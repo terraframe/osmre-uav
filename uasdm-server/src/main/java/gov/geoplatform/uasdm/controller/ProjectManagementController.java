@@ -259,10 +259,10 @@ public class ProjectManagementController
     return new RemoteFileGetResponse(this.service.downloadReport(sessionId, colId, productName, folder));
   }
 
-  @Endpoint(url = "run-ortho", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF runOrtho(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "processPtcloud") Boolean processPtcloud, @RequestParamter(name = "processDem") Boolean processDem, @RequestParamter(name = "processOrtho") Boolean processOrtho, @RequestParamter(name = "configuration") String configuration)
+  @Endpoint(url = "run-process", method = ServletMethod.POST, error = ErrorSerialization.JSON)
+  public ResponseIF runProcess(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "configuration") String configuration)
   {
-    this.service.runOrtho(request.getSessionId(), id, processPtcloud, processDem, processOrtho, configuration);
+    this.service.runOrtho(request.getSessionId(), id, configuration);
 
     return new RestResponse();
   }

@@ -1257,8 +1257,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.addBreadcrumb(node);
         this.setNodes(nodes);
-
-        console.log(this.current);
       });
     }
   }

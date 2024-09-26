@@ -370,17 +370,21 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
   public static JSONArray getComponentTasks(String componentId, String productId)
   {
     List<? extends WorkflowTask> tasks;
-    
+
     boolean isCollection = StringUtils.isBlank(productId);
-    if (StringUtils.isNotBlank(componentId)) {
+    if (StringUtils.isNotBlank(componentId))
+    {
       UasComponentIF c = ComponentFacade.getComponent(componentId);
-      
-      isCollection = (c instanceof CollectionIF);
+
+      isCollection = ( c instanceof CollectionIF );
     }
-    
-    if (isCollection) {
+
+    if (isCollection)
+    {
       tasks = getTasksForComponent(componentId);
-    } else {
+    }
+    else
+    {
       tasks = getTasksForProduct(productId);
     }
 
@@ -405,7 +409,7 @@ public class WorkflowTask extends WorkflowTaskBase implements ImageryWorkflowTas
       return iterator.getAll();
     }
   }
-  
+
   public static List<? extends WorkflowTask> getTasksForProduct(String productId)
   {
     WorkflowTaskQuery query = new WorkflowTaskQuery(new QueryFactory());

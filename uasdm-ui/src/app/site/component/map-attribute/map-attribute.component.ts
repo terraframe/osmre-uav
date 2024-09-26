@@ -229,8 +229,6 @@ export class MapAttributeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     refreshCoordinateFromInput(): void {
         if (this.coordinate.longitude != null && this.coordinate.latitude != null) {
-            console.log(this.site.geometry);
-
             if (this.site.geometry == null) {
                 this.site.geometry = { type: 'Point' };
             }

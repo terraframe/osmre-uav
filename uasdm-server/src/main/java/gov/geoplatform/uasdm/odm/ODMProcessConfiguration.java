@@ -90,6 +90,12 @@ public class ODMProcessConfiguration implements ProcessConfiguration
 
   public static final String     PRODUCT_NAME                      = "productName";
 
+  public static final String     PROCESS_PT_CLOUD                  = "processPtcloud";
+
+  public static final String     PROCESS_DEM                       = "processDem";
+
+  public static final String     PROCESS_ORTHO                     = "processOrtho";
+
   private boolean                includeGeoLocationFile;
 
   private FileFormat             geoLocationFormat;
@@ -169,6 +175,12 @@ public class ODMProcessConfiguration implements ProcessConfiguration
   private RadiometricCalibration radiometricCalibration;
 
   private String                 productName;
+
+  private Boolean                processPtcloud;
+
+  private Boolean                processDem;
+
+  private Boolean                processOrtho;
 
   public ODMProcessConfiguration()
   {
@@ -339,6 +351,36 @@ public class ODMProcessConfiguration implements ProcessConfiguration
     this.pcQuality = pcQuality;
   }
 
+  public Boolean getProcessPtcloud()
+  {
+    return processPtcloud;
+  }
+
+  public void setProcessPtcloud(Boolean processPtcloud)
+  {
+    this.processPtcloud = processPtcloud;
+  }
+
+  public Boolean getProcessDem()
+  {
+    return processDem;
+  }
+
+  public void setProcessDem(Boolean processDem)
+  {
+    this.processDem = processDem;
+  }
+
+  public Boolean getProcessOrtho()
+  {
+    return processOrtho;
+  }
+
+  public void setProcessOrtho(Boolean processOrtho)
+  {
+    this.processOrtho = processOrtho;
+  }
+
   @Override
   public JsonObject toJson()
   {
@@ -494,6 +536,36 @@ public class ODMProcessConfiguration implements ProcessConfiguration
       if (!element.isJsonNull())
       {
         configuration.setRadiometricCalibration(RadiometricCalibration.valueOf(object.get(RADIOMETRIC_CALIBRATION).getAsString()));
+      }
+    }
+
+    if (object.has(PROCESS_ORTHO))
+    {
+      JsonElement element = object.get(PROCESS_ORTHO);
+
+      if (!element.isJsonNull())
+      {
+        configuration.setProcessOrtho(object.get(PROCESS_ORTHO).getAsBoolean());
+      }
+    }
+
+    if (object.has(PROCESS_DEM))
+    {
+      JsonElement element = object.get(PROCESS_DEM);
+
+      if (!element.isJsonNull())
+      {
+        configuration.setProcessDem(object.get(PROCESS_DEM).getAsBoolean());
+      }
+    }
+
+    if (object.has(PROCESS_PT_CLOUD))
+    {
+      JsonElement element = object.get(PROCESS_PT_CLOUD);
+
+      if (!element.isJsonNull())
+      {
+        configuration.setProcessDem(object.get(PROCESS_PT_CLOUD).getAsBoolean());
       }
     }
 

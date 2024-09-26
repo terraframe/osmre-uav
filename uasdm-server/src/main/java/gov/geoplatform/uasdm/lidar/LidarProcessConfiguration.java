@@ -130,6 +130,17 @@ public class LidarProcessConfiguration implements ProcessConfiguration
   {
     this.productName = productName;
   }
+  
+  public boolean hasProcess()
+  {
+    return (
+        this.generateCopc ||
+        this.generateGSM ||
+        this.generateTerrainModel ||
+        this.generateTreeCanopyCover ||
+        this.generateTreeStructure);
+  }
+
 
   public JsonObject toJson()
   {
@@ -255,4 +266,5 @@ public class LidarProcessConfiguration implements ProcessConfiguration
 
     return configuration;
   }
+
 }

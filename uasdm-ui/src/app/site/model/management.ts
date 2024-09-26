@@ -96,6 +96,7 @@ export class SiteEntity {
 	areaCovered?: number;
 	weatherConditions?: string;
 	presignedThumbnailDownload?: string;
+	isLidar?: boolean;
 
 	// Document metadata fields
 	description?: string;
@@ -104,6 +105,7 @@ export class SiteEntity {
 	projectionName?: string;
 	orthoCorrectionModel?: string;
 	isPrivate?: boolean;
+
 }
 
 export class CollectionArtifact {

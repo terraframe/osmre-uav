@@ -80,6 +80,7 @@ import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.graph.UserAccessEntity;
 import gov.geoplatform.uasdm.lidar.LidarProcessConfiguration;
+import gov.geoplatform.uasdm.lidar.LidarProcessingTask;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.CompositeComponent;
@@ -90,6 +91,7 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.Page;
+import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.SiteIF;
@@ -123,7 +125,7 @@ import net.geoprism.localization.LocalizationService;
 public class ProjectManagementService
 {
 
-  private class RerunOrthoThread extends Thread
+  private class RerunODMProcessThread extends Thread
   {
     private ODMProcessingTask task;
 
@@ -131,7 +133,7 @@ public class ProjectManagementService
 
     private Set<String>       excludes;
 
-    public RerunOrthoThread(ODMProcessingTask task, CollectionIF collection, Set<String> excludes)
+    public RerunODMProcessThread(ODMProcessingTask task, CollectionIF collection, Set<String> excludes)
     {
       super("Rerun ortho thread for collection [" + collection.getName() + "]");
 
@@ -190,6 +192,60 @@ public class ProjectManagementService
       catch (Throwable t)
       {
         logger.error("Exception while re-running ortho", t);
+
+        task.appLock();
+        task.setStatus(ODMStatus.FAILED.getLabel());
+        task.setMessage(RunwayException.localizeThrowable(t, CommonProperties.getDefaultLocale()));
+        task.apply();
+
+        NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
+
+        throw t;
+      }
+    }
+  }
+
+  private class RerunLidarProcessThread extends Thread
+  {
+    private LidarProcessingTask task;
+
+    private CollectionIF        collection;
+
+    public RerunLidarProcessThread(LidarProcessingTask task, CollectionIF collection)
+    {
+      super("Rerun ortho thread for collection [" + collection.getName() + "]");
+
+      this.task = task;
+      this.collection = collection;
+    }
+
+    @Override
+    @Request
+    public void run()
+    {
+      try
+      {
+        logger.info("Initiating download from S3 of all raw data for collection [" + collection.getName() + "].");
+
+        try (CloseableFile zip = new CloseableFile(File.createTempFile("raw-" + this.collection.getOid(), ".zip")))
+        {
+          try (OutputStream ostream = new BufferedOutputStream(new FileOutputStream(zip)))
+          {
+            downloadAll(this.collection, ImageryComponent.RAW, ostream, null, false);
+          }
+
+          task.initiate(new FileResource(zip));
+
+          NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
+        }
+        catch (IOException e)
+        {
+          throw new ProgrammingErrorException(e);
+        }
+      }
+      catch (Throwable t)
+      {
+        logger.error("Exception while re-processing the point cloud", t);
 
         task.appLock();
         task.setStatus(ODMStatus.FAILED.getLabel());
@@ -459,7 +515,7 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public void runOrtho(String sessionId, String id, Boolean processPtcloud, Boolean processDem, Boolean processOrtho, String configuration)
+  public void runOrtho(String sessionId, String id, String configJson)
   {
     CollectionIF collection = ComponentFacade.getCollection(id);
 
@@ -479,27 +535,50 @@ public class ProjectManagementService
     // throw exception;
     // }
 
-    ODMProcessingTask task = new ODMProcessingTask();
-    task.setUploadId(id);
-    task.setComponent(collection.getOid());
-    task.setGeoprismUser(GeoprismUser.getCurrentUser());
-    task.setStatus(ODMStatus.RUNNING.getLabel());
-    task.setProcessDem(processDem);
-    task.setProcessOrtho(processOrtho);
-    task.setProcessPtcloud(processOrtho);
-    task.setTaskLabel("Orthorectification Processing (ODM) [" + collection.getName() + "]");
-    task.setMessage("The images uploaded to ['" + collection.getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
-    task.setConfiguration(ODMProcessConfiguration.parse(configuration));
-    task.apply();
+    ProcessConfiguration configuration = ProcessConfiguration.parse(configJson);
 
-    NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
+    if (configuration.isODM())
+    {
+      ODMProcessingTask task = new ODMProcessingTask();
+      task.setUploadId(id);
+      task.setComponent(collection.getOid());
+      task.setGeoprismUser(GeoprismUser.getCurrentUser());
+      task.setStatus(ODMStatus.RUNNING.getLabel());
+      task.setProcessDem(configuration.toODM().getProcessDem());
+      task.setProcessOrtho(configuration.toODM().getProcessOrtho());
+      task.setProcessPtcloud(configuration.toODM().getProcessPtcloud());
+      task.setTaskLabel("Orthorectification Processing (ODM) [" + collection.getName() + "]");
+      task.setMessage("The images uploaded to ['" + collection.getName() + "'] are submitted for orthorectification processing. Check back later for updates.");
+      task.setConfiguration(configuration.toODM());
+      task.apply();
 
-    // Get the exlcudes
-    Set<String> excludes = collection.getExcludes();
+      NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
-    RerunOrthoThread t = new RerunOrthoThread(task, collection, excludes);
-    t.setDaemon(true);
-    t.start();
+      // Get the exlcudes
+      Set<String> excludes = collection.getExcludes();
+
+      RerunODMProcessThread t = new RerunODMProcessThread(task, collection, excludes);
+      t.setDaemon(true);
+      t.start();
+    }
+    else if (configuration.isLidar())
+    {
+      LidarProcessingTask task = new LidarProcessingTask();
+      task.setUploadId(id);
+      task.setComponent(collection.getOid());
+      task.setGeoprismUser(GeoprismUser.getCurrentUser());
+      task.setStatus(ODMStatus.RUNNING.getLabel());
+      task.setTaskLabel("Lidar processing for collection [" + collection.getName() + "]");
+      task.setMessage("The point clouds uploaded to ['" + collection.getName() + "'] are submitted for processing. Check back later for updates.");
+      task.setConfiguration(configuration.toLidar());
+      task.apply();
+
+      NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
+
+      RerunLidarProcessThread t = new RerunLidarProcessThread(task, collection);
+      t.setDaemon(true);
+      t.start();
+    }
   }
 
   @Request(RequestType.SESSION)

@@ -31,7 +31,7 @@ public interface ProcessConfiguration
 
   public default boolean isLidar()
   {
-    return this.getType().equals(ProcessType.ODM);
+    return this.getType().equals(ProcessType.LIDAR);
   }
 
   @SuppressWarnings("unchecked")

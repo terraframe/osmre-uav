@@ -13,11 +13,11 @@ import { Subject } from 'rxjs';
 
 
 @Component({
-    selector: 'run-ortho-modal',
-    templateUrl: './run-ortho-modal.component.html',
+    selector: 'run-process-modal',
+    templateUrl: './run-process-modal.component.html',
     styleUrls: ['./artifact-page.component.css']
 })
-export class RunOrthoModalComponent implements OnInit, OnDestroy {
+export class RunProcessModalComponent implements OnInit, OnDestroy {
 
     message: string = null;
     entity: SiteEntity = null;
@@ -45,21 +45,23 @@ export class RunOrthoModalComponent implements OnInit, OnDestroy {
     /*
      * Called on confirm
      */
-    public onConfirm: Subject<any>;
+    public onConfirm: Subject<ProcessConfig>;
+
+    // Make the process config type usable in the HTML template
+    readonly ProcessConfigType = ProcessConfigType;
 
     constructor(public bsModalRef: BsModalRef, private service: ManagementService,) { }
 
     init(entity: SiteEntity) {
         this.entity = entity;
         this.config.radiometricCalibration = this.entity.sensor.sensorType.isMultispectral ? "CAMERA" : "NONE";
-        
-        this.service.getDefaultRunConfig(this.entity.id).then((config: ProcessConfig) => {
-			this.config = config;
-            this.config.productName = null;
 
-		}).catch((err: HttpErrorResponse) => {
-			this.error(err);
-		});
+        this.service.getDefaultRunConfig(this.entity.id).then((config: ProcessConfig) => {
+            this.config = config;
+            this.config.productName = null;
+        }).catch((err: HttpErrorResponse) => {
+            this.error(err);
+        });
     }
 
     ngOnInit(): void {
@@ -67,6 +69,14 @@ export class RunOrthoModalComponent implements OnInit, OnDestroy {
     }
 
     isValid(): boolean {
+        if (this.config.type === ProcessConfigType.LIDAR) {
+            return (this.config.generateCopc
+                || this.config.generateGSM
+                || this.config.generateTerrainModel
+                || this.config.generateTreeCanopyCover
+                || this.config.generateTreeStructure);
+        }
+
         return this.config.processPtcloud || this.config.processDem || this.config.processOrtho;
     }
 

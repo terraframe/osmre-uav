@@ -50,6 +50,8 @@ import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.lidar.LidarProcessConfiguration;
+import gov.geoplatform.uasdm.lidar.LidarProcessingTask;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
@@ -191,9 +193,12 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
           }
         }
       }
-      else
+      else if (configuration.isLidar())
       {
-        // TODO : HEADS UP - HANDLE LIDAR PROCESSING
+        if (configuration.toLidar().hasProcess())
+        {
+          startLidarProcessing(infile, task, configuration.toLidar());
+        }
       }
     }
     else if (processUpload && ! ( uploadTarget.equals(ImageryComponent.RAW) || uploadTarget.equals(ImageryComponent.VIDEO) ))
@@ -246,6 +251,26 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.initiate(infile, isMultispectral);
   }
 
+  private void startLidarProcessing(ApplicationResource infile, WorkflowTask uploadTask, LidarProcessConfiguration configuration)
+  {
+    UasComponentIF component = uploadTask.getComponentInstance();
+    
+    LidarProcessingTask task = new LidarProcessingTask();
+    task.setUploadId(uploadTask.getUploadId());
+    task.setComponent(component.getOid());
+    task.setGeoprismUser(this.getEventUser());
+    task.setStatus(ODMStatus.RUNNING.getLabel());
+    task.setProcessDem(uploadTask.getProcessDem());
+    task.setProcessOrtho(uploadTask.getProcessOrtho());
+    task.setProcessPtcloud(uploadTask.getProcessPtcloud());
+    task.setTaskLabel("Lidar processing for collection [" + component.getName() + "]");
+    task.setMessage("The point clouds uploaded to ['" + component.getName() + "'] are submitted for processing. Check back later for updates.");
+    task.setConfiguration(configuration);
+    task.apply();
+    
+    task.initiate(infile);
+  }
+  
   private void calculateImageSize(ApplicationFileResource zip, CollectionIF collection)
   {
     try
