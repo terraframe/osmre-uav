@@ -3,7 +3,6 @@
 ///
 
 import { Component, OnInit, OnDestroy, AfterViewInit, Input } from '@angular/core';
-import { Map, LngLat, NavigationControl, ImageSource, MapboxOptions } from 'mapbox-gl';
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw';
 import * as StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
 import { Observable } from 'rxjs';
@@ -11,6 +10,8 @@ import { Observable } from 'rxjs';
 
 import { SiteEntity } from '@site/model/management';
 import { MapService } from '@site/service/map.service';
+import { ConfigurationService } from '@core/service/configuration.service';
+import { LngLat, Map, NavigationControl } from 'maplibre-gl';
 
 
 @Component( {
@@ -65,7 +66,10 @@ export class MapAttributeComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     search: string = "";
 
-    constructor( private mapService: MapService ) { 
+    constructor( 
+        private configuration: ConfigurationService,
+        private mapService: MapService
+     ) { 
         this.dataSource = Observable.create(( observer: any ) => {
 
             this.mapService.mbForwardGeocode( this.search ).then( response => {
@@ -102,9 +106,9 @@ export class MapAttributeComponent implements OnInit, AfterViewInit, OnDestroy {
         //     }
         // }, 1000 );
 
-        let config: MapboxOptions = {
+        let config = {
             container: 'map-attribute-div',
-            style: 'mapbox://styles/mapbox/outdoors-v11',
+            style: 'mapbox://styles/mapbox/outdoors-v11?access_token=' + this.configuration.getMapboxKey(),
             zoom: this.zoom,
             center: this.center
         };
@@ -142,7 +146,7 @@ export class MapAttributeComponent implements OnInit, AfterViewInit, OnDestroy {
         this.map.addControl( this.draw );
 
         // Add zoom and rotation controls to the map.
-        this.map.addControl( new NavigationControl() );
+        this.map.addControl( new NavigationControl({ visualizePitch: true }) );
 
         this.map.on( "draw.update", ( $event ) => { this.onDrawUpdate( $event ) } );
         this.map.on( "draw.create", ( $event ) => { this.onDrawCreate( $event ) } );
@@ -258,7 +262,7 @@ export class MapAttributeComponent implements OnInit, AfterViewInit, OnDestroy {
 
         layer.selected = true;
 
-        this.map.setStyle( 'mapbox://styles/mapbox/' + layer.id );
+        this.map.setStyle( 'mapbox://styles/mapbox/' + layer.id + "?access_token=" + this.configuration.getMapboxKey() );
     }
 
     handleClick( $event: any ): void {

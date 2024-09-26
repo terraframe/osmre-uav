@@ -23,6 +23,7 @@ import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 
+import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.SiteObject;
@@ -71,25 +72,38 @@ public class SiteObjectDocumentQuery implements SiteObjectDocumentQueryIF
   {
     ql.append(" WHERE " + mdAttribute.getColumnName() + " LIKE :s3location");
 
-    if (this.folder.equals("image"))
+    if (this.component instanceof CollectionIF)
     {
-      ql.append(" AND ( ");
-      ql.append(" " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :jpeg");
-      ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :jpg");
-      ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :png");
-      ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :tif");
-      ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :tiff");
-      ql.append(" )");
-    }
-    else if (this.folder.equals("data"))
-    {
-      ql.append(" AND NOT ( ");
-      ql.append(" " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :jpeg");
-      ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :jpg");
-      ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :png");
-      ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :tif");
-      ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :tiff");
-      ql.append(" )");
+      CollectionIF collection = (CollectionIF) this.component;
+
+      if (this.folder.equals("image") || this.folder.equals("data"))
+      {
+        if (this.folder.equals("image"))
+        {
+          ql.append(" AND ( ");
+        }
+        else if (this.folder.equals("data"))
+        {
+          ql.append(" AND NOT ( ");
+        }
+
+        if (!collection.isLidar())
+        {
+          ql.append(" " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :jpeg");
+          ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :jpg");
+          ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :png");
+          ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :tif");
+          ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :tiff");
+        }
+        else
+        {
+          ql.append(" " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :laz");
+          ql.append(" OR " + mdAttribute.getColumnName() + ".toUpperCase() LIKE :las");
+        }
+
+        ql.append(" )");
+      }
+
     }
   }
 
@@ -104,13 +118,26 @@ public class SiteObjectDocumentQuery implements SiteObjectDocumentQueryIF
 
     query.setParameter("s3location", component.getS3location(this.product, actualFolder) + "%");
 
-    if (this.folder.equals("image") || this.folder.equals("data"))
+    if (this.component instanceof CollectionIF)
     {
-      query.setParameter("jpeg", "%.JPEG");
-      query.setParameter("jpg", "%.JPG");
-      query.setParameter("png", "%.PNG");
-      query.setParameter("tif", "%.TIF");
-      query.setParameter("tif", "%.TIFF");
+      CollectionIF collection = (CollectionIF) this.component;
+
+      if (this.folder.equals("image") || this.folder.equals("data"))
+      {
+        if (!collection.isLidar())
+        {
+          query.setParameter("jpeg", "%.JPEG");
+          query.setParameter("jpg", "%.JPG");
+          query.setParameter("png", "%.PNG");
+          query.setParameter("tif", "%.TIF");
+          query.setParameter("tif", "%.TIFF");
+        }
+        else
+        {
+          query.setParameter("las", "%.LAS");
+          query.setParameter("laz", "%.LAZ");
+        }
+      }
     }
   }
 

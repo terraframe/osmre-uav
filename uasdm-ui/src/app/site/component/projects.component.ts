@@ -5,7 +5,7 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, TemplateRef, Inject } from "@angular/core";
 import { BsModalService } from "ngx-bootstrap/modal";
 import { BsModalRef } from "ngx-bootstrap/modal";
-import { Map, LngLatBounds, NavigationControl, MapboxEvent, AttributionControl } from "mapbox-gl";
+import { Map, LngLatBounds, NavigationControl, MapEvent, AttributionControl, RasterSourceSpecification } from "maplibre-gl";
 
 import { Observable, Subject } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
@@ -49,6 +49,7 @@ import { FilterModalComponent } from "./modal/filter-modal.component";
 import { LocalizedValue } from "@shared/model/organization";
 import { ProductService } from "@site/service/product.service";
 import { ProductModalComponent } from "./modal/product-modal.component";
+import { isMapboxURL, transformMapboxUrl } from "maplibregl-mapbox-request-transformer";
 
 
 const enum PANEL_TYPE {
@@ -133,7 +134,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   /* 
    * List of base layers
    */
-  baseLayers: any[] = [{
+  baseLayers: {
+    label: string;
+    id: string;
+    selected?: boolean;
+  }[] = [{
     label: "Outdoors",
     id: "outdoors-v11",
     selected: true
@@ -157,7 +162,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   /* 
      * debounced subject for map extent change events
      */
-  subject: Subject<MapboxEvent<MouseEvent | TouchEvent | WheelEvent>>;
+  subject: Subject<any>;
 
   /*
    * Reference to the modal current showing
@@ -372,12 +377,21 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
 
+    const layer = this.baseLayers.find(l => l.selected);
+
     this.map = new Map({
       container: "map",
-      style: "mapbox://styles/mapbox/outdoors-v11",
+      style: "mapbox://styles/mapbox/" + layer.id,
       zoom: 2,
       attributionControl: false,
-      center: [-78.880453, 42.897852]
+      center: [-78.880453, 42.897852],
+      transformRequest: (url: string, resourceType: string) => {
+        if (isMapboxURL(url)) {
+          return transformMapboxUrl(url, resourceType, this.configuration.getMapboxKey())
+        }
+
+        return { url }
+      }
     });
 
     this.map.on("load", () => {
@@ -406,7 +420,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.refreshMapPoints(true);
 
     // Add zoom and rotation controls to the map.
-    this.map.addControl(new NavigationControl(), "bottom-right");
+    this.map.addControl(new NavigationControl({ visualizePitch: true }), "bottom-right");
     this.map.addControl(new AttributionControl({ compact: true }), "bottom-left");
 
     this.map.on("mousemove", e => {
@@ -593,7 +607,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     */
   }
 
-  handleExtentChange(e: MapboxEvent<MouseEvent | TouchEvent | WheelEvent>): void {
+  handleExtentChange(e: any): void {
     const bounds = this.map.getBounds();
 
     if (this.isValidBounds(bounds)) {
@@ -895,7 +909,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     //} );
   }
 
-  handleStyle(layer: any): void {
+  handleStyle(layer: { label: string; id: string; selected?: boolean; }): void {
 
     this.baseLayers.forEach(baseLayer => {
       baseLayer.selected = false;
@@ -919,8 +933,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             tileSize: 256
           }
         },
-        sprite: "https://demotiles.maplibre.org/styles/osm-bright-gl-style/sprite",
-        glyphs: "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
+        sprite: "https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/sprite?access_token=" + this.configuration.getMapboxKey(),
+        glyphs: "https://api.mapbox.com/fonts/v1/mapbox/{fontstack}/{range}.pbf?access_token=" + this.configuration.getMapboxKey(),
         layers: [
           {
             id: layer.id,
@@ -1145,13 +1159,15 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       url = "/" + url;
     }
 
+    this.map.addSource(layer.key, {
+      'type': 'raster',
+      'url': url
+    });
+
     this.map.addLayer({
       'id': layer.key,
       'type': 'raster',
-      'source': {
-        'type': 'raster',
-        'url': url
-      },
+      'source': layer.key,
       'paint': {}
     }, "points");
 

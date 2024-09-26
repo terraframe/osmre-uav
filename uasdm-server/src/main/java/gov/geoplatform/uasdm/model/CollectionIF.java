@@ -15,8 +15,6 @@
  */
 package gov.geoplatform.uasdm.model;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -25,8 +23,6 @@ import org.json.JSONObject;
 
 import gov.geoplatform.uasdm.bus.AllPrivilegeType;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
-import gov.geoplatform.uasdm.graph.Sensor;
-import gov.geoplatform.uasdm.graph.UAV;
 
 public interface CollectionIF extends UasComponentIF
 {
@@ -51,6 +47,8 @@ public interface CollectionIF extends UasComponentIF
   public Set<String> getExcludes();
 
   public boolean isMultiSpectral();
+  
+  boolean isLidar();
 
 //  public Sensor getSensor();
 //
@@ -103,4 +101,5 @@ public interface CollectionIF extends UasComponentIF
   public void setHasAllZip(Boolean b);
 
   public Optional<CollectionMetadata> getMetadata();
+
 }

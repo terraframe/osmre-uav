@@ -27,8 +27,6 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
-import gov.geoplatform.uasdm.*;
-import gov.geoplatform.uasdm.graph.Product;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -45,11 +43,16 @@ import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Session;
 import com.runwaysdk.system.SingleActor;
 
+import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.DevProperties;
+import gov.geoplatform.uasdm.GenericException;
+import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
-import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
@@ -57,7 +60,6 @@ import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.processing.CogTifProcessor;
 import gov.geoplatform.uasdm.processing.CogTifValidator;
-import gov.geoplatform.uasdm.view.FlightMetadata;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
 import gov.geoplatform.uasdm.ws.UserNotificationMessage;
@@ -75,7 +77,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     super();
   }
 
-  public void handleUploadFinish(WorkflowTask task, String uploadTarget, ApplicationFileResource infile, Boolean processUpload, ODMProcessConfiguration configuration)
+  public void handleUploadFinish(WorkflowTask task, String uploadTarget, ApplicationFileResource infile, Boolean processUpload, ProcessConfiguration configuration)
   {
     // if (Session.getCurrentSession() != null)
     // {
@@ -88,6 +90,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     ProductIF product = null;
 
     task.lock();
+
     if (!uploadTarget.equals(ImageryComponent.RAW) && !uploadTarget.equals(ImageryComponent.VIDEO) && !uploadTarget.equals(ImageryComponent.GEOREF))
     {
       Optional<ProductIF> optional = component.getProduct(configuration.getProductName());
@@ -102,7 +105,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 
       task.setProductId(product.getOid());
     }
-    
+
     task.setStatus(WorkflowTaskStatus.PROCESSING.toString());
     task.setMessage("Processing archived files");
     task.apply();
@@ -176,14 +179,21 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     // uploaded to s3
     if (processUpload && uploadTarget.equals(ImageryComponent.RAW) && ( !DevProperties.uploadRaw() || Util.hasImages(uploadedFiles) ))
     {
-      if (task.getProcessDem() || task.getProcessOrtho() || task.getProcessPtcloud())
+      if (configuration.isODM())
       {
-        startODMProcessing(infile, task, isMultispectral(component), configuration);
-
-        if (component instanceof CollectionIF)
+        if (task.getProcessDem() || task.getProcessOrtho() || task.getProcessPtcloud())
         {
-          calculateImageSize(infile, (CollectionIF) component);
+          startODMProcessing(infile, task, isMultispectral(component), configuration.toODM());
+
+          if (component instanceof CollectionIF)
+          {
+            calculateImageSize(infile, (CollectionIF) component);
+          }
         }
+      }
+      else
+      {
+        // TODO : HEADS UP - HANDLE LIDAR PROCESSING
       }
     }
     else if (processUpload && ! ( uploadTarget.equals(ImageryComponent.RAW) || uploadTarget.equals(ImageryComponent.VIDEO) ))

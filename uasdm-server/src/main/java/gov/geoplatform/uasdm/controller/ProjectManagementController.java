@@ -90,10 +90,10 @@ public class ProjectManagementController
     return new RestBodyResponse(configuration);
   }
 
-  @Endpoint(url = "get-default-odm-run-config", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getDefaultODMRunConfig(ClientRequestIF request, @RequestParamter(name = "collectionId") String collectionId)
+  @Endpoint(url = "get-default-run-config", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF getDefaultRunConfig(ClientRequestIF request, @RequestParamter(name = "collectionId") String collectionId)
   {
-    String config = this.service.getDefaultODMRunConfig(request.getSessionId(), collectionId);
+    String config = this.service.getDefaultRunConfig(request.getSessionId(), collectionId);
 
     return new RestBodyResponse(config);
   }

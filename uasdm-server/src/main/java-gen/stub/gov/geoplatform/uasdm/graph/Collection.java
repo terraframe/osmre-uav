@@ -108,11 +108,11 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     super();
   }
-  
+
   @Override
   public void regenerateMetadata()
   {
-    new GenerateMetadataCommand(this, null, ((CollectionIF) this).getMetadata().orElseThrow()).doIt();
+    new GenerateMetadataCommand(this, null, ( (CollectionIF) this ).getMetadata().orElseThrow()).doIt();
   }
 
   @Override
@@ -285,7 +285,8 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     // @see https://github.com/OpenDroneMap/ODM/issues/1658
     if (this.isMultiSpectral() && key.matches(Product.THUMBNAIL_ORTHO_PNG_REGEX))
     {
-      Product product = this.getProducts().get(0); // TODO : This might be the wrong product...
+      Product product = this.getProducts().get(0); // TODO : This might be the
+                                                   // wrong product...
       InputStream is = new TiTillerProxy().getCogPreview(product, product.getMappableOrtho().get(), new CogPreviewParams(250, 250));
 
       try
@@ -644,7 +645,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     return null;
   }
 
-//  @Override
+  // @Override
   public Sensor getSensor()
   {
     String oid = this.getObjectValue(COLLECTIONSENSOR);
@@ -656,12 +657,12 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
     return null;
   }
-//
-//  @Override
-//  public void setSensor(Sensor sensor)
-//  {
-//    this.setCollectionSensor(sensor);
-//  }
+  //
+  // @Override
+  // public void setSensor(Sensor sensor)
+  // {
+  // this.setCollectionSensor(sensor);
+  // }
 
   @Override
   public boolean isMultiSpectral()
@@ -677,6 +678,23 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
         {
           return true;
         }
+      }
+
+      return false;
+    }).orElse(false);
+  }
+
+  @Override
+  public boolean isLidar()
+  {
+    return this.getMetadata().map(metadata -> {
+      Sensor sensor = metadata.getSensor();
+
+      if (sensor != null)
+      {
+        SensorType type = sensor.getSensorType();
+
+        return type.isLidar();
       }
 
       return false;

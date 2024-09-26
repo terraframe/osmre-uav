@@ -14,7 +14,7 @@ import { FineUploader, UIOptions } from 'fine-uploader';
 
 import { ErrorModalComponent } from '@shared/component/modal/error-modal.component';
 import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confirm-modal.component';
-import { SiteEntity, UploadForm, Task } from '../model/management';
+import { SiteEntity, UploadForm, Task, ProcessConfigType } from '../model/management';
 import { ManagementService } from '../service/management.service';
 import EnvironmentUtil from '@core/utility/environment-util';
 
@@ -54,9 +54,10 @@ export class UploadComponent implements OnInit {
      * Form values
      */
     values: UploadForm = {
+        type: ProcessConfigType.ODM,
         create: false,
         includeGeoLocationFile: false,
-        geoLocationFormat:'RX1R2'
+        geoLocationFormat: 'RX1R2'
     };
 
     /*
@@ -126,7 +127,7 @@ export class UploadComponent implements OnInit {
                     //responseProperty: 'error'
                 },
                 validation: {
-                    allowedExtensions: ['zip', 'tar.gz']
+                    allowedExtensions: ['zip', 'tar.gz', 'laz', 'las']
                 },
                 showMessage: function (message: string) {
                     // 

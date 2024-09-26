@@ -29,7 +29,8 @@
       "@admin/*": [
         "src/app/admin/*"
       ]
-    }
+    },
+    "allowSyntheticDefaultImports": true
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

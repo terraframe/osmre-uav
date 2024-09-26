@@ -23,9 +23,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.view.RequestParserIF;
 
-public class ODMProcessConfiguration
+public class ODMProcessConfiguration implements ProcessConfiguration
 {
   public static enum Quality {
     ULTRA("ultra"), HIGH("high"), MEDIUM("medium"), LOW("low"), LOWEST("lowest");
@@ -192,6 +193,12 @@ public class ODMProcessConfiguration
     this.productName = Long.valueOf(System.currentTimeMillis()).toString();
   }
 
+  @Override
+  public ProcessType getType()
+  {
+    return ProcessType.ODM;
+  }
+
   public String getProductName()
   {
     return productName;
@@ -332,9 +339,11 @@ public class ODMProcessConfiguration
     this.pcQuality = pcQuality;
   }
 
+  @Override
   public JsonObject toJson()
   {
     JsonObject object = new JsonObject();
+    object.addProperty(TYPE, this.getType().name());
     object.addProperty(INCLUDE_GEO_LOCATION_FILE, this.includeGeoLocationFile);
     object.addProperty(GEO_LOCATION_FORMAT, this.geoLocationFormat.toString());
     object.addProperty(GEO_LOCATION_FILE_NAME, this.geoLocationFileName);
@@ -571,7 +580,7 @@ public class ODMProcessConfiguration
     {
       configuration.setProductName(parser.getCustomParams().get(PRODUCT_NAME));
     }
-    
+
     return configuration;
   }
 }

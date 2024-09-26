@@ -8,7 +8,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 import { ErrorHandler } from '@shared/component';
 
 import { ManagementService } from '@site/service/management.service';
-import { SiteEntity, ODMRunConfig } from '@site/model/management';
+import { SiteEntity, ProcessConfig, ProcessConfigType } from '@site/model/management';
 import { Subject } from 'rxjs';
 
 
@@ -21,7 +21,8 @@ export class RunOrthoModalComponent implements OnInit, OnDestroy {
 
     message: string = null;
     entity: SiteEntity = null;
-    config: ODMRunConfig = {
+    config: ProcessConfig = {
+        type: ProcessConfigType.ODM,
         processPtcloud: false,
         processDem: false,
         processOrtho: false,
@@ -52,7 +53,7 @@ export class RunOrthoModalComponent implements OnInit, OnDestroy {
         this.entity = entity;
         this.config.radiometricCalibration = this.entity.sensor.sensorType.isMultispectral ? "CAMERA" : "NONE";
         
-        this.service.getDefaultODMRunConfig(this.entity.id).then((config: ODMRunConfig) => {
+        this.service.getDefaultRunConfig(this.entity.id).then((config: ProcessConfig) => {
 			this.config = config;
             this.config.productName = null;
 

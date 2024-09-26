@@ -60,7 +60,6 @@ import com.runwaysdk.session.Session;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.ImageryProcessingJob;
-import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
@@ -80,6 +79,7 @@ import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.graph.UserAccessEntity;
+import gov.geoplatform.uasdm.lidar.LidarProcessConfiguration;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.CompositeComponent;
@@ -105,7 +105,6 @@ import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.Converter;
-import gov.geoplatform.uasdm.view.FlightMetadata;
 import gov.geoplatform.uasdm.view.ODMRunView;
 import gov.geoplatform.uasdm.view.QueryResult;
 import gov.geoplatform.uasdm.view.QuerySiteResult;
@@ -728,16 +727,19 @@ public class ProjectManagementService
     CollectionMetadata metadata = null;
     ProductIF product = null;
     UasComponentIF component = null;
-    
-    if (StringUtils.isNotBlank(collectionId)) {
+
+    if (StringUtils.isNotBlank(collectionId))
+    {
       component = ComponentFacade.getCollection(collectionId);
-      
-      metadata = ((CollectionIF)component).getMetadata().orElse(null);
+
+      metadata = ( (CollectionIF) component ).getMetadata().orElse(null);
       product = component.getPrimaryProduct().orElse(null);
-    } else if (StringUtils.isNotBlank(productId)) {
+    }
+    else if (StringUtils.isNotBlank(productId))
+    {
       product = Product.get(productId);
       component = product.getComponent();
-      
+
       metadata = product.getMetadata().orElse(null);
     }
 
@@ -748,13 +750,15 @@ public class ProjectManagementService
       if (poc.has(Collection.NAME))
       {
         metadata.setValue(CollectionMetadata.POCNAME, poc.getString(Collection.NAME));
-        if (component != null && component instanceof CollectionIF) component.setValue(Collection.POCNAME, poc.getString(Collection.NAME));
+        if (component != null && component instanceof CollectionIF)
+          component.setValue(Collection.POCNAME, poc.getString(Collection.NAME));
       }
 
       if (poc.has(Collection.EMAIL))
       {
         metadata.setValue(CollectionMetadata.POCEMAIL, poc.getString(Collection.EMAIL));
-        if (component != null && component instanceof CollectionIF) component.setValue(Collection.POCEMAIL, poc.getString(Collection.EMAIL));
+        if (component != null && component instanceof CollectionIF)
+          component.setValue(Collection.POCEMAIL, poc.getString(Collection.EMAIL));
       }
     }
 
@@ -770,8 +774,9 @@ public class ProjectManagementService
         {
           Integer ptEpsg = object.has(Document.PTEPSG) ? object.getInt(Document.PTEPSG) : null;
           String projectName = object.has(Document.PROJECTIONNAME) ? object.getString(Document.PROJECTIONNAME) : null;
-          
-          if (product != null) {
+
+          if (product != null)
+          {
             new ArtifactQuery(component, product).getDocuments().stream().filter(document -> {
               return document.getS3location().contains("/" + ImageryComponent.PTCLOUD + "/");
             }).forEach(document -> {
@@ -791,7 +796,8 @@ public class ProjectManagementService
         {
           String orthoCorrectionModel = object.has(Document.ORTHOCORRECTIONMODEL) ? object.getString(Document.ORTHOCORRECTIONMODEL) : null;
 
-          if (product != null) {
+          if (product != null)
+          {
             new ArtifactQuery(component, product).getDocuments().stream().filter(document -> {
               return document.getS3location().contains("/" + ImageryComponent.ORTHO + "/");
             }).forEach(document -> {
@@ -808,7 +814,8 @@ public class ProjectManagementService
       }
     }
 
-    if (component != null && component instanceof CollectionIF) {
+    if (component != null && component instanceof CollectionIF)
+    {
       ImageryWorkflowTaskIF.setBooleanValue(selection, component, Collection.EXIFINCLUDED);
       ImageryWorkflowTaskIF.setDecimalValue(selection, component, Collection.NORTHBOUND);
       ImageryWorkflowTaskIF.setDecimalValue(selection, component, Collection.SOUTHBOUND);
@@ -824,11 +831,12 @@ public class ProjectManagementService
       ImageryWorkflowTaskIF.setIntegerValue(selection, component, Collection.PERCENTSIDELAP);
       ImageryWorkflowTaskIF.setDecimalValue(selection, component, Collection.AREACOVERED);
       ImageryWorkflowTaskIF.setStringValue(selection, component, Collection.WEATHERCONDITIONS);
-      
-      ((Collection)component).apply(false);
+
+      ( (Collection) component ).apply(false);
     }
 
-    if (metadata != null) {
+    if (metadata != null)
+    {
       UAV uav = ( uavId != null && uavId.length() > 0 ) ? UAV.get(uavId) : null;
       Sensor sensor = ( sensorId != null && sensorId.length() > 0 ) ? Sensor.get(sensorId) : null;
 
@@ -850,12 +858,15 @@ public class ProjectManagementService
       ImageryWorkflowTaskIF.setIntegerValue(selection, metadata, CollectionMetadata.PERCENTSIDELAP);
       ImageryWorkflowTaskIF.setDecimalValue(selection, metadata, CollectionMetadata.AREACOVERED);
       ImageryWorkflowTaskIF.setStringValue(selection, metadata, CollectionMetadata.WEATHERCONDITIONS);
-      
+
       metadata.apply();
-      
-      if (product != null) {
+
+      if (product != null)
+      {
         new GenerateMetadataCommand(component, (Product) product, metadata).doIt();
-      } else {
+      }
+      else
+      {
         component.regenerateMetadata();
       }
     }
@@ -1140,7 +1151,7 @@ public class ProjectManagementService
     // response.put("platforms", Platform.getAll());
     response.put("name", user.getValue(GeoprismUser.FIRSTNAME) + " " + user.getValue(GeoprismUser.LASTNAME));
     response.put("email", user.getValue(GeoprismUser.EMAIL));
-    
+
     CollectionMetadata metadata = null;
     ProductIF product = null;
     UasComponentIF component = null;
@@ -1150,33 +1161,38 @@ public class ProjectManagementService
       component = ComponentFacade.getComponent(collectionId);
 
       CollectionIF collection = (CollectionIF) component;
-      
+
       metadata = collection.getMetadata().orElse(null);
       product = collection.getPrimaryProduct().orElse(null);
     }
-    
-    if (StringUtils.isNotBlank(productId)) {
+
+    if (StringUtils.isNotBlank(productId))
+    {
       product = Product.get(productId);
       component = product.getComponent();
-      
+
       metadata = product.getMetadata().orElse(null);
     }
-    
-    if (product != null) {
+
+    if (product != null)
+    {
       JSONArray artifacts = Arrays.stream(component.getArtifactObjects(product)).map(a -> a.toJSON(false)).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
-  
+
       response.put("artifacts", artifacts);
     }
-    
-    if (metadata != null) {
+
+    if (metadata != null)
+    {
       UAV uav = metadata.getUav();
       Sensor sensor = metadata.getSensor();
-      
-      if (metadata.getPocName() != null) {
+
+      if (metadata.getPocName() != null)
+      {
         response.put("name", metadata.getPocName());
       }
-      
-      if (metadata.getPocEmail() != null) {
+
+      if (metadata.getPocEmail() != null)
+      {
         response.put("email", metadata.getPocEmail());
       }
 
@@ -1320,16 +1336,16 @@ public class ProjectManagementService
 
     return Collection.createCollection(selections);
   }
-  
+
   @Request(RequestType.SESSION)
   public String createStandaloneProductGroup(String sessionId, String sJson)
   {
     JSONObject json = new JSONObject(sJson);
-    
+
     UasComponentIF component = ComponentFacade.getComponent(json.getString("component"));
-    
+
     ProductIF product = createStandaloneProductGroupInTrans(json, component);
-    
+
     return product.getOid();
   }
 
@@ -1359,49 +1375,60 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public String getDefaultODMRunConfig(String sessionId, String collectionId)
+  public String getDefaultRunConfig(String sessionId, String collectionId)
   {
     Collection collection = (Collection) ComponentFacade.getCollection(collectionId);
 
-    List<ODMRun> runs = ODMRun.getByComponentOrdered(collectionId);
-
-    if (runs.size() > 0)
+    if (collection.isLidar())
     {
-      ODMRun run = runs.get(0);
-
-      ODMProcessConfiguration config = run.getConfiguration();
-
-      if (config.isIncludeGeoLocationFile())
-      {
-        config.setGeoLocationFileName(Product.GEO_LOCATION_FILE);
-      }
+      LidarProcessConfiguration config = new LidarProcessConfiguration();
 
       return config.toJson().toString();
     }
     else
     {
-      ODMProcessConfiguration config = new ODMProcessConfiguration();
+      List<ODMRun> runs = ODMRun.getByComponentOrdered(collectionId);
 
-      Document geoFile = Document.find(collection.buildRawKey() + Product.GEO_LOCATION_FILE);
-
-      if (geoFile != null)
+      if (runs.size() > 0)
       {
-        config.setIncludeGeoLocationFile(true);
-        config.setGeoLocationFileName(Product.GEO_LOCATION_FILE);
-        config.setGeoLocationFormat(FileFormat.RX1R2);
+        ODMRun run = runs.get(0);
+
+        ODMProcessConfiguration config = run.getConfiguration();
+
+        if (config.isIncludeGeoLocationFile())
+        {
+          config.setGeoLocationFileName(Product.GEO_LOCATION_FILE);
+        }
+
+        return config.toJson().toString();
+      }
+      else
+      {
+        ODMProcessConfiguration config = new ODMProcessConfiguration();
+
+        Document geoFile = Document.find(collection.buildRawKey() + Product.GEO_LOCATION_FILE);
+
+        if (geoFile != null)
+        {
+          config.setIncludeGeoLocationFile(true);
+          config.setGeoLocationFileName(Product.GEO_LOCATION_FILE);
+          config.setGeoLocationFormat(FileFormat.RX1R2);
+        }
+
+        collection.getMetadata().ifPresent(metadata -> {
+
+          if (Boolean.TRUE.equals(metadata.getSensor().getHighResolution()))
+          {
+            config.setResolution(new BigDecimal(2.0f));
+            config.setPcQuality(Quality.HIGH);
+          }
+        });
+
+        return config.toJson().toString();
       }
 
-      collection.getMetadata().ifPresent(metadata -> {
-
-        if (Boolean.TRUE.equals(metadata.getSensor().getHighResolution()))
-        {
-          config.setResolution(new BigDecimal(2.0f));
-          config.setPcQuality(Quality.HIGH);
-        }
-      });
-
-      return config.toJson().toString();
     }
+
   }
 
   @Request(RequestType.SESSION)

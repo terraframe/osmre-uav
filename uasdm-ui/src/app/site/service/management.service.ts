@@ -4,7 +4,6 @@
 
 import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http';
-import { LngLatBounds } from 'mapbox-gl';
 import { Observable } from 'rxjs';
 
 // import 'rxjs/add/operator/toPromise';
@@ -14,7 +13,7 @@ import { AuthService } from '@shared/service/auth.service';
 import { EventService } from '@shared/service/event.service';
 import { HttpBackendClient } from '@shared/service/http-backend-client.service';
 
-import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet, TaskGroup, Selection, CollectionArtifacts, ODMRun, ODMRunConfig } from '../model/management';
+import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet, TaskGroup, Selection, CollectionArtifacts, ODMRun, ProcessConfig } from '../model/management';
 import { Sensor } from '../model/sensor';
 import { Platform } from '../model/platform';
 import { PageResult } from '@shared/model/page';
@@ -168,12 +167,12 @@ export class ManagementService {
 			.toPromise()
 	}
 
-	getDefaultODMRunConfig(collectionId: string): Promise<ODMRunConfig> {
+	getDefaultRunConfig(collectionId: string): Promise<ProcessConfig> {
 		let params: HttpParams = new HttpParams();
 		params = params.set('collectionId', collectionId);
 
 		return this.http
-			.get<ODMRunConfig>(environment.apiUrl + '/project/get-default-odm-run-config', { params: params })
+			.get<ProcessConfig>(environment.apiUrl + '/project/get-default-run-config', { params: params })
 			.toPromise()
 	}
 
