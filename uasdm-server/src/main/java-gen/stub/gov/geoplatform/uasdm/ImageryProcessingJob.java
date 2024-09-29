@@ -65,7 +65,6 @@ import gov.geoplatform.uasdm.bus.ImageryUploadEventQuery;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.graph.UasComponent;
-import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.ProcessConfiguration.ProcessType;
@@ -410,6 +409,8 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
           NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
         }
 
+        FileUtils.deleteQuietly(newZip);
+
         return null;
       }
 
@@ -432,6 +433,8 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         {
           NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
         }
+
+        FileUtils.deleteQuietly(newZip);
 
         return null;
       }
@@ -461,6 +464,8 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       {
         NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
       }
+
+      FileUtils.deleteQuietly(newZip);
 
       return null;
     }
