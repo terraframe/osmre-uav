@@ -1529,6 +1529,23 @@ public class ProjectManagementService
     return ODMRunView.fromODMRun(run);
   }
 
+  @Request(RequestType.SESSION)
+  public ProcessConfiguration getConfigurationByTask(String sessionId, String taskId)
+  {
+    WorkflowTask task = WorkflowTask.get(taskId);
+
+    if (task instanceof LidarProcessingTask)
+    {
+      return ( (LidarProcessingTask) task ).getConfiguration();
+    }
+    else if (task instanceof ODMProcessingTask)
+    {
+      return ( (ODMProcessingTask) task ).getConfiguration();
+    }
+
+    return new ODMProcessConfiguration();
+  }
+
   // public void logLoginAttempt(String sessionId, String username)
   // {
   // if (sessionId != null)

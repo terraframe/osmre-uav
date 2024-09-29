@@ -75,6 +75,7 @@ import { UserAccessModalComponent } from './component/modal/user-access-modal.co
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RunProcessModalComponent } from './component/modal/run-process-modal.component';
+import { ProcessRunModalComponent } from './component/modal/process-run-modal.component';
 
 @NgModule({
 	imports: [
@@ -135,7 +136,8 @@ import { RunProcessModalComponent } from './component/modal/run-process-modal.co
 		ArtifactUploadComponent,
 		CreateProductGroupModalComponent,
 		ShareProductModalComponent,
-		UserAccessModalComponent
+		UserAccessModalComponent,
+		ProcessRunModalComponent
 	],
 	providers: [
 		CanDeactivateGuardService,
@@ -164,7 +166,8 @@ import { RunProcessModalComponent } from './component/modal/run-process-modal.co
 		ProductModalComponent,
 		CreateProductGroupModalComponent,
 		ShareProductModalComponent,
-		UserAccessModalComponent
+		UserAccessModalComponent,
+		ProcessRunModalComponent
 	]
 })
 export class SiteModule { }
