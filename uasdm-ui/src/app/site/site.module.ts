@@ -65,21 +65,20 @@ import { ReportService } from './service/report.service';
 import { CreateCollectionModalComponent } from './component/modal/create-collection-modal.component';
 import { CreateStandaloneProductModalComponent } from './component/modal/create-standalone-product-group-modal.component';
 import { ArtifactPageComponent } from './component/modal/artifact-page.component';
-import { RunOrthoModalComponent } from './component/modal/run-ortho-modal.component';
 import { ArtifactUploadComponent } from './component/artifact-upload/artifact-upload.component';
 import { FilterModalComponent } from './component/modal/filter-modal.component';
 import { CreateProductGroupModalComponent } from './component/modal/create-product-group-modal.component';
 import { ShareProductModalComponent } from './component/modal/share-product-modal.component';
 import { UserAccessService } from './service/user-access.service';
 import { UserAccessModalComponent } from './component/modal/user-access-modal.component';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { StacItemPanelComponent } from './component/stac-item-panel/stac-item-panel.component';
 import { KnowStacService } from './service/know-stac.service';
 import { KnowStacPanelComponent } from './component/know-stac-panel/know-stac-panel.component';
 import { ImageryPanelComponent } from './component/imagery-panel/imagery-panel.component';
 import { KnowStacModalComponent } from './component/know-stac-modal/know-stac-modal.component';
 import { LegendPanelComponent } from './component/legend-panel/legend-panel.component';
+import { RunProcessModalComponent } from './component/modal/run-process-modal.component';
+import { ProcessRunModalComponent } from './component/modal/process-run-modal.component';
 
 @NgModule({
 	imports: [
@@ -112,7 +111,7 @@ import { LegendPanelComponent } from './component/legend-panel/legend-panel.comp
 		UploadModalComponent,
 		ODMRunModalComponent,
 		ArtifactPageComponent,
-		RunOrthoModalComponent,
+		RunProcessModalComponent,
 		CollectionModalComponent,
 		AccessibleSupportModalComponent,
 		ProductModalComponent,
@@ -144,7 +143,8 @@ import { LegendPanelComponent } from './component/legend-panel/legend-panel.comp
 		ImageryPanelComponent,
 		KnowStacPanelComponent,
 		KnowStacModalComponent,
-		LegendPanelComponent
+		LegendPanelComponent,
+		ProcessRunModalComponent
 	],
 	providers: [
 		CanDeactivateGuardService,
@@ -162,7 +162,7 @@ import { LegendPanelComponent } from './component/legend-panel/legend-panel.comp
 	],
 	entryComponents: [
 		FilterModalComponent,
-		RunOrthoModalComponent,
+		RunProcessModalComponent,
 		CreateCollectionModalComponent,
 		CreateStandaloneProductModalComponent,
 		UploadModalComponent,
@@ -175,7 +175,8 @@ import { LegendPanelComponent } from './component/legend-panel/legend-panel.comp
 		CreateProductGroupModalComponent,
 		ShareProductModalComponent,
 		UserAccessModalComponent,
-		KnowStacModalComponent
+		KnowStacModalComponent,
+		ProcessRunModalComponent
 	]
 })
 export class SiteModule { }

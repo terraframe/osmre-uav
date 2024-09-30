@@ -10,7 +10,7 @@ import { Subject } from 'rxjs';
 
 import { ErrorHandler, BasicConfirmModalComponent } from '@shared/component';
 
-import { SiteEntity, SiteObjectsResultSet } from '@site/model/management';
+import { ProcessConfig, SiteEntity, SiteObjectsResultSet } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 import { MetadataService } from '@site/service/metadata.service';
 import { MetadataModalComponent } from './metadata-modal.component';
@@ -23,7 +23,7 @@ import {
 } from 'angular-animations';
 import { UploadModalComponent } from './upload-modal.component';
 import { ArtifactPageComponent } from './artifact-page.component';
-import { RunOrthoModalComponent } from './run-ortho-modal.component';
+import { RunProcessModalComponent } from './run-process-modal.component';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import EnvironmentUtil from '@core/utility/environment-util';
 import { environment } from 'src/environments/environment';
@@ -149,15 +149,15 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 
 	getThumbnail(image: SiteEntity): void {
 		if (image == null) { return; }
-		
+
 		if (image.presignedThumbnailDownload != null && image.presignedThumbnailDownload.length > 0) {
-		
+
 			this.service.downloadPresigned(image.presignedThumbnailDownload, false).subscribe(blob => {
 				this.createImageFromBlob(blob, image);
 			}, error => {
 				console.log(error);
 			});
-		
+
 		} else {
 
 			let rootPath: string = image.key.substr(0, image.key.lastIndexOf("/"));
@@ -212,13 +212,15 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	}
 
 	getData(component: string, folder: string, pageNumber: number, pageSize: number) {
-		
+
 		this.loading = true;
 
 		this.service.getObjects(component, folder, pageNumber, pageSize, true).then(resultSet => {
 			this.page = resultSet;
 
-			this.canReprocessImagery = this.page.results.length > 1 ? true : false;
+			const minNumberOfFiles = this.entity.isLidar ? 0 : 1;
+
+			this.canReprocessImagery = this.page.results.length > minNumberOfFiles ? true : false;
 
 			for (let i = 0; i < this.page.results.length; ++i) {
 				let item = this.page.results[i];
@@ -258,17 +260,6 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		this.service.setExclude(image.id, !image.exclude).then(result => {
 			image.exclude = result.exclude;
 		});
-		//
-		//
-		//		if (image.exclude) {
-		//			this.excludes.push(image.name);
-		//		}
-		//		else {
-		//			let position = this.excludes.indexOf(image.name);
-		//			if (position > -1) {
-		//				this.excludes.splice(position, 1);
-		//			}
-		//		}
 	}
 
 	isProcessable(item: any): boolean {
@@ -292,35 +283,36 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 
 	handleRunOrtho(): void {
 
-		const confirmModalRef = this.modalService.show(RunOrthoModalComponent, {
+		const confirmModalRef = this.modalService.show(RunProcessModalComponent, {
 			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: true,
 			'class': 'confirmation-modal'
 		});
 		confirmModalRef.content.init(this.entity);
-		confirmModalRef.content.onConfirm.subscribe(data => {
+		confirmModalRef.content.onConfirm.subscribe(configuration => {
 			this.processRunning = true;
 			this.showOrthoRerunMessage = true;
 
-			const configuration = {
-				includeGeoLocationFile: data.includeGeoLocationFile,
-				outFileNamePrefix: data.outFileNamePrefix,
-				resolution: data.resolution,
-				videoResolution: data.videoResolution,
-				matcherNeighbors: data.matcherNeighbors,
-				minNumFeatures: data.minNumFeatures,
-				pcQuality: data.pcQuality,
-				featureQuality: data.featureQuality,
-				radiometricCalibration: data.radiometricCalibration,
-				geoLocationFormat: data.geoLocationFormat,
-				geoLocationFileName: data.geoLocationFileName,
-				includeGroundControlPointFile: data.includeGroundControlPointFile,
-				groundControlPointFileName: data.groundControlPointFileName,
-				productName: data.productName
-			};
+			// const configuration: ProcessConfig = {
+			// 	type: data.type,
+			// 	includeGeoLocationFile: data.includeGeoLocationFile,
+			// 	outFileNamePrefix: data.outFileNamePrefix,
+			// 	resolution: data.resolution,
+			// 	videoResolution: data.videoResolution,
+			// 	matcherNeighbors: data.matcherNeighbors,
+			// 	minNumFeatures: data.minNumFeatures,
+			// 	pcQuality: data.pcQuality,
+			// 	featureQuality: data.featureQuality,
+			// 	radiometricCalibration: data.radiometricCalibration,
+			// 	geoLocationFormat: data.geoLocationFormat,
+			// 	geoLocationFileName: data.geoLocationFileName,
+			// 	includeGroundControlPointFile: data.includeGroundControlPointFile,
+			// 	groundControlPointFileName: data.groundControlPointFileName,
+			// 	productName: data.productName
+			// };
 
-			this.service.runOrtho(this.entity.id, data.processPtcloud, data.processDem, data.processOrtho, configuration).then(() => {
+			this.service.runProcess(this.entity.id, configuration).then(() => {
 				this.processRunning = false;
 
 				setTimeout(() => {

@@ -4,20 +4,17 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
+import { isMapboxURL, transformMapboxUrl } from 'maplibregl-mapbox-request-transformer'
 
 import { map } from 'rxjs/operators';
 // import 'rxjs/add/operator/toPromise';
 import { finalize } from 'rxjs/operators';
 
-import { GeoJSONSource } from 'mapbox-gl';
 
-import * as mapboxgl from 'mapbox-gl';
 import { environment } from 'src/environments/environment';
-
-
-const mapboxKey = 'pk.eyJ1IjoidGVycmFmcmFtZSIsImEiOiJjanZxNTFnaTYyZ2RuNDlxcmNnejNtNjN6In0.-kmlS8Tgb2fNc1NPb5rJEQ';
-
+import { ConfigurationService } from '@core/service/configuration.service';
+import { GeoJSONSource } from 'maplibre-gl';
 
 
 
@@ -35,8 +32,7 @@ export interface TileJson {
 @Injectable()
 export class MapService {
 
-    constructor(private http: HttpClient) {
-        (mapboxgl as any).accessToken = mapboxKey;
+    constructor(private http: HttpClient, private configuration: ConfigurationService) {
     }
 
     features(conditions: { hierarchy: any, array: { field: string, value: any }[] }): Promise<{ features: GeoJSONSource, bbox: number[] }> {
@@ -53,13 +49,13 @@ export class MapService {
     mbForwardGeocode(searchText: string): Promise<any> {
         let params: HttpParams = new HttpParams();
 
-        let url = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + searchText + ".json?proximity=-74.70850,40.78375&access_token=" + mapboxKey;
+        let url = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + searchText + ".json?proximity=-74.70850,40.78375&access_token=" + this.configuration.getMapboxKey();
 
         return this.http
             .get(url, { params: params })
             .toPromise()
     }
-    
+
     tilejson(url: string): Promise<TileJson> {
         let params: HttpParams = new HttpParams();
 
@@ -67,5 +63,4 @@ export class MapService {
             .get<TileJson>(url)
             .toPromise()
     }
-
 }

@@ -29,6 +29,10 @@ set -e
 
 cd ./titiler/deployment/aws
 
+# Run these once
+python -m pip install -r requirements-cdk.txt
+npm run cdk bootstrap
+
 export AWS_ACCESS_KEY_ID=$UASDM_TITILER_LAMBDA_DEPLOY_KEY
 export AWS_SECRET_ACCESS_KEY=$UASDM_TITILER_LAMBDA_DEPLOY_SECRET
 
@@ -40,8 +44,7 @@ export AWS_REGION=us-east-1
 DeployStage () {
   export TITILER_STACK_NAME="titiler-private"
   export TITILER_STACK_BUCKETS="[\"osmre-uas-${TITILER_STACK_STAGE}\"]"
-  # TODO : This command cannot be automated yet because it requires user input.
-  npm run cdk deploy "${TITILER_STACK_NAME}-lambda-${TITILER_STACK_STAGE}"
+  npm run cdk deploy "${TITILER_STACK_NAME}-lambda-${TITILER_STACK_STAGE}" --require-approval never
   
   # TODO : This cannot be automated (yet) because it requires output from the cdk deploy to be piped into here (in the route-id)
   # https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-access-control-iam.html

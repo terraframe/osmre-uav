@@ -8,7 +8,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 import { ErrorHandler } from '@shared/component';
 
 import { ManagementService } from '@site/service/management.service';
-import { SiteEntity, ODMRunConfig, Product } from '@site/model/management';
+import { SiteEntity, ProcessConfig, Product } from '@site/model/management';
 import { Subject } from 'rxjs';
 import { ProductService } from '@site/service/product.service';
 

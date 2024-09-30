@@ -9,8 +9,8 @@ import { v4 as uuid } from "uuid";
 import { ManagementService } from '@site/service/management.service';
 import { Criteria, Filter, StacItem, ToggleableLayer, ToggleableLayerType } from '@site/model/layer';
 import { PageResult } from '@shared/model/page';
-import { LngLatBounds } from 'mapbox-gl';
 import { environment } from 'src/environments/environment';
+import { LngLatBounds } from 'maplibre-gl';
 
 const enum VIEW_MODE {
 	FORM = 0,

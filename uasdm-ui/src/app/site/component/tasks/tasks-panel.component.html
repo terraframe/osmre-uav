@@ -57,6 +57,7 @@
                 <button class="btn btn-default" *ngIf="task.actions.length > 0" (click)="task.showError = !task.showError">{{task.showError ? 'Hide' : 'Show'}} Messages</button>
                 <button class="btn btn-default" *ngIf="task.odmOutput" (click)="task.showODMOutput = !task.showODMOutput">Show Detailed Log Output</button>
                 <button class="btn btn-default" *ngIf="task.odmRunId" (click)="viewOdmRun(task)">View ODM Run Information</button>
+                <button class="btn btn-default" *ngIf="task.type === 'gov.geoplatform.uasdm.lidar.LidarProcessingTask'" (click)="viewConfiguration(task)">View Run Configuration</button>
                 <button class="btn btn-default caution" (click)="removeTask(task)">Delete Task</button>
               </div>
             </div>

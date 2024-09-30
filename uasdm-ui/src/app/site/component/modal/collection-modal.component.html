@@ -148,7 +148,7 @@
         <div class="col-sm-12">
           <tabset class="nav-full-width">
 
-            <tab heading="raw images" (selectTab)="onSelect('image')">
+            <tab heading="raw" (selectTab)="onSelect('image')">
               <i *ngIf="loading" class="fa fa-spinner fa-spin" style="margin-left:50%;"></i>
 
               <div class="image-list-container">
@@ -177,7 +177,7 @@
               </div>
             </tab>
 
-            <tab heading="raw data" (selectTab)="onSelect('data')">
+            <tab heading="supporting data" (selectTab)="onSelect('data')">
               <i *ngIf="loading" class="fa fa-spinner fa-spin" style="margin-left:50%;"></i>
 
               <table style="width: 100%;">

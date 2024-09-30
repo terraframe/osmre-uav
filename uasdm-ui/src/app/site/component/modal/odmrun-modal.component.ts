@@ -9,7 +9,7 @@ import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
 import { ErrorHandler } from '@shared/component';
 
-import { SiteEntity, UploadForm, Task, Selection, CollectionArtifacts, ODMRun, ODMRunConfig } from '@site/model/management';
+import { SiteEntity, UploadForm, Task, Selection, CollectionArtifacts, ODMRun, ProcessConfig } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 import { environment } from 'src/environments/environment';
 
@@ -33,7 +33,7 @@ export class ODMRunModalComponent implements OnInit, OnDestroy {
 	
 	odmRun: ODMRun = null;
 	
-	config: ODMRunConfig = null;
+	config: ProcessConfig = null;
 	
 	constructor(private service: ManagementService, private modalService: BsModalService, public bsModalRef: BsModalRef) {
 	}

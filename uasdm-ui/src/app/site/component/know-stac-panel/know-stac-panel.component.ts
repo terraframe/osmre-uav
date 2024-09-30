@@ -5,8 +5,8 @@
 import { Component, OnInit, OnDestroy, Output, EventEmitter, Input } from '@angular/core';
 
 import { StacCollection, StacItem, StacLink, StacProperty } from '@site/model/layer';
-import { LngLatBounds, Map } from 'mapbox-gl';
 import { KnowStacService } from '@site/service/know-stac.service';
+import { LngLatBounds } from 'maplibre-gl';
 import { environment } from 'src/environments/environment';
 
 

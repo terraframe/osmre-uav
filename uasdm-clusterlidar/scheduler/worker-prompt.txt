@@ -1,0 +1,31 @@
+Write me some HTTP webserver code in python using flask and dask distributed which allows me to respond to requests. The Dask client needs to be initialized with an EC2Cluster object. 
+
+The full list of HTTP endpoints are:
+1. GET '/info' - Returns software version, memory, CPU cores, etc.
+2. POST '/task/new' - Creates a new task. Accepts input parameter 'zipUrl' which is a remote path to a zip file (on S3) which will include the data to be processed. This method will autoscale a server by invoking an async function called 'autoscale' for this operation which uses asyncio and utilizes a dask 'future' object. It will also generate a 'taskId' (a UUID) and then store this taskId in a JSON file on the filesystem called 'tasks.json'. When new tasks are created, you must store the taskId as well as the future object in memory which will be used later in the status method.
+3. GET '/status/taskId' - Used to request status of a task previously started from '/task/new'. Takes the taskId as a parameter. Will check the previously mentioned futures map via the taskId to see if a task exists. Returns a JSON object with the following template: { status (string): "CANCELED" | "RUNNING" | "NONE", dateCreated (number): "The timestamp when the task was created. This field helps in tracking the duration of the task and when it was initiated", processingTime (number): "The time (in milliseconds) that the task has been in processing. This value is dynamically calculated if the task is still running (RUNNING status). If the task has not started yet or is in an idle state, this value may be -1. ", output (string): "If a task with the id exists, returns the output from the dask Client as returned from get_worker_logs" }
+4. GET '/tasks' - Returns a JSON array representation of all tasks which are currently running, where each JSON object inside the array is produced with the same format from the status method.
+
+Upon server boot, load the 'tasks.json' file and see if there are existing tasks running on the dask scheduler. If there are existing tasks, and we suspect that the webserver was killed or rebooted while tasks were running, then we must attempt to rebuild our in-memory context for these in-process jobs so that we can respond properly to future status requests.
+
+Using dask distributed, the worker node must download a zip file from s3, unzip it to a local directory on the filesystem, and perform a 'processing' operation on it (which you will use a synchronous placeholder method called 'process'), and then after processing is done, upload a 'results' folder to S3.
+
+The autoscaling must be implemented using Dask distributed, with the Client and EC2Cluster objects we initialized at startup. To achieve this, the tasks.json file must include the ip address of the server, and must utilize this ip address when reconnecting to the cluster at startup.
+
+As part of the initialization procedure, the webserver must also read a JSON configuration file called 'config.json' which provides configurable information about the autoscaling process. It must include an array which specifies the number of files in the processing input, and then a ec2 instance type as well as a disk size. The task/new function must have parameters 'maxImages' and 'maxColSizeMb", which are checked against this JSON config file and used to specify what the EC2 instance type is as well as the disk storage specifications for the autoscaled server. Here is an example of this configuration JSON:
+
+{
+"imageSizeMapping": [
+        {"maxImages": 18, "maxColSizeMb": 80, "slug": "t3a.medium", "storage": 100},
+		{"maxImages": 60, "maxColSizeMb": 300, "slug": "m5.large", "storage": 160},
+		{"maxImages": 200, "maxColSizeMb": 1000, "slug": "m5.xlarge", "storage": 320},
+		{"maxImages": 800, "maxColSizeMb": 4500, "slug": "m5.2xlarge", "storage": 640},
+		{"maxImages": 2000, "maxColSizeMb": 11000, "slug": "r5.2xlarge", "storage": 800},
+		{"maxImages": 3000, "maxColSizeMb": 24000, "slug": "r5.4xlarge", "storage": 1000},
+		{"maxImages": 6000, "maxColSizeMb": 60000, "slug": "r5.8xlarge", "storage": 1200},
+		{"maxImages": 12000, "maxColSizeMb": 200000, "slug": "r5.12xlarge", "storage": 1600},
+		{"maxImages": 24000, "maxColSizeMb": 500000, "slug": "r5.16xlarge", "storage": 2000}
+    ]
+}
+
+Don't forget to remove the task from the in memory structures as well as the persisted 'tasks.json' file when it is finished processing, either successfully or in an errored state.

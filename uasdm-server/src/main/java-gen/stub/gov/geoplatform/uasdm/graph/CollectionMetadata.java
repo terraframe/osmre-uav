@@ -24,22 +24,24 @@ public class CollectionMetadata extends CollectionMetadataBase implements Compon
   public void applyWithCollection(CollectionIF collection)
   {
     this.apply();
-    
-    ((VertexObject) collection).addChild(this, EdgeType.COLLECTION_HAS_METADATA).apply();
+
+    ( (VertexObject) collection ).addChild(this, EdgeType.COLLECTION_HAS_METADATA).apply();
   }
-  
+
   public List<Product> getProducts()
   {
     return this.getParents(EdgeType.PRODUCT_HAS_METADATA, Product.class);
   }
-  
+
   public Optional<Collection> getCollection()
   {
     List<Collection> list = this.getParents(EdgeType.COLLECTION_HAS_METADATA, Collection.class);
-    
-    if (list.size() == 0) return Optional.empty();
-    else if (list.size() > 1) throw new IndexOutOfBoundsException();
-    
+
+    if (list.size() == 0)
+      return Optional.empty();
+    else if (list.size() > 1)
+      throw new IndexOutOfBoundsException();
+
     return Optional.of(list.get(0));
   }
 
@@ -81,6 +83,20 @@ public class CollectionMetadata extends CollectionMetadataBase implements Compon
       {
         return true;
       }
+    }
+
+    return false;
+  }
+
+  public boolean isLidar()
+  {
+    Sensor sensor = this.getSensor();
+
+    if (sensor != null)
+    {
+      SensorType type = sensor.getSensorType();
+
+      return type.isLidar();
     }
 
     return false;

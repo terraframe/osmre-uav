@@ -16,7 +16,7 @@ import { ErrorHandler, BasicConfirmModalComponent } from '@shared/component';
 
 import { Sensor } from '@site/model/sensor';
 import { Platform } from '@site/model/platform';
-import { SiteEntity, UploadForm, Task, Selection, CollectionArtifacts, ODMRunConfig } from '@site/model/management';
+import { SiteEntity, UploadForm, Task, Selection, CollectionArtifacts, ProcessConfig, ProcessConfigType } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 import { MetadataService } from '@site/service/metadata.service';
 import { MetadataModalComponent } from './metadata-modal.component';
@@ -54,10 +54,14 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 
 	isAdvancedSettingsCollapsed = true;
 
+	// Make the process config type usable in the HTML template
+	readonly ProcessConfigType = ProcessConfigType;
+
 	/* 
 	 * Form values
 	 */
-	values: UploadForm = {
+	config: UploadForm = {
+		type: ProcessConfigType.ODM,
 		create: false,
 		resolution: 5,
 		videoResolution: 4000,
@@ -69,8 +73,11 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		geoLocationFormat: "RX1R2",
 		geoLocationFileName: "PIX4D.CSV",
 		groundControlPointFileName: "gcp_list.txt",
-		productName: null
-	} as UploadForm;
+		productName: null,
+		processPtcloud: true,
+		processDem: true,
+		processOrtho: true
+	};
 
 	/*
 	 * FineUploader for uploading large files
@@ -96,13 +103,6 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 	 * Flag indicating if the upload should be processed by ODM
 	 */
 	processUpload: boolean = true;
-
-	// Upload config
-	config = {
-		processPtcloud: true,
-		processDem: true,
-		processOrtho: true
-	};
 
 	/*
 	 * List of hierarchies
@@ -355,13 +355,11 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 	}
 
 	init(component: SiteEntity, uploadTarget: string, productName?: string): void {
-		console.log(component);
-
 		this.component = component;
 		this.uploadTarget = uploadTarget;
-		
+
 		if (productName != null) {
-			this.values.productName = productName;
+			this.config.productName = productName;
 		}
 
 		// this.processUpload = this.uploadTarget === 'raw';
@@ -384,13 +382,14 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 			this.page = this.pages[this.pages.length - 1];
 		}
 
-		this.values.radiometricCalibration = this.component.sensor.sensorType.isMultispectral ? "CAMERA" : "NONE";
-		this.values.includeGeoLocationFile = this.component.sensor.hasGeologger === true;
+		this.config.radiometricCalibration = this.component.sensor.sensorType.isMultispectral ? "CAMERA" : "NONE";
+		this.config.includeGeoLocationFile = this.component.sensor.hasGeologger === true;
 
 		if (this.component.type.toLowerCase() === 'collection') {
-			this.service.getDefaultODMRunConfig(this.component.id).then((config: ODMRunConfig) => {
-				this.values.pcQuality = config.pcQuality;
-				this.values.resolution = config.resolution;
+			this.service.getDefaultRunConfig(this.component.id).then((config: ProcessConfig) => {
+				this.config.type = config.type;
+				this.config.pcQuality = config.pcQuality;
+				this.config.resolution = config.resolution;
 			}).catch((err: HttpErrorResponse) => {
 				this.error(err);
 			});
@@ -580,20 +579,17 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 				//                this.message = "A [" + selection.type + "] must first be selected before the file can be uploaded";
 				//            }
 				//            else {
-				//                this.values.uasComponentOid = selection.value;
-				// this.values.selections = JSON.stringify(this.selections);
-				this.values.uploadTarget = this.uploadTarget;
-				this.values.uasComponentOid = this.component.id;
-				this.values.processUpload = this.processUpload;
-				this.values.processDem = this.config.processDem;
-				this.values.processOrtho = this.config.processOrtho;
-				this.values.processPtcloud = this.config.processPtcloud;
+				//                this.config.uasComponentOid = selection.value;
+				// this.config.selections = JSON.stringify(this.selections);
+				this.config.uploadTarget = this.uploadTarget;
+				this.config.uasComponentOid = this.component.id;
+				this.config.processUpload = this.processUpload;
 
-				if(this.values.productName == null) {
-					delete this.values.productName;
+				if (this.config.productName == null) {
+					delete this.config.productName;
 				}
 
-				this.uploader.setParams(this.values);
+				this.uploader.setParams(this.config);
 				this.uploader.uploadStoredFiles();
 				//            }
 			};

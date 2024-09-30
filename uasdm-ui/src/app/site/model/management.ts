@@ -96,6 +96,7 @@ export class SiteEntity {
 	areaCovered?: number;
 	weatherConditions?: string;
 	presignedThumbnailDownload?: string;
+	isLidar?: boolean;
 
 	// Document metadata fields
 	description?: string;
@@ -104,6 +105,7 @@ export class SiteEntity {
 	projectionName?: string;
 	orthoCorrectionModel?: string;
 	isPrivate?: boolean;
+
 }
 
 export class CollectionArtifact {
@@ -119,33 +121,49 @@ export class CollectionArtifacts {
 	ptcloud?: CollectionArtifact;
 }
 
+export enum ProcessConfigType {
+	ODM = 'ODM', LIDAR = 'LIDAR'
+}
+
+export class ProcessConfig {
+	type: ProcessConfigType;
+
+	// ODM processing options
+	productName?: string;
+	processPtcloud?: boolean;
+	processDem?: boolean;
+	processOrtho?: boolean;
+	includeGeoLocationFile?: boolean;
+	includeGroundControlPointFile?: boolean;
+	outFileNamePrefix?: string;
+	resolution?: number;
+	videoResolution?: number;
+	matcherNeighbors?: number;
+	minNumFeatures?: number;
+	pcQuality?: string;
+	featureQuality?: string;
+	radiometricCalibration?: string;
+	geoLocationFormat?: string;
+	geoLocationFileName?: string;
+	groundControlPointFileName?: string;
+
+	// LIDAR processing options;
+	generateCopc?: boolean;
+	generateTreeCanopyCover?: boolean;
+	generateGSM?: boolean;
+	generateTreeStructure?: boolean;
+	generateTerrainModel?: boolean;
+	productNamePrefix?: string;
+}
+
 export class ODMRun {
 	output: string;
-	config: ODMRunConfig;
+	config: ProcessConfig;
 	report: SiteEntity;
 	runStart: string;
 	runEnd: string;
 }
 
-export class ODMRunConfig {
-	productName: string;
-	processPtcloud: boolean;
-	processDem: boolean;
-	processOrtho: boolean;
-	includeGeoLocationFile: boolean;
-	includeGroundControlPointFile: boolean;
-	outFileNamePrefix: string;
-	resolution: number;
-	videoResolution: number;
-	matcherNeighbors: number;
-	minNumFeatures: number;
-	pcQuality: string;
-	featureQuality: string;
-	radiometricCalibration?: string;
-	geoLocationFormat?: string;
-	geoLocationFileName?: string;
-	groundControlPointFileName?: string;
-}
 
 export class CollectionHierarchy {
 	site: string;
@@ -198,7 +216,7 @@ export class Selection {
 	isPrivate?: boolean;
 };
 
-export class UploadForm {
+export class UploadForm extends ProcessConfig {
 	create?: boolean;
 	name?: string;
 	outFileNamePrefix?: string;
@@ -211,24 +229,8 @@ export class UploadForm {
 	selections?: string;
 
 	// Processing configuration fields
-	productName?: string;
 	uploadTarget?: string;
 	processUpload?: boolean;
-	processOrtho?: boolean;
-	processDem?: boolean;
-	processPtcloud?: boolean;
-	includeGeoLocationFile?: boolean;
-	includeGroundControlPointFile?: boolean;
-	resolution?: number;
-	videoResolution?: number;
-	matcherNeighbors?: number;
-	minNumFeatures?: number;
-	pcQuality?: string;
-	featureQuality?: string;
-	radiometricCalibration?: string;
-	geoLocationFormat?: string;
-	geoLocationFileName?: string;
-	groundControlPointFileName?: string;
 
 	// Document metadata fields
 	tool?: string;

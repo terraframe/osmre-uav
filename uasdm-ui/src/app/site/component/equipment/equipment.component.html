@@ -17,7 +17,7 @@
                 <h4><i class="fa fa-fw collapsible-link" [ngClass]="{'fa-chevron-down': !isSensorTypeCollapsed, 'fa-chevron-right': isSensorTypeCollapsed}"></i>Sensor Types</h4>
             </a>
             <div id="sensorTypeCollabseContainer" [collapse]="isSensorTypeCollapsed">
-                <classifications [metadata]='{title: "", label: "type", baseUrl: "/sensor-type"}'></classifications>
+                <classifications [metadata]='{title: "", label: "type", baseUrl: "/sensor-type"}' ></classifications>
             </div>
             
             <a (click)="isSensorWavelengthCollapsed = !isSensorWavelengthCollapsed">

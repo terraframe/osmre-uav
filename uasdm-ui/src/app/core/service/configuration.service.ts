@@ -8,6 +8,8 @@ import { Configuration } from "@core/model/application";
 import { firstValueFrom } from "rxjs";
 import { environment } from "src/environments/environment";
 import EnvironmentUtil from '@core/utility/environment-util';
+const mapboxKey = 'pk.eyJ1IjoidGVycmFmcmFtZSIsImEiOiJjanZxNTFnaTYyZ2RuNDlxcmNnejNtNjN6In0.-kmlS8Tgb2fNc1NPb5rJEQ';
+
 
 @Injectable()
 export class ConfigurationService {
@@ -54,6 +56,10 @@ export class ConfigurationService {
 
     getKnowStacURL(): string {
         return this.getConfiguration().knowStacUrl;
+    }
+    
+    getMapboxKey(): string {
+        return mapboxKey;
     }
 
 }

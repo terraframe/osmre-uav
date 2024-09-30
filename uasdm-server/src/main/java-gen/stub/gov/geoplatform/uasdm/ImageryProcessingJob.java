@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm;
 
@@ -27,6 +27,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -63,11 +64,15 @@ import gov.geoplatform.uasdm.bus.ImageryUploadEvent;
 import gov.geoplatform.uasdm.bus.ImageryUploadEventQuery;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
+import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ProcessConfiguration;
+import gov.geoplatform.uasdm.model.ProcessConfiguration.ProcessType;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.view.RequestParserIF;
+import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
@@ -84,28 +89,29 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     super();
   }
 
-  public ODMProcessConfiguration getConfiguration()
+  public ProcessConfiguration getConfiguration()
   {
     String json = this.getConfigurationJson();
 
     if (!StringUtils.isEmpty(json))
     {
-      return ODMProcessConfiguration.parse(json);
+      return ProcessConfiguration.parse(json);
     }
 
     return new ODMProcessConfiguration();
   }
 
-  public void setConfiguration(ODMProcessConfiguration configuration)
+  public void setConfiguration(ProcessConfiguration configuration)
   {
     this.setConfigurationJson(configuration.toJson().toString());
   }
 
   public static JobHistory processFiles(RequestParserIF parser, File archive) throws FileNotFoundException
   {
+    ProcessConfiguration configuration = ProcessConfiguration.parse(parser);
+
     AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
     String ext = FilenameUtils.getExtension(archive.getName()).toLowerCase();
-    ODMProcessConfiguration configuration = ODMProcessConfiguration.parse(parser);
 
     try (CloseableFile newArchive = ( ext.endsWith("gz") || ext.endsWith("zip") ) ? validateArchive(archive, task, configuration) : validateFile(archive, task, configuration))
     {
@@ -113,18 +119,17 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       {
         return null;
       }
-      
+
       FileUtils.deleteQuietly(archive);
       archive = newArchive;
-      
+
       VaultFile vfImageryZip = null;
-  
-      try
+
+      try (FileInputStream istream = new FileInputStream(archive))
       {
-  
-        vfImageryZip = VaultFile.createAndApply(parser.getFilename(), new FileInputStream(archive));
+        vfImageryZip = VaultFile.createAndApply(parser.getFilename(), istream);
         Boolean processUpload = parser.getProcessUpload();
-  
+
         ImageryProcessingJob job = new ImageryProcessingJob();
         job.setRunAsUserId(Session.getCurrentSession().getUser().getOid());
         job.setWorkflowTask(task);
@@ -132,26 +137,32 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         job.setUploadTarget(task.getUploadTarget());
         job.setProcessUpload(processUpload);
         job.setConfiguration(configuration);
-        job.setOutFileNamePrefix(configuration.getOutFileNamePrefix());
+        // job.setOutFileNamePrefix(configuration.getOutFileNamePrefix());
         job.apply();
-  
+
         JobHistory history = job.start();
-  
+
         return history;
       }
       catch (Throwable t)
       {
-        try { vfImageryZip.delete(); } catch(Throwable t2) {}
-        
+        try
+        {
+          vfImageryZip.delete();
+        }
+        catch (Throwable t2)
+        {
+        }
+
         task.lock();
         task.setStatus(WorkflowTaskStatus.ERROR.toString());
         task.setMessage("An error occurred while uploading the imagery to S3. " + RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
         task.apply();
-        
+
         t.printStackTrace();
-  
+
         logger.error("An error occurred while uploading the imagery to S3.", t);
-  
+
         if (Session.getCurrentSession() != null)
         {
           NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
@@ -184,7 +195,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
   }
 
-  private static CloseableFile validateFile(File archive, AbstractUploadTask task, ODMProcessConfiguration configuration)
+  private static CloseableFile validateFile(File archive, AbstractUploadTask task, ProcessConfiguration configuration)
   {
     String filename = FilenameUtils.getName(archive.getName());
     String ext = FilenameUtils.getExtension(archive.getName());
@@ -225,14 +236,13 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
   }
 
-  private static CloseableFile validateArchive(File archive, AbstractUploadTask task, ODMProcessConfiguration configuration)
+  private static CloseableFile validateArchive(File archive, AbstractUploadTask task, ProcessConfiguration configuration)
   {
     final String ext = FilenameUtils.getExtension(archive.getName()).toLowerCase();
     final boolean isMultispectral = isMultispectral(task);
 
     boolean hasFiles = false;
     Set<String> filenameSet = new HashSet<String>();
-
     byte buffer[] = new byte[Util.BUFFER_SIZE];
 
     CloseableFile newZip;
@@ -254,7 +264,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
               ZipArchiveEntry entry = entries.nextElement();
 
               String filename = entry.getName();
-              
+
               boolean isValid = validateFile(filename, entry.isDirectory(), isMultispectral, task, configuration);
 
               if (!entry.isDirectory())
@@ -264,23 +274,29 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
                 int len;
 
                 filename = FilenameUtils.getName(filename);
-                
+
                 filename = filename.replaceAll(UasComponentIF.DISALLOWED_FILENAME_REGEX, "_");
-                
-                if (configuration.isIncludeGeoLocationFile() && filename.equals(configuration.getGeoLocationFileName()))
+
+                if (configuration.getType().equals(ProcessType.ODM))
                 {
-                  filename = "geo.txt";
+                  if (configuration.toODM().isIncludeGeoLocationFile() && filename.equals(configuration.toODM().getGeoLocationFileName()))
+                  {
+                    filename = "geo.txt";
+                  }
+
+                  if (configuration.toODM().isIncludeGroundControlPointFile() && filename.equals(configuration.toODM().getGroundControlPointFileName()))
+                  {
+                    filename = "gcp_list.txt";
+                  }
                 }
 
-                if (configuration.isIncludeGroundControlPointFile() && filename.equals(configuration.getGroundControlPointFileName()))
+                if (filenameSet.contains(filename))
                 {
-                  filename = "gcp_list.txt";
-                }
-                
-                if (filenameSet.contains(filename)) {
                   task.createAction("The filename [" + filename + "] conflicts with another name in the uploaded archive. This conflict may be a result of inner directories or special characters which cannot be represented in the final collection. This will result in missing files.", TaskActionType.ERROR.getType());
                   continue;
-                } else {
+                }
+                else
+                {
                   filenameSet.add(filename);
                 }
 
@@ -313,7 +329,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
               while ( ( entry = (TarArchiveEntry) tarIn.getNextEntry() ) != null)
               {
                 String filename = entry.getName();
-                
+
                 boolean isValid = validateFile(filename, entry.isDirectory(), isMultispectral, task, configuration);
 
                 if (!entry.isDirectory())
@@ -323,23 +339,29 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
                   int count;
 
                   filename = FilenameUtils.getName(filename);
-                  
+
                   filename = filename.replaceAll(UasComponentIF.DISALLOWED_FILENAME_REGEX, "_");
-                  
-                  if (configuration.isIncludeGeoLocationFile() && filename.equals(configuration.getGeoLocationFileName()))
+
+                  if (configuration.getType().equals(ProcessType.ODM))
                   {
-                    filename = "geo.txt";
+                    if (configuration.toODM().isIncludeGeoLocationFile() && filename.equals(configuration.toODM().getGeoLocationFileName()))
+                    {
+                      filename = "geo.txt";
+                    }
+
+                    if (configuration.toODM().isIncludeGroundControlPointFile() && filename.equals(configuration.toODM().getGroundControlPointFileName()))
+                    {
+                      filename = "gcp_list.txt";
+                    }
                   }
 
-                  if (configuration.isIncludeGroundControlPointFile() && filename.equals(configuration.getGroundControlPointFileName()))
+                  if (filenameSet.contains(filename))
                   {
-                    filename = "gcp_list.txt";
-                  }
-                  
-                  if (filenameSet.contains(filename)) {
                     task.createAction("The filename [" + filename + "] conflicts with another name in the uploaded archive. This conflict may be a result of inner directories or special characters which cannot be represented in the final collection. This will result in missing files.", TaskActionType.ERROR.getType());
                     continue;
-                  } else {
+                  }
+                  else
+                  {
                     filenameSet.add(filename);
                   }
 
@@ -369,6 +391,56 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       throw new InvalidZipException(e);
     }
 
+    if (hasFiles && configuration.isLidar() && task.getUploadTarget().equals(ImageryComponent.RAW))
+    {
+      List<String> incomingFiles = filenameSet.stream().filter(f -> {
+        return f.toUpperCase().endsWith(".LAZ") || f.toUpperCase().endsWith(".LAS");
+      }).collect(Collectors.toList());
+
+      if (incomingFiles.size() > 1)
+      {
+        task.lock();
+        task.setStatus(WorkflowTaskStatus.ERROR.toString());
+        task.setMessage("The zip file contains more than a single point cloud file.  A Lidar collection can only have one raw point cloud.");
+        task.apply();
+
+        if (Session.getCurrentSession() != null)
+        {
+          NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
+        }
+
+        FileUtils.deleteQuietly(newZip);
+
+        return null;
+      }
+
+      UasComponent component = (UasComponent) task.getImageryComponent();
+
+      SiteObjectsResultSet resultSet = component.getSiteObjects(ImageryComponent.RAW, null, null);
+
+      List<String> existingFiles = resultSet.getObjects().stream().map(o -> o.getName()).filter(f -> {
+        return f.toUpperCase().endsWith(".LAZ") || f.toUpperCase().endsWith(".LAS");
+      }).filter(f -> !incomingFiles.contains(f)).collect(Collectors.toList());
+
+      if (existingFiles.size() > 0)
+      {
+        task.lock();
+        task.setStatus(WorkflowTaskStatus.ERROR.toString());
+        task.setMessage("The zip file contains a new point cloud file with a different name than an existing point cloud file.  A Lidar collection can only have one raw point cloud.");
+        task.apply();
+
+        if (Session.getCurrentSession() != null)
+        {
+          NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
+        }
+
+        FileUtils.deleteQuietly(newZip);
+
+        return null;
+      }
+
+    }
+
     if (!hasFiles)
     {
       if (!isMultispectral)
@@ -393,13 +465,15 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
       }
 
+      FileUtils.deleteQuietly(newZip);
+
       return null;
     }
 
     return newZip;
   }
 
-  private static boolean validateFile(String path, boolean isDirectory, boolean isMultispectral, AbstractUploadTask task, ODMProcessConfiguration configuration)
+  private static boolean validateFile(String path, boolean isDirectory, boolean isMultispectral, AbstractUploadTask task, ProcessConfiguration configuration)
   {
     String filename = FilenameUtils.getName(path);
     boolean isVideo = Util.isVideoFile(filename);
@@ -419,28 +493,38 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       {
         task.createAction("The filename [" + filename + "] contains special characters which will be replaced with an underscore.", TaskActionType.ERROR);
 
-        return true; // The file will be renamed later so it's valid. But we do want to let them know we're renaming it.
+        return true; // The file will be renamed later so it's valid. But we do
+                     // want to let them know we're renaming it.
       }
 
-      List<String> extensions = getSupportedExtensions(uploadTarget);
-
-      if (isMultispectral)
+      if (configuration.isODM())
       {
-        if (! ( (ext.equals("tif") || ext.equals("tiff"))
-                || ( filename.equalsIgnoreCase(configuration.getGeoLocationFileName()) && configuration.isIncludeGeoLocationFile() )
-                || ( filename.equalsIgnoreCase(configuration.getGroundControlPointFileName()) && configuration.isIncludeGroundControlPointFile() )))
+        List<String> extensions = getSupportedExtensions(uploadTarget);
+
+        ODMProcessConfiguration config = configuration.toODM();
+
+        if (isMultispectral)
         {
-          task.createAction("Multispectral processing only supports .tif format. The file [" + filename + "] will be ignored.", TaskActionType.ERROR);
-          return false;
+          if (! ( ( ext.equals("tif") || ext.equals("tiff") ) || ( filename.equalsIgnoreCase(config.getGeoLocationFileName()) && config.isIncludeGeoLocationFile() ) || ( filename.equalsIgnoreCase(config.getGroundControlPointFileName()) && config.isIncludeGroundControlPointFile() ) ))
+          {
+            task.createAction("Multispectral processing only supports .tif format. The file [" + filename + "] will be ignored.", TaskActionType.ERROR);
+            return false;
+          }
+        }
+        else
+        {
+          if (! ( extensions.contains(ext) || ( filename.equalsIgnoreCase(config.getGeoLocationFileName()) && config.isIncludeGeoLocationFile() ) || ( filename.equalsIgnoreCase(config.getGroundControlPointFileName()) && config.isIncludeGroundControlPointFile() ) ))
+          {
+            task.createAction("The file [" + filename + "] is of an unsupported format and will be ignored. The following formats are supported: " + StringUtils.join(extensions, ", "), TaskActionType.ERROR);
+            return false;
+          }
         }
       }
-      else
+      else if (configuration.isLidar())
       {
-        if (! ( extensions.contains(ext)
-                || ( filename.equalsIgnoreCase(configuration.getGeoLocationFileName()) && configuration.isIncludeGeoLocationFile() )
-                || ( filename.equalsIgnoreCase(configuration.getGroundControlPointFileName()) && configuration.isIncludeGroundControlPointFile() ) ))
+        if (! ( ext.equals("las") || ext.equals("laz") ))
         {
-          task.createAction("The file [" + filename + "] is of an unsupported format and will be ignored. The following formats are supported: " + StringUtils.join(extensions, ", "), TaskActionType.ERROR);
+          task.createAction("Lidar processing only supports .las and .laz format. The file [" + filename + "] will be ignored.", TaskActionType.ERROR);
           return false;
         }
       }
@@ -485,12 +569,12 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     }
   }
 
-  private void uploadToS3(VaultFile vfImageryZip, String uploadTarget, ODMProcessConfiguration configuration)
+  private void uploadToS3(VaultFile vfImageryZip, String uploadTarget, ProcessConfiguration configuration)
   {
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
     AbstractWorkflowTask task = this.getWorkflowTask();
-    
+
     try
     {
       if (task instanceof ImageryWorkflowTask)

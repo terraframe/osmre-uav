@@ -15,9 +15,7 @@
  */
 package gov.geoplatform.uasdm.bus;
 
-import java.math.BigDecimal;
 import java.util.Collections;
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,16 +36,11 @@ import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.Util;
-import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
-import gov.geoplatform.uasdm.graph.Product;
-import gov.geoplatform.uasdm.graph.Sensor;
-import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import net.geoprism.GeoprismUser;
@@ -62,7 +55,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     super();
   }
-  
+
   @Override
   public void regenerateMetadata()
   {
@@ -123,6 +116,12 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
   @Override
   public boolean isMultiSpectral()
+  {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public boolean isLidar()
   {
     throw new UnsupportedOperationException();
   }
@@ -391,7 +390,6 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     return new TreeSet<String>();
   }
-
 
   @Override
   public AbstractWorkflowTask createWorkflowTask(String uploadId, String uploadTarget)

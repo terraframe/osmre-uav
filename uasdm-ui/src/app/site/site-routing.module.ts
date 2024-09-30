@@ -9,17 +9,13 @@ import { Routes, RouterModule } from '@angular/router';
 import { ProjectsComponent } from './component/projects.component';
 import { UploadComponent } from './component/upload.component';
 import { TasksComponent } from './component/tasks.component';
-import { SensorsComponent } from './component/sensor/sensors.component';
-import { PlatformsComponent } from './component/platform/platforms.component';
 
 import { CanDeactivateGuardService } from "./service/can.deactivate.guard.service";
 import { AuthGuard, AdminGuardService } from '../shared/service/guard.service';
 import { PlatformComponent } from './component/platform/platform.component';
 import { SensorComponent } from './component/sensor/sensor.component';
-import { ClassificationsComponent } from './component/classification/classifications.component';
 import { Endpoint } from './service/classification.service';
 import { ClassificationComponent } from './component/classification/classification.component';
-import { UAVsComponent } from './component/uav/uavs.component';
 import { UAVsPageComponent } from './component/uav/uavs-page.component';
 import { UAVComponent } from './component/uav/uav.component';
 import { ReportsComponent } from './component/report/reports.component';
@@ -99,7 +95,13 @@ const routes: Routes = [
                     name: 'isMultispectral',
                     label: 'Is Multispectral',
                     type: 'boolean'
+                },
+                {
+                    name: 'isLidar',
+                    label: 'Is Lidar',
+                    type: 'boolean'
                 }
+
             ]
         }
 
