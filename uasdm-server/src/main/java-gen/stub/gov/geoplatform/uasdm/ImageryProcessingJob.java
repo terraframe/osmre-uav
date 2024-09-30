@@ -391,7 +391,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       throw new InvalidZipException(e);
     }
 
-    if (hasFiles && configuration.isLidar())
+    if (hasFiles && configuration.isLidar() && task.getUploadTarget().equals(ImageryComponent.RAW))
     {
       List<String> incomingFiles = filenameSet.stream().filter(f -> {
         return f.toUpperCase().endsWith(".LAZ") || f.toUpperCase().endsWith(".LAS");
