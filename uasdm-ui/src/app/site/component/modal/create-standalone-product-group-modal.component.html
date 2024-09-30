@@ -61,12 +61,6 @@
           </div>
           <div [@fadeInOnEnter] class="row">
             <div class="col-md-8">
-              <boolean-field [(value)]="metadata.restricted" label="Restricted">
-              </boolean-field>
-            </div>
-          </div>
-          <div [@fadeInOnEnter] class="row">
-            <div class="col-md-8">
               <label for="sunsetDate" style="margin-top: 10px;">Sunset Date:</label>
               <input [(ngModel)]="metadata.sunsetDate" name="sunsetDate" type="date" class="form-control" />
             </div>
@@ -95,14 +89,6 @@
                 maxlength="50" />
             </div>
           </div>
-
-          <div [@fadeInOnEnter] class="row">
-            <div class="col-md-8">
-              <boolean-field [(value)]="metadata.isPrivate" label="Make Product Private">
-              </boolean-field>
-            </div>
-          </div>
-
 
           <metadata-page [page]="getMetadataPage()"></metadata-page>
         </div>
