@@ -260,17 +260,6 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		this.service.setExclude(image.id, !image.exclude).then(result => {
 			image.exclude = result.exclude;
 		});
-		//
-		//
-		//		if (image.exclude) {
-		//			this.excludes.push(image.name);
-		//		}
-		//		else {
-		//			let position = this.excludes.indexOf(image.name);
-		//			if (position > -1) {
-		//				this.excludes.splice(position, 1);
-		//			}
-		//		}
 	}
 
 	isProcessable(item: any): boolean {

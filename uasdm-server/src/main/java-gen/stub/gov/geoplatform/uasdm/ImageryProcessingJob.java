@@ -27,6 +27,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -63,6 +64,7 @@ import gov.geoplatform.uasdm.bus.ImageryUploadEvent;
 import gov.geoplatform.uasdm.bus.ImageryUploadEventQuery;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
+import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.ProcessConfiguration.ProcessType;
@@ -70,6 +72,7 @@ import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.view.RequestParserIF;
+import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
@@ -110,8 +113,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
     String ext = FilenameUtils.getExtension(archive.getName()).toLowerCase();
 
-    try (CloseableFile newArchive = ( ext.endsWith("gz") || ext.endsWith("zip") ) ? 
-        validateArchive(archive, task, configuration) : validateFile(archive, task, configuration))
+    try (CloseableFile newArchive = ( ext.endsWith("gz") || ext.endsWith("zip") ) ? validateArchive(archive, task, configuration) : validateFile(archive, task, configuration))
     {
       if (newArchive == null)
       {
@@ -135,7 +137,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         job.setUploadTarget(task.getUploadTarget());
         job.setProcessUpload(processUpload);
         job.setConfiguration(configuration);
-//        job.setOutFileNamePrefix(configuration.getOutFileNamePrefix());
+        // job.setOutFileNamePrefix(configuration.getOutFileNamePrefix());
         job.apply();
 
         JobHistory history = job.start();
@@ -241,7 +243,6 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
     boolean hasFiles = false;
     Set<String> filenameSet = new HashSet<String>();
-
     byte buffer[] = new byte[Util.BUFFER_SIZE];
 
     CloseableFile newZip;
@@ -390,6 +391,56 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       throw new InvalidZipException(e);
     }
 
+    if (hasFiles && configuration.isLidar() && task.getUploadTarget().equals(ImageryComponent.RAW))
+    {
+      List<String> incomingFiles = filenameSet.stream().filter(f -> {
+        return f.toUpperCase().endsWith(".LAZ") || f.toUpperCase().endsWith(".LAS");
+      }).collect(Collectors.toList());
+
+      if (incomingFiles.size() > 1)
+      {
+        task.lock();
+        task.setStatus(WorkflowTaskStatus.ERROR.toString());
+        task.setMessage("The zip file contains more than a single point cloud file.  A Lidar collection can only have one raw point cloud.");
+        task.apply();
+
+        if (Session.getCurrentSession() != null)
+        {
+          NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
+        }
+
+        FileUtils.deleteQuietly(newZip);
+
+        return null;
+      }
+
+      UasComponent component = (UasComponent) task.getImageryComponent();
+
+      SiteObjectsResultSet resultSet = component.getSiteObjects(ImageryComponent.RAW, null, null);
+
+      List<String> existingFiles = resultSet.getObjects().stream().map(o -> o.getName()).filter(f -> {
+        return f.toUpperCase().endsWith(".LAZ") || f.toUpperCase().endsWith(".LAS");
+      }).filter(f -> !incomingFiles.contains(f)).collect(Collectors.toList());
+
+      if (existingFiles.size() > 0)
+      {
+        task.lock();
+        task.setStatus(WorkflowTaskStatus.ERROR.toString());
+        task.setMessage("The zip file contains a new point cloud file with a different name than an existing point cloud file.  A Lidar collection can only have one raw point cloud.");
+        task.apply();
+
+        if (Session.getCurrentSession() != null)
+        {
+          NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
+        }
+
+        FileUtils.deleteQuietly(newZip);
+
+        return null;
+      }
+
+    }
+
     if (!hasFiles)
     {
       if (!isMultispectral)
@@ -413,6 +464,8 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       {
         NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
       }
+
+      FileUtils.deleteQuietly(newZip);
 
       return null;
     }
@@ -447,14 +500,12 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       if (configuration.isODM())
       {
         List<String> extensions = getSupportedExtensions(uploadTarget);
-        
+
         ODMProcessConfiguration config = configuration.toODM();
 
         if (isMultispectral)
         {
-          if (! ( ( ext.equals("tif") || ext.equals("tiff") ) 
-              || ( filename.equalsIgnoreCase(config.getGeoLocationFileName()) && config.isIncludeGeoLocationFile() ) 
-              || ( filename.equalsIgnoreCase(config.getGroundControlPointFileName()) && config.isIncludeGroundControlPointFile() ) ))
+          if (! ( ( ext.equals("tif") || ext.equals("tiff") ) || ( filename.equalsIgnoreCase(config.getGeoLocationFileName()) && config.isIncludeGeoLocationFile() ) || ( filename.equalsIgnoreCase(config.getGroundControlPointFileName()) && config.isIncludeGroundControlPointFile() ) ))
           {
             task.createAction("Multispectral processing only supports .tif format. The file [" + filename + "] will be ignored.", TaskActionType.ERROR);
             return false;
@@ -462,9 +513,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         }
         else
         {
-          if (! ( extensions.contains(ext) 
-              || ( filename.equalsIgnoreCase(config.getGeoLocationFileName()) && config.isIncludeGeoLocationFile() ) 
-              || ( filename.equalsIgnoreCase(config.getGroundControlPointFileName()) && config.isIncludeGroundControlPointFile() ) ))
+          if (! ( extensions.contains(ext) || ( filename.equalsIgnoreCase(config.getGeoLocationFileName()) && config.isIncludeGeoLocationFile() ) || ( filename.equalsIgnoreCase(config.getGroundControlPointFileName()) && config.isIncludeGroundControlPointFile() ) ))
           {
             task.createAction("The file [" + filename + "] is of an unsupported format and will be ignored. The following formats are supported: " + StringUtils.join(extensions, ", "), TaskActionType.ERROR);
             return false;

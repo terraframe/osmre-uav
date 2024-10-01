@@ -211,12 +211,15 @@ public class ProjectManagementService
 
     private CollectionIF        collection;
 
-    public RerunLidarProcessThread(LidarProcessingTask task, CollectionIF collection)
+    private Set<String>         excludes;
+
+    public RerunLidarProcessThread(LidarProcessingTask task, CollectionIF collection, Set<String> excludes)
     {
       super("Rerun ortho thread for collection [" + collection.getName() + "]");
 
       this.task = task;
       this.collection = collection;
+      this.excludes = excludes;
     }
 
     @Override
@@ -229,9 +232,15 @@ public class ProjectManagementService
 
         try (CloseableFile zip = new CloseableFile(File.createTempFile("raw-" + this.collection.getOid(), ".zip")))
         {
+          /*
+           * Predicate for filtering out files from the zip file to send for
+           * LIDAR processing
+           */
+          Predicate<SiteObject> predicate = ( excludes == null || excludes.size() == 0 ) ? null : new ExcludeSiteObjectPredicate(this.excludes);
+
           try (OutputStream ostream = new BufferedOutputStream(new FileOutputStream(zip)))
           {
-            downloadAll(this.collection, ImageryComponent.RAW, ostream, null, false);
+            downloadAll(this.collection, ImageryComponent.RAW, ostream, predicate, false);
           }
 
           task.initiate(new FileResource(zip));
@@ -554,10 +563,7 @@ public class ProjectManagementService
 
       NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
-      // Get the exlcudes
-      Set<String> excludes = collection.getExcludes();
-
-      RerunODMProcessThread t = new RerunODMProcessThread(task, collection, excludes);
+      RerunODMProcessThread t = new RerunODMProcessThread(task, collection, collection.getExcludes());
       t.setDaemon(true);
       t.start();
     }
@@ -575,7 +581,7 @@ public class ProjectManagementService
 
       NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
-      RerunLidarProcessThread t = new RerunLidarProcessThread(task, collection);
+      RerunLidarProcessThread t = new RerunLidarProcessThread(task, collection, collection.getExcludes());
       t.setDaemon(true);
       t.start();
     }
@@ -1521,6 +1527,23 @@ public class ProjectManagementService
     }
 
     return ODMRunView.fromODMRun(run);
+  }
+
+  @Request(RequestType.SESSION)
+  public ProcessConfiguration getConfigurationByTask(String sessionId, String taskId)
+  {
+    WorkflowTask task = WorkflowTask.get(taskId);
+
+    if (task instanceof LidarProcessingTask)
+    {
+      return ( (LidarProcessingTask) task ).getConfiguration();
+    }
+    else if (task instanceof ODMProcessingTask)
+    {
+      return ( (ODMProcessingTask) task ).getConfiguration();
+    }
+
+    return new ODMProcessConfiguration();
   }
 
   // public void logLoginAttempt(String sessionId, String username)

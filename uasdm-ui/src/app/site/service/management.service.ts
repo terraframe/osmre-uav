@@ -185,10 +185,19 @@ export class ManagementService {
 			.toPromise()
 	}
 
-	getODMRunByTask(taskId: string): Promise<ODMRun> {
+	getConfigurationByTask(taskId: string): Promise<ProcessConfig> {
 		let params: HttpParams = new HttpParams();
 		params = params.set('taskId', taskId);
 
+		return this.http
+			.get<ProcessConfig>(environment.apiUrl + '/project/get-configuration-by-task', { params: params })
+			.toPromise()
+	}
+
+	getODMRunByTask(taskId: string): Promise<ODMRun> {
+		let params: HttpParams = new HttpParams();
+		params = params.set('taskId', taskId);
+ 
 		return this.http
 			.get<ODMRun>(environment.apiUrl + '/project/get-odm-run-by-task', { params: params })
 			.toPromise()
