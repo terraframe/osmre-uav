@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm;
 
@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -29,6 +30,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import javax.imageio.ImageIO;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -39,6 +42,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,18 +117,18 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       {
         return null;
       }
-      
+
       FileUtils.deleteQuietly(archive);
       archive = newArchive;
-      
+
       VaultFile vfImageryZip = null;
-  
+
       try
       {
-  
+
         vfImageryZip = VaultFile.createAndApply(parser.getFilename(), new FileInputStream(archive));
         Boolean processUpload = parser.getProcessUpload();
-  
+
         ImageryProcessingJob job = new ImageryProcessingJob();
         job.setRunAsUserId(Session.getCurrentSession().getUser().getOid());
         job.setWorkflowTask(task);
@@ -134,24 +138,30 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         job.setConfiguration(configuration);
         job.setOutFileNamePrefix(configuration.getOutFileNamePrefix());
         job.apply();
-  
+
         JobHistory history = job.start();
-  
+
         return history;
       }
       catch (Throwable t)
       {
-        try { vfImageryZip.delete(); } catch(Throwable t2) {}
-        
+        try
+        {
+          vfImageryZip.delete();
+        }
+        catch (Throwable t2)
+        {
+        }
+
         task.lock();
         task.setStatus(WorkflowTaskStatus.ERROR.toString());
         task.setMessage("An error occurred while uploading the imagery to S3. " + RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
         task.apply();
-        
+
         t.printStackTrace();
-  
+
         logger.error("An error occurred while uploading the imagery to S3.", t);
-  
+
         if (Session.getCurrentSession() != null)
         {
           NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
@@ -233,8 +243,6 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     boolean hasFiles = false;
     Set<String> filenameSet = new HashSet<String>();
 
-    byte buffer[] = new byte[Util.BUFFER_SIZE];
-
     CloseableFile newZip;
 
     try
@@ -245,7 +253,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       {
         try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(newZip))))
         {
-          try (ZipFile zipFile = new ZipFile(archive))
+          try (ZipFile zipFile = ZipFile.builder().setFile(archive).get())
           {
             Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
 
@@ -254,19 +262,17 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
               ZipArchiveEntry entry = entries.nextElement();
 
               String filename = entry.getName();
-              
+
               boolean isValid = validateFile(filename, entry.isDirectory(), isMultispectral, task, configuration);
 
               if (!entry.isDirectory())
               {
                 hasFiles = hasFiles || isValid;
 
-                int len;
-
                 filename = FilenameUtils.getName(filename);
-                
+
                 filename = filename.replaceAll(UasComponentIF.DISALLOWED_FILENAME_REGEX, "_");
-                
+
                 if (configuration.isIncludeGeoLocationFile() && filename.equals(configuration.getGeoLocationFileName()))
                 {
                   filename = "geo.txt";
@@ -276,11 +282,14 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
                 {
                   filename = "gcp_list.txt";
                 }
-                
-                if (filenameSet.contains(filename)) {
+
+                if (filenameSet.contains(filename))
+                {
                   task.createAction("The filename [" + filename + "] conflicts with another name in the uploaded archive. This conflict may be a result of inner directories or special characters which cannot be represented in the final collection. This will result in missing files.", TaskActionType.ERROR.getType());
                   continue;
-                } else {
+                }
+                else
+                {
                   filenameSet.add(filename);
                 }
 
@@ -288,9 +297,11 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
                 try (InputStream zis = zipFile.getInputStream(entry))
                 {
-                  while ( ( len = zis.read(buffer) ) > 0)
+                  boolean valid = validateAndCopyFile(task, zos, zis, filename);
+
+                  if (!valid)
                   {
-                    zos.write(buffer, 0, len);
+                    FileUtils.deleteQuietly(newZip);
                   }
                 }
 
@@ -313,19 +324,17 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
               while ( ( entry = (TarArchiveEntry) tarIn.getNextEntry() ) != null)
               {
                 String filename = entry.getName();
-                
+
                 boolean isValid = validateFile(filename, entry.isDirectory(), isMultispectral, task, configuration);
 
                 if (!entry.isDirectory())
                 {
                   hasFiles = hasFiles || isValid;
 
-                  int count;
-
                   filename = FilenameUtils.getName(filename);
-                  
+
                   filename = filename.replaceAll(UasComponentIF.DISALLOWED_FILENAME_REGEX, "_");
-                  
+
                   if (configuration.isIncludeGeoLocationFile() && filename.equals(configuration.getGeoLocationFileName()))
                   {
                     filename = "geo.txt";
@@ -335,11 +344,15 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
                   {
                     filename = "gcp_list.txt";
                   }
-                  
-                  if (filenameSet.contains(filename)) {
+
+                  if (filenameSet.contains(filename))
+                  {
                     task.createAction("The filename [" + filename + "] conflicts with another name in the uploaded archive. This conflict may be a result of inner directories or special characters which cannot be represented in the final collection. This will result in missing files.", TaskActionType.ERROR.getType());
+
                     continue;
-                  } else {
+                  }
+                  else
+                  {
                     filenameSet.add(filename);
                   }
 
@@ -349,9 +362,11 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
                   tOut.putArchiveEntry(tarEntry);
 
-                  while ( ( count = tarIn.read(buffer, 0, Util.BUFFER_SIZE) ) != -1)
+                  boolean valid = validateAndCopyFile(task, tOut, tarIn, filename);
+
+                  if (!valid)
                   {
-                    tOut.write(buffer, 0, count);
+                    FileUtils.deleteQuietly(newZip);
                   }
 
                   tOut.closeArchiveEntry();
@@ -399,6 +414,54 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     return newZip;
   }
 
+  private static boolean validateAndCopyFile(AbstractUploadTask task, OutputStream zos, InputStream zis, String filename) throws IOException, FileNotFoundException
+  {
+    if (Util.isImageFile(filename))
+    {
+      File temp = File.createTempFile(FilenameUtils.getBaseName(filename), FilenameUtils.getExtension(filename));
+
+      try
+      {
+        // Copy the image to a temp file
+        try (FileOutputStream fos = new FileOutputStream(temp))
+        {
+          IOUtils.copy(zis, fos);
+        }
+
+        // Validate that the file is good
+        try
+        {
+          ImageIO.read(temp);
+        }
+        catch (Exception e)
+        {
+          task.lock();
+          task.setStatus(WorkflowTaskStatus.ERROR.toString());
+          task.setMessage("The file [" + filename + " is not a valid image file]");
+          task.apply();
+
+          return false;
+        }
+
+        // Copy the temp image file to the zip file
+        try (FileInputStream fis = new FileInputStream(temp))
+        {
+          IOUtils.copy(fis, zos);
+        }
+      }
+      finally
+      {
+        FileUtils.deleteQuietly(temp);
+      }
+    }
+    else
+    {
+      IOUtils.copy(zis, zos);
+    }
+
+    return true;
+  }
+
   private static boolean validateFile(String path, boolean isDirectory, boolean isMultispectral, AbstractUploadTask task, ODMProcessConfiguration configuration)
   {
     String filename = FilenameUtils.getName(path);
@@ -419,16 +482,15 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       {
         task.createAction("The filename [" + filename + "] contains special characters which will be replaced with an underscore.", TaskActionType.ERROR);
 
-        return true; // The file will be renamed later so it's valid. But we do want to let them know we're renaming it.
+        return true; // The file will be renamed later so it's valid. But we do
+                     // want to let them know we're renaming it.
       }
 
       List<String> extensions = getSupportedExtensions(uploadTarget);
 
       if (isMultispectral)
       {
-        if (! ( (ext.equals("tif") || ext.equals("tiff"))
-                || ( filename.equalsIgnoreCase(configuration.getGeoLocationFileName()) && configuration.isIncludeGeoLocationFile() )
-                || ( filename.equalsIgnoreCase(configuration.getGroundControlPointFileName()) && configuration.isIncludeGroundControlPointFile() )))
+        if (! ( ( ext.equals("tif") || ext.equals("tiff") ) || ( filename.equalsIgnoreCase(configuration.getGeoLocationFileName()) && configuration.isIncludeGeoLocationFile() ) || ( filename.equalsIgnoreCase(configuration.getGroundControlPointFileName()) && configuration.isIncludeGroundControlPointFile() ) ))
         {
           task.createAction("Multispectral processing only supports .tif format. The file [" + filename + "] will be ignored.", TaskActionType.ERROR);
           return false;
@@ -436,9 +498,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       }
       else
       {
-        if (! ( extensions.contains(ext)
-                || ( filename.equalsIgnoreCase(configuration.getGeoLocationFileName()) && configuration.isIncludeGeoLocationFile() )
-                || ( filename.equalsIgnoreCase(configuration.getGroundControlPointFileName()) && configuration.isIncludeGroundControlPointFile() ) ))
+        if (! ( extensions.contains(ext) || ( filename.equalsIgnoreCase(configuration.getGeoLocationFileName()) && configuration.isIncludeGeoLocationFile() ) || ( filename.equalsIgnoreCase(configuration.getGroundControlPointFileName()) && configuration.isIncludeGroundControlPointFile() ) ))
         {
           task.createAction("The file [" + filename + "] is of an unsupported format and will be ignored. The following formats are supported: " + StringUtils.join(extensions, ", "), TaskActionType.ERROR);
           return false;
@@ -490,7 +550,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
     AbstractWorkflowTask task = this.getWorkflowTask();
-    
+
     try
     {
       if (task instanceof ImageryWorkflowTask)
