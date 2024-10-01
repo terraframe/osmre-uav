@@ -1,15 +1,31 @@
 package gov.geoplatform.uasdm.lidar;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
+import org.codelibs.jhighlight.tools.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.RunwayException;
-import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.ApplicationFileResource;
+import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Session;
 
+import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.EmptyFileSetException;
 import gov.geoplatform.uasdm.odm.ODMStatus;
+import gov.geoplatform.uasdm.processing.COPCConverterProcessor;
+import gov.geoplatform.uasdm.processing.SilvimetricProcessor;
+import gov.geoplatform.uasdm.processing.StatusMonitorIF;
+import gov.geoplatform.uasdm.processing.WorkflowTaskMonitor;
+import net.lingala.zip4j.ZipFile;
 
 public class LidarProcessingTask extends LidarProcessingTaskBase
 {
@@ -40,11 +56,26 @@ public class LidarProcessingTask extends LidarProcessingTaskBase
     this.setConfigurationJson(configuration.toJson().toString());
   }
 
-  public void initiate(ApplicationResource pointcloud)
+  public void initiate(ApplicationFileResource pointcloud)
   {
     try
     {
-      // TODO: HEADS UP - LIDAR PROCESSING
+      File tempDir = Files.createTempDirectory(this.getProductId()).toFile();
+      new ZipFile(pointcloud.getUnderlyingFile()).extractAll(tempDir.getAbsolutePath());
+      
+      List<File> lazList = Arrays.asList(tempDir.listFiles()).stream().filter(f -> FileUtils.getExtension(f.getName()).toLowerCase().contains("laz")).collect(Collectors.toList());
+      if (lazList.size() == 0 || lazList.size() > 1) {
+        throw new RuntimeException("Expected a single laz file, but there were " + lazList.size());
+      }
+      File laz = lazList.get(0);
+      
+      UasComponentIF component = getComponentInstance();
+      StatusMonitorIF monitor = new WorkflowTaskMonitor(this);
+      Product product = Product.get(this.getProductId());
+      
+      new COPCConverterProcessor(component.getS3location() + "/" + ImageryComponent.PTCLOUD, product, component, monitor)
+        .addDownstream(new SilvimetricProcessor(component, monitor))
+        .process(new FileResource(laz));
 
       this.appLock();
       this.setStatus(ODMStatus.COMPLETED.getLabel());

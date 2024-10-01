@@ -17,6 +17,8 @@ package gov.geoplatform.uasdm;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 
 import com.runwaysdk.configuration.ConfigurationManager;
 import com.runwaysdk.configuration.ConfigurationReaderIF;
@@ -285,6 +287,16 @@ public class AppProperties
 
   public static String getPotreeConverterPath()
   {
-    return Singleton.getProps().getString("potree.converter.bin");
+    return Singleton.getProps().getString("potree.converter.bin", "/opt/PotreeConverter/build/PotreeConverter");
+  }
+  
+  public static List<String> getSilvimetricCommand()
+  {
+    return Arrays.asList(Singleton.getProps().getString("silvimetric.cmd", "silvimetric.cmd=/opt/silvimetric/silvimetric_idm.sh").split(" "));
+  }
+  
+  public static String getPdalPath()
+  {
+    return Singleton.getProps().getString("pdal.bin");
   }
 }
