@@ -20,6 +20,11 @@ ENV CGR_VERSION=LATEST
 ENV LOG_LEVEL=error
 ENV POSTGRES_PORT=5432
 
+# Set environment variables to avoid prompts and for Miniconda installation
+ENV DEBIAN_FRONTEND=noninteractive
+ENV CONDA_DIR /opt/conda
+ENV PATH=$CONDA_DIR/bin:$PATH
+
 RUN mkdir -p $CATALINA_HOME/wars
 
 # Install exiftool
@@ -42,6 +47,25 @@ WORKDIR /opt/PotreeConverter/build
 RUN apt-get install -y libboost-all-dev libtbb-dev
 RUN cmake -DCMAKE_BUILD_TYPE=Release ..
 RUN make
+
+# Install Conda
+# Install Miniconda dependencies and download the installer
+RUN apt-get update && \
+    apt-get install -y wget bzip2 ca-certificates curl && \
+    apt-get clean
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
+    bash Miniconda3-latest-Linux-x86_64.sh -b -p $CONDA_DIR && \
+    rm Miniconda3-latest-Linux-x86_64.sh
+RUN conda init bash
+
+# Install silvimetric
+WORKDIR /opt/silvimetric
+RUN conda env create \
+    -f https://raw.githubusercontent.com/hobuinc/silvimetric/main/environment.yml  \
+    -n silvimetric
+RUN apt-get install -y jq
+COPY silvimetric_idm.sh /opt/silvimetric/silvimetric_idm.sh
+RUN chmod +x /opt/silvimetric/silvimetric_idm.sh
 
 #Revert the working directory
 WORKDIR /usr/local/tomcat
