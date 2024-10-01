@@ -1,9 +1,5 @@
 #!/bin/bash
 
-## script params ##
-out="/opt/silvimetric/metrics"
-input="/opt/silvimetric/input.copc.laz"
-
 ## set shell options ##
 set -e
 set -x
@@ -24,8 +20,6 @@ source /opt/conda/etc/profile.d/conda.sh
 conda activate silvimetric
 pip install silvimetric
 
-file $1
-
 ## begin script ##
 
 bounds=$(pdal info $1 --readers.copc.resolution=1 | jq -c '.stats.bbox.native.bbox')
@@ -43,7 +37,7 @@ silvimetric -d database.tdb \
    --workers 4 \
    shatter \
    --date 2008-12-01 \
-   $input
+   $1
 
 silvimetric -d database.tdb extract -o $2
 
