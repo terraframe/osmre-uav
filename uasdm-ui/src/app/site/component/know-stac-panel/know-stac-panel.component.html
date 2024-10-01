@@ -29,6 +29,11 @@
     <div class="row">
         <div class="col-md-12" style="background:#f7f7f7; padding:0; height:100%;">
             <div class="list-group" *ngIf="collection != null">
+                <ng-container *ngIf="collection.links.length === 1">
+                    <div class="list-group-item">
+                        No Results
+                    </div>
+                </ng-container>
                 <ng-container *ngFor="let result of collection.links">
                     <div class="list-group-item" *ngIf="result.rel === 'item'">
                         <div class="card card-default">
@@ -63,7 +68,8 @@
                                             <li style="padding: 3px 0 3px 0; min-width:6em;">
                                                 <boolean-field [value]="result.item.enabled"
                                                     (valueChange)="handleToggleItem(result.item)"
-                                                    [disabled]="result.item.asset == null || result.item.asset == ''" label="Enabled">
+                                                    [disabled]="result.item.asset == null || result.item.asset == ''"
+                                                    label="Enabled">
                                                 </boolean-field>
                                             </li>
                                         </ul>
