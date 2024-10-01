@@ -2,6 +2,7 @@ package com.runwaysdk.build.domain;
 
 import java.util.Calendar;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,7 +10,6 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.system.VaultFile;
-import com.runwaysdk.system.VaultFileQuery;
 
 import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.ImageryProcessingJobQuery;
@@ -33,24 +33,28 @@ public class DeleteLingeringVaultFiles
   {
     QueryFactory qf = new QueryFactory();
     ImageryProcessingJobQuery jobq = new ImageryProcessingJobQuery(qf);
-    VaultFileQuery vfq = new VaultFileQuery(qf);
-    
-    jobq.WHERE(jobq.getImageryFile().EQ(jobq));
     
     Calendar cal = Calendar.getInstance();
     cal.add(Calendar.MONTH, -4);
-    vfq.WHERE(vfq.getLastUpdateDate().LT(cal.getTime()));
+    jobq.WHERE(jobq.getLastUpdateDate().LT(cal.getTime()));
     
-    logger.error("deleting " + vfq.getCount() + " old vault files");
+    long count = 0;
     
     OIterator<? extends ImageryProcessingJob> it = jobq.getIterator();
     
     while (it.hasNext()) {
       try {
-        VaultFile.get(it.next().getImageryFile());
+        String oid = it.next().getImageryFile();
+        
+        if (StringUtils.isNotBlank(oid)) {
+          VaultFile.get(oid).delete();
+          count++;
+        }
       } catch(Throwable t) {
         logger.error("Error deleting vault file", t);
       }
     }
+    
+    logger.error("deleted " + count + " old vault files");
   }
 }

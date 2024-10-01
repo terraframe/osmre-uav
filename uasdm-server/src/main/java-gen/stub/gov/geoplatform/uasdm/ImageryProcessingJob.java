@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -30,6 +31,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import javax.imageio.ImageIO;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -40,6 +43,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -243,7 +247,6 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
     boolean hasFiles = false;
     Set<String> filenameSet = new HashSet<String>();
-    byte buffer[] = new byte[Util.BUFFER_SIZE];
 
     CloseableFile newZip;
 
@@ -255,7 +258,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       {
         try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(newZip))))
         {
-          try (ZipFile zipFile = new ZipFile(archive))
+          try (ZipFile zipFile = ZipFile.builder().setFile(archive).get())
           {
             Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
 
@@ -270,8 +273,6 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
               if (!entry.isDirectory())
               {
                 hasFiles = hasFiles || isValid;
-
-                int len;
 
                 filename = FilenameUtils.getName(filename);
 
@@ -304,9 +305,11 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
                 try (InputStream zis = zipFile.getInputStream(entry))
                 {
-                  while ( ( len = zis.read(buffer) ) > 0)
+                  boolean valid = validateAndCopyFile(task, zos, zis, filename);
+
+                  if (!valid)
                   {
-                    zos.write(buffer, 0, len);
+                    FileUtils.deleteQuietly(newZip);
                   }
                 }
 
@@ -336,8 +339,6 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
                 {
                   hasFiles = hasFiles || isValid;
 
-                  int count;
-
                   filename = FilenameUtils.getName(filename);
 
                   filename = filename.replaceAll(UasComponentIF.DISALLOWED_FILENAME_REGEX, "_");
@@ -358,6 +359,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
                   if (filenameSet.contains(filename))
                   {
                     task.createAction("The filename [" + filename + "] conflicts with another name in the uploaded archive. This conflict may be a result of inner directories or special characters which cannot be represented in the final collection. This will result in missing files.", TaskActionType.ERROR.getType());
+
                     continue;
                   }
                   else
@@ -371,9 +373,11 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
                   tOut.putArchiveEntry(tarEntry);
 
-                  while ( ( count = tarIn.read(buffer, 0, Util.BUFFER_SIZE) ) != -1)
+                  boolean valid = validateAndCopyFile(task, tOut, tarIn, filename);
+
+                  if (!valid)
                   {
-                    tOut.write(buffer, 0, count);
+                    FileUtils.deleteQuietly(newZip);
                   }
 
                   tOut.closeArchiveEntry();
@@ -471,6 +475,54 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     }
 
     return newZip;
+  }
+
+  private static boolean validateAndCopyFile(AbstractUploadTask task, OutputStream zos, InputStream zis, String filename) throws IOException, FileNotFoundException
+  {
+    if (Util.isImageFile(filename))
+    {
+      File temp = File.createTempFile(FilenameUtils.getBaseName(filename), FilenameUtils.getExtension(filename));
+
+      try
+      {
+        // Copy the image to a temp file
+        try (FileOutputStream fos = new FileOutputStream(temp))
+        {
+          IOUtils.copy(zis, fos);
+        }
+
+        // Validate that the file is good
+        try
+        {
+          ImageIO.read(temp);
+        }
+        catch (Exception e)
+        {
+          task.lock();
+          task.setStatus(WorkflowTaskStatus.ERROR.toString());
+          task.setMessage("The file [" + filename + " is not a valid image file]");
+          task.apply();
+
+          return false;
+        }
+
+        // Copy the temp image file to the zip file
+        try (FileInputStream fis = new FileInputStream(temp))
+        {
+          IOUtils.copy(fis, zos);
+        }
+      }
+      finally
+      {
+        FileUtils.deleteQuietly(temp);
+      }
+    }
+    else
+    {
+      IOUtils.copy(zis, zos);
+    }
+
+    return true;
   }
 
   private static boolean validateFile(String path, boolean isDirectory, boolean isMultispectral, AbstractUploadTask task, ProcessConfiguration configuration)
