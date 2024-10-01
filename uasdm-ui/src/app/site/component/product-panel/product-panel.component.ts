@@ -319,7 +319,7 @@ export class ProductPanelComponent implements OnDestroy {
                 view.product = view.products[0];
             }
             else {
-                this.views = this.views.filter((n: CollectionProductView) => n.componentId !== view.componentId);
+                this.views = this.views.filter((n: CollectionProductView) => n.products.length > 0);
             }
         });
     }

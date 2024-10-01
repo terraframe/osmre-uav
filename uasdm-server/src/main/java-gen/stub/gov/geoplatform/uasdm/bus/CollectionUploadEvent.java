@@ -16,9 +16,13 @@
 package gov.geoplatform.uasdm.bus;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -27,6 +31,9 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -271,64 +278,81 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.initiate(infile);
   }
   
-  private void calculateImageSize(ApplicationFileResource zip, CollectionIF collection)
+  private void calculateImageSize(ApplicationFileResource resource, CollectionIF collection)
   {
+    String name = FilenameUtils.getBaseName(resource.getName());
+
+    File parentFolder = null;
     try
     {
-      File parentFolder = new File(FileUtils.getTempDirectory(), zip.getName());
+      parentFolder = new File(FileUtils.getTempDirectory(), name);
+      parentFolder.mkdirs();
 
-      try (ZipFile zipFile = new ZipFile(zip.getUnderlyingFile()))
+      if (FilenameUtils.getExtension(name).equalsIgnoreCase("zip"))
       {
-        zipFile.extractAll(parentFolder.getAbsolutePath());
-
-        File[] files = parentFolder.listFiles(new FilenameFilter()
+        try (ZipFile zipFile = new ZipFile(resource.getUnderlyingFile()))
         {
-          @Override
-          public boolean accept(File dir, String name)
-          {
-            String ext = FilenameUtils.getExtension(name).toLowerCase();
-
-            return ArrayUtils.contains(ImageryUploadEvent.formats, ext);
-          }
-        });
-
-        if (files.length > 0)
-        {
-          File file = files[0];
-          BufferedImage bimg = ImageIO.read(file);
-
-          int width = bimg.getWidth();
-          int height = bimg.getHeight();
-
-          collection.appLock();
-          collection.setImageHeight(height);
-          collection.setImageWidth(width);
-          collection.apply();
-
-          // // Update the metadata
-          // FlightMetadata metadata = FlightMetadata.get(collection,
-          // Collection.RAW, collection.getFolderName() +
-          // MetadataXMLGenerator.FILENAME);
-          //
-          // if (metadata != null)
-          // {
-          // metadata.getSensor().setImageWidth(Integer.toString(width));
-          // metadata.getSensor().setImageHeight(Integer.toString(height));
-          //
-          // MetadataXMLGenerator generator = new MetadataXMLGenerator();
-          // generator.generateAndUpload(collection, metadata);
-          // }
-
+          zipFile.extractAll(parentFolder.getAbsolutePath());
         }
       }
-      finally
+      else
       {
-        FileUtils.deleteQuietly(parentFolder);
+        // Untar the archive
+        try (BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(resource.getUnderlyingFile())); TarArchiveInputStream tar = new TarArchiveInputStream(new GzipCompressorInputStream(inputStream)))
+        {
+          ArchiveEntry entry;
+
+          while ( ( entry = tar.getNextEntry() ) != null)
+          {
+            Path extractTo = parentFolder.toPath().resolve(entry.getName());
+
+            if (entry.isDirectory())
+            {
+              Files.createDirectories(extractTo);
+            }
+            else
+            {
+              Files.copy(tar, extractTo);
+            }
+          }
+        }
+      }
+
+      File[] files = parentFolder.listFiles(new FilenameFilter()
+      {
+        @Override
+        public boolean accept(File dir, String name)
+        {
+          String ext = FilenameUtils.getExtension(name).toLowerCase();
+
+          return ArrayUtils.contains(ImageryUploadEvent.formats, ext);
+        }
+      });
+
+      if (files.length > 0)
+      {
+        File file = files[0];
+        BufferedImage bimg = ImageIO.read(file);
+
+        int width = bimg.getWidth();
+        int height = bimg.getHeight();
+
+        collection.appLock();
+        collection.setImageHeight(height);
+        collection.setImageWidth(width);
+        collection.apply();
       }
     }
     catch (Throwable e)
     {
       logger.error("Error occurred while calculating the image size.", e);
+    }
+    finally
+    {
+      if (parentFolder != null)
+      {
+        FileUtils.deleteQuietly(parentFolder);
+      }
     }
   }
 

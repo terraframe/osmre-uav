@@ -24,6 +24,7 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.LinkedList;
@@ -203,6 +204,21 @@ public class Util
     // }
     // }
     // }
+  }
+
+  public static boolean isImageFile(String path)
+  {
+    final String ext = FilenameUtils.getExtension(path);
+
+    for (String accepted : Arrays.asList("jpg", "jpeg", "png"))
+    {
+      if (ext.equalsIgnoreCase(accepted))
+      {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public static boolean isVideoFile(String path)
