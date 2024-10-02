@@ -55,7 +55,7 @@
         </div>
         <div class="form-group">
           <label>Organization</label>
-          <organization-field name="organization" [(value)]="uav.organization" [disabled]="mode === 'READ'">
+          <organization-field name="organization" [(value)]="uav.organization" [disabled]="mode === 'READ'" [required]="true">
           </organization-field>
         </div>
         <div *ngIf="isAdmin && mode === 'WRITE'" class="btn-holder" style="text-align: right;">

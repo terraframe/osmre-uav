@@ -76,7 +76,8 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		productName: null,
 		processPtcloud: true,
 		processDem: true,
-		processOrtho: true
+		processOrtho: true,
+		generateCopc: true
 	};
 
 	/*
