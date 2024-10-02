@@ -17,6 +17,7 @@ package gov.geoplatform.uasdm;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -292,11 +293,16 @@ public class AppProperties
   
   public static List<String> getSilvimetricCommand()
   {
-    return Arrays.asList(Singleton.getProps().getString("silvimetric.cmd", "silvimetric.cmd=/opt/silvimetric/silvimetric_idm.sh").split(" "));
+    return new ArrayList<String>(Arrays.asList(Singleton.getProps().getString("silvimetric.cmd", "silvimetric.cmd=/opt/silvimetric/silvimetric_idm.sh /opt/conda/etc/profile.d/conda.sh").split(" ")));
   }
   
-  public static String getPdalPath()
+  public static List<String> getPdalPath()
   {
-    return Singleton.getProps().getString("pdal.bin");
+    return new ArrayList<String>(Arrays.asList(Singleton.getProps().getString("pdal.bin", "/opt/conda/envs/silvimetric/bin/pdal").split(" ")));
+  }
+  
+  public static String getProjDataPath()
+  {
+    return Singleton.getProps().getString("proj.data", "/opt/conda/envs/silvimetric/share/proj");
   }
 }

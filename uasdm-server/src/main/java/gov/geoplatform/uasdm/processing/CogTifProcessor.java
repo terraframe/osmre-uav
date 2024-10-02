@@ -38,8 +38,6 @@ public class CogTifProcessor extends ManagedDocument
 
   private Logger             logger        = LoggerFactory.getLogger(CogTifProcessor.class);
 
-  private Processor          downstream    = null;
-
   public CogTifProcessor(String s3path, Product product, UasComponentIF component, StatusMonitorIF monitor)
   {
     super(s3path, product, component, monitor, false);
@@ -49,12 +47,6 @@ public class CogTifProcessor extends ManagedDocument
   protected ManagedDocumentTool getTool()
   {
     return ManagedDocumentTool.GDAL;
-  }
-
-  public CogTifProcessor addDownstream(Processor downstreamProcessor)
-  {
-    this.downstream = downstreamProcessor;
-    return this;
   }
 
   @Override
@@ -115,17 +107,7 @@ public class CogTifProcessor extends ManagedDocument
 
           if (new CogTifValidator(this.monitor).isValidCog(cogRes))
           {
-            if (this.downstream == null)
-            {
-              return super.process(cogRes);
-            }
-            else
-            {
-              if (super.process(cogRes))
-              {
-                return this.downstream.process(cogRes);
-              }
-            }
+            return super.process(cogRes);
           }
           else
           {

@@ -16,7 +16,6 @@
 package gov.geoplatform.uasdm.processing;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
@@ -29,24 +28,21 @@ import com.runwaysdk.resource.FileResource;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.lidar.LidarProcessConfiguration;
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.LayerClassification;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
-public class SilvimetricProcessor extends ManagedDocument implements Processor
+public class SilvimetricProcessor extends ManagedDocument
 {
   private Logger            logger = LoggerFactory.getLogger(SilvimetricProcessor.class);
+  
+  private LidarProcessConfiguration config;
 
-  protected String          s3Path;
-
-  protected StatusMonitorIF monitor;
-
-  protected UasComponentIF component;
-
-  protected Product         product;
-
-  public SilvimetricProcessor(UasComponentIF component, StatusMonitorIF monitor)
+  public SilvimetricProcessor(LidarProcessConfiguration config, UasComponentIF component, StatusMonitorIF monitor)
   {
     super(null, null, component, monitor);
+    this.config = config;
   }
   
   @Override
@@ -60,9 +56,10 @@ public class SilvimetricProcessor extends ManagedDocument implements Processor
   {
     File input = res.getUnderlyingFile();
 
-    final String basename = FilenameUtils.getBaseName(res.getName());
+    final String basename = res.getName().substring(0, res.getName().lastIndexOf("."));
 
     File outputDirectory = new File(input.getParent(), basename + "-silvimetric");
+    outputDirectory.mkdirs();
 
     try
     {
@@ -70,7 +67,9 @@ public class SilvimetricProcessor extends ManagedDocument implements Processor
       
       cmd.addAll(Arrays.asList(new String[] { input.getAbsolutePath(), outputDirectory.getAbsolutePath() }));
 
-      boolean success = new SystemProcessExecutor(this.monitor).execute(cmd.toArray(new String[0]));
+      boolean success = new SystemProcessExecutor(this.monitor)
+          .setEnvironment("PROJ_DATA", AppProperties.getProjDataPath())
+          .execute(cmd.toArray(new String[0]));
 
       if (success && outputDirectory.exists())
       {
@@ -81,8 +80,12 @@ public class SilvimetricProcessor extends ManagedDocument implements Processor
           // Upload all of the generated files
           for (File outfile : files)
           {
-            this.product = Product.createIfNotExistOrThrow(component, FilenameUtils.getBaseName(outfile.getName()));
-            this.s3Path = this.product.getS3location() + "/" + ImageryComponent.ORTHO;
+            this.product = Product.createIfNotExist(component, this.config.getProductName() + "_" + FilenameUtils.getBaseName(outfile.getName()).replace("-", "_"));
+            this.s3Path = this.product.getS3location() + LayerClassification.ORTHO.getKeyPath();
+            
+            // TODO : leaky abstraction
+            ((S3FileUpload)this.downstream).setProduct(product);
+            ((S3FileUpload)this.downstream).setS3Path(ImageryComponent.ORTHO + "/odm_orthophoto.cog.tif");
             
             super.process(new FileResource(outfile));
           }

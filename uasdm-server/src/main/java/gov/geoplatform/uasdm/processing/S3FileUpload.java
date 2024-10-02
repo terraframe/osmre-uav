@@ -36,6 +36,8 @@ public class S3FileUpload implements Processor
   
   protected Product product;
   
+  protected Processor downstream = null;
+  
   /**
    * 
    * @param s3Path The s3 target upload path, relative to the collection.
@@ -50,6 +52,12 @@ public class S3FileUpload implements Processor
     this.product = product;
     this.component = component;
   }
+  
+  public Processor addDownstream(Processor downstreamProcessor)
+  {
+    this.downstream = downstreamProcessor;
+    return this;
+  }
 
   public String getS3Path()
   {
@@ -61,6 +69,26 @@ public class S3FileUpload implements Processor
     this.s3Path = s3Path;
   }
   
+  public UasComponentIF getComponent()
+  {
+    return component;
+  }
+
+  public void setComponent(UasComponentIF component)
+  {
+    this.component = component;
+  }
+
+  public Product getProduct()
+  {
+    return product;
+  }
+
+  public void setProduct(Product product)
+  {
+    this.product = product;
+  }
+
   @Override
   public boolean process(ApplicationFileResource res)
   {
@@ -74,6 +102,11 @@ public class S3FileUpload implements Processor
 
     if (this.component instanceof CollectionIF) {
       CollectionReportFacade.updateSize((CollectionIF) this.component).doIt();
+    }
+    
+    if (this.downstream != null)
+    {
+      return this.downstream.process(res);
     }
     
     return true;

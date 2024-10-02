@@ -22,6 +22,7 @@ import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.EmptyFileSetException;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.processing.COPCConverterProcessor;
+import gov.geoplatform.uasdm.processing.CogTifProcessor;
 import gov.geoplatform.uasdm.processing.SilvimetricProcessor;
 import gov.geoplatform.uasdm.processing.StatusMonitorIF;
 import gov.geoplatform.uasdm.processing.WorkflowTaskMonitor;
@@ -71,10 +72,11 @@ public class LidarProcessingTask extends LidarProcessingTaskBase
       
       UasComponentIF component = getComponentInstance();
       StatusMonitorIF monitor = new WorkflowTaskMonitor(this);
-      Product product = Product.get(this.getProductId());
+      LidarProcessConfiguration config = getConfiguration();
       
-      new COPCConverterProcessor(component.getS3location() + "/" + ImageryComponent.PTCLOUD, product, component, monitor)
-        .addDownstream(new SilvimetricProcessor(component, monitor))
+      new COPCConverterProcessor(config, component, monitor)
+        .addDownstream(new SilvimetricProcessor(config, component, monitor)
+            .addDownstream(new CogTifProcessor(null, null, component, monitor)))
         .process(new FileResource(laz));
 
       this.appLock();

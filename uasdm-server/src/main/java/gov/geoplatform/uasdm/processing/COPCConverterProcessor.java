@@ -16,38 +16,34 @@
 package gov.geoplatform.uasdm.processing;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.dataaccess.DuplicateDataException;
 import com.runwaysdk.resource.ApplicationFileResource;
-import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.lidar.LidarProcessConfiguration;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
-public class COPCConverterProcessor extends ManagedDocument implements Processor
+public class COPCConverterProcessor extends ManagedDocument
 {
   private Logger            logger = LoggerFactory.getLogger(COPCConverterProcessor.class);
 
-  protected String          s3Path;
-
   protected StatusMonitorIF monitor;
 
-  protected UasComponentIF component;
+  private LidarProcessConfiguration config;
 
-  protected Product         product;
-  
-  private Processor          downstream = null;
-
-  public COPCConverterProcessor(String s3Path, Product product, UasComponentIF component, StatusMonitorIF monitor)
+  public COPCConverterProcessor(LidarProcessConfiguration config, UasComponentIF component, StatusMonitorIF monitor)
   {
-    super(s3Path, product, component, monitor, false);
+    super(null, null, component, monitor, false);
+    this.config = config;
   }
   
   @Override
@@ -56,36 +52,29 @@ public class COPCConverterProcessor extends ManagedDocument implements Processor
     return ManagedDocumentTool.PDAL;
   }
   
-  public COPCConverterProcessor addDownstream(Processor downstreamProcessor)
-  {
-    this.downstream = downstreamProcessor;
-    return this;
-  }
-
   @Override
   public boolean process(ApplicationFileResource res)
   {
+    this.product = Product.createIfNotExist(component, this.config.getProductName());
+    this.s3Path = this.product.getS3location() + ImageryComponent.PTCLOUD + "/pointcloud.copc.laz";
+    
     File out = new File(res.getUnderlyingFile().getParent(), res.getBaseName() + ".copc.laz");
 
     try
     {
-      boolean success = new SystemProcessExecutor(this.monitor).execute(new String[] { AppProperties.getPdalPath(), "translate", " -i", res.getAbsolutePath(), "-o", out.getAbsolutePath(), "-r", "readers.las", "-w", "writers.copc", "--overwrite" });
+      var cmd = AppProperties.getPdalPath();
+      
+      cmd.addAll(Arrays.asList(new String[] { "translate", "-i", res.getAbsolutePath(), "-o", out.getAbsolutePath(), "-r", "readers.las", "-w", "writers.copc", "--overwrite" }));
+      
+      boolean success = new SystemProcessExecutor(this.monitor)
+          .setEnvironment("PROJ_DATA", AppProperties.getProjDataPath())
+          .execute(cmd.toArray(new String[0]));
   
       if (success && out.exists())
       {
         FileResource frout = new FileResource(out);
         
-        if (this.downstream == null)
-        {
-          return super.process(frout);
-        }
-        else
-        {
-          if (super.process(frout))
-          {
-            return this.downstream.process(frout);
-          }
-        }
+        return super.process(frout);
       }
       else
       {
