@@ -37,7 +37,8 @@ export class RunProcessModalComponent implements OnInit, OnDestroy {
         featureQuality: "HIGH",
         radiometricCalibration: "NONE",
         geoLocationFormat: "RX1R2",
-        productName: null
+        productName: null,
+        generateCopc: true
     };
 
     isAdvancedSettingsCollapsed = true;
