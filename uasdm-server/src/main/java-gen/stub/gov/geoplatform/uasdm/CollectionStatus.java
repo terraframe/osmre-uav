@@ -365,4 +365,19 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
       return new Page<CollectionStatus>(query.getCount(), pageNumber, pageSize, results);
     }
   }
+
+  public static void deleteForProduct(Product product)
+  {
+    CollectionStatusQuery query = new CollectionStatusQuery(new QueryFactory());
+    query.WHERE(query.getProductId().EQ(product.getOid()));
+    query.ORDER_BY_DESC(query.getLastModificationDate());
+
+    try (OIterator<? extends CollectionStatus> iterator = query.getIterator())
+    {
+      while (iterator.hasNext())
+      {
+        iterator.next().delete();
+      }
+    }
+  }
 }

@@ -56,12 +56,12 @@ import com.runwaysdk.session.SessionIF;
 import com.runwaysdk.system.metadata.MdEdge;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.CollectionStatus;
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
 import gov.geoplatform.uasdm.bus.InvalidUasComponentNameException;
 import gov.geoplatform.uasdm.bus.UasComponentDeleteException;
 import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
-import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.command.IndexDeleteStacCommand;
 import gov.geoplatform.uasdm.command.ReIndexStacItemCommand;
 import gov.geoplatform.uasdm.model.CollectionIF;
@@ -185,22 +185,29 @@ public class Product extends ProductBase implements ProductIF
     {
       document.delete(removeFromS3);
     }
-    
+
     UasComponent component = this.getComponent();
 
     CollectionReportFacade.handleDeleteProduct(component).doIt();
 
     new IndexDeleteStacCommand(this).doIt();
-    
-    if (!(component instanceof CollectionIF)) {
+
+    if (! ( component instanceof CollectionIF ))
+    {
+
+      CollectionStatus.deleteForProduct(this);
+
       this.getMetadata().ifPresent(meta -> {
         meta.delete();
       });
-    } else if (this.isPrimary() && component instanceof CollectionIF) {
-      CollectionIF col = ((CollectionIF) component);
-      
+    }
+    else if (this.isPrimary() && component instanceof CollectionIF)
+    {
+      CollectionIF col = ( (CollectionIF) component );
+
       List<ProductIF> prods = col.getProducts();
-      if (prods.size() > 0) {
+      if (prods.size() > 0)
+      {
         Product prod = (Product) prods.get(0);
         prod.setPrimary(true);
         prod.apply();
@@ -280,8 +287,9 @@ public class Product extends ProductBase implements ProductIF
       product.setName(uasComponent.getName());
       product.setProductName(productName);
       product.setPublished(false);
-      
-      if (!(uasComponent instanceof CollectionIF)) {
+
+      if (! ( uasComponent instanceof CollectionIF ))
+      {
         product.setPrimary(false);
       }
     }
@@ -291,7 +299,7 @@ public class Product extends ProductBase implements ProductIF
 
     return product;
   }
-  
+
   public static Product createIfNotExistOrThrow(UasComponentIF uasComponent, String productName)
   {
     Product product = find(uasComponent, productName);
@@ -302,11 +310,14 @@ public class Product extends ProductBase implements ProductIF
       product.setName(uasComponent.getName());
       product.setProductName(productName);
       product.setPublished(false);
-      
-      if (!(uasComponent instanceof CollectionIF)) {
+
+      if (! ( uasComponent instanceof CollectionIF ))
+      {
         product.setPrimary(false);
       }
-    } else {
+    }
+    else
+    {
       throw new DuplicateDataException("Product with name [" + productName + "] is already associated with the provided component. Choose a different product name, or a different associated component.", MdClassDAO.getMdClassDAO(Product.CLASS), Arrays.asList(Product.getProductNameMd()), Arrays.asList(productName));
     }
 
@@ -452,18 +463,22 @@ public class Product extends ProductBase implements ProductIF
       this.setBoundingBox(bbox.toJSON().toString());
       this.apply();
 
-//      if (component instanceof Collection)
-//      {
-//        Collection collection = (Collection) component;
-//
-//        collection.setValue(Collection.NORTHBOUND, new BigDecimal(bbox.getMaxLat()));
-//        collection.setValue(Collection.SOUTHBOUND, new BigDecimal(bbox.getMinLat()));
-//        collection.setValue(Collection.EASTBOUND, new BigDecimal(bbox.getMaxLong()));
-//        collection.setValue(Collection.WESTBOUND, new BigDecimal(bbox.getMinLong()));
-//
-//        collection.apply();
-//      }
-      
+      // if (component instanceof Collection)
+      // {
+      // Collection collection = (Collection) component;
+      //
+      // collection.setValue(Collection.NORTHBOUND, new
+      // BigDecimal(bbox.getMaxLat()));
+      // collection.setValue(Collection.SOUTHBOUND, new
+      // BigDecimal(bbox.getMinLat()));
+      // collection.setValue(Collection.EASTBOUND, new
+      // BigDecimal(bbox.getMaxLong()));
+      // collection.setValue(Collection.WESTBOUND, new
+      // BigDecimal(bbox.getMinLong()));
+      //
+      // collection.apply();
+      // }
+
       this.getMetadata().ifPresent(metadata -> {
         metadata.setNorthBound(new BigDecimal(bbox.getMaxLat()));
         metadata.setSouthBound(new BigDecimal(bbox.getMinLat()));
@@ -581,16 +596,17 @@ public class Product extends ProductBase implements ProductIF
   public void refreshDocuments() throws InterruptedException
   {
     UasComponent c = this.getComponent();
-    
-    if (c != null && c instanceof CollectionIF) {
+
+    if (c != null && c instanceof CollectionIF)
+    {
       final CollectionIF collection = (CollectionIF) this.getComponent();
-  
+
       boolean allZipExists = this.hasAllZip();
-  
+
       if (allZipExists)
       {
         ODMZipPostProcessor uploader = new ODMZipPostProcessor(collection, null, this, null);
-  
+
         uploader.processAllZip();
       }
     }
@@ -600,12 +616,13 @@ public class Product extends ProductBase implements ProductIF
   {
     // return this.getDocuments().stream().filter(doc ->
     // doc.getS3location().matches(".*\\/odm_all\\/all.*\\.zip")).findAny();
-    
+
     UasComponent c = this.getComponent();
-    
-    if (!(c instanceof Collection)) return false;
-    
-    return ((Collection) c).getHasAllZip();
+
+    if (! ( c instanceof Collection ))
+      return false;
+
+    return ( (Collection) c ).getHasAllZip();
   }
 
   public SiteObject getAllZip()
@@ -842,11 +859,12 @@ public class Product extends ProductBase implements ProductIF
     properties.setUpdated(this.getLastUpdateDate());
 
     Date dateTime = new Date();
-    
+
     Optional<CollectionMetadata> opMeta = getMetadata();
-    if (opMeta.isPresent()) {
+    if (opMeta.isPresent())
+    {
       CollectionMetadata metadata = opMeta.get();
-      
+
       Sensor sensor = metadata.getSensor();
 
       if (sensor != null)
@@ -868,7 +886,7 @@ public class Product extends ProductBase implements ProductIF
           properties.setPlatform(platform.getName());
         }
       }
-      
+
       dateTime = metadata.getCollectionDate();
 
       if (dateTime == null)
@@ -881,7 +899,7 @@ public class Product extends ProductBase implements ProductIF
         dateTime = this.getLastUpdateDate();
       }
     }
-    
+
     properties.setDatetime(dateTime);
 
     item.setProperties(properties);
@@ -941,7 +959,7 @@ public class Product extends ProductBase implements ProductIF
 
     return item;
   }
-  
+
   public Optional<CollectionMetadata> getMetadata()
   {
     MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Product.CLASS);
@@ -1002,37 +1020,21 @@ public class Product extends ProductBase implements ProductIF
     }
   }
 
-  
   /*
    * 
-   TRAVERSE OUT ('mission_has_collection0') FROM ( TRAVERSE OUT ('project_has_mission0') FROM ( TRAVERSE OUT('site_has_project') FROM (
+   * TRAVERSE OUT ('mission_has_collection0') FROM ( TRAVERSE OUT
+   * ('project_has_mission0') FROM ( TRAVERSE OUT('site_has_project') FROM (
    * 
    * 
-   TRAVERSE OUT('component_has_product') FROM (
-    SELECT FROM (
-      SELECT FROM (
-        SELECT FROM (
-          TRAVERSE OUT ('mission_has_collection0') FROM (
-            TRAVERSE OUT ('project_has_mission0') FROM (
-              TRAVERSE OUT('site_has_project') FROM (
-                SELECT FROM (
-                  SELECT FROM (
-                      TRAVERSE OUT('g_0__operational', 'ha_0__graph_541834') FROM #274:1
-                  )
-                  WHERE @class = 'site0' AND organization.code = '100013241'
-                )
-              )
-            )
-          )
-        )
-      )
-    )
-   WHERE (isPrivate = false 
-     OR isPrivate IS NULL 
-     OR owner = 'a2c721a5-a547-4627-bf3a-8f5ae000052a' 
-     OR in('user_has_access')[user = 'a2c721a5-a547-4627-bf3a-8f5ae000052a'].size() > 0 
-   ) 
-  ORDER BY name ASC)
+   * TRAVERSE OUT('component_has_product') FROM ( SELECT FROM ( SELECT FROM (
+   * SELECT FROM ( TRAVERSE OUT ('mission_has_collection0') FROM ( TRAVERSE OUT
+   * ('project_has_mission0') FROM ( TRAVERSE OUT('site_has_project') FROM (
+   * SELECT FROM ( SELECT FROM ( TRAVERSE OUT('g_0__operational',
+   * 'ha_0__graph_541834') FROM #274:1 ) WHERE @class = 'site0' AND
+   * organization.code = '100013241' ) ) ) ) ) ) ) WHERE (isPrivate = false OR
+   * isPrivate IS NULL OR owner = 'a2c721a5-a547-4627-bf3a-8f5ae000052a' OR
+   * in('user_has_access')[user = 'a2c721a5-a547-4627-bf3a-8f5ae000052a'].size()
+   * > 0 ) ORDER BY name ASC)
    */
   public static List<ComponentProductDTO> getProducts(ProductCriteria criteria)
   {
@@ -1085,16 +1087,19 @@ public class Product extends ProductBase implements ProductIF
       statement.append("  SELECT FROM (\n");
     }
 
-//    statement.append("    SELECT EXPAND(OUT('site_has_project')");
-//
-//    criteria.getConditions().stream().filter(condition -> condition.isProject()).forEach(condition -> {
-//      statement.append("[" + condition.getSQL() + " = :" + condition.getField() + "]");
-//    });
-//
-//    statement.append(".OUT('project_has_mission0').OUT('mission_has_collection0')) FROM (\n");
-    
+    // statement.append(" SELECT EXPAND(OUT('site_has_project')");
+    //
+    // criteria.getConditions().stream().filter(condition ->
+    // condition.isProject()).forEach(condition -> {
+    // statement.append("[" + condition.getSQL() + " = :" + condition.getField()
+    // + "]");
+    // });
+    //
+    // statement.append(".OUT('project_has_mission0').OUT('mission_has_collection0'))
+    // FROM (\n");
+
     statement.append("TRAVERSE OUT ('mission_has_collection0') FROM ( TRAVERSE OUT ('project_has_mission0') FROM ( TRAVERSE OUT('site_has_project') FROM (");
-    
+
     statement.append("      SELECT FROM (\n");
     statement.append("        TRAVERSE OUT('" + hierarchyType.getGraphMdEdge().getDbClassName() + "', '" + siteEdge.getDbClassName() + "') FROM :rid");
     statement.append("      ) WHERE @class = 'site0' \n");
@@ -1131,15 +1136,14 @@ public class Product extends ProductBase implements ProductIF
     {
       parameters.put("owner", session.getUser().getOid());
     }
-    
+
     criteria.getConditions().stream().filter(condition -> condition.isCollection()).forEach(condition -> {
       statement.append(" AND " + condition.getSQL() + " = :" + condition.getField() + " \n");
     });
-    
+
     criteria.getConditions().stream().filter(condition -> condition.isMetadata()).forEach(condition -> {
       statement.append(" AND (first(out('collection_has_metadata'))." + condition.getSQL() + " = :" + condition.getField() + " OR OUT('component_has_product').out('product_has_metadata')." + condition.getSQL() + " = :" + condition.getField() + ") \n");
     });
-
 
     if (sortField.equals("name"))
     {
