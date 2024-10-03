@@ -194,7 +194,6 @@ public class Product extends ProductBase implements ProductIF
 
     if (! ( component instanceof CollectionIF ))
     {
-
       CollectionStatus.deleteForProduct(this);
 
       this.getMetadata().ifPresent(meta -> {
