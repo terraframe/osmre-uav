@@ -130,7 +130,7 @@
                 </h4>
                 <span>
                   <span><b>{{node.numberOfChildren}}</b> {{getMetadata(node).childLabel}}</span>
-                  <span *ngIf="node.type !== 'folder'" class="pull-right">
+                  <span *ngIf="node.type !== 'folder' && (node.isOwner || admin)" class="pull-right">
                     <a class="fa fa-pencil-alt ico-edit" (click)="handleEdit(node, $event)" title="Edit"></a>
                     <a class="fa fa-trash-alt ico-remove" (click)="handleDelete(node, $event)" title="Delete"></a>
                   </span>
@@ -148,9 +148,12 @@
               <i (click)="handleExpand(node, $event)" class="fa fa-caret-left expand-arrow-ico pull-right"
                 [ngClass]="{'fa-rotate-270':node.active}" style="font-size: 25px; padding: 0 5px"
                 aria-hidden="true"></i>
-              <a class="fa fa-trash-alt ico-remove pull-right" style="font-size: 15px; padding: 5px 0px" (click)="handleDelete(node, $event)" title="Delete"></a>
-              <a class="fa fa-pencil-alt ico-edit pull-right" style="font-size: 15px; padding: 5px 0px"
-                (click)="handleEdit(node, $event)" title="Edit"></a>
+              <ng-container *ngIf="node.isOwner || admin">
+                <a class="fa fa-trash-alt ico-remove pull-right" style="font-size: 15px; padding: 5px 0px"
+                  (click)="handleDelete(node, $event)" title="Delete"></a>
+                <a class="fa fa-pencil-alt ico-edit pull-right" style="font-size: 15px; padding: 5px 0px"
+                  (click)="handleEdit(node, $event)" title="Edit"></a>
+              </ng-container>
 
               <h4 style="word-break: break-all;">{{node.name}}</h4>
               <p><b>{{node.numberOfChildren}}</b> {{getMetadata(node).childLabel}}</p>
@@ -161,7 +164,7 @@
                   <!-- <a (click)="select(child, $event)"> -->
                   {{child.name}}
                   <!-- </a> -->
-                  <span *ngIf="child.type !== 'folder'" class="pull-right button-column">
+                  <span *ngIf="child.type !== 'folder' && (child.isOwner || admin)" class="pull-right button-column">
                     <a class="fa fa-pencil-alt ico-edit" (click)="handleEdit(child, $event)" title="Edit"></a>
                     <a class="fa fa-trash-alt ico-remove" (click)="handleDelete(child, $event)" title="Delete"></a>
                   </span>
@@ -323,11 +326,8 @@
                           </ng-container>
                         </tab>
                         <tab heading="Products" (selectTab)="activeTab = 'Products'">
-                          <product-panel *ngIf="activeTab === 'Products'" 
-                            [selection]="current"
-                            [organization]="organization"
-                            [filter]="filter"
-                            (toggleMapOrtho)="handleMapOrtho($event)"
+                          <product-panel *ngIf="activeTab === 'Products'" [selection]="current"
+                            [organization]="organization" [filter]="filter" (toggleMapOrtho)="handleMapOrtho($event)"
                             (toggleMapDem)="handleMapDem($event)"></product-panel>
                         </tab>
                       </tabset>
@@ -339,11 +339,8 @@
                           </ng-container>
                         </tab>
                         <tab heading="Products" (selectTab)="activeTab = 'Products'">
-                          <product-panel *ngIf="activeTab === 'Products'" 
-                            [selection]="current"
-                            [organization]="organization"
-                            [filter]="filter"
-                            (toggleMapOrtho)="handleMapOrtho($event)"
+                          <product-panel *ngIf="activeTab === 'Products'" [selection]="current"
+                            [organization]="organization" [filter]="filter" (toggleMapOrtho)="handleMapOrtho($event)"
                             (toggleMapDem)="handleMapDem($event)"></product-panel>
                         </tab>
                       </tabset>
@@ -376,7 +373,8 @@
           <div class="row" *ngIf="current != null && current.type === 0" style="background:white;">
             <div class="col-md-12" style="text-align: center;padding: 10px;border-top: 1px solid lightgrey;">
               <button (click)="handleCreateCollection()" class="btn btn-primary">Create Collection</button>
-              <button *ngIf="current.data.type !== 'Site'" (click)="handleUploadProducts()" class="btn btn-primary">Upload Products</button>
+              <button *ngIf="current.data.type !== 'Site'" (click)="handleUploadProducts()"
+                class="btn btn-primary">Upload Products</button>
             </div>
           </div>
           <div class="row" *ngIf="current == null || current.type !== 0" style="background:white;">
