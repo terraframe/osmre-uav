@@ -26,7 +26,10 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.build.domain.CogTiffPatcher;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.Condition;
 import com.runwaysdk.query.OIterator;
@@ -51,7 +54,9 @@ import net.geoprism.GeoprismUser;
 
 public class CollectionStatus extends CollectionStatusBase implements JSONSerializable
 {
-  private static final long serialVersionUID = -1406310431;
+  private static final Logger logger           = LoggerFactory.getLogger(CollectionStatus.class);
+
+  private static final long   serialVersionUID = -1406310431;
 
   public CollectionStatus()
   {
@@ -76,13 +81,22 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
     JSONObject obj = new JSONObject();
     obj.put("label", component.getName());
     obj.put("collectionId", component.getOid());
-    
     obj.put("productId", this.getProductId());
-    
-    if (StringUtils.isNotBlank(this.getProductId())) {
-      obj.put("productName", Product.get(this.getProductId()).getProductName());
+
+    if (StringUtils.isNotBlank(this.getProductId()))
+    {
+      Product product = Product.get(this.getProductId());
+
+      if (product != null)
+      {
+        obj.put("productName", product.getProductName());
+      }
+      else
+      {
+        logger.error("Collection status with invalid product id for collection [" + component.getOid() + "][" + component.getName() + "][" + this.getProductId() + "]");
+      }
     }
-    
+
     obj.put("status", this.getStatus());
     obj.put("lastUpdateDate", Util.formatIso8601(this.getLastModificationDate(), true));
     obj.put("ancestors", parents);
@@ -241,10 +255,10 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
   {
     if (task instanceof WorkflowTask)
     {
-      updateStatus( ( (WorkflowTask) task ).getComponent(), ((AbstractWorkflowTask)task).getProductId());
+      updateStatus( ( (WorkflowTask) task ).getComponent(), ( (AbstractWorkflowTask) task ).getProductId());
     }
   }
-  
+
   public static void updateStatus(String componentId)
   {
     updateStatus(componentId, null);
@@ -253,12 +267,13 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
   @Transaction
   public static void updateStatus(String componentId, String productId)
   {
-    if (StringUtils.isBlank(componentId)) return;
-    
+    if (StringUtils.isBlank(componentId))
+      return;
+
     UasComponentIF component = UasComponent.get(componentId);
-    
+
     List<? extends WorkflowTask> tasks = null;
-    
+
     if (component instanceof CollectionIF)
     {
       tasks = WorkflowTask.getTasksForComponent(componentId);
@@ -267,16 +282,20 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
     {
       tasks = WorkflowTask.getTasksForProduct(productId);
     }
-    
-    if (tasks != null && tasks.size() > 0) {
+
+    if (tasks != null && tasks.size() > 0)
+    {
       Map<String, LinkedList<WorkflowTask>> taskGroups = createTaskGroups(tasks);
       String status = mergeTaskGroupStatuses(taskGroups);
 
       CollectionStatusQuery query = new CollectionStatusQuery(new QueryFactory());
-      
-      if (StringUtils.isNotBlank(productId) && !(component instanceof CollectionIF)) {
+
+      if (StringUtils.isNotBlank(productId) && ! ( component instanceof CollectionIF ))
+      {
         query.WHERE(query.getProductId().EQ(productId));
-      } else {
+      }
+      else
+      {
         query.WHERE(query.getComponent().EQ(componentId));
       }
 
@@ -294,8 +313,9 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
           collectionStatus = new CollectionStatus();
           collectionStatus.setComponent(componentId);
         }
-        
-        if (StringUtils.isNotBlank(productId)) {
+
+        if (StringUtils.isNotBlank(productId))
+        {
           collectionStatus.setProductId(productId);
         }
 
@@ -343,6 +363,21 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
       List<CollectionStatus> results = iterator.getAll().stream().filter(status -> showUserOnly || UserAccessEntity.hasAccess(status.getComponent())).collect(Collectors.toList());
 
       return new Page<CollectionStatus>(query.getCount(), pageNumber, pageSize, results);
+    }
+  }
+
+  public static void deleteForProduct(Product product)
+  {
+    CollectionStatusQuery query = new CollectionStatusQuery(new QueryFactory());
+    query.WHERE(query.getProductId().EQ(product.getOid()));
+    query.ORDER_BY_DESC(query.getLastModificationDate());
+
+    try (OIterator<? extends CollectionStatus> iterator = query.getIterator())
+    {
+      while (iterator.hasNext())
+      {
+        iterator.next().delete();
+      }
     }
   }
 }
