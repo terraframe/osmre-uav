@@ -80,12 +80,16 @@ public class SilvimetricProcessor extends ManagedDocument
           // Upload all of the generated files
           for (File outfile : files)
           {
-            this.product = Product.createIfNotExist(component, this.config.getProductName() + "_" + FilenameUtils.getBaseName(outfile.getName()).replace("-", "_"));
-            this.s3Path = this.product.getS3location() + LayerClassification.ORTHO.getKeyPath();
+            final String metricName = FilenameUtils.getBaseName(outfile.getName()).replace("-", "_");
             
-            // TODO : leaky abstraction
-            ((S3FileUpload)this.downstream).setProduct(product);
-            ((S3FileUpload)this.downstream).setS3Path(ImageryComponent.ORTHO + "/odm_orthophoto.cog.tif");
+            this.product = Product.createIfNotExist(component, this.config.getProductName() + "_" + metricName);
+            
+            this.s3Path = ImageryComponent.ORTHO + "/" + metricName + ".tif";
+            
+            if (this.downstream != null && this.downstream instanceof S3FileUpload) {
+              ((S3FileUpload)this.downstream).setProduct(product);
+              ((S3FileUpload)this.downstream).setS3Path(ImageryComponent.ORTHO + "/" + metricName + ".cog.tif");
+            }
             
             super.process(new FileResource(outfile));
           }

@@ -56,7 +56,7 @@ public class COPCConverterProcessor extends ManagedDocument
   public boolean process(ApplicationFileResource res)
   {
     this.product = Product.createIfNotExist(component, this.config.getProductName());
-    this.s3Path = this.product.getS3location() + ImageryComponent.PTCLOUD + "/pointcloud.copc.laz";
+    this.s3Path = ImageryComponent.PTCLOUD + "/pointcloud.copc.laz";
     
     File out = new File(res.getUnderlyingFile().getParent(), res.getBaseName() + ".copc.laz");
 

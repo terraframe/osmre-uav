@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.codelibs.jhighlight.tools.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +17,7 @@ import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.graph.Product;
-import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.EmptyFileSetException;
 import gov.geoplatform.uasdm.odm.ODMStatus;
@@ -64,7 +64,7 @@ public class LidarProcessingTask extends LidarProcessingTaskBase
       File tempDir = Files.createTempDirectory(this.getProductId()).toFile();
       new ZipFile(pointcloud.getUnderlyingFile()).extractAll(tempDir.getAbsolutePath());
       
-      List<File> lazList = Arrays.asList(tempDir.listFiles()).stream().filter(f -> FileUtils.getExtension(f.getName()).toLowerCase().contains("laz")).collect(Collectors.toList());
+      List<File> lazList = Arrays.asList(tempDir.listFiles()).stream().filter(f -> FilenameUtils.getExtension(f.getName()).toLowerCase().contains("laz")).collect(Collectors.toList());
       if (lazList.size() == 0 || lazList.size() > 1) {
         throw new RuntimeException("Expected a single laz file, but there were " + lazList.size());
       }
@@ -78,6 +78,16 @@ public class LidarProcessingTask extends LidarProcessingTaskBase
         .addDownstream(new SilvimetricProcessor(config, component, monitor)
             .addDownstream(new CogTifProcessor(null, null, component, monitor)))
         .process(new FileResource(laz));
+      
+      if (component.getPrimaryProduct().isEmpty()) {
+        for (ProductIF product : component.getProducts()) {
+          if (!product.getProductName().equals(config.getProductName()) && product.getProductName().contains(config.getProductName())) {
+            ((Product)product).setPrimary(true);
+            ((Product)product).apply();
+            break;
+          }
+        }
+      }
 
       this.appLock();
       this.setStatus(ODMStatus.COMPLETED.getLabel());
