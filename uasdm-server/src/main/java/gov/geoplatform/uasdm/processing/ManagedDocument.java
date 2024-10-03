@@ -134,8 +134,6 @@ public class ManagedDocument extends S3FileUpload
   @Transaction
   public boolean process(ApplicationFileResource res)
   {
-    boolean success = super.process(res);
-
     if (!res.isDirectory())
     {
       String key = this.getS3Key();
@@ -155,7 +153,7 @@ public class ManagedDocument extends S3FileUpload
         IndexService.updateOrCreateDocument(this.component.getAncestors(), this.component, key, documentName);
       }
     }
-
-    return success;
+    
+    return super.process(res);
   }
 }

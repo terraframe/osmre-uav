@@ -19,5 +19,7 @@ public enum ManagedDocumentTool
 {
   ODM,
   GDAL,
-  POTREE_CONVERTER;
+  POTREE_CONVERTER,
+  PDAL,
+  SILVIMETRIC;
 }

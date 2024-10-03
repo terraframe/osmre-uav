@@ -17,6 +17,9 @@ package gov.geoplatform.uasdm;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import com.runwaysdk.configuration.ConfigurationManager;
 import com.runwaysdk.configuration.ConfigurationReaderIF;
@@ -285,6 +288,21 @@ public class AppProperties
 
   public static String getPotreeConverterPath()
   {
-    return Singleton.getProps().getString("potree.converter.bin");
+    return Singleton.getProps().getString("potree.converter.bin", "/opt/PotreeConverter/build/PotreeConverter");
+  }
+  
+  public static List<String> getSilvimetricCommand()
+  {
+    return new ArrayList<String>(Arrays.asList(Singleton.getProps().getString("silvimetric.cmd", "silvimetric.cmd=/opt/silvimetric/silvimetric_idm.sh /opt/conda/etc/profile.d/conda.sh").split(" ")));
+  }
+  
+  public static List<String> getPdalPath()
+  {
+    return new ArrayList<String>(Arrays.asList(Singleton.getProps().getString("pdal.bin", "/opt/conda/envs/silvimetric/bin/pdal").split(" ")));
+  }
+  
+  public static String getProjDataPath()
+  {
+    return Singleton.getProps().getString("proj.data", "/opt/conda/envs/silvimetric/share/proj");
   }
 }

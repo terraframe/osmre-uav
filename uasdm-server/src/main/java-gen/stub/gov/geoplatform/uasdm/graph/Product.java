@@ -131,7 +131,7 @@ public class Product extends ProductBase implements ProductIF
       MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Product.CLASS);
       MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Product.PRODUCTNAME);
 
-      InvalidUasComponentNameException ex = new InvalidUasComponentNameException("The folder name field has an invalid character");
+      InvalidUasComponentNameException ex = new InvalidUasComponentNameException("The product name [" + this.getProductName() + "] has an invalid character. Disallowed characters are " + UasComponentIF.DISALLOWED_FILENAME_REGEX);
       ex.setAttributeName(mdAttribute.getDisplayLabel(Session.getCurrentLocale()));
       throw ex;
     }

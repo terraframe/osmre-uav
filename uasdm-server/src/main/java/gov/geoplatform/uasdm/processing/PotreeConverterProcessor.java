@@ -87,7 +87,7 @@ public class PotreeConverterProcessor implements Processor
         else
         {
           logger.info("Problem occurred generating Potree Converter Transform. Potree data directory did not exist at [" + outputDirectory.getAbsolutePath() + "].");
-          monitor.addError("Problem occurred generating gdal transform. Hillshade file did not exist.");
+          monitor.addError("Problem occurred running Potree Converter. Output file did not exist.");
         }
       }
       finally
@@ -98,8 +98,8 @@ public class PotreeConverterProcessor implements Processor
     }
     catch (IOException e)
     {
-      logger.info("Problem occurred generating Potree Converter Transform. Potree data directory did not exist at [" + outputDirectory.getAbsolutePath() + "].");
-      monitor.addError("Problem occurred generating gdal transform. Hillshade file did not exist.");
+      logger.error("Problem occurred generating Potree Converter Transform.", e);
+      monitor.addError("Problem occurred running Potree Converter.");
     }
 
     return false;
