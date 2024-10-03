@@ -58,6 +58,7 @@ import com.runwaysdk.session.SessionIF;
 import com.runwaysdk.system.metadata.MdEdge;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.CollectionStatus;
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
 import gov.geoplatform.uasdm.bus.InvalidUasComponentNameException;
@@ -142,7 +143,7 @@ public class Product extends ProductBase implements ProductIF
       MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(Product.CLASS);
       MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(Product.PRODUCTNAME);
 
-      InvalidUasComponentNameException ex = new InvalidUasComponentNameException("The folder name field has an invalid character");
+      InvalidUasComponentNameException ex = new InvalidUasComponentNameException("The product name [" + this.getProductName() + "] has an invalid character. Disallowed characters are " + UasComponentIF.DISALLOWED_FILENAME_REGEX);
       ex.setAttributeName(mdAttribute.getDisplayLabel(Session.getCurrentLocale()));
       throw ex;
     }
@@ -205,6 +206,8 @@ public class Product extends ProductBase implements ProductIF
 
     if (! ( component instanceof CollectionIF ))
     {
+      CollectionStatus.deleteForProduct(this);
+
       this.getMetadata().ifPresent(meta -> {
         meta.delete();
       });

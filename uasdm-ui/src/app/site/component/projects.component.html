@@ -130,7 +130,7 @@
                 </h4>
                 <span>
                   <span><b>{{node.numberOfChildren}}</b> {{getMetadata(node).childLabel}}</span>
-                  <span *ngIf="node.type !== 'folder'" class="pull-right">
+                  <span *ngIf="node.type !== 'folder' && (node.isOwner || admin)" class="pull-right">
                     <a class="fa fa-pencil-alt ico-edit" (click)="handleEdit(node, $event)" title="Edit"></a>
                     <a class="fa fa-trash-alt ico-remove" (click)="handleDelete(node, $event)" title="Delete"></a>
                   </span>
@@ -148,10 +148,12 @@
               <i (click)="handleExpand(node, $event)" class="fa fa-caret-left expand-arrow-ico pull-right"
                 [ngClass]="{'fa-rotate-270':node.active}" style="font-size: 25px; padding: 0 5px"
                 aria-hidden="true"></i>
-              <a class="fa fa-trash-alt ico-remove pull-right" style="font-size: 15px; padding: 5px 0px"
-                (click)="handleDelete(node, $event)" title="Delete"></a>
-              <a class="fa fa-pencil-alt ico-edit pull-right" style="font-size: 15px; padding: 5px 0px"
-                (click)="handleEdit(node, $event)" title="Edit"></a>
+              <ng-container *ngIf="node.isOwner || admin">
+                <a class="fa fa-trash-alt ico-remove pull-right" style="font-size: 15px; padding: 5px 0px"
+                  (click)="handleDelete(node, $event)" title="Delete"></a>
+                <a class="fa fa-pencil-alt ico-edit pull-right" style="font-size: 15px; padding: 5px 0px"
+                  (click)="handleEdit(node, $event)" title="Edit"></a>
+              </ng-container>
 
               <h4 style="word-break: break-all;">{{node.name}}</h4>
               <p><b>{{node.numberOfChildren}}</b> {{getMetadata(node).childLabel}}</p>
@@ -162,7 +164,7 @@
                   <!-- <a (click)="select(child, $event)"> -->
                   {{child.name}}
                   <!-- </a> -->
-                  <span *ngIf="child.type !== 'folder'" class="pull-right button-column">
+                  <span *ngIf="child.type !== 'folder' && (child.isOwner || admin)" class="pull-right button-column">
                     <a class="fa fa-pencil-alt ico-edit" (click)="handleEdit(child, $event)" title="Edit"></a>
                     <a class="fa fa-trash-alt ico-remove" (click)="handleDelete(child, $event)" title="Delete"></a>
                   </span>
@@ -324,9 +326,11 @@
                           </ng-container>
                         </tab>
                         <tab heading="Products" (selectTab)="activeTab = 'Products'">
-                          <product-panel *ngIf="activeTab === 'Products'" [selection]="current"
+                          <product-panel *ngIf="activeTab === 'Products'" [selection]="current" <<<<<<< HEAD
                             [organization]="organization" [filter]="filter" [views]="views"
-                            (onViewsChange)="handleProductsChange($event)" (toggleMapOrtho)="handleMapOrtho($event)"
+                            (onViewsChange)="handleProductsChange($event)"
+                            (toggleMapOrtho)="handleMapOrtho($event)"=======[organization]="organization"
+                            [filter]="filter" (toggleMapOrtho)="handleMapOrtho($event)">>>>>>> refs/remotes/origin/lidar
                             (toggleMapDem)="handleMapDem($event)"></product-panel>
                         </tab>
                       </tabset>
@@ -338,9 +342,11 @@
                           </ng-container>
                         </tab>
                         <tab heading="Products" (selectTab)="activeTab = 'Products'">
-                          <product-panel *ngIf="activeTab === 'Products'" [selection]="current"
+                          <product-panel *ngIf="activeTab === 'Products'" [selection]="current" <<<<<<< HEAD
                             [organization]="organization" [filter]="filter" [views]="views"
-                            (onViewsChange)="handleProductsChange($event)" (toggleMapOrtho)="handleMapOrtho($event)"
+                            (onViewsChange)="handleProductsChange($event)"
+                            (toggleMapOrtho)="handleMapOrtho($event)"=======[organization]="organization"
+                            [filter]="filter" (toggleMapOrtho)="handleMapOrtho($event)">>>>>>> refs/remotes/origin/lidar
                             (toggleMapDem)="handleMapDem($event)"></product-panel>
                         </tab>
                       </tabset>

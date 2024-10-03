@@ -258,7 +258,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.initiate(infile, isMultispectral);
   }
 
-  private void startLidarProcessing(ApplicationResource infile, WorkflowTask uploadTask, LidarProcessConfiguration configuration)
+  private void startLidarProcessing(ApplicationFileResource infile, WorkflowTask uploadTask, LidarProcessConfiguration configuration)
   {
     UasComponentIF component = uploadTask.getComponentInstance();
     

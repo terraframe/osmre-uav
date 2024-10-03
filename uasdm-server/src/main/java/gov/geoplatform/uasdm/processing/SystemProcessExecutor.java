@@ -18,7 +18,9 @@ package gov.geoplatform.uasdm.processing;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +39,8 @@ public class SystemProcessExecutor
   private StringBuffer stdErr = null;
   
   private int exitCode;
+  
+  private Map<String, String> environment = new HashMap<String, String>();
   
   public SystemProcessExecutor(StatusMonitorIF monitor)
   {
@@ -63,18 +67,29 @@ public class SystemProcessExecutor
     return this.exitCode;
   }
   
+  public SystemProcessExecutor setEnvironment(String key, String value)
+  {
+    this.environment.put(key, value);
+    return this;
+  }
+  
   public boolean execute(String... commands)
   {
-    final Runtime rt = Runtime.getRuntime();
-
     this.stdOut = new StringBuffer();
     this.stdErr = new StringBuffer();
     
     this.exitCode = -1;
     
+    ProcessBuilder processBuilder = new ProcessBuilder();
+
+    processBuilder.command(commands);
+
+//    processBuilder.environment().put("PROJ_DATA", "/home/rrowlands/miniconda3/envs/silvimetric/share/proj");
+    processBuilder.environment().putAll(environment);
+    
     try
     {
-      Process process = rt.exec(commands);
+      Process process = processBuilder.start();
       
       BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
