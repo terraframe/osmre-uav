@@ -62,7 +62,8 @@ public class LidarProcessingTask extends LidarProcessingTaskBase
     try
     {
       File tempDir = Files.createTempDirectory(this.getProductId()).toFile();
-      new ZipFile(pointcloud.getUnderlyingFile()).extractAll(tempDir.getAbsolutePath());
+      
+      try (ZipFile zip = new ZipFile(pointcloud.getUnderlyingFile())) { zip.extractAll(tempDir.getAbsolutePath()); }
       
       List<File> lazList = Arrays.asList(tempDir.listFiles()).stream().filter(f -> FilenameUtils.getExtension(f.getName()).toLowerCase().contains("laz")).collect(Collectors.toList());
       if (lazList.size() == 0 || lazList.size() > 1) {
@@ -90,8 +91,13 @@ public class LidarProcessingTask extends LidarProcessingTaskBase
       }
 
       this.appLock();
-      this.setStatus(ODMStatus.COMPLETED.getLabel());
-      this.setMessage("Lidar processing is complete");
+      if (monitor.getErrors().size() > 0) {
+        this.setStatus(ODMStatus.FAILED.getLabel());
+        this.setMessage("Lidar processing encountered errors. View messages for more information.");
+      } else {
+        this.setStatus(ODMStatus.COMPLETED.getLabel());
+        this.setMessage("Lidar processing is complete");
+      }
       this.apply();
     }
     catch (EmptyFileSetException e)

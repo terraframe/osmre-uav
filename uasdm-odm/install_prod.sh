@@ -40,8 +40,8 @@ yum install -y --setopt=obsoletes=0 docker-ce-17.03.2.ce-1.el7.centos.x86_64 doc
 service docker start
 
 # Consider using (if all containers are live and running)
-docker system prune --volumes # TODO : Be careful since this may delete the micasense image
-docker image prune -a # TODO : Be careful since this may delete the micasense image
+docker system prune --volumes
+docker image prune -a
 
 # Requires AWS CLI : pip install awscli --upgrade --user
 # https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html

@@ -33,6 +33,10 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.LayerClassification;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
+/**
+ * Generates metrics for an input copc pointcloud. For each metric, a new product will be created and the output raster
+ * will be uploaded to the "odm" folder of the new product.
+ */
 public class SilvimetricProcessor extends ManagedDocument
 {
   private Logger            logger = LoggerFactory.getLogger(SilvimetricProcessor.class);
@@ -94,11 +98,6 @@ public class SilvimetricProcessor extends ManagedDocument
             super.process(new FileResource(outfile));
           }
         }
-      }
-      else
-      {
-        logger.info("Problem occurred generating Potree Converter Transform. Potree data directory did not exist at [" + outputDirectory.getAbsolutePath() + "].");
-        monitor.addError("Problem occurred generating gdal transform. Hillshade file did not exist.");
       }
     }
     finally

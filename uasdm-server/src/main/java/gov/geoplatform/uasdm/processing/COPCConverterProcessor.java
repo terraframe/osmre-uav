@@ -32,6 +32,9 @@ import gov.geoplatform.uasdm.lidar.LidarProcessConfiguration;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
+/**
+ * Responsible for converting a laz/las pointcloud to copc format
+ */
 public class COPCConverterProcessor extends ManagedDocument
 {
   private Logger            logger = LoggerFactory.getLogger(COPCConverterProcessor.class);
@@ -75,11 +78,6 @@ public class COPCConverterProcessor extends ManagedDocument
         FileResource frout = new FileResource(out);
         
         return super.process(frout);
-      }
-      else
-      {
-        logger.info("Problem occurred generating COPC. PDAL translate ran, did not generate an output file at [" + out.getAbsolutePath() + "].");
-        monitor.addError("Problem occurred running pdal translate. Output copc file did not exist.");
       }
     } finally {
       FileUtils.deleteQuietly(out);
