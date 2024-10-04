@@ -42,6 +42,52 @@ public class SilvimetricProcessor extends ManagedDocument
   private Logger            logger = LoggerFactory.getLogger(SilvimetricProcessor.class);
   
   private LidarProcessConfiguration config;
+  
+  public static enum Metric {
+    TREE_CANOPY_COVER("tree_canopy_cover"),
+    GROUND_SURFACE_MODEL("ground_surface_model"),
+    TREE_STRUCTURE("tree_structure"),
+    TERRAIN_MODEL("terrain_model");
+    
+    private String name;
+    
+    private Metric(String name) {
+      this.name = name;
+    }
+    
+    public String getName() {
+      return this.name;
+    }
+    
+    public static Metric fromSilvimetric(String silvimetric) {
+      for (Metric m : Metric.values()) {
+        if (m.matches(silvimetric)) {
+          return m;
+        }
+      }
+      return null;
+    }
+    
+    public boolean matches(String metricName) {
+      if (this.equals(GROUND_SURFACE_MODEL) && metricName.toLowerCase().equals("m_z_min")) {
+        return true;
+      } else if (this.equals(TERRAIN_MODEL) && metricName.toLowerCase().equals("m_z_max")) {
+        return true;
+      }
+      
+      return false;
+    }
+    
+    public boolean shouldGenerate(LidarProcessConfiguration config) {
+      if (this.equals(GROUND_SURFACE_MODEL) && config.isGenerateGSM()) {
+        return true;
+      } else if (this.equals(TERRAIN_MODEL) && config.isGenerateTerrainModel()) {
+        return true;
+      }
+      
+      return false;
+    }
+  }
 
   public SilvimetricProcessor(LidarProcessConfiguration config, UasComponentIF component, StatusMonitorIF monitor)
   {
@@ -85,17 +131,20 @@ public class SilvimetricProcessor extends ManagedDocument
           for (File outfile : files)
           {
             final String metricName = FilenameUtils.getBaseName(outfile.getName()).replace("-", "_");
+            final Metric metric = Metric.fromSilvimetric(metricName);
             
-            this.product = Product.createIfNotExist(component, this.config.getProductName() + "_" + metricName);
-            
-            this.s3Path = ImageryComponent.ORTHO + "/" + metricName + ".tif";
-            
-            if (this.downstream != null && this.downstream instanceof S3FileUpload) {
-              ((S3FileUpload)this.downstream).setProduct(product);
-              ((S3FileUpload)this.downstream).setS3Path(ImageryComponent.ORTHO + "/" + metricName + ".cog.tif");
+            if (metric != null && metric.shouldGenerate(config)) {
+              this.product = Product.createIfNotExist(component, this.config.getProductName() + "_" + metric.getName());
+              
+              this.s3Path = ImageryComponent.ORTHO + "/" + metric.getName() + ".tif";
+              
+              if (this.downstream != null && this.downstream instanceof S3FileUpload) {
+                ((S3FileUpload)this.downstream).setProduct(product);
+                ((S3FileUpload)this.downstream).setS3Path(ImageryComponent.ORTHO + "/" + metric.getName() + ".cog.tif");
+              }
+              
+              super.process(new FileResource(outfile));
             }
-            
-            super.process(new FileResource(outfile));
           }
         }
       }
