@@ -293,7 +293,7 @@ public class AppProperties
   
   public static List<String> getSilvimetricCommand()
   {
-    return new ArrayList<String>(Arrays.asList(Singleton.getProps().getString("silvimetric.cmd", "silvimetric.cmd=/opt/silvimetric/silvimetric_idm.sh /opt/conda/etc/profile.d/conda.sh").split(" ")));
+    return new ArrayList<String>(Arrays.asList(Singleton.getProps().getString("silvimetric.cmd", "/opt/silvimetric/silvimetric_idm.sh /opt/conda/etc/profile.d/conda.sh").split(" ")));
   }
   
   public static List<String> getPdalPath()
