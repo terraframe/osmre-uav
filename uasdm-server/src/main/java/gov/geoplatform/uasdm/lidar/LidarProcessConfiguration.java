@@ -218,7 +218,7 @@ public class LidarProcessConfiguration implements ProcessConfiguration
 
       if (!element.isJsonNull())
       {
-        configuration.setGenerateTreeStructure(object.get(GENERATE_COPC).getAsBoolean());
+        configuration.setGenerateTreeStructure(object.get(GENERATE_TREE_STRUCTURE).getAsBoolean());
       }
     }
 
