@@ -18,7 +18,9 @@ package gov.geoplatform.uasdm.processing;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -42,6 +44,8 @@ public class SystemProcessExecutor
   
   private Map<String, String> environment = new HashMap<String, String>();
   
+  private List<String> suppressedErrors = new ArrayList<String>();
+  
   public SystemProcessExecutor(StatusMonitorIF monitor)
   {
     this.monitor = monitor;
@@ -50,6 +54,12 @@ public class SystemProcessExecutor
   public SystemProcessExecutor()
   {
     // When monitor is null, we will throw errors as exceptions.
+  }
+  
+  public SystemProcessExecutor suppressError(String errorRegex)
+  {
+    this.suppressedErrors.add(errorRegex);
+    return this;
   }
   
   public String getStdOut()
@@ -157,7 +167,8 @@ public class SystemProcessExecutor
     {
       logger.info("Invoked system process with output [" + stdOut.toString() + "].");
     }
-
+    
+    this.suppressErrors();
     if (this.getStdErr().length() > 0)
     {
       String msg = "Unexpected error invoking system process [" + this.getStdErr() + "].";
@@ -174,6 +185,21 @@ public class SystemProcessExecutor
     }
     
     return exitCode == 0;
+  }
+  
+  private void suppressErrors()
+  {
+    String err = this.getStdErr();
+    
+    if (err.length() > 0)
+    {
+      for (String regex : this.suppressedErrors)
+      {
+        err = err.replaceAll(regex, "");
+      }
+      
+      this.stdErr = new StringBuffer(err.trim());
+    }
   }
   
 }

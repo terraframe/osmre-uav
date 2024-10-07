@@ -19,6 +19,7 @@ FROM tomcat:8.5-jdk11-openjdk
 ENV CGR_VERSION=LATEST
 ENV LOG_LEVEL=error
 ENV POSTGRES_PORT=5432
+ENV PIP_ROOT_USER_ACTION=ignore
 
 # Set environment variables to avoid prompts and for Miniconda installation
 ENV DEBIAN_FRONTEND=noninteractive
