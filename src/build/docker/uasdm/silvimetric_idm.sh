@@ -10,11 +10,11 @@ if [ ! -f "$1" ]; then
     exit 1
 fi
 if [ ! -f "$2" ]; then
-    echo "The specified input file '$1' does not exist or is not a regular file."
+    echo "The specified input file '$2' does not exist or is not a regular file."
     exit 1
 fi
 if [ ! -d "$3" ]; then
-    echo "The specified output directory '$2' does not exist or is not a directory."
+    echo "The specified output directory '$3' does not exist or is not a directory."
     exit 1
 fi
 

@@ -67,6 +67,7 @@ RUN conda env create \
 RUN apt-get install -y jq
 COPY silvimetric_idm.sh /opt/silvimetric/silvimetric_idm.sh
 RUN chmod +x /opt/silvimetric/silvimetric_idm.sh
+COPY dask_distributed.yml ~/.config/dask/distributed.yaml
 
 #Revert the working directory
 WORKDIR /usr/local/tomcat
