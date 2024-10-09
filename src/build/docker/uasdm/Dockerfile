@@ -83,7 +83,7 @@ RUN apt-get update > /dev/null && \
 
 
 # Install GDAL
-RUN conda install -c conda-forge gdal
+RUN conda install -c conda-forge gdal proj proj-data
 
 
 # Install silvimetric
