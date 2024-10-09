@@ -32,9 +32,11 @@ RUN mkdir -p $CATALINA_HOME/wars
 RUN apt-get update && apt-get -y install exiftool 
 
 # Install GDAL and COG Tiff validator
-RUN apt-get update && apt-get -y install libgdal-dev gdal-bin python3 pip wget
-RUN pip install --global-option=build_ext --global-option="-I/usr/include/gdal" GDAL=="$(gdal-config --version)"
+#RUN apt-get update && apt-get -y install libgdal-dev gdal-bin python3 pip wget
+#RUN pip install --global-option=build_ext --global-option="-I/usr/include/gdal" GDAL=="$(gdal-config --version)"
 RUN wget https://raw.githubusercontent.com/OSGeo/gdal/master/swig/python/gdal-utils/osgeo_utils/samples/validate_cloud_optimized_geotiff.py -O validate_cloud_optimized_geotiff.py
+
+RUN apt-get update && apt-get -y install python3 pip wget
 
 # INSTALL compilers and build toold
 RUN apt-get install -y wget git cmake build-essential gcc g++ 
@@ -49,22 +51,47 @@ RUN apt-get install -y libboost-all-dev libtbb-dev
 RUN cmake -DCMAKE_BUILD_TYPE=Release ..
 RUN make
 
-# Install Conda
-# Install Miniconda dependencies and download the installer
-RUN apt-get update && \
-    apt-get install -y wget bzip2 ca-certificates curl && \
-    apt-get clean
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
-    bash Miniconda3-latest-Linux-x86_64.sh -b -p $CONDA_DIR && \
-    rm Miniconda3-latest-Linux-x86_64.sh
-RUN conda init bash
+
+
+### Install Conda from miniforge ###
+## Commands taken from official conda-forge Dockerfile at:
+## https://github.com/conda-forge/miniforge-images/blob/master/ubuntu/Dockerfile
+ARG MINIFORGE_NAME=Miniforge3
+ARG MINIFORGE_VERSION=24.7.1-2
+ARG TARGETPLATFORM
+ENV CONDA_DIR=/opt/conda
+ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
+ENV PATH=${CONDA_DIR}/bin:${PATH}
+RUN apt-get update > /dev/null && \
+    apt-get install --no-install-recommends --yes \
+        wget bzip2 ca-certificates \
+        git \
+        tini \
+        > /dev/null && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    wget --no-hsts --quiet https://github.com/conda-forge/miniforge/releases/download/${MINIFORGE_VERSION}/${MINIFORGE_NAME}-${MINIFORGE_VERSION}-Linux-$(uname -m).sh -O /tmp/miniforge.sh && \
+    /bin/bash /tmp/miniforge.sh -b -p ${CONDA_DIR} && \
+    rm /tmp/miniforge.sh && \
+    conda clean --tarballs --index-cache --packages --yes && \
+    find ${CONDA_DIR} -follow -type f -name '*.a' -delete && \
+    find ${CONDA_DIR} -follow -type f -name '*.pyc' -delete && \
+    conda clean --force-pkgs-dirs --all --yes  && \
+    echo ". ${CONDA_DIR}/etc/profile.d/conda.sh && conda activate base" >> /etc/skel/.bashrc && \
+    echo ". ${CONDA_DIR}/etc/profile.d/conda.sh && conda activate base" >> ~/.bashrc
+
+
+
+# Install GDAL
+RUN conda install -c conda-forge gdal
+
 
 # Install silvimetric
 WORKDIR /opt/silvimetric
 RUN conda env create \
     -f https://raw.githubusercontent.com/hobuinc/silvimetric/main/environment.yml  \
     -n silvimetric
-RUN apt-get install -y jq
+RUN apt-get update && apt-get install -y jq
 COPY silvimetric_idm.sh /opt/silvimetric/silvimetric_idm.sh
 RUN chmod +x /opt/silvimetric/silvimetric_idm.sh
 COPY dask_distributed.yml /root/.config/dask/distributed.yaml
