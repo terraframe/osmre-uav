@@ -118,7 +118,7 @@ public class SilvimetricProcessor extends ManagedDocument
       cmd.addAll(Arrays.asList(new String[] { input.getAbsolutePath(), outputDirectory.getAbsolutePath() }));
 
       boolean success = new SystemProcessExecutor(this.monitor)
-          .setEnvironment("PROJ_DATA", AppProperties.getProjDataPath())
+          .setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath())
           .suppressError("2\\d\\d\\d\\-\\d\\d-\\d\\d.*?distributed.worker.memory.*?Unmanaged memory use is high.*?Worker memory limit: [\\d|\\.]* (GiB|MiB|TiB)?")
           .execute(cmd.toArray(new String[0]));
 

@@ -296,13 +296,18 @@ public class AppProperties
     return new ArrayList<String>(Arrays.asList(Singleton.getProps().getString("silvimetric.cmd", "/opt/silvimetric/silvimetric_idm.sh /opt/conda/etc/profile.d/conda.sh").split(" ")));
   }
   
-  public static List<String> getPdalPath()
+  public static List<String> getPythonToolPath(String tool)
   {
-    return new ArrayList<String>(Arrays.asList(Singleton.getProps().getString("pdal.bin", "/opt/conda/envs/silvimetric/bin/pdal").split(" ")));
+    return new ArrayList<String>(Arrays.asList(Singleton.getProps().getString("pdal.bin", "/opt/conda/envs/silvimetric/bin/" + tool).split(" ")));
   }
   
-  public static String getProjDataPath()
+  public static String getSilvimetricProjDataPath()
   {
     return Singleton.getProps().getString("proj.data", "/opt/conda/envs/silvimetric/share/proj");
   }
+  
+//  public static String getProjDataPath()
+//  {
+//    return Singleton.getProps().getString("proj.data", "/opt/conda/share/proj");
+//  }
 }
