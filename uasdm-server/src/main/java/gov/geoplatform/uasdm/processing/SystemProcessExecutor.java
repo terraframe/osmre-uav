@@ -153,25 +153,25 @@ public class SystemProcessExecutor
     {
       if (this.monitor != null)
       {
-        this.monitor.addError("Interrupted when invoking system process. " + RunwayException.localizeThrowable(t, Locale.US));
+        this.monitor.addError("Interrupted while invoking " + commands[0] + " " + RunwayException.localizeThrowable(t, Locale.US));
       }
       else
       {
         throw new RuntimeException(t);
       }
-      logger.info("Interrupted when invoking system process", t);
+      logger.info("Interrupted when invoking " + commands[0], t);
       return false;
     }
 
     if (this.getStdOut().length() > 0)
     {
-      logger.info("Invoked system process with output [" + stdOut.toString() + "].");
+      logger.info("Invoked " + commands[0] + " with output [" + stdOut.toString() + "].");
     }
     
     this.suppressErrors();
     if (this.getStdErr().length() > 0)
     {
-      String msg = "Unexpected error invoking system process [" + this.getStdErr() + "].";
+      String msg = "Unexpected error invoking " + commands[0] + " [" + this.getStdErr() + "].";
       if (this.monitor != null)
       {
         this.monitor.addError(msg);
