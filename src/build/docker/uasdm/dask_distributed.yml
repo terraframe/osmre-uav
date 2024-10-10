@@ -1,4 +1,7 @@
 distributed:
+  client:
+    heartbeat: 10 minutes
+
   worker:
    # Fractions of worker process memory at which we take action to avoid memory
    # blowup. Set any of the values to False to turn off the behavior entirely.
@@ -8,3 +11,6 @@ distributed:
       spill: 0.95      # fraction of process memory where we start spilling to disk
       pause: False     # fraction of process memory at which we pause worker threads
       terminate: False # fraction of process memory at which we terminate the worker
+      
+  scheduler:
+    worker-ttl: 10 minutes
