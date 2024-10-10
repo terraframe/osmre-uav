@@ -60,12 +60,12 @@ public class AppProperties
     }
   }
   
-  public static final String PROD_VALIDATOR_CMD = "[\"python3\", \"/usr/local/tomcat/validate_cloud_optimized_geotiff.py\", \"{cog_file}\"]";
+//  public static final String PROD_VALIDATOR_CMD = "[\"python3\", \"/usr/local/tomcat/validate_cloud_optimized_geotiff.py\", \"{cog_file}\"]";
   
-  public static String getCogValidatorCommand()
-  {
-    return Singleton.getProps().getString("cog.validator.cmd", PROD_VALIDATOR_CMD);
-  }
+//  public static String getCogValidatorCommand()
+//  {
+//    return Singleton.getProps().getString("cog.validator.cmd", PROD_VALIDATOR_CMD);
+//  }
 
   public static String getTitilerUrl()
   {
@@ -291,14 +291,25 @@ public class AppProperties
     return Singleton.getProps().getString("potree.converter.bin", "/opt/PotreeConverter/build/PotreeConverter");
   }
   
+  public static List<String> getCogValidatorCommand(String cogFile)
+  {
+    List<String> cmd = getCondaTool("python3");
+    
+    cmd.addAll(new ArrayList<String>(Arrays.asList(Singleton.getProps().getString("cog.validator.py", "/usr/local/tomcat/validate_cloud_optimized_geotiff.py").split(" "))));
+    
+    cmd.add(cogFile);
+    
+    return cmd;
+  }
+  
   public static List<String> getSilvimetricCommand()
   {
     return new ArrayList<String>(Arrays.asList(Singleton.getProps().getString("silvimetric.cmd", "/opt/silvimetric/silvimetric_idm.sh /opt/conda/etc/profile.d/conda.sh").split(" ")));
   }
   
-  public static String getPythonToolPath(String tool)
+  public static List<String> getCondaTool(String tool)
   {
-    return Singleton.getProps().getString("pdal.bin", "/opt/conda/envs/silvimetric/bin/") + tool;
+    return new ArrayList<String>(Arrays.asList(Singleton.getProps().getString("conda.cmd", "conda run -n silvimetric " + tool).split(" ")));
   }
   
   public static String getSilvimetricProjDataPath()

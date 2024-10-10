@@ -65,9 +65,13 @@ public class COPCConverterProcessor extends ManagedDocument
 
     try
     {
+      var cmd = AppProperties.getCondaTool("pdal");
+      
+      cmd.addAll(Arrays.asList(new String[] { "translate", "-i", res.getAbsolutePath(), "-o", out.getAbsolutePath(), "-r", "readers.las", "-w", "writers.copc", "--overwrite" }));
+      
       boolean success = new SystemProcessExecutor(this.monitor)
           .setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath())
-          .execute(AppProperties.getPythonToolPath("pdal"), "translate", "-i", res.getAbsolutePath(), "-o", out.getAbsolutePath(), "-r", "readers.las", "-w", "writers.copc", "--overwrite");
+          .execute(cmd.toArray(new String[0]));
   
       if (success && out.exists())
       {

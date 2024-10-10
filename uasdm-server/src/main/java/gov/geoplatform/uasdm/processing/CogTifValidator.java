@@ -15,6 +15,8 @@
  */
 package gov.geoplatform.uasdm.processing;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,19 +58,17 @@ public class CogTifValidator
   {
     try
     {
-      final String template = AppProperties.getCogValidatorCommand();
+      final List<String> cmd = AppProperties.getCogValidatorCommand(res.getUnderlyingFile().getAbsolutePath());
       
-      if (template == null || template.length() == 0)
+      if (cmd == null || cmd.size() == 0)
       {
         return res.getName().endsWith(".cog.tif") || res.getName().endsWith(".cog.tiff");
       }
       else
       {
-        final String[] cmds = getCogValidatorCommand(template, res.getUnderlyingFile().getAbsolutePath());
-        
         SystemProcessExecutor exec = new SystemProcessExecutor(this.monitor);
         
-        if (exec.execute(cmds))
+        if (exec.execute(cmd.toArray(new String[0])))
         {
           return !exec.getStdOut().contains("it is recommended to include internal overviews");
         }
