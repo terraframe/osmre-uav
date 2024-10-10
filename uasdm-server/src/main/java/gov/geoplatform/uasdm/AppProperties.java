@@ -296,9 +296,9 @@ public class AppProperties
     return new ArrayList<String>(Arrays.asList(Singleton.getProps().getString("silvimetric.cmd", "/opt/silvimetric/silvimetric_idm.sh /opt/conda/etc/profile.d/conda.sh").split(" ")));
   }
   
-  public static List<String> getPythonToolPath(String tool)
+  public static String getPythonToolPath(String tool)
   {
-    return new ArrayList<String>(Arrays.asList(Singleton.getProps().getString("pdal.bin", "/opt/conda/envs/silvimetric/bin/" + tool).split(" ")));
+    return Singleton.getProps().getString("pdal.bin", "/opt/conda/envs/silvimetric/bin/") + tool;
   }
   
   public static String getSilvimetricProjDataPath()
