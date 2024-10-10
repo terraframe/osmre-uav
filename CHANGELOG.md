@@ -6,7 +6,8 @@
 
 ### Features
 
- - **major feature** - Support for standlone products (products associated with components other than collections)
+ - **major feature** - Support for standalone products (products associated with components other than collections)
+ - **major feature** - Support for multiple product groups per collection
  - support for osm basemaps   ([c9ed8](https://github.com/terraframe/osmre-uav/commit/c9ed83e5aea26ced275092719ead2edc01e5cd97))
  - communicate out of memory messages a little better   ([0af76](https://github.com/terraframe/osmre-uav/commit/0af760fa89ba59af90fcad842a46b41d99d489ca))
  - added support for locking a product which prevents it from being published or unpublished   ([5526f](https://github.com/terraframe/osmre-uav/commit/5526ff53652c9683e7696ceecd230eb2d198c5fa))
