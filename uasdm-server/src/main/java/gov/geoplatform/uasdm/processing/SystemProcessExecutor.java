@@ -94,7 +94,6 @@ public class SystemProcessExecutor
 
     processBuilder.command(commands);
 
-//    processBuilder.environment().put("PROJ_DATA", "/home/rrowlands/miniconda3/envs/silvimetric/share/proj");
     processBuilder.environment().putAll(environment);
     
     try
@@ -153,25 +152,25 @@ public class SystemProcessExecutor
     {
       if (this.monitor != null)
       {
-        this.monitor.addError("Interrupted while invoking " + commands[0] + " " + RunwayException.localizeThrowable(t, Locale.US));
+        this.monitor.addError("Interrupted while invoking [" + String.join(" ", commands) + "] " + RunwayException.localizeThrowable(t, Locale.US));
       }
       else
       {
         throw new RuntimeException(t);
       }
-      logger.info("Interrupted when invoking " + commands[0], t);
+      logger.info("Interrupted when invoking [" + String.join(" ", commands) + "]", t);
       return false;
     }
 
     if (this.getStdOut().length() > 0)
     {
-      logger.info("Invoked " + commands[0] + " with output [" + stdOut.toString() + "].");
+      logger.info("Invoked [" + String.join(" ", commands) + "] with output [" + stdOut.toString() + "].");
     }
     
     this.suppressErrors();
     if (this.getStdErr().length() > 0)
     {
-      String msg = "Unexpected error invoking " + commands[0] + " [" + this.getStdErr() + "].";
+      String msg = "Invoking [" + String.join(" ", commands) + "] produced unexpected std error [" + this.getStdErr() + "].";
       if (this.monitor != null)
       {
         this.monitor.addError(msg);
