@@ -34,7 +34,8 @@ RUN apt-get update && apt-get -y install exiftool
 # Install GDAL and COG Tiff validator
 #RUN apt-get update && apt-get -y install libgdal-dev gdal-bin python3 pip wget
 #RUN pip install --global-option=build_ext --global-option="-I/usr/include/gdal" GDAL=="$(gdal-config --version)"
-RUN wget https://raw.githubusercontent.com/OSGeo/gdal/master/swig/python/gdal-utils/osgeo_utils/samples/validate_cloud_optimized_geotiff.py -O validate_cloud_optimized_geotiff.py
+#RUN wget https://raw.githubusercontent.com/OSGeo/gdal/master/swig/python/gdal-utils/osgeo_utils/samples/validate_cloud_optimized_geotiff.py -O validate_cloud_optimized_geotiff.py
+COPY validate_cloud_optimized_geotiff.py validate_cloud_optimized_geotiff.py
 
 RUN apt-get update && apt-get -y install python3 pip wget
 
