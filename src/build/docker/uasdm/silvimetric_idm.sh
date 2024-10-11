@@ -41,7 +41,7 @@ silvimetric --database database.tdb \
     --crs $crs
 
 silvimetric -d database.tdb \
-   --threads 4 \
+   --threads 2 \
    --workers 1 \
    shatter \
    --date 2008-12-01 \
