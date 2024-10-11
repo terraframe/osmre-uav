@@ -67,6 +67,7 @@ public class CogTifValidator
       else
       {
         SystemProcessExecutor exec = new SystemProcessExecutor(this.monitor);
+        exec.suppressError("\\/opt\\/conda\\/envs\\/silvimetric.*FutureWarning.*UseExceptions.*warnings.warn\\(");
         
         if (exec.execute(cmd.toArray(new String[0])))
         {

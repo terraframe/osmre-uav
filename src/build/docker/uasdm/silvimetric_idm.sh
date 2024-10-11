@@ -42,7 +42,7 @@ silvimetric --database database.tdb \
 
 silvimetric -d database.tdb \
    --threads 4 \
-   --workers 4 \
+   --workers 1 \
    shatter \
    --date 2008-12-01 \
    $2
