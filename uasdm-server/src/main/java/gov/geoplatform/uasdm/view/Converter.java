@@ -424,10 +424,12 @@ public abstract class Converter<T extends UasComponentIF>
     UasComponentIF component = components.size() > 0 ? components.get(components.size() - 1) : null;
 
     final String s3Loc = component != null ? component.getS3location(product, ODMZipPostProcessor.POTREE) : "";
-
-    boolean hasPointcloud = RemoteFileFacade.objectExists(s3Loc + "metadata.json") || RemoteFileFacade.objectExists(s3Loc + "ept.json");
+    
+    List<DocumentIF> docs = product.getDocuments();
+    
+    boolean hasPointcloud = docs.stream().anyMatch(d -> d.getS3location().endsWith(".copc.laz"));
+    hasPointcloud = hasPointcloud || RemoteFileFacade.objectExists(s3Loc + "metadata.json") || RemoteFileFacade.objectExists(s3Loc + "ept.json");
     hasPointcloud = hasPointcloud || RemoteFileFacade.objectExists(component != null ? component.getS3location(product, PointcloudService.LEGACY_POTREE_SUPPORT) : "" + "cloud.js");
-
     view.setHasPointcloud(hasPointcloud);
 
     view.setHasAllZip(product.hasAllZip());

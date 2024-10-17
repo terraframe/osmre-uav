@@ -15,6 +15,8 @@
  */
 package gov.geoplatform.uasdm.controller;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,12 +30,7 @@ import com.runwaysdk.mvc.ResponseIF;
 import com.runwaysdk.mvc.ViewResponse;
 import com.runwaysdk.request.ServletRequestIF;
 
-import gov.geoplatform.uasdm.graph.Product;
-import gov.geoplatform.uasdm.graph.UasComponent;
-import gov.geoplatform.uasdm.model.ImageryComponent;
-import gov.geoplatform.uasdm.model.ProductIF;
-import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
-import gov.geoplatform.uasdm.remote.RemoteFileFacade;
+import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.remote.RemoteFileGetResponse;
 import gov.geoplatform.uasdm.service.PointcloudService;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
@@ -150,8 +147,15 @@ public class PointcloudController
       String componentId = matcher.group(1);
 
       String dataPath = matcher.group(2);
-
-      return new RemoteFileGetResponse(this.pService.download(request.getSessionId(), componentId, dataPath, true));
+      
+      final String sRange = servletRequest.getHeader("Range");
+      if (sRange != null) {
+        List<Range> range = Range.decodeRange(sRange);
+        
+        return new RemoteFileGetResponse(this.pService.download(request.getSessionId(), componentId, dataPath, range));
+      } else {
+        return new RemoteFileGetResponse(this.pService.download(request.getSessionId(), componentId, dataPath, true));
+      }
     }
     else
     {

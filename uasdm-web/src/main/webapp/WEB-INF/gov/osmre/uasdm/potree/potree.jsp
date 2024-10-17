@@ -43,6 +43,7 @@
   <script src="../../resource/libs/openlayers3/ol.js"></script>
   <script src="../../resource/libs/i18next/i18next.js"></script>
   <script src="../../resource/libs/jstree/jstree.js"></script>
+  <script src="../../resource/libs/copc/index.js"></script>
   <script src="../../resource/build/potree/potree.js"></script>
   <script src="../../resource/libs/plasio/js/laslaz.js"></script>
 
