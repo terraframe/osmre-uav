@@ -21,9 +21,23 @@ fi
 ## initialize conda ##
 source $1
 conda activate silvimetric
-pip install silvimetric
+
+# Silvimetric versions 1.2.1 and 1.2.3 were found to throw an error when specifying custom metrics
+# More info here: https://github.com/hobuinc/silvimetric/issues/101
+pip install silvimetric==1.1.1
+pip install line-profiler # Silvimetric v1.1.1 requires this (but newer versions don't)
 
 ## begin script ##
+
+cat > silvimetric_metrics.py<< EOF
+import numpy as np
+from silvimetric.resources.metric import Metric, Metrics
+def metrics() -> list[Metric]:
+     def z_diff(arr: np.ndarray):
+          return np.max(arr) - np.min(arr)
+     m_z_diff = Metric('diff', np.float32, z_diff)
+     return [m_z_diff, Metrics["min"], Metrics["max"]]
+EOF
 
 bounds=$(pdal info $2 --readers.copc.resolution=1 | jq -c '.stats.bbox.native.bbox')
 
@@ -38,7 +52,8 @@ rm -rf database.tdb
 silvimetric --database database.tdb \
     initialize \
     --bounds $bounds \
-    --crs $crs
+    --crs $crs \
+    -m "silvimetric_metrics.py"
 
 silvimetric -d database.tdb \
    --threads 2 \

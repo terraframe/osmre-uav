@@ -69,9 +69,11 @@ public class SilvimetricProcessor extends ManagedDocument
     }
     
     public boolean matches(String metricName) {
-      if (this.equals(GROUND_SURFACE_MODEL) && metricName.toLowerCase().equals("m_z_min")) {
+      if (this.equals(GROUND_SURFACE_MODEL) && metricName.toLowerCase().equals("m_z_max")) {
         return true;
-      } else if (this.equals(TERRAIN_MODEL) && metricName.toLowerCase().equals("m_z_max")) {
+      } else if (this.equals(TERRAIN_MODEL) && metricName.toLowerCase().equals("m_z_min")) {
+        return true;
+      } else if (this.equals(TREE_STRUCTURE) && metricName.toLowerCase().equals("m_z_diff")) {
         return true;
       }
       
@@ -82,6 +84,8 @@ public class SilvimetricProcessor extends ManagedDocument
       if (this.equals(GROUND_SURFACE_MODEL) && config.isGenerateGSM()) {
         return true;
       } else if (this.equals(TERRAIN_MODEL) && config.isGenerateTerrainModel()) {
+        return true;
+      } else if (this.equals(TREE_STRUCTURE) && config.isGenerateTreeStructure()) {
         return true;
       }
       
