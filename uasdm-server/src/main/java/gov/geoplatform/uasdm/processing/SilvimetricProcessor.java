@@ -75,6 +75,8 @@ public class SilvimetricProcessor extends ManagedDocument
         return true;
       } else if (this.equals(TREE_STRUCTURE) && metricName.toLowerCase().equals("m_z_diff")) {
         return true;
+      } else if (this.equals(TREE_CANOPY_COVER) && metricName.toLowerCase().equals("m_Classification_veg_density")) {
+        return true;
       }
       
       return false;
@@ -86,6 +88,8 @@ public class SilvimetricProcessor extends ManagedDocument
       } else if (this.equals(TERRAIN_MODEL) && config.isGenerateTerrainModel()) {
         return true;
       } else if (this.equals(TREE_STRUCTURE) && config.isGenerateTreeStructure()) {
+        return true;
+      } else if (this.equals(TREE_CANOPY_COVER) && config.isGenerateTreeStructure()) {
         return true;
       }
       

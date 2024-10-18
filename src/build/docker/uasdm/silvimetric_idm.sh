@@ -33,10 +33,14 @@ cat > silvimetric_metrics.py<< EOF
 import numpy as np
 from silvimetric.resources.metric import Metric, Metrics
 def metrics() -> list[Metric]:
-     def z_diff(arr: np.ndarray):
+     def diff(arr: np.ndarray):
           return np.max(arr) - np.min(arr)
-     m_z_diff = Metric('diff', np.float32, z_diff)
-     return [m_z_diff, Metrics["min"], Metrics["max"]]
+     def veg_density(arr: np.ndarray):
+          if (len(arr) == 0): return 0
+          return float(len([x for x in arr if int(x) >= 3 and int(x) <= 5])) / float(len(arr))
+     m_diff = Metric('diff', np.float32, diff)
+     m_veg_density = Metric('veg_density', np.float32, veg_density)
+     return [m_diff, m_veg_density, Metrics["min"], Metrics["max"], Metrics["median"]]
 EOF
 
 bounds=$(pdal info $2 --readers.copc.resolution=1 | jq -c '.stats.bbox.native.bbox')
@@ -53,7 +57,8 @@ silvimetric --database database.tdb \
     initialize \
     --bounds $bounds \
     --crs $crs \
-    -m "silvimetric_metrics.py"
+    --metrics "silvimetric_metrics.py" \
+    -a "Z" -a "Classification"
 
 silvimetric -d database.tdb \
    --threads 2 \
