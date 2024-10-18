@@ -40,7 +40,7 @@ def metrics() -> list[Metric]:
           return float(len([x for x in arr if int(x) >= 3 and int(x) <= 5])) / float(len(arr))
      m_diff = Metric('diff', np.float32, diff)
      m_veg_density = Metric('veg_density', np.float32, veg_density)
-     return [m_diff, m_veg_density, Metrics["min"], Metrics["max"], Metrics["median"]]
+     return [m_diff, m_veg_density, Metrics["min"], Metrics["max"]]
 EOF
 
 bounds=$(pdal info $2 --readers.copc.resolution=1 | jq -c '.stats.bbox.native.bbox')
