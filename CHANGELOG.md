@@ -2,6 +2,48 @@
 # Release Notes
 
 
+## [1.3.0](https://github.com/terraframe/osmre-uav/releases/tag/1.3.0) (2024-10-04)
+
+### Features
+
+ - **major feature** - Support for standalone products (products associated with components other than collections)
+ - **major feature** - Support for multiple product groups per collection
+ - support for osm basemaps   ([c9ed8](https://github.com/terraframe/osmre-uav/commit/c9ed83e5aea26ced275092719ead2edc01e5cd97))
+ - communicate out of memory messages a little better   ([0af76](https://github.com/terraframe/osmre-uav/commit/0af760fa89ba59af90fcad842a46b41d99d489ca))
+ - added support for locking a product which prevents it from being published or unpublished   ([5526f](https://github.com/terraframe/osmre-uav/commit/5526ff53652c9683e7696ceecd230eb2d198c5fa))
+ - added support for using ground control point files   ([d0090](https://github.com/terraframe/osmre-uav/commit/d0090daeff9fe56eb17557b31d450b5c2bcaa41b))
+ - support for high resolution sensors   ([1770e](https://github.com/terraframe/osmre-uav/commit/1770e48546d99f7db93ee9e2b68002bc846c3675))
+ - change default role when creating a new user to field worker   ([152fc](https://github.com/terraframe/osmre-uav/commit/152fc0b1eecfee0a5b35258d29ca5591edff1711))
+ - change project types to more meaningful ones   ([ddd2a](https://github.com/terraframe/osmre-uav/commit/ddd2a25126feef6af4eab8536292577ff8acee39))
+ - **report** system error report for collection processing   ([48844](https://github.com/terraframe/osmre-uav/commit/48844e379e042610c03e29df3a638f28ddde8efb))
+ - **account** ability to import users into the system using a csv file   ([42bd1](https://github.com/terraframe/osmre-uav/commit/42bd1f553c126f51426fd54841008bb8b04d9557))
+
+### Bug Fixes
+
+   - issue where processing files could pile up and cause the server to run out of disk space  ([c98a6](https://github.com/terraframe/osmre-uav/commit/c98a655867897578fbfd0706ff1b831631ed9b16))
+   - ability to delete projects   ([47ffe](https://github.com/terraframe/osmre-uav/commit/47ffe0bca7b1a280f1b0855b6958c0d57fcd29dd))
+   - fix for NPE when deleting existing artifacts during a manual upload   ([b753e](https://github.com/terraframe/osmre-uav/commit/b753e17bd86f54ff427417e5bd39ddb7e38b7fbb))
+   - patcher for stale collection report data which was not updated due to a bug  ([7a1d6](https://github.com/terraframe/osmre-uav/commit/7a1d6435555fcb12efa1088891b8877f00746b7b))
+   - fixed issue where the collection report was not being updated because the update thread was being shutdown right after the webapplication started  ([73c0c](https://github.com/terraframe/osmre-uav/commit/73c0cdee313d1d5cc989b9648a4f6a172e4029f5))
+   - fixed issue when viewing all of the products located within a hierarchy location the products were not restricted to the organizationof the hierarchy  ([e603d](https://github.com/terraframe/osmre-uav/commit/e603db1d0b440158c3cc60ea043471faf21b272f))
+   - uasdm-server/pom.xml to reduce vulnerabilities The following vulnerabilities are fixed with an upgrade:- https://snyk.io/vuln/SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038424- https://snyk.io/vuln/SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426  ([cc3af](https://github.com/terraframe/osmre-uav/commit/cc3afd89fcaf1803f5a0991e33092cb7e9ea129c))
+   - fixed issue creating a cog for manually uploaded tif files larger than 4 GB  ([9f220](https://github.com/terraframe/osmre-uav/commit/9f220c55fd09f1b442fa4a856bd2705ba257d28a))
+   - uasdm-server/pom.xml to reduce vulnerabilities The following vulnerabilities are fixed with an upgrade:- https://snyk.io/vuln/SNYK-JAVA-SOFTWAREAMAZONION-6153869  ([f3e38](https://github.com/terraframe/osmre-uav/commit/f3e38961ff8f7468d2d8c2124531c04404d94369))
+   - uasdm-fargate-erossync/pom.xml to reduce vulnerabilities The following vulnerabilities are fixed with an upgrade:- https://snyk.io/vuln/SNYK-JAVA-SOFTWAREAMAZONION-6153869  ([64d82](https://github.com/terraframe/osmre-uav/commit/64d824cea5f8c86d5cada86e5047beab8622f410))
+   - fixed collection date and collection end date using the wrong timezone when being displayed   ([63916](https://github.com/terraframe/osmre-uav/commit/6391674179420145be0192aa1eafd85abdaf4daf))
+   - generating processing report on prod throws error   ([baae6](https://github.com/terraframe/osmre-uav/commit/baae639491564bdfd7a1de092184601703b0b945))
+   - **org-tree** select org on left click   ([d4a86](https://github.com/terraframe/osmre-uav/commit/d4a86c544b75face217bd854527861573b8972a7))
+   - bureau not showing in session log anymore   ([82b46](https://github.com/terraframe/osmre-uav/commit/82b469941233201a312c50904b4accdd97b3d6d7))
+   - prevent people from deleting products they dont own   ([153ce](https://github.com/terraframe/osmre-uav/commit/153ce0555e291e0472a4520d43f2f8ed90f3ea36))
+   - uasdm-server/pom.xml to reduce vulnerabilities The following vulnerabilities are fixed with an upgrade:- https://snyk.io/vuln/SNYK-JAVA-ORGECLIPSEJETTYHTTP2-6277726  ([8f562](https://github.com/terraframe/osmre-uav/commit/8f562885fecc73951fd71a0310e00068747eff0e))
+   - uasdm-server/pom.xml to reduce vulnerabilities The following vulnerabilities are fixed with an upgrade:- https://snyk.io/vuln/SNYK-JAVA-ORGKEYCLOAK-6230634  ([ca2cd](https://github.com/terraframe/osmre-uav/commit/ca2cdd608b4f7ee840f65fee04bd4941e264fac0))
+   - uasdm-server/pom.xml to reduce vulnerabilities The following vulnerabilities are fixed with an upgrade:- https://snyk.io/vuln/SNYK-JAVA-ORGECLIPSEPARSSON-6044728  ([c8b0b](https://github.com/terraframe/osmre-uav/commit/c8b0b922c79dbf4626674836c2923cdceb2a6cc9))
+   - **keycloak** allow admins to edit emails of existing users   ([7e827](https://github.com/terraframe/osmre-uav/commit/7e827f6a73b8e51a783eff929b084ff900310600))
+   - **keycloak** ignore case when matching email   ([d0df9](https://github.com/terraframe/osmre-uav/commit/d0df97c5c545329b35fba5830501ffafac5a35d2))
+   - uasdm-lambda-thumbnail/python-serverless/package.json & uasdm-lambda-thumbnail/python-serverless/package-lock.json to reduce vulnerabilities The following vulnerabilities are fixed with an upgrade:- https://snyk.io/vuln/SNYK-JS-LODASHSET-1320032  ([26f0b](https://github.com/terraframe/osmre-uav/commit/26f0ba4ccd00e4dd09e8cb2542f892081cf26151))
+
+
+
 ## [1.2.1](https://github.com/terraframe/osmre-uav/releases/tag/1.2.1) (2024-05-31)
 
 ### Features
