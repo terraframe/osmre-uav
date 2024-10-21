@@ -326,11 +326,10 @@
                           </ng-container>
                         </tab>
                         <tab heading="Products" (selectTab)="activeTab = 'Products'">
-                          <product-panel *ngIf="activeTab === 'Products'" [selection]="current" <<<<<<< HEAD
+                          <product-panel *ngIf="activeTab === 'Products'" [selection]="current"
                             [organization]="organization" [filter]="filter" [views]="views"
                             (onViewsChange)="handleProductsChange($event)"
-                            (toggleMapOrtho)="handleMapOrtho($event)"=======[organization]="organization"
-                            [filter]="filter" (toggleMapOrtho)="handleMapOrtho($event)">>>>>>> refs/remotes/origin/lidar
+                            (toggleMapOrtho)="handleMapOrtho($event)"
                             (toggleMapDem)="handleMapDem($event)"></product-panel>
                         </tab>
                       </tabset>
@@ -342,12 +341,10 @@
                           </ng-container>
                         </tab>
                         <tab heading="Products" (selectTab)="activeTab = 'Products'">
-                          <product-panel *ngIf="activeTab === 'Products'" [selection]="current" <<<<<<< HEAD
+                          <product-panel *ngIf="activeTab === 'Products'" [selection]="current"
                             [organization]="organization" [filter]="filter" [views]="views"
                             (onViewsChange)="handleProductsChange($event)"
-                            (toggleMapOrtho)="handleMapOrtho($event)"=======[organization]="organization"
-                            [filter]="filter" (toggleMapOrtho)="handleMapOrtho($event)">>>>>>> refs/remotes/origin/lidar
-                            (toggleMapDem)="handleMapDem($event)"></product-panel>
+                            (toggleMapOrtho)="handleMapOrtho($event)"></product-panel>
                         </tab>
                       </tabset>
 
