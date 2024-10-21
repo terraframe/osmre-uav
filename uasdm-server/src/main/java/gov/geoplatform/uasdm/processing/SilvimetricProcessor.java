@@ -33,11 +33,69 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.LayerClassification;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
+/**
+ * Generates metrics for an input copc pointcloud. For each metric, a new product will be created and the output raster
+ * will be uploaded to the "odm" folder of the new product.
+ */
 public class SilvimetricProcessor extends ManagedDocument
 {
   private Logger            logger = LoggerFactory.getLogger(SilvimetricProcessor.class);
   
   private LidarProcessConfiguration config;
+  
+  public static enum Metric {
+    TREE_CANOPY_COVER("tree_canopy_cover"),
+    GROUND_SURFACE_MODEL("ground_surface_model"),
+    TREE_STRUCTURE("tree_structure"),
+    TERRAIN_MODEL("terrain_model");
+    
+    private String name;
+    
+    private Metric(String name) {
+      this.name = name;
+    }
+    
+    public String getName() {
+      return this.name;
+    }
+    
+    public static Metric fromSilvimetric(String silvimetric) {
+      for (Metric m : Metric.values()) {
+        if (m.matches(silvimetric)) {
+          return m;
+        }
+      }
+      return null;
+    }
+    
+    public boolean matches(String metricName) {
+      if (this.equals(GROUND_SURFACE_MODEL) && metricName.toLowerCase().equals("m_z_max")) {
+        return true;
+      } else if (this.equals(TERRAIN_MODEL) && metricName.toLowerCase().equals("m_z_min")) {
+        return true;
+      } else if (this.equals(TREE_STRUCTURE) && metricName.toLowerCase().equals("m_z_diff")) {
+        return true;
+      } else if (this.equals(TREE_CANOPY_COVER) && metricName.toLowerCase().equals("m_Classification_veg_density")) {
+        return true;
+      }
+      
+      return false;
+    }
+    
+    public boolean shouldGenerate(LidarProcessConfiguration config) {
+      if (this.equals(GROUND_SURFACE_MODEL) && config.isGenerateGSM()) {
+        return true;
+      } else if (this.equals(TERRAIN_MODEL) && config.isGenerateTerrainModel()) {
+        return true;
+      } else if (this.equals(TREE_STRUCTURE) && config.isGenerateTreeStructure()) {
+        return true;
+      } else if (this.equals(TREE_CANOPY_COVER) && config.isGenerateTreeStructure()) {
+        return true;
+      }
+      
+      return false;
+    }
+  }
 
   public SilvimetricProcessor(LidarProcessConfiguration config, UasComponentIF component, StatusMonitorIF monitor)
   {
@@ -68,7 +126,8 @@ public class SilvimetricProcessor extends ManagedDocument
       cmd.addAll(Arrays.asList(new String[] { input.getAbsolutePath(), outputDirectory.getAbsolutePath() }));
 
       boolean success = new SystemProcessExecutor(this.monitor)
-          .setEnvironment("PROJ_DATA", AppProperties.getProjDataPath())
+          .setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath())
+          .suppressError("2\\d\\d\\d\\-\\d\\d-\\d\\d.*?distributed.worker.memory.*?Unmanaged memory use is high.*?Worker memory limit: [\\d|\\.]* (GiB|MiB|TiB)?")
           .execute(cmd.toArray(new String[0]));
 
       if (success && outputDirectory.exists())
@@ -80,21 +139,23 @@ public class SilvimetricProcessor extends ManagedDocument
           // Upload all of the generated files
           for (File outfile : files)
           {
-            this.product = Product.createIfNotExist(component, this.config.getProductName() + "_" + FilenameUtils.getBaseName(outfile.getName()).replace("-", "_"));
-            this.s3Path = this.product.getS3location() + LayerClassification.ORTHO.getKeyPath();
+            final String metricName = FilenameUtils.getBaseName(outfile.getName()).replace("-", "_");
+            final Metric metric = Metric.fromSilvimetric(metricName);
             
-            // TODO : leaky abstraction
-            ((S3FileUpload)this.downstream).setProduct(product);
-            ((S3FileUpload)this.downstream).setS3Path(ImageryComponent.ORTHO + "/odm_orthophoto.cog.tif");
-            
-            super.process(new FileResource(outfile));
+            if (metric != null && metric.shouldGenerate(config)) {
+              this.product = Product.createIfNotExist(component, this.config.getProductName() + "_" + metric.getName());
+              
+              this.s3Path = ImageryComponent.ORTHO + "/" + metric.getName() + ".tif";
+              
+              if (this.downstream != null && this.downstream instanceof S3FileUpload) {
+                ((S3FileUpload)this.downstream).setProduct(product);
+                ((S3FileUpload)this.downstream).setS3Path(ImageryComponent.ORTHO + "/" + metric.getName() + ".cog.tif");
+              }
+              
+              super.process(new FileResource(outfile));
+            }
           }
         }
-      }
-      else
-      {
-        logger.info("Problem occurred generating Potree Converter Transform. Potree data directory did not exist at [" + outputDirectory.getAbsolutePath() + "].");
-        monitor.addError("Problem occurred generating gdal transform. Hillshade file did not exist.");
       }
     }
     finally

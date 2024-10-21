@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.resource.ApplicationFileResource;
 import com.runwaysdk.resource.FileResource;
 
+import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
@@ -71,7 +72,11 @@ public class CogTifProcessor extends ManagedDocument
 
     try
     {
-      if (!new SystemProcessExecutor(this.monitor).execute(new String[] { "gdaladdo", "-r", "average", overview.getAbsolutePath(), "2", "4", "8", "16" }))
+      var cmd = AppProperties.getCondaTool("gdaladdo");
+      cmd.addAll(Arrays.asList(new String[] { "-r", "average", overview.getAbsolutePath(), "2", "4", "8", "16" }));
+      if (!new SystemProcessExecutor(this.monitor)
+          .setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath())
+          .execute(cmd.toArray(new String[0])))
       {
         String msg = "Problem occurred generating overview file. Cog generation failed for [" + this.getS3Path() + "].";
         logger.error(msg);
@@ -83,17 +88,11 @@ public class CogTifProcessor extends ManagedDocument
 
       try
       {
-        // https://www.cogeo.org/developers-guide.html
-
-        // for GDAL versions below 3.1
-        // "gdal_translate", overview.getAbsolutePath(), cog.getAbsolutePath(),
-        // "-co", "COMPRESS=LZW", "-co", "TILED=YES", "-co",
-        // "COPY_SRC_OVERVIEWS=YES"
-        List<String> args = new LinkedList<>(Arrays.asList("gdal_translate", overview.getAbsolutePath(), cog.getAbsolutePath(), "-of", "COG", "-co", "COMPRESS=LZW"));
-        args.add("-co");
-        args.add("BIGTIFF=YES");
-
-        if (!new SystemProcessExecutor(this.monitor).execute(args.toArray(new String[args.size()])))
+        var cmd2 = AppProperties.getCondaTool("gdal_translate");
+        cmd2.addAll(Arrays.asList(new String[] { overview.getAbsolutePath(), cog.getAbsolutePath(), "-of", "COG", "-co", "COMPRESS=LZW", "-co", "BIGTIFF=YES" }));
+        if (!new SystemProcessExecutor(this.monitor)
+            .setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath())
+            .execute(cmd2.toArray(new String[0])))
         {
           String msg = "Problem occurred generating cog file. Cog generation failed for [" + this.getS3Path() + "].";
           logger.error(msg);

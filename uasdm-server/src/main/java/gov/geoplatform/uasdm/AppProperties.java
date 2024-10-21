@@ -59,13 +59,13 @@ public class AppProperties
       return getInstance().props;
     }
   }
-
-  public static final String PROD_VALIDATOR_CMD = "[\"python3\", \"/usr/local/tomcat/validate_cloud_optimized_geotiff.py\", \"{cog_file}\"]";
-
-  public static String getCogValidatorCommand()
-  {
-    return Singleton.getProps().getString("cog.validator.cmd", PROD_VALIDATOR_CMD);
-  }
+  
+//  public static final String PROD_VALIDATOR_CMD = "[\"python3\", \"/usr/local/tomcat/validate_cloud_optimized_geotiff.py\", \"{cog_file}\"]";
+  
+//  public static String getCogValidatorCommand()
+//  {
+//    return Singleton.getProps().getString("cog.validator.cmd", PROD_VALIDATOR_CMD);
+//  }
 
   public static String getTitilerUrl()
   {
@@ -292,21 +292,37 @@ public class AppProperties
     return Singleton.getProps().getString("potree.converter.bin", "/opt/PotreeConverter/build/PotreeConverter");
   }
   
+  public static List<String> getCogValidatorCommand(String cogFile)
+  {
+    List<String> cmd = getCondaTool("python3");
+    
+    cmd.addAll(new ArrayList<String>(Arrays.asList(Singleton.getProps().getString("cog.validator.py", "/usr/local/tomcat/validate_cloud_optimized_geotiff.py").split(" "))));
+    
+    cmd.add(cogFile);
+    
+    return cmd;
+  }
+  
   public static List<String> getSilvimetricCommand()
   {
-    return new ArrayList<String>(Arrays.asList(Singleton.getProps().getString("silvimetric.cmd", "silvimetric.cmd=/opt/silvimetric/silvimetric_idm.sh /opt/conda/etc/profile.d/conda.sh").split(" ")));
+    return new ArrayList<String>(Arrays.asList(Singleton.getProps().getString("silvimetric.cmd", "/opt/silvimetric/silvimetric_idm.sh /opt/conda/etc/profile.d/conda.sh").split(" ")));
   }
   
-  public static List<String> getPdalPath()
+  public static List<String> getCondaTool(String tool)
   {
-    return new ArrayList<String>(Arrays.asList(Singleton.getProps().getString("pdal.bin", "/opt/conda/envs/silvimetric/bin/pdal").split(" ")));
+    return new ArrayList<String>(Arrays.asList(new String(Singleton.getProps().getString("conda.cmd", "conda run -n silvimetric") + " " + tool).split(" ")));
   }
   
-  public static String getProjDataPath()
+  public static String getSilvimetricProjDataPath()
   {
     return Singleton.getProps().getString("proj.data", "/opt/conda/envs/silvimetric/share/proj");
   }
 
+//  public static String getProjDataPath()
+//  {
+//    return Singleton.getProps().getString("proj.data", "/opt/conda/share/proj");
+//  }
+  
   public static Boolean isKnowStacEnabled()
   {
     return Singleton.getProps().getBoolean("knowstac.enabled", true);

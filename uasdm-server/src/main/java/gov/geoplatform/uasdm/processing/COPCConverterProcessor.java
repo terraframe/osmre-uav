@@ -32,6 +32,9 @@ import gov.geoplatform.uasdm.lidar.LidarProcessConfiguration;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
+/**
+ * Responsible for converting a laz/las pointcloud to copc format
+ */
 public class COPCConverterProcessor extends ManagedDocument
 {
   private Logger            logger = LoggerFactory.getLogger(COPCConverterProcessor.class);
@@ -56,18 +59,18 @@ public class COPCConverterProcessor extends ManagedDocument
   public boolean process(ApplicationFileResource res)
   {
     this.product = Product.createIfNotExist(component, this.config.getProductName());
-    this.s3Path = this.product.getS3location() + ImageryComponent.PTCLOUD + "/pointcloud.copc.laz";
+    this.s3Path = ImageryComponent.PTCLOUD + "/pointcloud.copc.laz";
     
     File out = new File(res.getUnderlyingFile().getParent(), res.getBaseName() + ".copc.laz");
 
     try
     {
-      var cmd = AppProperties.getPdalPath();
+      var cmd = AppProperties.getCondaTool("pdal");
       
       cmd.addAll(Arrays.asList(new String[] { "translate", "-i", res.getAbsolutePath(), "-o", out.getAbsolutePath(), "-r", "readers.las", "-w", "writers.copc", "--overwrite" }));
       
       boolean success = new SystemProcessExecutor(this.monitor)
-          .setEnvironment("PROJ_DATA", AppProperties.getProjDataPath())
+          .setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath())
           .execute(cmd.toArray(new String[0]));
   
       if (success && out.exists())
@@ -75,11 +78,6 @@ public class COPCConverterProcessor extends ManagedDocument
         FileResource frout = new FileResource(out);
         
         return super.process(frout);
-      }
-      else
-      {
-        logger.info("Problem occurred generating COPC. PDAL translate ran, did not generate an output file at [" + out.getAbsolutePath() + "].");
-        monitor.addError("Problem occurred running pdal translate. Output copc file did not exist.");
       }
     } finally {
       FileUtils.deleteQuietly(out);
