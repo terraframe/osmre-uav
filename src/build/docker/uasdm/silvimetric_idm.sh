@@ -52,21 +52,69 @@ if [ -z "$crs" ] || [ "$crs" = "null" ]; then
     crs=$(pdal info --metadata $2 --readers.copc.resolution=10 | jq -c '.metadata.srs.json.id.code')
 fi
 
+#rm -rf database.tdb
+#silvimetric --database database.tdb \
+#    initialize \
+#    --bounds $bounds \
+#    --crs $crs \
+#    --metrics "silvimetric_metrics.py" \
+#    -a "Z" -a "Classification"
+
+#silvimetric -d database.tdb \
+#   --threads 2 \
+#   --workers 1 \
+#   shatter \
+#   --date 2008-12-01 \
+#   $2
+
+#silvimetric -d database.tdb extract -o $3
+
+#rm -rf database.tdb
+
+
+## BEGIN Ferry pipeline hacks ##
+# Necessary because of https://github.com/hobuinc/silvimetric/issues/102
+
+cat > ferry.pipeline<< EOF
+{
+  "pipeline": [
+    {
+      "type": "readers.copc",
+      "filename": "$2"
+    },
+    {
+      "type": "filters.ferry",
+      "dimensions": "Classification=>UserData"
+    },
+    {
+      "type": "writers.copc",
+      "filename": "ferry.copc.laz"
+    }
+  ]
+}
+EOF
+
+pdal pipeline ferry.pipeline
+
 rm -rf database.tdb
 silvimetric --database database.tdb \
     initialize \
     --bounds $bounds \
     --crs $crs \
     --metrics "silvimetric_metrics.py" \
-    -a "Z" -a "Classification"
+    -a "Z" -a "UserData"
 
 silvimetric -d database.tdb \
    --threads 2 \
    --workers 1 \
    shatter \
    --date 2008-12-01 \
-   $2
+   ferry.copc.laz
 
 silvimetric -d database.tdb extract -o $3
 
 rm -rf database.tdb
+
+mv $3/m_UserData_veg_density.tif $3/m_Classification_veg_density.tif
+
+rm ferry.copc.laz
