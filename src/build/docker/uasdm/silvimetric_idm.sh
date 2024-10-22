@@ -43,36 +43,8 @@ def metrics() -> list[Metric]:
      return [m_diff, m_veg_density, Metrics["min"], Metrics["max"]]
 EOF
 
-bounds=$(pdal info $2 --readers.copc.resolution=1 | jq -c '.stats.bbox.native.bbox')
 
-crs=$(pdal info --metadata $2 --readers.copc.resolution=10 | jq -c '.metadata.srs.json.components[0].id.code')
-
-# CRS fallback
-if [ -z "$crs" ] || [ "$crs" = "null" ]; then
-    crs=$(pdal info --metadata $2 --readers.copc.resolution=10 | jq -c '.metadata.srs.json.id.code')
-fi
-
-#rm -rf database.tdb
-#silvimetric --database database.tdb \
-#    initialize \
-#    --bounds $bounds \
-#    --crs $crs \
-#    --metrics "silvimetric_metrics.py" \
-#    -a "Z" -a "Classification"
-
-#silvimetric -d database.tdb \
-#   --threads 2 \
-#   --workers 1 \
-#   shatter \
-#   --date 2008-12-01 \
-#   $2
-
-#silvimetric -d database.tdb extract -o $3
-
-#rm -rf database.tdb
-
-
-## BEGIN Ferry pipeline hacks ##
+## Ferry pipeline hack ##
 # Necessary because of https://github.com/hobuinc/silvimetric/issues/102
 
 cat > ferry.pipeline<< EOF
@@ -95,6 +67,15 @@ cat > ferry.pipeline<< EOF
 EOF
 
 pdal pipeline ferry.pipeline
+
+bounds=$(pdal info ferry.copc.laz --readers.copc.resolution=1 | jq -c '.stats.bbox.native.bbox')
+
+crs=$(pdal info --metadata ferry.copc.laz --readers.copc.resolution=10 | jq -c '.metadata.srs.json.components[0].id.code')
+
+# CRS fallback
+if [ -z "$crs" ] || [ "$crs" = "null" ]; then
+    crs=$(pdal info --metadata ferry.copc.laz --readers.copc.resolution=10 | jq -c '.metadata.srs.json.id.code')
+fi
 
 rm -rf database.tdb
 silvimetric --database database.tdb \
