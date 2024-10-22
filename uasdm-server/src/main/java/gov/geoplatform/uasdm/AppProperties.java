@@ -330,6 +330,6 @@ public class AppProperties
 
   public static String getKnowStacUrl()
   {
-    return Singleton.getProps().getString("knowstac.url", "https://localhost:8444/");
+    return Singleton.getProps().getString("knowstac.url", "http://localhost:8081/");
   }
 }
