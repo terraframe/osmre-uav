@@ -99,6 +99,8 @@ public class Product extends ProductBase implements ProductIF
   }
 
   public static final String  ODM_ALL_DIR               = "odm_all";
+  
+  public static final String  SILVIMETRIC_ORTHO_REGEX   = ".*\\/" + ImageryComponent.ORTHO + "\\/(tree_canopy_cover|tree_structure|ground_surface_model|terrain_model)" + CogTifProcessor.COG_EXTENSION.replaceAll("\\.", "\\\\.");
 
   public static final String  MAPPABLE_ORTHO_REGEX      = ".*\\/" + ImageryComponent.ORTHO + "\\/[^\\/]+" + CogTifProcessor.COG_EXTENSION.replaceAll("\\.", "\\\\.");
 
