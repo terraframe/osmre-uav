@@ -152,7 +152,8 @@ public class PointcloudController
       if (sRange != null) {
         List<Range> range = Range.decodeRange(sRange);
         
-        return new RemoteFileGetResponse(this.pService.download(request.getSessionId(), componentId, dataPath, range));
+        return new RemoteFileGetResponse(this.pService.download(request.getSessionId(), componentId, dataPath, range))
+            .setHeader("Cache-Control", "no-store"); // For some reason chrome is bugging out on copc rendering in potree
       } else {
         return new RemoteFileGetResponse(this.pService.download(request.getSessionId(), componentId, dataPath, true));
       }
