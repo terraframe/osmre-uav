@@ -27,6 +27,7 @@ import gov.geoplatform.uasdm.odm.EmptyFileSetException;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.processing.COPCConverterProcessor;
 import gov.geoplatform.uasdm.processing.CogTifProcessor;
+import gov.geoplatform.uasdm.processing.GdalPNGGenerator;
 import gov.geoplatform.uasdm.processing.SilvimetricProcessor;
 import gov.geoplatform.uasdm.processing.StatusMonitorIF;
 import gov.geoplatform.uasdm.processing.WorkflowTaskMonitor;
@@ -80,10 +81,13 @@ public class LidarProcessingTask extends LidarProcessingTaskBase
         File laz = lazList.get(0);
         
         COPCConverterProcessor processor = new COPCConverterProcessor(config, component, monitor);
-          
+        
         if (config.isGenerateGSM() || config.isGenerateTerrainModel() || config.isGenerateTreeCanopyCover() || config.isGenerateTreeStructure()) {
           processor.addDownstream(new SilvimetricProcessor(config, component, monitor)
-              .addDownstream(new CogTifProcessor(null, null, component, monitor)));
+              .addDownstream(new CogTifProcessor(null, null, component, monitor)
+                  .addDownstream(new GdalPNGGenerator(null, null, component, monitor))
+                  )
+              );
         }
         
         processor.process(new FileResource(laz));
@@ -103,7 +107,9 @@ public class LidarProcessingTask extends LidarProcessingTaskBase
         
         try (CloseableFile copc = op.get().download().openNewFile()) {
           new SilvimetricProcessor(config, component, monitor)
-              .addDownstream(new CogTifProcessor(null, null, component, monitor))
+              .addDownstream(new CogTifProcessor(null, null, component, monitor)
+                  .addDownstream(new GdalPNGGenerator(null, null, component, monitor))
+              )
               .process(new FileResource(copc));
         }
       }

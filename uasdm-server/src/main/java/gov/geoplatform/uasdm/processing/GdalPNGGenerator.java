@@ -54,7 +54,9 @@ public class GdalPNGGenerator extends ManagedDocument
 
     // gdal_translate -of PNG odm_orthophoto.tif test.png
 
-    boolean success = new SystemProcessExecutor(this.monitor).execute(new String[] {
+    boolean success = new SystemProcessExecutor(this.monitor)
+        .suppressError("Warning 6.*Defaulting to Byte")
+        .execute(new String[] {
         "gdal_translate", "-of", "PNG", file.getAbsolutePath(), png.getAbsolutePath()
     });
 

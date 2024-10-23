@@ -31,6 +31,7 @@ import com.runwaysdk.resource.FileResource;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class CogTifProcessor extends ManagedDocument
@@ -106,6 +107,11 @@ public class CogTifProcessor extends ManagedDocument
 
           if (new CogTifValidator(this.monitor).isValidCog(cogRes))
           {
+            if (this.downstream != null && this.downstream instanceof GdalPNGGenerator) {
+              ((S3FileUpload)this.downstream).setProduct(product);
+              ((S3FileUpload)this.downstream).setS3Path(ImageryComponent.ORTHO + "/" + cogRes.getBaseName() + ".png");
+            }
+            
             return super.process(cogRes);
           }
           else
