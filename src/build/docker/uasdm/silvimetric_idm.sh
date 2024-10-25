@@ -77,8 +77,13 @@ if [ -z "$crs" ] || [ "$crs" = "null" ]; then
     crs=$(pdal info --metadata ferry.copc.laz --readers.copc.resolution=10 | jq -c '.metadata.srs.json.id.code')
 fi
 
+# Display nice error messages if we couldn't calculate bounds or CRS
 if [ -z "$crs" ] || [ "$crs" = "null" ]; then
 	echo "Error: Could not determine CRS (Coordinate Reference System) for supplied pointcloud." >&2
+	exit 1
+fi
+if [ -z "$bounds" ] || [ "$bounds" = "null" ]; then
+	echo "Error: Could not determine bounds for supplied pointcloud." >&2
 	exit 1
 fi
 
