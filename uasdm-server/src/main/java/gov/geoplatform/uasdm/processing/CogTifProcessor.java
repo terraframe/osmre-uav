@@ -77,6 +77,7 @@ public class CogTifProcessor extends ManagedDocument
       cmd.addAll(Arrays.asList(new String[] { "-r", "average", overview.getAbsolutePath(), "2", "4", "8", "16" }));
       if (!new SystemProcessExecutor(this.monitor)
           .setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath())
+          .setCommandName("gdaladdo")
           .execute(cmd.toArray(new String[0])))
       {
         String msg = "Problem occurred generating overview file. Cog generation failed for [" + this.getS3Path() + "].";
@@ -93,6 +94,7 @@ public class CogTifProcessor extends ManagedDocument
         cmd2.addAll(Arrays.asList(new String[] { overview.getAbsolutePath(), cog.getAbsolutePath(), "-of", "COG", "-co", "COMPRESS=LZW", "-co", "BIGTIFF=YES" }));
         if (!new SystemProcessExecutor(this.monitor)
             .setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath())
+            .setCommandName("gdal_translate")
             .execute(cmd2.toArray(new String[0])))
         {
           String msg = "Problem occurred generating cog file. Cog generation failed for [" + this.getS3Path() + "].";

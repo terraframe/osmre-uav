@@ -85,7 +85,7 @@ public class LidarProcessingTask extends LidarProcessingTaskBase
         if (config.isGenerateGSM() || config.isGenerateTerrainModel() || config.isGenerateTreeCanopyCover() || config.isGenerateTreeStructure()) {
           processor.addDownstream(new SilvimetricProcessor(config, component, monitor)
               .addDownstream(new CogTifProcessor(null, null, component, monitor)
-                  .addDownstream(new GdalPNGGenerator(null, null, component, monitor))
+//                  .addDownstream(new GdalPNGGenerator(null, null, component, monitor)) // PNG generation temporarily disabled because its generating black images sometimes
                   )
               );
         }
@@ -108,7 +108,7 @@ public class LidarProcessingTask extends LidarProcessingTaskBase
         try (CloseableFile copc = op.get().download().openNewFile()) {
           new SilvimetricProcessor(config, component, monitor)
               .addDownstream(new CogTifProcessor(null, null, component, monitor)
-                  .addDownstream(new GdalPNGGenerator(null, null, component, monitor))
+//                  .addDownstream(new GdalPNGGenerator(null, null, component, monitor)) // PNG generation temporarily disabled because its generating black images sometimes
               )
               .process(new FileResource(copc));
         }

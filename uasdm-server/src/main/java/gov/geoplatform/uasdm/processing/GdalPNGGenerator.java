@@ -59,6 +59,7 @@ public class GdalPNGGenerator extends ManagedDocument
     
     boolean success = new SystemProcessExecutor(this.monitor)
         .setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath())
+        .setCommandName("gdal_translate")
         .suppressError("Warning 6.*Defaulting to Byte")
         .execute(cmd.toArray(new String[0]));
 

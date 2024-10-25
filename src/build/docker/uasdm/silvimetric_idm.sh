@@ -37,7 +37,7 @@ def metrics() -> list[Metric]:
           return np.max(arr) - np.min(arr)
      def veg_density(arr: np.ndarray):
           if (len(arr) == 0): return 0
-          return float(len([x for x in arr if int(x) >= 3 and int(x) <= 5])) / float(len(arr))
+          return float(len([x for x in arr if int(x) >= 4 and int(x) <= 5])) / float(len(arr))
      m_diff = Metric('diff', np.float32, diff)
      m_veg_density = Metric('veg_density', np.float32, veg_density)
      return [m_diff, m_veg_density, Metrics["min"], Metrics["max"]]
@@ -75,6 +75,11 @@ crs=$(pdal info --metadata ferry.copc.laz --readers.copc.resolution=10 | jq -c '
 # CRS fallback
 if [ -z "$crs" ] || [ "$crs" = "null" ]; then
     crs=$(pdal info --metadata ferry.copc.laz --readers.copc.resolution=10 | jq -c '.metadata.srs.json.id.code')
+fi
+
+if [ -z "$crs" ] || [ "$crs" = "null" ]; then
+	echo "Error: Could not determine CRS (Coordinate Reference System) for supplied pointcloud." >&2
+	exit 1
 fi
 
 rm -rf database.tdb

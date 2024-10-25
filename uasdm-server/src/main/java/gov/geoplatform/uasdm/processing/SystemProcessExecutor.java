@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +46,8 @@ public class SystemProcessExecutor
   private Map<String, String> environment = new HashMap<String, String>();
   
   private List<String> suppressedErrors = new ArrayList<String>();
+  
+  private String commandName = null;
   
   public SystemProcessExecutor(StatusMonitorIF monitor)
   {
@@ -75,6 +78,12 @@ public class SystemProcessExecutor
   public int getExitCode()
   {
     return this.exitCode;
+  }
+  
+  public SystemProcessExecutor setCommandName(String cmd)
+  {
+    this.commandName = cmd;
+    return this;
   }
   
   public SystemProcessExecutor setEnvironment(String key, String value)
@@ -170,7 +179,15 @@ public class SystemProcessExecutor
     this.suppressErrors();
     if (this.getStdErr().length() > 0)
     {
-      String msg = "Invoking [" + String.join(" ", commands) + "] produced unexpected std error [" + this.getStdErr() + "].";
+      logger.error("Invoking [" + String.join(" ", commands) + "] produced unexpected std error [" + this.getStdErr() + "].");
+      
+      String cmd = commandName;
+      if (StringUtils.isBlank(cmd))
+      {
+        cmd = commands[0];
+      }
+      
+      String msg = "Unexpected error invoking " + cmd + " [" + this.getStdErr() + "].";
       if (this.monitor != null)
       {
         this.monitor.addError(msg);
