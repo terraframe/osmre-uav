@@ -20,8 +20,10 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +40,7 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
 
+import gov.geoplatform.uasdm.Area51DataTest;
 import gov.geoplatform.uasdm.InstanceTestClassListener;
 import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
 import gov.geoplatform.uasdm.TestConfig;
@@ -48,22 +51,23 @@ import gov.geoplatform.uasdm.mock.MockIndex;
 import gov.geoplatform.uasdm.mock.MockRemoteFileService;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.service.IndexService;
+import gov.geoplatform.uasdm.test.Area51DataSet;
 import gov.geoplatform.uasdm.util.FileTestUtils;
 import net.geoprism.GeoprismUser;
 
 @ContextConfiguration(classes = { TestConfig.class })
 @RunWith(SpringInstanceTestClassRunner.class)
-public class UploadArchiveTest implements InstanceTestClassListener
+public class UploadArchiveTest extends Area51DataTest implements InstanceTestClassListener
 {
-  // private static ProjectManagementService service;
-  //
-  // private static String siteId;
-  //
-  // private static String projectId1;
-  //
-  // private static String missionId1;
+  private Product              product;
 
-  private static String       collectionId1;
+  private Site                 site;
+
+  private Project              project;
+
+  private Mission              mission;
+
+  private Collection           collection;
 
   /**
    * The test user object
@@ -81,6 +85,40 @@ public class UploadArchiveTest implements InstanceTestClassListener
   private final static String PASSWORD     = "1234";
 
   private final static int    sessionLimit = 2;
+  
+  @Before
+  @Request
+  public void setUp()
+  {
+    testData.setUpInstanceData();
+    
+    RemoteFileFacade.setService(new MockRemoteFileService());
+    IndexService.setIndex(new MockIndex());
+
+    createSiteHierarchyTransaction();
+
+    site = (Site) Area51DataSet.SITE_AREA_51.getServerObject();
+    project = (Project) Area51DataSet.PROJECT_DREAMLAND.getServerObject();
+    mission = (Mission) Area51DataSet.MISSION_HAVE_DOUGHNUT.getServerObject();
+    collection = Area51DataSet.COLLECTION_FISHBED.getServerObject();
+    product = collection.getProducts().get(0);
+
+    testData.logIn();
+  }
+
+  @After
+  @Request
+  public void tearDown()
+  {
+    testData.logOut();
+
+    if (product != null)
+    {
+      product.delete();
+    }
+
+    testData.tearDownInstanceData();
+  }
 
   @Request
   public void beforeClassSetup() throws Exception
@@ -92,9 +130,8 @@ public class UploadArchiveTest implements InstanceTestClassListener
   }
 
   @Transaction
-  private static void createSiteHierarchyTransaction()
+  private void createSiteHierarchyTransaction()
   {
-
     try
     {
       // Create a new user
@@ -115,42 +152,6 @@ public class UploadArchiveTest implements InstanceTestClassListener
     {
       newUser = GeoprismUser.getByUsername(USERNAME);
     }
-
-    Bureau bureau = Bureau.getByKey("OSMRE");
-
-    Site site = new Site();
-    site.setName("Site_Unit_Test");
-    site.setFolderName("Site_Unit_Test");
-    site.setBureau(bureau);
-    site.applyWithParent(null);
-    // System.out.println("S3: "+site.getS3location());
-    // siteId = site.getOid();
-
-    Project project1 = new Project();
-    project1.setName("Project1");
-    project1.setFolderName("Project1");
-    project1.applyWithParent(site);
-    // System.out.println("S3: "+project1.getS3location());
-    // projectId1 = project1.getOid();
-
-    Project project2 = new Project();
-    project2.setName("Project2");
-    project2.setFolderName("Project2");
-    project2.applyWithParent(site);
-
-    Mission mission1 = new Mission();
-    mission1.setName("Mission1");
-    mission1.setFolderName("Mission1");
-    mission1.applyWithParent(project1);
-    // System.out.println("S3: "+mission1.getS3location());
-    // missionId1 = mission1.getOid();
-
-    Collection collection1 = new Collection();
-    collection1.setName("Collection1");
-    collection1.setFolderName("Collection1");
-    collection1.applyWithParent(mission1);
-    // System.out.println("S3: "+collection1.getS3location());
-    collectionId1 = collection1.getOid();
   }
 
   @Request
@@ -188,8 +189,6 @@ public class UploadArchiveTest implements InstanceTestClassListener
   @Request
   public void testZipArchive() throws URISyntaxException, IOException
   {
-    Collection collection = Collection.get(collectionId1);
-
     WorkflowTask task = new WorkflowTask();
     task.setGeoprismUser(newUser);
     task.setComponent(collection.getOid());
@@ -201,7 +200,7 @@ public class UploadArchiveTest implements InstanceTestClassListener
 
     final FileResource resource = new FileResource(file);
 
-    List<String> results = collection.uploadArchive(task, resource, "raw");
+    List<String> results = collection.uploadArchive(task, resource, "RAW", product);
 
     Assert.assertEquals(5, results.size());
 
@@ -214,8 +213,6 @@ public class UploadArchiveTest implements InstanceTestClassListener
   @Request
   public void testUploadUnknownUploadTarget() throws URISyntaxException, IOException
   {
-    Collection collection = Collection.get(collectionId1);
-
     WorkflowTask task = new WorkflowTask();
     task.setGeoprismUser(newUser);
     task.setComponent(collection.getOid());
@@ -227,15 +224,13 @@ public class UploadArchiveTest implements InstanceTestClassListener
 
     final FileResource resource = new FileResource(file);
 
-    collection.uploadArchive(task, resource, "RAW");
+    collection.uploadArchive(task, resource, "RAW", product);
   }
 
   @Test
   @Request
   public void testTarGzArchive() throws URISyntaxException, IOException
   {
-    Collection collection = Collection.get(collectionId1);
-
     WorkflowTask task = new WorkflowTask();
     task.setGeoprismUser(newUser);
     task.setComponent(collection.getOid());
@@ -247,7 +242,7 @@ public class UploadArchiveTest implements InstanceTestClassListener
 
     final FileResource resource = new FileResource(file);
 
-    List<String> results = collection.uploadArchive(task, resource, "raw");
+    List<String> results = collection.uploadArchive(task, resource, "raw", product);
 
     Assert.assertEquals(5, results.size());
 
@@ -260,8 +255,6 @@ public class UploadArchiveTest implements InstanceTestClassListener
   @Request
   public void testUploadOrtho() throws URISyntaxException
   {
-    Collection collection = Collection.get(collectionId1);
-
     WorkflowTask task = new WorkflowTask();
     task.setGeoprismUser(newUser);
     task.setComponent(collection.getOid());
@@ -273,7 +266,7 @@ public class UploadArchiveTest implements InstanceTestClassListener
 
     final FileResource resource = new FileResource(file);
 
-    List<String> results = collection.uploadArchive(task, resource, "ortho");
+    List<String> results = collection.uploadArchive(task, resource, "ortho", product);
 
     Assert.assertEquals(1, results.size());
 
@@ -286,8 +279,6 @@ public class UploadArchiveTest implements InstanceTestClassListener
   @Request
   public void testUploadDem() throws URISyntaxException
   {
-    Collection collection = Collection.get(collectionId1);
-
     WorkflowTask task = new WorkflowTask();
     task.setGeoprismUser(newUser);
     task.setComponent(collection.getOid());
@@ -299,7 +290,7 @@ public class UploadArchiveTest implements InstanceTestClassListener
 
     final FileResource resource = new FileResource(file);
 
-    List<String> results = collection.uploadArchive(task, resource, "dem");
+    List<String> results = collection.uploadArchive(task, resource, "dem", product);
 
     Assert.assertEquals(1, results.size());
 
@@ -312,8 +303,6 @@ public class UploadArchiveTest implements InstanceTestClassListener
   @Request
   public void testUploadPtcloud() throws URISyntaxException
   {
-    Collection collection = Collection.get(collectionId1);
-
     WorkflowTask task = new WorkflowTask();
     task.setGeoprismUser(newUser);
     task.setComponent(collection.getOid());
@@ -325,7 +314,7 @@ public class UploadArchiveTest implements InstanceTestClassListener
 
     final FileResource resource = new FileResource(file);
 
-    List<String> results = collection.uploadArchive(task, resource, "ptcloud");
+    List<String> results = collection.uploadArchive(task, resource, "ptcloud", product);
 
     Assert.assertEquals(1, results.size());
 

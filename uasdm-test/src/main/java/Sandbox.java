@@ -166,23 +166,23 @@ public class Sandbox
 //    IndexService.shutdown();
     
     
-    String statement = "SELECT FROM " + MdGraphClassDAO.getMdGraphClassDAO(ODMRun.CLASS).getDBClassName();
-    statement += " WHERE saved = :saved";
-    
-    GraphQuery<ODMRun> query = new GraphQuery<ODMRun>(statement);
-    query.setParameter("saved", true);
-    
-    List<ODMRun> results = query.getResults();
-    
-    System.out.println("Results size: " + results.size());
-    
-    for(ODMRun run : results) {
-      UasComponent component = run.getComponent();
-      
-      int items = RemoteFileFacade.getItemCount(component.getS3location() + Collection.ODM + "/" + run.getOid());
-      
-      System.out.println("Items for version " + component.getS3location() + " - " + run.getOid() + ": " + items);      
-    }
+//    String statement = "SELECT FROM " + MdGraphClassDAO.getMdGraphClassDAO(ODMRun.CLASS).getDBClassName();
+//    statement += " WHERE saved = :saved";
+//    
+//    GraphQuery<ODMRun> query = new GraphQuery<ODMRun>(statement);
+//    query.setParameter("saved", true);
+//    
+//    List<ODMRun> results = query.getResults();
+//    
+//    System.out.println("Results size: " + results.size());
+//    
+//    for(ODMRun run : results) {
+//      UasComponent component = run.getComponent();
+//      
+//      int items = RemoteFileFacade.getItemCount(component.getS3location() + Collection.ODM + "/" + run.getOid());
+//      
+//      System.out.println("Items for version " + component.getS3location() + " - " + run.getOid() + ": " + items);      
+//    }
   }
 //
   public static void testTika() throws Exception

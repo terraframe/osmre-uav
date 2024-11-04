@@ -279,4 +279,17 @@ public class MockRemoteFileService implements RemoteFileService
   {
     return null;
   }
+
+  @Override
+  public void copyFolder(String sourceKey, String sourceBucket, String destKey, String destBucket)
+  {
+    // TODO Auto-generated method stub
+  }
+
+  @Override
+  public String getUrl(String bucket, String key)
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }

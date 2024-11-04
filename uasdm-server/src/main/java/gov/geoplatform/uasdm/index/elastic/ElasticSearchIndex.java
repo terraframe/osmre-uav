@@ -83,7 +83,7 @@ import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 import net.geoprism.registry.conversion.LocalizedValueConverter;
 import net.geoprism.registry.model.ServerOrganization;
-import net.geoprism.spring.ApplicationContextHolder;
+import net.geoprism.spring.core.ApplicationContextHolder;
 
 public class ElasticSearchIndex implements Index
 {

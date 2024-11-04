@@ -323,7 +323,7 @@ abstract public class TestDataSet
 
       Collection collection = obj.getComponent().getServerObject();
 
-      Product product = Product.createIfNotExist(collection);
+      Product product = Product.createIfNotExist(collection, "test123");
 
       if (obj.getKey().startsWith(ImageryComponent.RAW))
       {

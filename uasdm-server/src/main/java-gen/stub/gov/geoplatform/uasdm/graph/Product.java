@@ -85,12 +85,11 @@ import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
 import gov.geoplatform.uasdm.service.IndexService;
-import gov.geoplatform.uasdm.service.business.KnowStacBusinessService;
 import gov.geoplatform.uasdm.service.request.IDMLabeledPropertyGraphSynchronizationService;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.ProductCriteria;
 import gov.geoplatform.uasdm.view.SiteObject;
-import net.geoprism.graph.GeoObjectTypeSnapshot;
+import net.geoprism.graph.GraphTypeSnapshot;
 import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphSynchronizationQuery;
@@ -98,10 +97,9 @@ import net.geoprism.graph.LabeledPropertyGraphType;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 import net.geoprism.rbac.RoleConstants;
 import net.geoprism.registry.model.ServerOrganization;
-import net.geoprism.registry.service.business.GeoObjectTypeSnapshotBusinessServiceIF;
 import net.geoprism.registry.service.business.HierarchyTypeSnapshotBusinessServiceIF;
 import net.geoprism.registry.service.business.LabeledPropertyGraphTypeVersionBusinessServiceIF;
-import net.geoprism.spring.ApplicationContextHolder;
+import net.geoprism.spring.core.ApplicationContextHolder;
 
 public class Product extends ProductBase implements ProductIF
 {
@@ -1122,7 +1120,7 @@ public class Product extends ProductBase implements ProductIF
 
     LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(criteria.getHierarchy());
     LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
-    HierarchyTypeSnapshot hierarchyType = service.getHierarchies(version).get(0);
+    GraphTypeSnapshot hierarchyType = service.getGraphSnapshots(version).get(0);
 
     SynchronizationEdge synchronizationEdge = SynchronizationEdge.get(version);
     MdEdge siteEdge = synchronizationEdge.getGraphEdge();

@@ -44,7 +44,7 @@ import net.geoprism.account.ExternalProfileQuery;
 import net.geoprism.account.GeoprismActorIF;
 import net.geoprism.registry.Organization;
 import net.geoprism.registry.service.business.AccountBusinessService;
-import net.geoprism.spring.ApplicationContextHolder;
+import net.geoprism.spring.core.ApplicationContextHolder;
 
 public class UserInfo extends UserInfoBase
 {

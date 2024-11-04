@@ -36,7 +36,7 @@ import net.geoprism.registry.lpg.adapter.RegistryConnectorBuilderIF;
 import net.geoprism.registry.lpg.adapter.RegistryConnectorFactory;
 import net.geoprism.registry.lpg.adapter.RegistryConnectorIF;
 import net.geoprism.registry.lpg.adapter.exception.HTTPException;
-import net.geoprism.spring.ApplicationContextHolder;
+import net.geoprism.spring.core.ApplicationContextHolder;
 
 public class LabeledPropertyGraphSynchronizationJob extends LabeledPropertyGraphSynchronizationJobBase
 {

@@ -24,18 +24,16 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONWriter;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.locationtech.jts.geom.Point;
+import org.springframework.test.context.ContextConfiguration;
 
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
-import org.locationtech.jts.geom.Point;
-import org.springframework.test.context.ContextConfiguration;
 
 import gov.geoplatform.uasdm.Area51DataTest;
 import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
@@ -44,6 +42,7 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.test.Area51DataSet;
+import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
@@ -112,19 +111,18 @@ public class UasComponentTest extends Area51DataTest
   @Request
   public void testGetArtifacts()
   {
-    JSONObject artifacts = collection.getArtifacts();
+    JSONArray artifacts = collection.getArtifacts();
+    JSONObject artifact = artifacts.getJSONObject(0);
+    
+    Assert.assertTrue(artifact.has(ImageryComponent.DEM));
+    Assert.assertTrue(artifact.has(ImageryComponent.ORTHO));
+    Assert.assertTrue(artifact.has(ImageryComponent.PTCLOUD));
 
-    Assert.assertTrue(artifacts.has(ImageryComponent.DEM));
-    Assert.assertTrue(artifacts.has(ImageryComponent.ORTHO));
-    Assert.assertTrue(artifacts.has(ImageryComponent.PTCLOUD));
+    Assert.assertEquals(0, artifact.getJSONObject(ImageryComponent.DEM).getJSONArray("items").length());
+    Assert.assertEquals(0, artifact.getJSONObject(ImageryComponent.PTCLOUD).getJSONArray("items").length());
 
-    Assert.assertEquals(0, artifacts.getJSONObject(ImageryComponent.DEM).getJSONArray("items").length());
-    Assert.assertEquals(0, artifacts.getJSONObject(ImageryComponent.PTCLOUD).getJSONArray("items").length());
-
-    JSONArray result = artifacts.getJSONObject(ImageryComponent.ORTHO).getJSONArray("items");
+    JSONArray result = artifact.getJSONObject(ImageryComponent.ORTHO).getJSONArray("items");
     Assert.assertEquals(1, result.length());
-
-    JSONObject artifact = result.getJSONObject(0);
 
     Assert.assertEquals(target.getOid(), artifact.getString("id"));
   }
@@ -133,7 +131,7 @@ public class UasComponentTest extends Area51DataTest
   @Request
   public void testRemoveArtifacts()
   {
-    collection.removeArtifacts(ImageryComponent.ORTHO, true);
+    collection.removeArtifacts(product, ImageryComponent.ORTHO, true);
 
     Assert.assertNull(Document.get(target.getOid()));
     Assert.assertNull(Document.get(image.getOid()));
@@ -287,39 +285,42 @@ public class UasComponentTest extends Area51DataTest
   @Request
   public void testGetDerivedProducts_Mission() throws IOException
   {
-    List<ProductIF> results = mission.getDerivedProducts(null, null);
+    List<ComponentProductDTO> results = mission.getDerivedProducts(null, null);
 
     Assert.assertEquals(1, results.size());
 
-    ProductIF result = results.get(0);
+    ComponentProductDTO result = results.get(0);
+    ProductIF product = result.getProducts().iterator().next();
 
-    Assert.assertEquals(product.getOid(), result.getOid());
+    Assert.assertEquals(this.product.getOid(), product.getOid());
   }
 
   @Test
   @Request
   public void testGetDerivedProducts_Project() throws IOException
   {
-    List<ProductIF> results = project.getDerivedProducts(null, null);
+    List<ComponentProductDTO> results = mission.getDerivedProducts(null, null);
 
     Assert.assertEquals(1, results.size());
 
-    ProductIF result = results.get(0);
+    ComponentProductDTO result = results.get(0);
+    ProductIF product = result.getProducts().iterator().next();
 
-    Assert.assertEquals(product.getOid(), result.getOid());
+    Assert.assertEquals(this.product.getOid(), product.getOid());
   }
 
   @Test
   @Request
   public void testGetDerivedProducts_Site() throws IOException
   {
-    List<ProductIF> results = site.getDerivedProducts(null, null);
+    List<ComponentProductDTO> results = site.getDerivedProducts(null, null);
 
     Assert.assertEquals(1, results.size());
 
-    ProductIF result = results.get(0);
+    ComponentProductDTO result = results.get(0);
+    ProductIF product = result.getProducts().iterator().next();
 
-    Assert.assertEquals(product.getOid(), result.getOid());
+    Assert.assertEquals(this.product.getOid(), product.getOid());
   }
 
   @Test

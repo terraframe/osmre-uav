@@ -54,6 +54,7 @@ import gov.geoplatform.uasdm.bus.LabeledPropertyGraphSynchronizationJob;
 import gov.geoplatform.uasdm.bus.LabeledPropertyGraphSynchronizationJobQuery;
 import gov.geoplatform.uasdm.service.business.IDMLabeledPropertyGraphSynchronizationBusinessService;
 import net.geoprism.graph.GeoObjectTypeSnapshot;
+import net.geoprism.graph.GraphTypeSnapshot;
 import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphType;
@@ -155,7 +156,7 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
     LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
     GeoObjectTypeSnapshot type = this.versionService.getRootType(version);
     MdVertex mdVertex = type.getGraphMdVertex();
-    HierarchyTypeSnapshot hierarchy = this.versionService.getHierarchies(version).get(0);
+    GraphTypeSnapshot hierarchy = this.versionService.getGraphSnapshots(version).get(0);
     MdEdge mdEdge = hierarchy.getGraphMdEdge();
 
     StringBuffer statement = new StringBuffer();
@@ -324,7 +325,7 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
   {
     JsonArray array = new JsonArray();
 
-    HierarchyTypeSnapshot hierarchy = this.versionService.getHierarchies(version).get(0);
+    GraphTypeSnapshot hierarchy = this.versionService.getGraphSnapshots(version).get(0);
     MdEdgeDAOIF mdEdge = MdEdgeDAO.get(hierarchy.getGraphMdEdgeOid());
 
     // List<VertexObject> children = parent.getChildren(mdEdge,

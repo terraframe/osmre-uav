@@ -40,7 +40,7 @@ import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
 import net.geoprism.registry.service.business.EmailBusinessServiceIF;
-import net.geoprism.spring.ApplicationContextHolder;
+import net.geoprism.spring.core.ApplicationContextHolder;
 import net.lingala.zip4j.exception.ZipException;
 
 public class ODMTaskProcessor

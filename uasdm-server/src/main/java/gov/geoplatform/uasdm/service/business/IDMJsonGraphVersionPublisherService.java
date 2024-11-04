@@ -15,28 +15,23 @@
  */
 package gov.geoplatform.uasdm.service.business;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.runwaysdk.query.OIterator;
-import com.runwaysdk.query.QueryFactory;
-import com.runwaysdk.system.metadata.MdEdge;
-import gov.geoplatform.uasdm.LPGGeometry;
-import gov.geoplatform.uasdm.LPGGeometryQuery;
-import net.geoprism.graph.HierarchyTypeSnapshot;
-import net.geoprism.registry.service.business.HierarchyTypeSnapshotBusinessServiceIF;
 import org.commongeoregistry.adapter.dataaccess.GeoObject;
 import org.commongeoregistry.adapter.dataaccess.LocalizedValue;
-import org.commongeoregistry.adapter.metadata.GeoObjectType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import com.runwaysdk.business.graph.VertexObject;
+import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.system.metadata.MdEdge;
 import com.runwaysdk.system.metadata.MdVertex;
 
+import gov.geoplatform.uasdm.LPGGeometry;
+import gov.geoplatform.uasdm.LPGGeometryQuery;
 import gov.geoplatform.uasdm.service.IndexService;
-import net.geoprism.registry.service.request.JsonGraphVersionPublisherService;
-import net.geoprism.registry.service.request.JsonGraphVersionPublisherServiceIF;
+import net.geoprism.registry.cache.ClassificationCache;
+import net.geoprism.registry.service.business.JsonGraphVersionPublisherService;
+import net.geoprism.registry.service.business.JsonGraphVersionPublisherServiceIF;
 
 @Service
 @Primary
@@ -62,9 +57,9 @@ public class IDMJsonGraphVersionPublisherService extends JsonGraphVersionPublish
   }
 
   @Override
-  protected VertexObject publish(State state, MdVertex mdVertex, GeoObject geoObject)
+  protected VertexObject publish(State state, MdVertex mdVertex, GeoObject geoObject, ClassificationCache classiCache)
   {
-    VertexObject object = super.publish(state, mdVertex, geoObject);
+    VertexObject object = super.publish(state, mdVertex, geoObject, classiCache);
 
     // Index the object in elastic search for full text look up
     IndexService.createDocument(state.synchronization, object);

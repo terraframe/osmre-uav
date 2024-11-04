@@ -38,7 +38,7 @@ public class MockIndex implements Index
 {
 
   public static enum IndexActionType {
-    CLEAR, DELETE_DOCUMENTS, DELETE_DOCUMENT, UPDATE_DOCUMENT, UPDATE_METADATA, UPDATE_COMPONENT, QUERY, CREATE_STAC, REMOVE_STAC, GET_TOTALS, GET_STAC
+    CLEAR, DELETE_DOCUMENTS, DELETE_DOCUMENT, UPDATE_DOCUMENT, UPDATE_METADATA, UPDATE_COMPONENT, QUERY, CREATE_STAC, REMOVE_STAC, GET_TOTALS, GET_STAC, DELETE_STAC_INDEX
   }
 
   public static class IndexAction
@@ -183,5 +183,11 @@ public class MockIndex implements Index
   public void deleteDocuments(LabeledPropertyGraphTypeVersion version)
   {
     this.actions.add(new IndexAction(IndexActionType.DELETE_DOCUMENTS, version));
+  }
+
+  @Override
+  public void deleteStacIndex()
+  {
+    this.actions.add(new IndexAction(IndexActionType.DELETE_STAC_INDEX));
   }
 }

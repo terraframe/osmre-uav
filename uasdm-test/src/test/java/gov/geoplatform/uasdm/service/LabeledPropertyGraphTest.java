@@ -33,13 +33,12 @@ import com.runwaysdk.system.metadata.MdEdge;
 import com.runwaysdk.system.metadata.MdVertex;
 
 import gov.geoplatform.uasdm.Area51DataTest;
-import gov.geoplatform.uasdm.InstanceTestClassListener;
 import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
 import gov.geoplatform.uasdm.TestConfig;
 import gov.geoplatform.uasdm.graph.SynchronizationEdge;
 import gov.geoplatform.uasdm.mock.MockRegistryConnectionBuilder;
-import gov.geoplatform.uasdm.test.Area51DataSet;
 import net.geoprism.graph.GeoObjectTypeSnapshot;
+import net.geoprism.graph.GraphTypeSnapshot;
 import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
@@ -99,7 +98,7 @@ public class LabeledPropertyGraphTest extends Area51DataTest
 
           Assert.assertEquals(11, vertices.size());
 
-          List<HierarchyTypeSnapshot> edges = this.vService.getHierarchies(version);
+          List<GraphTypeSnapshot> edges = this.vService.getGraphSnapshots(version);
 
           Assert.assertEquals(1, edges.size());
 
@@ -107,7 +106,7 @@ public class LabeledPropertyGraphTest extends Area51DataTest
           GeoObjectTypeSnapshot graphVertex = vertices.get(0);
           MdVertex mdVertex = graphVertex.getGraphMdVertex();
 
-          HierarchyTypeSnapshot graphEdge = edges.get(0);
+          GraphTypeSnapshot graphEdge = edges.get(0);
           MdEdge mdEdge = graphEdge.getGraphMdEdge();
 
           List<VertexObject> results = new GraphQuery<VertexObject>("SELECT FROM " + mdVertex.getDbClassName()).getResults();

@@ -62,7 +62,7 @@ import net.geoprism.registry.lpg.StrategyConfiguration;
 import net.geoprism.registry.lpg.TreeStrategyConfiguration;
 import net.geoprism.registry.model.ServerOrganization;
 import net.geoprism.registry.service.business.LabeledPropertyGraphTypeVersionBusinessServiceIF;
-import net.geoprism.spring.ApplicationContextHolder;
+import net.geoprism.spring.core.ApplicationContextHolder;
 
 public class Site extends SiteBase implements SiteIF
 {
@@ -143,7 +143,7 @@ public class Site extends SiteBase implements SiteIF
 
     MdVertex graphMdVertex = service.getRootType(version).getGraphMdVertex();
 
-    service.getHierarchies(version).forEach(hierarchy -> {
+    service.getGraphSnapshots(version).forEach(hierarchy -> {
       // MdEdge hierarchyEdge = hierarchy.getGraphMdEdge();
 
       StringBuffer sql = new StringBuffer();
