@@ -15,8 +15,8 @@
  */
 package gov.geoplatform.uasdm.chunk;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 
 public class ChunkManagerContextListener implements ServletContextListener
 {

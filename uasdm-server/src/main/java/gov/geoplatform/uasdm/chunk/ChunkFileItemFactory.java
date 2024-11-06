@@ -17,7 +17,7 @@ package gov.geoplatform.uasdm.chunk;
 
 import java.io.File;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.FileCleanerCleanup;
