@@ -1,24 +1,24 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.processing;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -72,11 +72,17 @@ public class CogTifProcessor extends ManagedDocument
 
     try
     {
-      var cmd = AppProperties.getCondaTool("gdaladdo");
+      SystemProcessExecutor executor = new SystemProcessExecutor(this.monitor);
+
+      if (AppProperties.isCondaEnabled())
+      {
+        executor.setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath());
+      }
+
+      List<String> cmd = AppProperties.isCondaEnabled() ? AppProperties.getCondaTool("gdaladdo") : new ArrayList<>(Arrays.asList(new String[] { "gdaladdo" }));
       cmd.addAll(Arrays.asList(new String[] { "-r", "average", overview.getAbsolutePath(), "2", "4", "8", "16" }));
-      if (!new SystemProcessExecutor(this.monitor)
-          .setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath())
-          .execute(cmd.toArray(new String[0])))
+
+      if (!executor.execute(cmd.toArray(new String[cmd.size()])))
       {
         String msg = "Problem occurred generating overview file. Cog generation failed for [" + this.getS3Path() + "].";
         logger.error(msg);
@@ -88,11 +94,10 @@ public class CogTifProcessor extends ManagedDocument
 
       try
       {
-        var cmd2 = AppProperties.getCondaTool("gdal_translate");
+        var cmd2 = AppProperties.isCondaEnabled() ? AppProperties.getCondaTool("gdal_translate") : new ArrayList<>(Arrays.asList("gdal_translate"));
         cmd2.addAll(Arrays.asList(new String[] { overview.getAbsolutePath(), cog.getAbsolutePath(), "-of", "COG", "-co", "COMPRESS=LZW", "-co", "BIGTIFF=YES" }));
-        if (!new SystemProcessExecutor(this.monitor)
-            .setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath())
-            .execute(cmd2.toArray(new String[0])))
+
+        if (!executor.execute(cmd2.toArray(new String[0])))
         {
           String msg = "Problem occurred generating cog file. Cog generation failed for [" + this.getS3Path() + "].";
           logger.error(msg);

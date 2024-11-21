@@ -190,7 +190,7 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
     StringBuffer s = new StringBuffer();
     s.append("SELECT FROM (");
     s.append(" TRAVERSE in('" + mdEdge.getDbClassName() + "') FROM :rid");
-    s.append(") WHERE $depth >= 1");
+    s.append(") WHERE $depth >= 0");
 
     GraphQuery<VertexObject> squery = new GraphQuery<VertexObject>(s.toString());
     squery.setParameter("rid", child.getRID());
