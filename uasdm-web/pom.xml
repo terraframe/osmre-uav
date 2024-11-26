@@ -29,7 +29,6 @@
   <name>UASDM Web</name>
 
   <properties>
-    <geoserver.version>2.14.2-custom</geoserver.version>
     <local.host>$${pageContext.request.contextPath}</local.host>
   </properties>
 
@@ -61,15 +60,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-<!--
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>geoserver</artifactId>
-      <version>${geoserver.version}</version>
-      <type>war</type>
-      <scope>provided</scope>
-    </dependency>
--->    
     <dependency>
 	    <groupId>jakarta.servlet.jsp.jstl</groupId>
 	    <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
@@ -150,16 +140,6 @@
                     <context>uasdm</context>
                   </properties>
                 </deployable>
-<!--
-                <deployable>
-                  <groupId>org.geoserver</groupId>
-                  <artifactId>geoserver</artifactId>
-                  <type>war</type>
-                  <properties>
-                    <context>geoserver</context>
-                  </properties>
-                </deployable>
--->                
               </deployables>
             </configuration>
             <executions>
