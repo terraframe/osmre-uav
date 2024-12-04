@@ -37,7 +37,7 @@ import net.geoprism.account.ExternalProfileQuery;
 import net.geoprism.account.GeoprismActorIF;
 import net.geoprism.account.LocaleSerializer;
 import net.geoprism.rbac.RoleConstants;
-import net.geoprism.spring.ApplicationContextHolder;
+import net.geoprism.spring.core.ApplicationContextHolder;
 
 public class IDMSessionService extends IDMSessionServiceBase
 {

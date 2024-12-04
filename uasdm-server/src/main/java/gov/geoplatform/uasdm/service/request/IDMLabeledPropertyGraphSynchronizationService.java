@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.service.request;
 
@@ -52,6 +52,7 @@ import com.runwaysdk.system.scheduler.JobHistoryQuery;
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.bus.LabeledPropertyGraphSynchronizationJob;
 import gov.geoplatform.uasdm.bus.LabeledPropertyGraphSynchronizationJobQuery;
+import gov.geoplatform.uasdm.service.business.IDMHierarchyTypeSnapshotBusinessService;
 import gov.geoplatform.uasdm.service.business.IDMLabeledPropertyGraphSynchronizationBusinessService;
 import net.geoprism.graph.GeoObjectTypeSnapshot;
 import net.geoprism.graph.HierarchyTypeSnapshot;
@@ -77,6 +78,9 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
   @Autowired
   private GeoObjectTypeSnapshotBusinessServiceIF                typeService;
 
+  @Autowired
+  private IDMHierarchyTypeSnapshotBusinessService               hierarchyService;
+
   @Request(RequestType.SESSION)
   public JsonObject roots(String sessionId, String oid, Boolean includeRoot)
   {
@@ -98,7 +102,7 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
     sql.append(" @rid,");
     sql.append(" @version,");
     sql.append(" @class,");
-    sql.append(" uuid,");
+    sql.append(" uid,");
     sql.append(" code,");
     sql.append(" oid,");
     sql.append(" lastUpdateDate,");
@@ -155,7 +159,7 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
     LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
     GeoObjectTypeSnapshot type = this.versionService.getRootType(version);
     MdVertex mdVertex = type.getGraphMdVertex();
-    HierarchyTypeSnapshot hierarchy = this.versionService.getHierarchies(version).get(0);
+    HierarchyTypeSnapshot hierarchy = this.hierarchyService.get(version).get(0);
     MdEdge mdEdge = hierarchy.getGraphMdEdge();
 
     StringBuffer statement = new StringBuffer();
@@ -201,7 +205,7 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
     // Remove the root object
     // TODO: Figure out a configurable way to determine if the root object
     // should be included or not
-    p.remove(0);
+    // p.remove(0);
 
     return p.stream().map(parent -> {
       MdVertexDAOIF parentVertex = (MdVertexDAOIF) parent.getMdClass();
@@ -265,7 +269,7 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
     sql.append(" @rid,");
     sql.append(" @version,");
     sql.append(" @class,");
-    sql.append(" uuid,");
+    sql.append(" uid,");
     sql.append(" code,");
     sql.append(" oid,");
     sql.append(" lastUpdateDate,");
@@ -275,10 +279,10 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
     sql.append(" createDate,");
     sql.append(" seq");
     sql.append(" FROM " + mdVertex.getDbClassName());
-    sql.append(" WHERE uuid = :uuid");
+    sql.append(" WHERE uid = :uid");
 
     GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(sql.toString(), new TreeMap<>(), VertexObjectDAO.class);
-    query.setParameter("uuid", uid);
+    query.setParameter("uid", uid);
 
     return query.getSingleResult();
   }
@@ -290,10 +294,10 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
     StringBuffer sql = new StringBuffer();
     sql.append("SELECT ST_AsGeoJSON(ST_Envelope(geometry)) AS envelope");
     sql.append(" FROM " + mdVertex.getDbClassName());
-    sql.append(" WHERE uuid = :uuid");
+    sql.append(" WHERE uid = :uid");
 
     GraphQuery<String> query = new GraphQuery<String>(sql.toString());
-    query.setParameter("uuid", uid);
+    query.setParameter("uid", uid);
 
     String result = query.getSingleResult();
 
@@ -324,7 +328,7 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
   {
     JsonArray array = new JsonArray();
 
-    HierarchyTypeSnapshot hierarchy = this.versionService.getHierarchies(version).get(0);
+    HierarchyTypeSnapshot hierarchy = this.hierarchyService.get(version).get(0);
     MdEdgeDAOIF mdEdge = MdEdgeDAO.get(hierarchy.getGraphMdEdgeOid());
 
     // List<VertexObject> children = parent.getChildren(mdEdge,
@@ -334,7 +338,7 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
     sql.append(" @rid,");
     sql.append(" @version,");
     sql.append(" @class,");
-    sql.append(" uuid,");
+    sql.append(" uid,");
     sql.append(" code,");
     sql.append(" oid,");
     sql.append(" lastUpdateDate,");

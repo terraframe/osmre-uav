@@ -28,7 +28,7 @@ import net.geoprism.registry.Organization;
 import net.geoprism.registry.OrganizationQuery;
 import net.geoprism.registry.cache.ServerOrganizationCache;
 import net.geoprism.registry.model.ServerOrganization;
-import net.geoprism.registry.service.request.CacheProviderIF;
+import net.geoprism.registry.service.business.CacheProviderIF;
 
 @Service
 public class ServerStartupListener implements ApplicationListener<ContextRefreshedEvent>

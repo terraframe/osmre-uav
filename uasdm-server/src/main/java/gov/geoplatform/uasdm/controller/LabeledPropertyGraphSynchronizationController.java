@@ -41,7 +41,7 @@ import com.google.gson.JsonParser;
 import gov.geoplatform.uasdm.service.request.IDMLabeledPropertyGraphSynchronizationService;
 import net.geoprism.registry.controller.RunwaySpringController;
 import net.geoprism.registry.service.request.LabeledPropertyGraphTypeVersionServiceIF;
-import net.geoprism.spring.JsonObjectDeserializer;
+import net.geoprism.spring.core.JsonObjectDeserializer;
 
 @RestController
 @Validated

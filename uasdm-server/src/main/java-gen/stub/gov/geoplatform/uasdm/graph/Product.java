@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -85,12 +85,11 @@ import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
 import gov.geoplatform.uasdm.service.IndexService;
-import gov.geoplatform.uasdm.service.business.KnowStacBusinessService;
+import gov.geoplatform.uasdm.service.business.IDMHierarchyTypeSnapshotBusinessService;
 import gov.geoplatform.uasdm.service.request.IDMLabeledPropertyGraphSynchronizationService;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.ProductCriteria;
 import gov.geoplatform.uasdm.view.SiteObject;
-import net.geoprism.graph.GeoObjectTypeSnapshot;
 import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphSynchronizationQuery;
@@ -98,10 +97,9 @@ import net.geoprism.graph.LabeledPropertyGraphType;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 import net.geoprism.rbac.RoleConstants;
 import net.geoprism.registry.model.ServerOrganization;
-import net.geoprism.registry.service.business.GeoObjectTypeSnapshotBusinessServiceIF;
 import net.geoprism.registry.service.business.HierarchyTypeSnapshotBusinessServiceIF;
 import net.geoprism.registry.service.business.LabeledPropertyGraphTypeVersionBusinessServiceIF;
-import net.geoprism.spring.ApplicationContextHolder;
+import net.geoprism.spring.core.ApplicationContextHolder;
 
 public class Product extends ProductBase implements ProductIF
 {
@@ -1119,10 +1117,11 @@ public class Product extends ProductBase implements ProductIF
   public static List<ComponentProductDTO> getProducts(ProductCriteria criteria)
   {
     LabeledPropertyGraphTypeVersionBusinessServiceIF service = ApplicationContextHolder.getBean(LabeledPropertyGraphTypeVersionBusinessServiceIF.class);
+    IDMHierarchyTypeSnapshotBusinessService hService = ApplicationContextHolder.getBean(IDMHierarchyTypeSnapshotBusinessService.class);
 
     LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(criteria.getHierarchy());
     LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
-    HierarchyTypeSnapshot hierarchyType = service.getHierarchies(version).get(0);
+    HierarchyTypeSnapshot hierarchyType = hService.get(version).get(0);
 
     SynchronizationEdge synchronizationEdge = SynchronizationEdge.get(version);
     MdEdge siteEdge = synchronizationEdge.getGraphEdge();
