@@ -1550,7 +1550,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       tiles: [
         protocol + "//" + host + EnvironmentUtil.getApiUrl() + "/api/labeled-property-graph-synchronization/tile?x={x}&y={y}&z={z}&config=" + encodeURIComponent(JSON.stringify(config))
       ],
-      promoteId: "uuid"
+      promoteId: "uid"
     });
 
     // Add the hierarchy polygon layer
@@ -1568,7 +1568,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         "all",
         [
           "==",
-          this.current.data.properties.uuid,
+          this.current.data.properties.uid,
           ["get", attribute]
         ]
       ],
@@ -1596,7 +1596,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         "all",
         [
           "==",
-          this.current.data.properties.uuid,
+          this.current.data.properties.uid,
           ["get", attribute]
         ]
       ],
@@ -1668,7 +1668,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.current = {
           type: SELECTION_TYPE.ROOT,
-          data: { properties: { uuid: resp.parent } },
+          data: { properties: { uid: resp.parent } },
           metadata: null,
           hierarchy: this.hierarchy.oid
         };
@@ -1680,7 +1680,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
           metadata.attributes = metadata.attributes.filter(attribute => {
             return (attribute.code == 'code'
               || (!attribute.isDefault
-                && attribute.code != 'uuid'));
+                && attribute.code != 'uid'));
           });
 
           this.metadataCache[metadata.code] = metadata;
@@ -1755,7 +1755,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             metadata.attributes = metadata.attributes.filter(attribute => {
               return (attribute.code == 'code'
                 || (!attribute.isDefault
-                  && attribute.code != 'uuid'));
+                  && attribute.code != 'uid'));
             });
 
             this.metadataCache[metadata.code] = metadata;

@@ -29,7 +29,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 
 import net.geoprism.EncodingFilter;
 import net.geoprism.registry.service.SessionFilter;
-import net.geoprism.spring.JsonExceptionHandler;
+import net.geoprism.spring.web.JsonExceptionHandler;
 
 @Configuration
 @EnableWebMvc
