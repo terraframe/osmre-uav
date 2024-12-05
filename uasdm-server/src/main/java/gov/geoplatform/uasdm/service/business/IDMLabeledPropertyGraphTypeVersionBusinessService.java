@@ -73,10 +73,11 @@ public class IDMLabeledPropertyGraphTypeVersionBusinessService extends LabeledPr
       edge.delete();
     }
 
-    super.delete(version);
-
-    IndexService.deleteDocuments(version);
     LPGGeometry.delete(version);
+    
+    super.delete(version);
+    
+    IndexService.deleteDocuments(version);
   }
 
   @Override

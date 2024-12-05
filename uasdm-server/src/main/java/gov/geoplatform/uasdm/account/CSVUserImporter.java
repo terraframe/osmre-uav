@@ -42,7 +42,7 @@ import net.geoprism.account.ExternalProfile;
 import net.geoprism.account.ExternalProfileQuery;
 import net.geoprism.registry.Organization;
 import net.geoprism.registry.service.business.AccountBusinessService;
-import net.geoprism.spring.ApplicationContextHolder;
+import net.geoprism.spring.core.ApplicationContextHolder;
 
 public class CSVUserImporter
 {

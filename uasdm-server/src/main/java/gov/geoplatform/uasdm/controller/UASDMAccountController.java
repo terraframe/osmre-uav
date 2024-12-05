@@ -58,8 +58,8 @@ import net.geoprism.rbac.RoleView;
 import net.geoprism.registry.controller.RunwaySpringController;
 import net.geoprism.registry.service.request.OrganizationServiceIF;
 import net.geoprism.registry.service.request.RoleServiceIF;
-import net.geoprism.spring.JsonArrayDeserializer;
-import net.geoprism.spring.JsonObjectDeserializer;
+import net.geoprism.spring.core.JsonArrayDeserializer;
+import net.geoprism.spring.core.JsonObjectDeserializer;
 
 @RestController
 @Validated

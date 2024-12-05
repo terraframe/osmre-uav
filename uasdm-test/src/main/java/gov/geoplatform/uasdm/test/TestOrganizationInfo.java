@@ -19,7 +19,7 @@ import org.commongeoregistry.adapter.dataaccess.LocalizedValue;
 
 import net.geoprism.registry.model.ServerOrganization;
 import net.geoprism.registry.service.business.OrganizationBusinessServiceIF;
-import net.geoprism.spring.ApplicationContextHolder;
+import net.geoprism.spring.core.ApplicationContextHolder;
 
 public class TestOrganizationInfo
 {

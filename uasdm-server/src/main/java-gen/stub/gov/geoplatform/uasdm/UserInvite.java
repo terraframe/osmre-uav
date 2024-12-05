@@ -35,7 +35,7 @@ import net.geoprism.GeoprismUser;
 import net.geoprism.registry.Organization;
 import net.geoprism.registry.service.business.AccountBusinessService;
 import net.geoprism.registry.service.business.EmailBusinessServiceIF;
-import net.geoprism.spring.ApplicationContextHolder;
+import net.geoprism.spring.core.ApplicationContextHolder;
 
 public class UserInvite extends UserInviteBase
 {

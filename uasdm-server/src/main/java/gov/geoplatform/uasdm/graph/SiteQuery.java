@@ -42,13 +42,14 @@ import com.runwaysdk.system.metadata.MdEdge;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.service.business.IDMHierarchyTypeSnapshotBusinessService;
 import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 import net.geoprism.registry.Organization;
 import net.geoprism.registry.model.ServerOrganization;
 import net.geoprism.registry.service.business.LabeledPropertyGraphTypeVersionBusinessServiceIF;
-import net.geoprism.spring.ApplicationContextHolder;
+import net.geoprism.spring.core.ApplicationContextHolder;
 
 public class SiteQuery
 {
@@ -416,10 +417,11 @@ public class SiteQuery
         String uid = hierarchy.getString("uid");
 
         LabeledPropertyGraphTypeVersionBusinessServiceIF service = ApplicationContextHolder.getBean(LabeledPropertyGraphTypeVersionBusinessServiceIF.class);
+        IDMHierarchyTypeSnapshotBusinessService hService = ApplicationContextHolder.getBean(IDMHierarchyTypeSnapshotBusinessService.class);
 
         LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(oid);
         LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
-        HierarchyTypeSnapshot hierarchyType = service.getHierarchies(version).get(0);
+        HierarchyTypeSnapshot hierarchyType = hService.get(version).get(0);
 
         SynchronizationEdge synchronizationEdge = SynchronizationEdge.get(version);
         MdEdge siteEdge = synchronizationEdge.getGraphEdge();
