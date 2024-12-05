@@ -62,7 +62,7 @@ public class LidarProcessConfiguration implements ProcessConfiguration
     this.generateGSM = false;
     this.generateTreeStructure = false;
     this.generateTerrainModel = false;
-    this.productName = Long.valueOf(System.currentTimeMillis()).toString();
+    this.productName = StringUtils.isBlank(outFileNamePrefix) ? Long.valueOf(System.currentTimeMillis()).toString() : outFileNamePrefix;
   }
 
   @Override

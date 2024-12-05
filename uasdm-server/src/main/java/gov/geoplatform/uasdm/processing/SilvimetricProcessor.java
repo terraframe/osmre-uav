@@ -144,7 +144,7 @@ public class SilvimetricProcessor extends ManagedDocument
             final Metric metric = Metric.fromSilvimetric(metricName);
             
             if (metric != null && metric.shouldGenerate(config)) {
-              this.product = Product.createIfNotExist(component, this.config.getProductName() + "_" + metric.getName());
+              this.product = (Product) component.createProductIfNotExist(this.config.getProductName() + "_" + metric.getName());
               
               this.s3Path = ImageryComponent.ORTHO + "/" + metric.getName() + ".tif";
               

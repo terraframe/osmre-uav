@@ -190,9 +190,9 @@
 <ng-template #lidarConfig>
   <ng-container *ngIf="processUpload">
     <div class="form-group">
-      <label for="productNamePrefix">Product name prefix</label>
-      <input [(ngModel)]="config.productNamePrefix" name="productNamePrefix" type="input" class="form-control"
-        placeholder="Prefix" required forbiddenName />
+      <label for="productName">Product name prefix</label>
+      <input [(ngModel)]="config.productName" name="productName" type="input" class="form-control"
+        placeholder="Prefix" forbiddenName />
     </div>
   </ng-container>
   <table style="width: 100%;">

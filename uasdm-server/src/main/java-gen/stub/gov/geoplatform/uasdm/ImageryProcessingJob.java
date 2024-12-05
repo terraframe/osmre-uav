@@ -150,6 +150,8 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       }
       catch (Throwable t)
       {
+        t.printStackTrace();
+        
         try
         {
           vfImageryZip.delete();
@@ -162,8 +164,6 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         task.setStatus(WorkflowTaskStatus.ERROR.toString());
         task.setMessage("An error occurred while uploading the imagery to S3. " + RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
         task.apply();
-
-        t.printStackTrace();
 
         logger.error("An error occurred while uploading the imagery to S3.", t);
 
@@ -208,7 +208,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
     if (!isValid)
     {
-      List<String> extensions = getSupportedExtensions(task.getUploadTarget());
+      List<String> extensions = getSupportedExtensions(task.getUploadTarget(), configuration);
 
       task.lock();
       task.setStatus(WorkflowTaskStatus.ERROR.toString());
@@ -449,7 +449,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     {
       if (!isMultispectral)
       {
-        List<String> extensions = getSupportedExtensions(task.getUploadTarget());
+        List<String> extensions = getSupportedExtensions(task.getUploadTarget(), configuration);
 
         task.lock();
         task.setStatus(WorkflowTaskStatus.ERROR.toString());
@@ -549,15 +549,13 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
                      // want to let them know we're renaming it.
       }
 
-      if (configuration.isODM())
+      if (configuration.isODM() || configuration.isLidar())
       {
-        List<String> extensions = getSupportedExtensions(uploadTarget);
+        List<String> extensions = getSupportedExtensions(uploadTarget, configuration);
 
-        ODMProcessConfiguration config = configuration.toODM();
-
-        if (isMultispectral)
+        if (configuration.isODM() && isMultispectral)
         {
-          if (! ( ( ext.equals("tif") || ext.equals("tiff") ) || ( filename.equalsIgnoreCase(config.getGeoLocationFileName()) && config.isIncludeGeoLocationFile() ) || ( filename.equalsIgnoreCase(config.getGroundControlPointFileName()) && config.isIncludeGroundControlPointFile() ) ))
+          if (! ( ( ext.equals("tif") || ext.equals("tiff") ) || ( filename.equalsIgnoreCase(configuration.toODM().getGeoLocationFileName()) && configuration.toODM().isIncludeGeoLocationFile() ) || ( filename.equalsIgnoreCase(configuration.toODM().getGroundControlPointFileName()) && configuration.toODM().isIncludeGroundControlPointFile() ) ))
           {
             task.createAction("Multispectral processing only supports .tif format. The file [" + filename + "] will be ignored.", TaskActionType.ERROR);
             return false;
@@ -565,19 +563,14 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         }
         else
         {
-          if (! ( extensions.contains(ext) || ( filename.equalsIgnoreCase(config.getGeoLocationFileName()) && config.isIncludeGeoLocationFile() ) || ( filename.equalsIgnoreCase(config.getGroundControlPointFileName()) && config.isIncludeGroundControlPointFile() ) ))
+          boolean isGeo = configuration.isODM() && ( filename.equalsIgnoreCase(configuration.toODM().getGeoLocationFileName()) && configuration.toODM().isIncludeGeoLocationFile() );
+          boolean isGcp = configuration.isODM() && ( filename.equalsIgnoreCase(configuration.toODM().getGroundControlPointFileName()) && configuration.toODM().isIncludeGroundControlPointFile() );
+          
+          if (! ( extensions.contains(ext) || isGeo || isGcp ))
           {
             task.createAction("The file [" + filename + "] is of an unsupported format and will be ignored. The following formats are supported: " + StringUtils.join(extensions, ", "), TaskActionType.ERROR);
             return false;
           }
-        }
-      }
-      else if (configuration.isLidar())
-      {
-        if (! ( ext.equals("las") || ext.equals("laz") ))
-        {
-          task.createAction("Lidar processing only supports .las and .laz format. The file [" + filename + "] will be ignored.", TaskActionType.ERROR);
-          return false;
         }
       }
     }
@@ -585,7 +578,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     return true;
   }
 
-  public static List<String> getSupportedExtensions(String uploadTarget)
+  public static List<String> getSupportedExtensions(String uploadTarget, ProcessConfiguration config)
   {
     if (uploadTarget.equals(ImageryComponent.DEM))
     {
@@ -604,7 +597,14 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       return Arrays.asList("mp4");
     }
 
-    return Arrays.asList("jpg", "jpeg", "png", "tif", "tiff");
+    if (config.isLidar())
+    {
+      return Arrays.asList(".las", ".laz");
+    }
+    else
+    {
+      return Arrays.asList("jpg", "jpeg", "png", "tif", "tiff");
+    }
   }
 
   private static boolean isMultispectral(AbstractWorkflowTask task)

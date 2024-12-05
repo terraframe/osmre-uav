@@ -207,7 +207,7 @@ public class ODMFacade
 
   private static ODMProcessingPayload filterTarGzArchive(ApplicationResource archive, ODMProcessConfiguration configuration) throws IOException, CsvValidationException
   {
-    List<String> extensions = ImageryProcessingJob.getSupportedExtensions(ImageryComponent.RAW);
+    List<String> extensions = ImageryProcessingJob.getSupportedExtensions(ImageryComponent.RAW, configuration);
 
     CloseableFile parent = new CloseableFile(Files.createTempDir(), true);
     final ODMProcessingPayload payload = new ODMProcessingPayload(parent);
@@ -279,7 +279,7 @@ public class ODMFacade
 
   private static ODMProcessingPayload filterZipArchive(ApplicationResource archive, ODMProcessConfiguration configuration) throws IOException, CsvValidationException
   {
-    List<String> extensions = ImageryProcessingJob.getSupportedExtensions(ImageryComponent.RAW);
+    List<String> extensions = ImageryProcessingJob.getSupportedExtensions(ImageryComponent.RAW, configuration);
     CloseableFile parent = new CloseableFile(Files.createTempDir(), true);
     final ODMProcessingPayload payload = new ODMProcessingPayload(parent);
 

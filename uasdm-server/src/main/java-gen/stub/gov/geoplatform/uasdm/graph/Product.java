@@ -279,6 +279,15 @@ public class Product extends ProductBase implements ProductIF
     }
   }
 
+  /**
+   * WARNING
+   * This method does not create an associated metadata with the created product. All products must have metadata associated with them.
+   * You probably want to use component.createProductIfNotExist instead.
+   * 
+   * @param uasComponent
+   * @param productName
+   * @return
+   */
   public static Product createIfNotExist(UasComponentIF uasComponent, String productName)
   {
     Product product = find(uasComponent, productName);
@@ -302,6 +311,15 @@ public class Product extends ProductBase implements ProductIF
     return product;
   }
 
+  /**
+   * WARNING
+   * This method does not create an associated metadata with the created product. All products must have metadata associated with them.
+   * You probably want to use component.createProductIfNotExist instead.
+   * 
+   * @param uasComponent
+   * @param productName
+   * @return
+   */
   public static Product createIfNotExistOrThrow(UasComponentIF uasComponent, String productName)
   {
     Product product = find(uasComponent, productName);

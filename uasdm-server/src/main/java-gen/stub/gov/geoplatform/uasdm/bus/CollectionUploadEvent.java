@@ -210,7 +210,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     }
     else if (processUpload && ! ( uploadTarget.equals(ImageryComponent.RAW) || uploadTarget.equals(ImageryComponent.VIDEO) ))
     {
-      this.startOrthoProcessing(task, infile, configuration.getProductName());
+      this.startArtifactProcessing(task, infile, configuration.getProductName());
     }
 
     if (uploadedFiles.size() > 0)
@@ -356,7 +356,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     }
   }
 
-  public void startOrthoProcessing(WorkflowTask uploadTask, ApplicationFileResource infile, String productName)
+  public void startArtifactProcessing(WorkflowTask uploadTask, ApplicationFileResource infile, String productName)
   {
     UasComponentIF component = uploadTask.getComponentInstance();
 
