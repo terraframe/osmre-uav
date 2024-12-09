@@ -66,6 +66,8 @@ public class SiteItem implements TreeComponent
 
   public static String        SENSOR              = "sensor";
 
+  public static String        IS_LIDAR            = "isLidar";
+
   public static String        COLLECTION_DATE     = "collectionDate";
 
   public static String        COLLECTION_END_DATE = "collectionEndDate";
@@ -89,6 +91,8 @@ public class SiteItem implements TreeComponent
   private String              privilegeType;
 
   private Boolean             metadataUploaded;
+
+  private Boolean             isLidar;
 
   private Geometry            geometry;
 
@@ -350,6 +354,16 @@ public class SiteItem implements TreeComponent
     this.platform = platform;
   }
 
+  public Boolean getIsLidar()
+  {
+    return isLidar;
+  }
+
+  public void setIsLidar(Boolean isLidar)
+  {
+    this.isLidar = isLidar;
+  }
+
   public JSONObject toJSON()
   {
     Set<Entry<String, Object>> entries = this.values.entrySet();
@@ -365,6 +379,7 @@ public class SiteItem implements TreeComponent
     obj.put(OWNER_EMAIL, this.getOwnerEmail());
     obj.put(METADATA_UPLOADED, this.getMetadataUploaded());
     obj.put(PRIVILEGE_TYPE, this.getPrivilegeType());
+    obj.put(IS_LIDAR, this.getIsLidar());
     obj.put("hasAllZip", this.hasAllZip);
 
     if (this.getType().equals("Collection"))

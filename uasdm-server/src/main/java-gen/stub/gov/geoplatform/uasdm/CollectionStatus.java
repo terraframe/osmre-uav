@@ -81,7 +81,6 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
     JSONObject obj = new JSONObject();
     obj.put("label", component.getName());
     obj.put("collectionId", component.getOid());
-    obj.put("productId", this.getProductId());
 
     if (StringUtils.isNotBlank(this.getProductId()))
     {
@@ -89,6 +88,7 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
 
       if (product != null)
       {
+        obj.put("productId", this.getProductId());
         obj.put("productName", product.getProductName());
       }
       else

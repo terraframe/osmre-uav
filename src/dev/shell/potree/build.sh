@@ -19,7 +19,7 @@
 
 set -ex
 
-POTREE_VERSION=1.8
+POTREE_VERSION=1.8.2
 
 BASEDIR=$(dirname "$0")
 UASDM=$BASEDIR/../../../..

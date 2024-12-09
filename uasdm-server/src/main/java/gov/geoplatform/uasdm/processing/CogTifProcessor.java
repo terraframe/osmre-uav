@@ -29,7 +29,9 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.resource.ApplicationFileResource;
 import com.runwaysdk.resource.FileResource;
 
+import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class CogTifProcessor extends ManagedDocument
@@ -37,8 +39,6 @@ public class CogTifProcessor extends ManagedDocument
   public static final String COG_EXTENSION = ".cog.tif";
 
   private Logger             logger        = LoggerFactory.getLogger(CogTifProcessor.class);
-
-  private Processor          downstream    = null;
 
   public CogTifProcessor(String s3path, Product product, UasComponentIF component, StatusMonitorIF monitor)
   {
@@ -49,12 +49,6 @@ public class CogTifProcessor extends ManagedDocument
   protected ManagedDocumentTool getTool()
   {
     return ManagedDocumentTool.GDAL;
-  }
-
-  public CogTifProcessor addDownstream(Processor downstreamProcessor)
-  {
-    this.downstream = downstreamProcessor;
-    return this;
   }
 
   @Override
@@ -79,7 +73,12 @@ public class CogTifProcessor extends ManagedDocument
 
     try
     {
-      if (!new SystemProcessExecutor(this.monitor).execute(new String[] { "gdaladdo", "-r", "average", overview.getAbsolutePath(), "2", "4", "8", "16" }))
+      var cmd = AppProperties.getCondaTool("gdaladdo");
+      cmd.addAll(Arrays.asList(new String[] { "-r", "average", overview.getAbsolutePath(), "2", "4", "8", "16" }));
+      if (!new SystemProcessExecutor(this.monitor)
+          .setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath())
+          .setCommandName("gdaladdo")
+          .execute(cmd.toArray(new String[0])))
       {
         String msg = "Problem occurred generating overview file. Cog generation failed for [" + this.getS3Path() + "].";
         logger.error(msg);
@@ -91,17 +90,12 @@ public class CogTifProcessor extends ManagedDocument
 
       try
       {
-        // https://www.cogeo.org/developers-guide.html
-
-        // for GDAL versions below 3.1
-        // "gdal_translate", overview.getAbsolutePath(), cog.getAbsolutePath(),
-        // "-co", "COMPRESS=LZW", "-co", "TILED=YES", "-co",
-        // "COPY_SRC_OVERVIEWS=YES"
-        List<String> args = new LinkedList<>(Arrays.asList("gdal_translate", overview.getAbsolutePath(), cog.getAbsolutePath(), "-of", "COG", "-co", "COMPRESS=LZW"));
-        args.add("-co");
-        args.add("BIGTIFF=YES");
-
-        if (!new SystemProcessExecutor(this.monitor).execute(args.toArray(new String[args.size()])))
+        var cmd2 = AppProperties.getCondaTool("gdal_translate");
+        cmd2.addAll(Arrays.asList(new String[] { overview.getAbsolutePath(), cog.getAbsolutePath(), "-of", "COG", "-co", "COMPRESS=LZW", "-co", "BIGTIFF=YES" }));
+        if (!new SystemProcessExecutor(this.monitor)
+            .setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath())
+            .setCommandName("gdal_translate")
+            .execute(cmd2.toArray(new String[0])))
         {
           String msg = "Problem occurred generating cog file. Cog generation failed for [" + this.getS3Path() + "].";
           logger.error(msg);
@@ -115,17 +109,12 @@ public class CogTifProcessor extends ManagedDocument
 
           if (new CogTifValidator(this.monitor).isValidCog(cogRes))
           {
-            if (this.downstream == null)
-            {
-              return super.process(cogRes);
+            if (this.downstream != null && this.downstream instanceof GdalPNGGenerator) {
+              ((S3FileUpload)this.downstream).setProduct(product);
+              ((S3FileUpload)this.downstream).setS3Path(ImageryComponent.ORTHO + "/" + cogRes.getBaseName() + ".png");
             }
-            else
-            {
-              if (super.process(cogRes))
-              {
-                return this.downstream.process(cogRes);
-              }
-            }
+            
+            return super.process(cogRes);
           }
           else
           {

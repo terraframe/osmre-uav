@@ -155,9 +155,9 @@ public class StacTiTillerProxy extends TiTillerProxy
           parameters.put("asset_bidx", Arrays.asList(assets + "|" + String.valueOf(redIdx) + "," + String.valueOf(greenIdx) + "," + String.valueOf(blueIdx)));
           
           TitilerCogStatistics stats = this.getCogStatistics(document);
-          TitilerCogBandStatistic redStat = stats.getBandStatistic(redIdx);
-          TitilerCogBandStatistic greenStat = stats.getBandStatistic(greenIdx);
-          TitilerCogBandStatistic blueStat = stats.getBandStatistic(blueIdx);
+          TitilerCogBandStatistic redStat = stats.getBandStatistic(String.valueOf(redIdx));
+          TitilerCogBandStatistic greenStat = stats.getBandStatistic(String.valueOf(greenIdx));
+          TitilerCogBandStatistic blueStat = stats.getBandStatistic(String.valueOf(blueIdx));
           
           Double min = Math.min(redStat.getMin(), Math.min(greenStat.getMin(), blueStat.getMin()));
           Double max = Math.max(redStat.getMax(), Math.max(greenStat.getMax(), blueStat.getMax()));

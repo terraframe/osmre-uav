@@ -28,7 +28,6 @@ import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.model.CollectionIF;
-import gov.geoplatform.uasdm.model.ComponentWithAttributes;
 import gov.geoplatform.uasdm.model.CompositeComponent;
 import net.geoprism.account.GeoprismActorIF;
 
@@ -89,6 +88,7 @@ public class CollectionConverter extends Converter<CollectionIF>
       siteItem.setOwnerPhone(phoneNumber);
       siteItem.setOwnerEmail(emailAddress);
       siteItem.setMetadataUploaded(collection.getMetadataUploaded());
+      siteItem.setIsLidar(collection.isLidar());
 
       collection.getPrimaryProduct().ifPresent(product -> {
         siteItem.setHasAllZip(product.hasAllZip());

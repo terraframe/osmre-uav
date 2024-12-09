@@ -57,8 +57,11 @@ import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.lidar.LidarProcessConfiguration;
+import gov.geoplatform.uasdm.lidar.LidarProcessingTask;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
@@ -83,7 +86,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     super();
   }
 
-  public void handleUploadFinish(WorkflowTask task, String uploadTarget, ApplicationFileResource infile, Boolean processUpload, ODMProcessConfiguration configuration)
+  public void handleUploadFinish(WorkflowTask task, String uploadTarget, ApplicationFileResource infile, Boolean processUpload, ProcessConfiguration configuration)
   {
     // if (Session.getCurrentSession() != null)
     // {
@@ -96,6 +99,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     ProductIF product = null;
 
     task.lock();
+
     if (!uploadTarget.equals(ImageryComponent.RAW) && !uploadTarget.equals(ImageryComponent.VIDEO) && !uploadTarget.equals(ImageryComponent.GEOREF))
     {
       Optional<ProductIF> optional = component.getProduct(configuration.getProductName());
@@ -184,19 +188,29 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     // uploaded to s3
     if (processUpload && uploadTarget.equals(ImageryComponent.RAW) && ( !DevProperties.uploadRaw() || Util.hasImages(uploadedFiles) ))
     {
-      if (task.getProcessDem() || task.getProcessOrtho() || task.getProcessPtcloud())
+      if (configuration.isODM())
       {
-        startODMProcessing(infile, task, isMultispectral(component), configuration);
-
-        if (component instanceof CollectionIF)
+        if (task.getProcessDem() || task.getProcessOrtho() || task.getProcessPtcloud())
         {
-          calculateImageSize(infile, (CollectionIF) component);
+          startODMProcessing(infile, task, isMultispectral(component), configuration.toODM());
+
+          if (component instanceof CollectionIF)
+          {
+            calculateImageSize(infile, (CollectionIF) component);
+          }
+        }
+      }
+      else if (configuration.isLidar())
+      {
+        if (configuration.toLidar().hasProcess())
+        {
+          startLidarProcessing(infile, task, configuration.toLidar());
         }
       }
     }
     else if (processUpload && ! ( uploadTarget.equals(ImageryComponent.RAW) || uploadTarget.equals(ImageryComponent.VIDEO) ))
     {
-      this.startOrthoProcessing(task, infile, configuration.getProductName());
+      this.startArtifactProcessing(task, infile, configuration.getProductName());
     }
 
     if (uploadedFiles.size() > 0)
@@ -244,6 +258,26 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.initiate(infile, isMultispectral);
   }
 
+  private void startLidarProcessing(ApplicationFileResource infile, WorkflowTask uploadTask, LidarProcessConfiguration configuration)
+  {
+    UasComponentIF component = uploadTask.getComponentInstance();
+    
+    LidarProcessingTask task = new LidarProcessingTask();
+    task.setUploadId(uploadTask.getUploadId());
+    task.setComponent(component.getOid());
+    task.setGeoprismUser(this.getEventUser());
+    task.setStatus(ODMStatus.RUNNING.getLabel());
+    task.setProcessDem(uploadTask.getProcessDem());
+    task.setProcessOrtho(uploadTask.getProcessOrtho());
+    task.setProcessPtcloud(uploadTask.getProcessPtcloud());
+    task.setTaskLabel("Lidar processing for collection [" + component.getName() + "]");
+    task.setMessage("The point clouds uploaded to ['" + component.getName() + "'] are submitted for processing. Check back later for updates.");
+    task.setConfiguration(configuration);
+    task.apply();
+    
+    task.initiate(infile);
+  }
+  
   private void calculateImageSize(ApplicationFileResource resource, CollectionIF collection)
   {
     String name = FilenameUtils.getBaseName(resource.getName());
@@ -322,7 +356,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     }
   }
 
-  public void startOrthoProcessing(WorkflowTask uploadTask, ApplicationFileResource infile, String productName)
+  public void startArtifactProcessing(WorkflowTask uploadTask, ApplicationFileResource infile, String productName)
   {
     UasComponentIF component = uploadTask.getComponentInstance();
 

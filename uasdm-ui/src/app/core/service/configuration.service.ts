@@ -8,16 +8,18 @@ import { Configuration } from "@core/model/application";
 import { firstValueFrom } from "rxjs";
 import { environment } from "src/environments/environment";
 import EnvironmentUtil from '@core/utility/environment-util';
+const mapboxKey = 'pk.eyJ1IjoidGVycmFmcmFtZSIsImEiOiJjanZxNTFnaTYyZ2RuNDlxcmNnejNtNjN6In0.-kmlS8Tgb2fNc1NPb5rJEQ';
+
 
 @Injectable()
 export class ConfigurationService {
 
     configuration: Configuration;
-    
+
     context: string;
 
     constructor(private http: HttpClient) {
-		this.context = EnvironmentUtil.getApiUrl();
+        this.context = EnvironmentUtil.getApiUrl();
     }
 
     load(): Promise<Configuration> {
@@ -39,10 +41,10 @@ export class ConfigurationService {
     isKeycloakEnabled(): boolean {
         return this.getConfiguration().uasdmKeycloakEnabled;
     }
-    
+
     isRequireKeycloakLogin(): boolean {
-		return this.getConfiguration().uasdmRequireKeycloakLogin;
-	}
+        return this.getConfiguration().uasdmRequireKeycloakLogin;
+    }
 
     getAppDisclaimer(): string {
         return this.getConfiguration().uasAppDisclaimer;
@@ -51,4 +53,9 @@ export class ConfigurationService {
     getContextPath(): string {
         return this.getConfiguration().contextPath;
     }
+
+    getMapboxKey(): string {
+        return mapboxKey;
+    }
+
 }

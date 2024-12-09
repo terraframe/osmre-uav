@@ -46,6 +46,7 @@ import com.runwaysdk.session.Request;
 import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.model.InvalidRangeException;
 import gov.geoplatform.uasdm.model.Page;
+import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.remote.BasicFileMetadata;
@@ -90,10 +91,10 @@ public class ProjectManagementController
     return new RestBodyResponse(configuration);
   }
 
-  @Endpoint(url = "get-default-odm-run-config", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getDefaultODMRunConfig(ClientRequestIF request, @RequestParamter(name = "collectionId") String collectionId)
+  @Endpoint(url = "get-default-run-config", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF getDefaultRunConfig(ClientRequestIF request, @RequestParamter(name = "collectionId") String collectionId)
   {
-    String config = this.service.getDefaultODMRunConfig(request.getSessionId(), collectionId);
+    String config = this.service.getDefaultRunConfig(request.getSessionId(), collectionId);
 
     return new RestBodyResponse(config);
   }
@@ -102,6 +103,14 @@ public class ProjectManagementController
   public ResponseIF getODMRun(ClientRequestIF request, @RequestParamter(name = "taskId") String taskId) throws IOException
   {
     return new RestBodyResponse(service.getODMRunByTask(request.getSessionId(), taskId));
+  }
+
+  @Endpoint(url = "get-configuration-by-task", method = ServletMethod.GET, error = ErrorSerialization.JSON)
+  public ResponseIF getConfigurationByTask(ClientRequestIF request, @RequestParamter(name = "taskId") String taskId) throws IOException
+  {
+    ProcessConfiguration configuration = service.getConfigurationByTask(request.getSessionId(), taskId);
+
+    return new RestBodyResponse(configuration.toJson().toString());
   }
 
   @Endpoint(url = "get-children", method = ServletMethod.GET, error = ErrorSerialization.JSON)
@@ -180,7 +189,7 @@ public class ProjectManagementController
 
     return response;
   }
-  
+
   @Endpoint(url = "create-standalone-product-group", method = ServletMethod.POST, error = ErrorSerialization.JSON)
   public ResponseIF createStandaloneProductGroup(ClientRequestIF request, @RequestParamter(name = "productGroup") String productGroupJson)
   {
@@ -259,10 +268,10 @@ public class ProjectManagementController
     return new RemoteFileGetResponse(this.service.downloadReport(sessionId, colId, productName, folder));
   }
 
-  @Endpoint(url = "run-ortho", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF runOrtho(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "processPtcloud") Boolean processPtcloud, @RequestParamter(name = "processDem") Boolean processDem, @RequestParamter(name = "processOrtho") Boolean processOrtho, @RequestParamter(name = "configuration") String configuration)
+  @Endpoint(url = "run-process", method = ServletMethod.POST, error = ErrorSerialization.JSON)
+  public ResponseIF runProcess(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "configuration") String configuration)
   {
-    this.service.runOrtho(request.getSessionId(), id, processPtcloud, processDem, processOrtho, configuration);
+    this.service.runOrtho(request.getSessionId(), id, configuration);
 
     return new RestResponse();
   }
@@ -454,10 +463,10 @@ public class ProjectManagementController
   public ResponseIF setPrimaryProduct(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "productName") String productName)
   {
     this.service.setPrimaryProduct(request.getSessionId(), id, productName);
-    
+
     return new RestResponse();
   }
-  
+
   @Endpoint(url = "download", method = ServletMethod.GET, error = ErrorSerialization.JSON)
   public ResponseIF download(ClientRequestIF request, ServletRequestIF sRequest, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key)
   {

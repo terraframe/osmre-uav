@@ -1,0 +1,20 @@
+name: silvimetric
+channels:
+  - conda-forge
+dependencies:
+  - pip
+  - tiledb-py
+  - pdal
+  - python-pdal
+  - numpy
+  - shapely
+  - dask
+  - pyproj
+  - gdal
+  - scipy
+  - awscli
+  - websocket-client
+  - python-json-logger
+  - dill
+  - pandas
+  - lmoments3

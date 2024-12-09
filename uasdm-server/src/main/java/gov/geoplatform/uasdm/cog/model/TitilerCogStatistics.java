@@ -39,11 +39,20 @@ public class TitilerCogStatistics
     }
   }
   
-  public TitilerCogBandStatistic getBandStatistic(int bandNum)
+  public TitilerCogBandStatistic getBandStatistic(String band)
   {
     ObjectMapper objectMapper = new ObjectMapper();
     
-    JsonNode bandJson = json.get(String.valueOf(bandNum));
+    JsonNode bandJson = json.get(band);
+    
+    return objectMapper.convertValue(bandJson, TitilerCogBandStatistic.class);
+  }
+  
+  public TitilerCogBandStatistic getBandStatistic()
+  {
+    ObjectMapper objectMapper = new ObjectMapper();
+    
+    JsonNode bandJson = json.get(json.fieldNames().next());
     
     return objectMapper.convertValue(bandJson, TitilerCogBandStatistic.class);
   }

@@ -28,6 +28,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -67,11 +68,15 @@ import gov.geoplatform.uasdm.bus.ImageryUploadEvent;
 import gov.geoplatform.uasdm.bus.ImageryUploadEventQuery;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
+import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ProcessConfiguration;
+import gov.geoplatform.uasdm.model.ProcessConfiguration.ProcessType;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.view.RequestParserIF;
+import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
@@ -88,28 +93,29 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     super();
   }
 
-  public ODMProcessConfiguration getConfiguration()
+  public ProcessConfiguration getConfiguration()
   {
     String json = this.getConfigurationJson();
 
     if (!StringUtils.isEmpty(json))
     {
-      return ODMProcessConfiguration.parse(json);
+      return ProcessConfiguration.parse(json);
     }
 
     return new ODMProcessConfiguration();
   }
 
-  public void setConfiguration(ODMProcessConfiguration configuration)
+  public void setConfiguration(ProcessConfiguration configuration)
   {
     this.setConfigurationJson(configuration.toJson().toString());
   }
 
   public static JobHistory processFiles(RequestParserIF parser, File archive) throws FileNotFoundException
   {
+    ProcessConfiguration configuration = ProcessConfiguration.parse(parser);
+
     AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
     String ext = FilenameUtils.getExtension(archive.getName()).toLowerCase();
-    ODMProcessConfiguration configuration = ODMProcessConfiguration.parse(parser);
 
     try (CloseableFile newArchive = ( ext.endsWith("gz") || ext.endsWith("zip") ) ? validateArchive(archive, task, configuration) : validateFile(archive, task, configuration))
     {
@@ -123,10 +129,9 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
       VaultFile vfImageryZip = null;
 
-      try
+      try (FileInputStream istream = new FileInputStream(archive))
       {
-
-        vfImageryZip = VaultFile.createAndApply(parser.getFilename(), new FileInputStream(archive));
+        vfImageryZip = VaultFile.createAndApply(parser.getFilename(), istream);
         Boolean processUpload = parser.getProcessUpload();
 
         ImageryProcessingJob job = new ImageryProcessingJob();
@@ -136,7 +141,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         job.setUploadTarget(task.getUploadTarget());
         job.setProcessUpload(processUpload);
         job.setConfiguration(configuration);
-        job.setOutFileNamePrefix(configuration.getOutFileNamePrefix());
+        // job.setOutFileNamePrefix(configuration.getOutFileNamePrefix());
         job.apply();
 
         JobHistory history = job.start();
@@ -145,6 +150,8 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       }
       catch (Throwable t)
       {
+        t.printStackTrace();
+        
         try
         {
           vfImageryZip.delete();
@@ -157,8 +164,6 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         task.setStatus(WorkflowTaskStatus.ERROR.toString());
         task.setMessage("An error occurred while uploading the imagery to S3. " + RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
         task.apply();
-
-        t.printStackTrace();
 
         logger.error("An error occurred while uploading the imagery to S3.", t);
 
@@ -194,7 +199,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
   }
 
-  private static CloseableFile validateFile(File archive, AbstractUploadTask task, ODMProcessConfiguration configuration)
+  private static CloseableFile validateFile(File archive, AbstractUploadTask task, ProcessConfiguration configuration)
   {
     String filename = FilenameUtils.getName(archive.getName());
     String ext = FilenameUtils.getExtension(archive.getName());
@@ -203,7 +208,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
     if (!isValid)
     {
-      List<String> extensions = getSupportedExtensions(task.getUploadTarget());
+      List<String> extensions = getSupportedExtensions(task.getUploadTarget(), configuration);
 
       task.lock();
       task.setStatus(WorkflowTaskStatus.ERROR.toString());
@@ -235,7 +240,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
   }
 
-  private static CloseableFile validateArchive(File archive, AbstractUploadTask task, ODMProcessConfiguration configuration)
+  private static CloseableFile validateArchive(File archive, AbstractUploadTask task, ProcessConfiguration configuration)
   {
     final String ext = FilenameUtils.getExtension(archive.getName()).toLowerCase();
     final boolean isMultispectral = isMultispectral(task);
@@ -273,14 +278,17 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
                 filename = filename.replaceAll(UasComponentIF.DISALLOWED_FILENAME_REGEX, "_");
 
-                if (configuration.isIncludeGeoLocationFile() && filename.equals(configuration.getGeoLocationFileName()))
+                if (configuration.getType().equals(ProcessType.ODM))
                 {
-                  filename = "geo.txt";
-                }
+                  if (configuration.toODM().isIncludeGeoLocationFile() && filename.equals(configuration.toODM().getGeoLocationFileName()))
+                  {
+                    filename = "geo.txt";
+                  }
 
-                if (configuration.isIncludeGroundControlPointFile() && filename.equals(configuration.getGroundControlPointFileName()))
-                {
-                  filename = "gcp_list.txt";
+                  if (configuration.toODM().isIncludeGroundControlPointFile() && filename.equals(configuration.toODM().getGroundControlPointFileName()))
+                  {
+                    filename = "gcp_list.txt";
+                  }
                 }
 
                 if (filenameSet.contains(filename))
@@ -335,14 +343,17 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
                   filename = filename.replaceAll(UasComponentIF.DISALLOWED_FILENAME_REGEX, "_");
 
-                  if (configuration.isIncludeGeoLocationFile() && filename.equals(configuration.getGeoLocationFileName()))
+                  if (configuration.getType().equals(ProcessType.ODM))
                   {
-                    filename = "geo.txt";
-                  }
+                    if (configuration.toODM().isIncludeGeoLocationFile() && filename.equals(configuration.toODM().getGeoLocationFileName()))
+                    {
+                      filename = "geo.txt";
+                    }
 
-                  if (configuration.isIncludeGroundControlPointFile() && filename.equals(configuration.getGroundControlPointFileName()))
-                  {
-                    filename = "gcp_list.txt";
+                    if (configuration.toODM().isIncludeGroundControlPointFile() && filename.equals(configuration.toODM().getGroundControlPointFileName()))
+                    {
+                      filename = "gcp_list.txt";
+                    }
                   }
 
                   if (filenameSet.contains(filename))
@@ -384,11 +395,61 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       throw new InvalidZipException(e);
     }
 
+    if (hasFiles && configuration.isLidar() && task.getUploadTarget().equals(ImageryComponent.RAW))
+    {
+      List<String> incomingFiles = filenameSet.stream().filter(f -> {
+        return f.toUpperCase().endsWith(".LAZ") || f.toUpperCase().endsWith(".LAS");
+      }).collect(Collectors.toList());
+
+      if (incomingFiles.size() > 1)
+      {
+        task.lock();
+        task.setStatus(WorkflowTaskStatus.ERROR.toString());
+        task.setMessage("The zip file contains more than a single point cloud file.  A Lidar collection can only have one raw point cloud.");
+        task.apply();
+
+        if (Session.getCurrentSession() != null)
+        {
+          NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
+        }
+
+        FileUtils.deleteQuietly(newZip);
+
+        return null;
+      }
+
+      UasComponent component = (UasComponent) task.getImageryComponent();
+
+      SiteObjectsResultSet resultSet = component.getSiteObjects(ImageryComponent.RAW, null, null);
+
+      List<String> existingFiles = resultSet.getObjects().stream().map(o -> o.getName()).filter(f -> {
+        return f.toUpperCase().endsWith(".LAZ") || f.toUpperCase().endsWith(".LAS");
+      }).filter(f -> !incomingFiles.contains(f)).collect(Collectors.toList());
+
+      if (existingFiles.size() > 0)
+      {
+        task.lock();
+        task.setStatus(WorkflowTaskStatus.ERROR.toString());
+        task.setMessage("The zip file contains a new point cloud file with a different name than an existing point cloud file.  A Lidar collection can only have one raw point cloud.");
+        task.apply();
+
+        if (Session.getCurrentSession() != null)
+        {
+          NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
+        }
+
+        FileUtils.deleteQuietly(newZip);
+
+        return null;
+      }
+
+    }
+
     if (!hasFiles)
     {
       if (!isMultispectral)
       {
-        List<String> extensions = getSupportedExtensions(task.getUploadTarget());
+        List<String> extensions = getSupportedExtensions(task.getUploadTarget(), configuration);
 
         task.lock();
         task.setStatus(WorkflowTaskStatus.ERROR.toString());
@@ -407,6 +468,8 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       {
         NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
       }
+
+      FileUtils.deleteQuietly(newZip);
 
       return null;
     }
@@ -462,7 +525,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     return true;
   }
 
-  private static boolean validateFile(String path, boolean isDirectory, boolean isMultispectral, AbstractUploadTask task, ODMProcessConfiguration configuration)
+  private static boolean validateFile(String path, boolean isDirectory, boolean isMultispectral, AbstractUploadTask task, ProcessConfiguration configuration)
   {
     String filename = FilenameUtils.getName(path);
     boolean isVideo = Util.isVideoFile(filename);
@@ -486,22 +549,28 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
                      // want to let them know we're renaming it.
       }
 
-      List<String> extensions = getSupportedExtensions(uploadTarget);
+      if (configuration.isODM() || configuration.isLidar())
+      {
+        List<String> extensions = getSupportedExtensions(uploadTarget, configuration);
 
-      if (isMultispectral)
-      {
-        if (! ( ( ext.equals("tif") || ext.equals("tiff") ) || ( filename.equalsIgnoreCase(configuration.getGeoLocationFileName()) && configuration.isIncludeGeoLocationFile() ) || ( filename.equalsIgnoreCase(configuration.getGroundControlPointFileName()) && configuration.isIncludeGroundControlPointFile() ) ))
+        if (configuration.isODM() && isMultispectral)
         {
-          task.createAction("Multispectral processing only supports .tif format. The file [" + filename + "] will be ignored.", TaskActionType.ERROR);
-          return false;
+          if (! ( ( ext.equals("tif") || ext.equals("tiff") ) || ( filename.equalsIgnoreCase(configuration.toODM().getGeoLocationFileName()) && configuration.toODM().isIncludeGeoLocationFile() ) || ( filename.equalsIgnoreCase(configuration.toODM().getGroundControlPointFileName()) && configuration.toODM().isIncludeGroundControlPointFile() ) ))
+          {
+            task.createAction("Multispectral processing only supports .tif format. The file [" + filename + "] will be ignored.", TaskActionType.ERROR);
+            return false;
+          }
         }
-      }
-      else
-      {
-        if (! ( extensions.contains(ext) || ( filename.equalsIgnoreCase(configuration.getGeoLocationFileName()) && configuration.isIncludeGeoLocationFile() ) || ( filename.equalsIgnoreCase(configuration.getGroundControlPointFileName()) && configuration.isIncludeGroundControlPointFile() ) ))
+        else
         {
-          task.createAction("The file [" + filename + "] is of an unsupported format and will be ignored. The following formats are supported: " + StringUtils.join(extensions, ", "), TaskActionType.ERROR);
-          return false;
+          boolean isGeo = configuration.isODM() && ( filename.equalsIgnoreCase(configuration.toODM().getGeoLocationFileName()) && configuration.toODM().isIncludeGeoLocationFile() );
+          boolean isGcp = configuration.isODM() && ( filename.equalsIgnoreCase(configuration.toODM().getGroundControlPointFileName()) && configuration.toODM().isIncludeGroundControlPointFile() );
+          
+          if (! ( extensions.contains(ext) || isGeo || isGcp ))
+          {
+            task.createAction("The file [" + filename + "] is of an unsupported format and will be ignored. The following formats are supported: " + StringUtils.join(extensions, ", "), TaskActionType.ERROR);
+            return false;
+          }
         }
       }
     }
@@ -509,7 +578,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     return true;
   }
 
-  public static List<String> getSupportedExtensions(String uploadTarget)
+  public static List<String> getSupportedExtensions(String uploadTarget, ProcessConfiguration config)
   {
     if (uploadTarget.equals(ImageryComponent.DEM))
     {
@@ -528,7 +597,14 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       return Arrays.asList("mp4");
     }
 
-    return Arrays.asList("jpg", "jpeg", "png", "tif", "tiff");
+    if (config.isLidar())
+    {
+      return Arrays.asList(".las", ".laz");
+    }
+    else
+    {
+      return Arrays.asList("jpg", "jpeg", "png", "tif", "tiff");
+    }
   }
 
   private static boolean isMultispectral(AbstractWorkflowTask task)
@@ -545,7 +621,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     }
   }
 
-  private void uploadToS3(VaultFile vfImageryZip, String uploadTarget, ODMProcessConfiguration configuration)
+  private void uploadToS3(VaultFile vfImageryZip, String uploadTarget, ProcessConfiguration configuration)
   {
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 

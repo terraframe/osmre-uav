@@ -23,9 +23,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.view.RequestParserIF;
 
-public class ODMProcessConfiguration
+public class ODMProcessConfiguration implements ProcessConfiguration
 {
   public static enum Quality {
     ULTRA("ultra"), HIGH("high"), MEDIUM("medium"), LOW("low"), LOWEST("lowest");
@@ -88,6 +89,12 @@ public class ODMProcessConfiguration
   public static final String     GROUND_CONTROL_POINT_FILE_NAME    = "GroundControlPointFileName";
 
   public static final String     PRODUCT_NAME                      = "productName";
+
+  public static final String     PROCESS_PT_CLOUD                  = "processPtcloud";
+
+  public static final String     PROCESS_DEM                       = "processDem";
+
+  public static final String     PROCESS_ORTHO                     = "processOrtho";
 
   private boolean                includeGeoLocationFile;
 
@@ -169,6 +176,12 @@ public class ODMProcessConfiguration
 
   private String                 productName;
 
+  private Boolean                processPtcloud;
+
+  private Boolean                processDem;
+
+  private Boolean                processOrtho;
+
   public ODMProcessConfiguration()
   {
     this("");
@@ -190,6 +203,12 @@ public class ODMProcessConfiguration
     this.includeGroundControlPointFile = false;
     this.groundControlPointFileName = "gcp_list.txt";
     this.productName = Long.valueOf(System.currentTimeMillis()).toString();
+  }
+
+  @Override
+  public ProcessType getType()
+  {
+    return ProcessType.ODM;
   }
 
   public String getProductName()
@@ -332,9 +351,41 @@ public class ODMProcessConfiguration
     this.pcQuality = pcQuality;
   }
 
+  public Boolean getProcessPtcloud()
+  {
+    return processPtcloud;
+  }
+
+  public void setProcessPtcloud(Boolean processPtcloud)
+  {
+    this.processPtcloud = processPtcloud;
+  }
+
+  public Boolean getProcessDem()
+  {
+    return processDem;
+  }
+
+  public void setProcessDem(Boolean processDem)
+  {
+    this.processDem = processDem;
+  }
+
+  public Boolean getProcessOrtho()
+  {
+    return processOrtho;
+  }
+
+  public void setProcessOrtho(Boolean processOrtho)
+  {
+    this.processOrtho = processOrtho;
+  }
+
+  @Override
   public JsonObject toJson()
   {
     JsonObject object = new JsonObject();
+    object.addProperty(TYPE, this.getType().name());
     object.addProperty(INCLUDE_GEO_LOCATION_FILE, this.includeGeoLocationFile);
     object.addProperty(GEO_LOCATION_FORMAT, this.geoLocationFormat.toString());
     object.addProperty(GEO_LOCATION_FILE_NAME, this.geoLocationFileName);
@@ -488,6 +539,36 @@ public class ODMProcessConfiguration
       }
     }
 
+    if (object.has(PROCESS_ORTHO))
+    {
+      JsonElement element = object.get(PROCESS_ORTHO);
+
+      if (!element.isJsonNull())
+      {
+        configuration.setProcessOrtho(object.get(PROCESS_ORTHO).getAsBoolean());
+      }
+    }
+
+    if (object.has(PROCESS_DEM))
+    {
+      JsonElement element = object.get(PROCESS_DEM);
+
+      if (!element.isJsonNull())
+      {
+        configuration.setProcessDem(object.get(PROCESS_DEM).getAsBoolean());
+      }
+    }
+
+    if (object.has(PROCESS_PT_CLOUD))
+    {
+      JsonElement element = object.get(PROCESS_PT_CLOUD);
+
+      if (!element.isJsonNull())
+      {
+        configuration.setProcessDem(object.get(PROCESS_PT_CLOUD).getAsBoolean());
+      }
+    }
+
     return configuration;
   }
 
@@ -571,7 +652,7 @@ public class ODMProcessConfiguration
     {
       configuration.setProductName(parser.getCustomParams().get(PRODUCT_NAME));
     }
-    
+
     return configuration;
   }
 }

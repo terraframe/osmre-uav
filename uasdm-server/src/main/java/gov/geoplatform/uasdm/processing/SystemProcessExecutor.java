@@ -18,8 +18,13 @@ package gov.geoplatform.uasdm.processing;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +43,12 @@ public class SystemProcessExecutor
   
   private int exitCode;
   
+  private Map<String, String> environment = new HashMap<String, String>();
+  
+  private List<String> suppressedErrors = new ArrayList<String>();
+  
+  private String commandName = null;
+  
   public SystemProcessExecutor(StatusMonitorIF monitor)
   {
     this.monitor = monitor;
@@ -46,6 +57,12 @@ public class SystemProcessExecutor
   public SystemProcessExecutor()
   {
     // When monitor is null, we will throw errors as exceptions.
+  }
+  
+  public SystemProcessExecutor suppressError(String errorRegex)
+  {
+    this.suppressedErrors.add(errorRegex);
+    return this;
   }
   
   public String getStdOut()
@@ -63,18 +80,34 @@ public class SystemProcessExecutor
     return this.exitCode;
   }
   
+  public SystemProcessExecutor setCommandName(String cmd)
+  {
+    this.commandName = cmd;
+    return this;
+  }
+  
+  public SystemProcessExecutor setEnvironment(String key, String value)
+  {
+    this.environment.put(key, value);
+    return this;
+  }
+  
   public boolean execute(String... commands)
   {
-    final Runtime rt = Runtime.getRuntime();
-
     this.stdOut = new StringBuffer();
     this.stdErr = new StringBuffer();
     
     this.exitCode = -1;
     
+    ProcessBuilder processBuilder = new ProcessBuilder();
+
+    processBuilder.command(commands);
+
+    processBuilder.environment().putAll(environment);
+    
     try
     {
-      Process process = rt.exec(commands);
+      Process process = processBuilder.start();
       
       BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
@@ -128,24 +161,33 @@ public class SystemProcessExecutor
     {
       if (this.monitor != null)
       {
-        this.monitor.addError("Interrupted when invoking system process. " + RunwayException.localizeThrowable(t, Locale.US));
+        this.monitor.addError("Interrupted while invoking [" + String.join(" ", commands) + "] " + RunwayException.localizeThrowable(t, Locale.US));
       }
       else
       {
         throw new RuntimeException(t);
       }
-      logger.info("Interrupted when invoking system process", t);
+      logger.info("Interrupted when invoking [" + String.join(" ", commands) + "]", t);
       return false;
     }
 
     if (this.getStdOut().length() > 0)
     {
-      logger.info("Invoked system process with output [" + stdOut.toString() + "].");
+      logger.info("Invoked [" + String.join(" ", commands) + "] with output [" + stdOut.toString() + "].");
     }
-
+    
+    this.suppressErrors();
     if (this.getStdErr().length() > 0)
     {
-      String msg = "Unexpected error invoking system process [" + this.getStdErr() + "].";
+      logger.error("Invoking [" + String.join(" ", commands) + "] produced unexpected std error [" + this.getStdErr() + "].");
+      
+      String cmd = commandName;
+      if (StringUtils.isBlank(cmd))
+      {
+        cmd = commands[0];
+      }
+      
+      String msg = "Unexpected error invoking " + cmd + " [" + this.getStdErr() + "].";
       if (this.monitor != null)
       {
         this.monitor.addError(msg);
@@ -159,6 +201,21 @@ public class SystemProcessExecutor
     }
     
     return exitCode == 0;
+  }
+  
+  private void suppressErrors()
+  {
+    String err = this.getStdErr();
+    
+    if (err.length() > 0)
+    {
+      for (String regex : this.suppressedErrors)
+      {
+        err = err.replaceAll(regex, "");
+      }
+      
+      this.stdErr = new StringBuffer(err.trim());
+    }
   }
   
 }

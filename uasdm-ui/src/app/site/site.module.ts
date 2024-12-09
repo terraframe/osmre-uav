@@ -65,7 +65,6 @@ import { ReportService } from './service/report.service';
 import { CreateCollectionModalComponent } from './component/modal/create-collection-modal.component';
 import { CreateStandaloneProductModalComponent } from './component/modal/create-standalone-product-group-modal.component';
 import { ArtifactPageComponent } from './component/modal/artifact-page.component';
-import { RunOrthoModalComponent } from './component/modal/run-ortho-modal.component';
 import { LayerPanelComponent } from './component/layer-panel/layer-panel.component';
 import { ArtifactUploadComponent } from './component/artifact-upload/artifact-upload.component';
 import { FilterModalComponent } from './component/modal/filter-modal.component';
@@ -75,6 +74,8 @@ import { UserAccessService } from './service/user-access.service';
 import { UserAccessModalComponent } from './component/modal/user-access-modal.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RunProcessModalComponent } from './component/modal/run-process-modal.component';
+import { ProcessRunModalComponent } from './component/modal/process-run-modal.component';
 
 @NgModule({
 	imports: [
@@ -107,7 +108,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 		UploadModalComponent,
 		ODMRunModalComponent,
 		ArtifactPageComponent,
-		RunOrthoModalComponent,
+		RunProcessModalComponent,
 		CollectionModalComponent,
 		AccessibleSupportModalComponent,
 		ProductModalComponent,
@@ -135,7 +136,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 		ArtifactUploadComponent,
 		CreateProductGroupModalComponent,
 		ShareProductModalComponent,
-		UserAccessModalComponent
+		UserAccessModalComponent,
+		ProcessRunModalComponent
 	],
 	providers: [
 		CanDeactivateGuardService,
@@ -152,7 +154,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 	],
 	entryComponents: [
 		FilterModalComponent,
-		RunOrthoModalComponent,
+		RunProcessModalComponent,
 		CreateCollectionModalComponent,
 		CreateStandaloneProductModalComponent,
 		UploadModalComponent,
@@ -164,7 +166,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 		ProductModalComponent,
 		CreateProductGroupModalComponent,
 		ShareProductModalComponent,
-		UserAccessModalComponent
+		UserAccessModalComponent,
+		ProcessRunModalComponent
 	]
 })
 export class SiteModule { }

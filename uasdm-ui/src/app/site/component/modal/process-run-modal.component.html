@@ -1,0 +1,169 @@
+<!--
+
+
+
+-->
+<div>
+	<div class="modal-body" tabindex="-1" role="dialog">
+
+		<div *ngIf="configuration" class="panel panel-default">
+			<div class="panel-heading">
+				Configuration
+			</div>
+			<div class="panel-body" style="padding:10px;" *ngIf="configuration.type === ProcessConfigType.ODM">
+				<div class="form-group">
+					<label for="outFileNamePrefix">Output Product Name Prefix</label>
+					<input [(ngModel)]="configuration.outFileNamePrefix" name="outFileNamePrefix" type="input"
+						class="form-control" placeholder="Output product name prefix..." disabled />
+				</div>
+
+				<div class="form-group">
+					<label for="resolution">Orthophoto and DEM Resolution (cm)</label>
+					<input [(ngModel)]="configuration.resolution" name="resolution" type="number" class="form-control"
+						placeholder="5" step="1" min="0" disabled />
+				</div>
+
+				<div class="form-group">
+					<label for="matcherNeighbors">Matcher Nieghbors</label>
+					<input [(ngModel)]="configuration.matcherNeighbors" name="matcherNeighbors" type="number"
+						class="form-control" placeholder="0" step="1" min="0" disabled />
+				</div>
+
+				<div class="form-group">
+					<label for="minNumFeatures">Minimum number of features to extract per image</label>
+					<input [(ngModel)]="configuration.minNumFeatures" name="minNumFeatures" type="number"
+						class="form-control" placeholder="10000" step="1" min="0" disabled />
+				</div>
+
+				<div class="form-group">
+					<label for="pcQuality">Generated point cloud quality</label>
+					<select [(ngModel)]="configuration.pcQuality" name="pcQuality" class="form-control" disabled>
+						<option value="ULTRA">ULTRA</option>
+						<option value="HIGH">HIGH</option>
+						<option value="MEDIUM">MEDIUM</option>
+						<option value="LOW">LOW</option>
+						<option value="LOWEST">LOWEST</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<label for="featureQuality">Generated feature quality</label>
+					<select [(ngModel)]="configuration.featureQuality" name="featureQuality" class="form-control"
+						disabled>
+						<option value="ULTRA">ULTRA</option>
+						<option value="HIGH">HIGH</option>
+						<option value="MEDIUM">MEDIUM</option>
+						<option value="LOW">LOW</option>
+						<option value="LOWEST">LOWEST</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<label for="radiometricCalibration">Radiometric Calibration</label>
+					<select [(ngModel)]="configuration.radiometricCalibration" name="radiometricCalibration"
+						class="form-control" disabled>
+						<option value="NONE">NONE</option>
+						<option value="CAMERA">CAMERA</option>
+						<option value="CAMERA_SUN">CAMERA+SUN</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<boolean-field [(value)]="configuration.includeGeoLocationFile"
+						label="Use geo location file when processing (if uploaded)" [disabled]="true"></boolean-field>
+				</div>
+
+				<div class="form-group" *ngIf="configuration.includeGeoLocationFile">
+					<label for="geoLocationFormat">Geo location file format</label>
+					<select [(ngModel)]="configuration.geoLocationFormat" name="geoLocationFormat" [disabled]="true"
+						class="form-control">
+						<option value="RX1R2">RX1R2</option>
+						<option value="ODM">ODM</option>
+					</select>
+				</div>
+
+				<div class="form-group" *ngIf="configuration.includeGeoLocationFile">
+					<label for="geoLocationFileName">Geo location file name</label>
+					<input [(ngModel)]="configuration.geoLocationFileName" [disabled]="true" name="geoLocationFileName"
+						type="input" class="form-control" placeholder="File name..." />
+				</div>
+
+				<div class="form-group">
+					<boolean-field [(value)]="configuration.includeGroundControlPointFile"
+						label="Use ground control point file when processing (if uploaded)"
+						[disabled]="true"></boolean-field>
+				</div>
+
+				<div class="form-group" *ngIf="configuration.includeGroundControlPointFile">
+					<label for="groundControlPointFileName">Ground control point file name</label>
+					<input [(ngModel)]="configuration.groundControlPointFileName" [disabled]="true"
+						name="groundControlPointFileName" type="input" class="form-control"
+						placeholder="File name..." />
+				</div>
+
+
+			</div>
+
+			<div class="panel-body" style="padding:10px;" *ngIf="configuration.type === ProcessConfigType.LIDAR">
+				<table style="width: 100%;">
+					<thead>
+						<th colspan="6">Type</th>
+						<th></th>
+					</thead>
+					<tr class="artifact-row">
+						<td colspan="6">Generate COPC</td>
+						<td>
+							<boolean-field [(value)]="configuration.generateCopc" label="Generate"
+								[disabled]="true"></boolean-field>
+						</td>
+					</tr>
+					<tr class="artifact-row">
+						<td colspan="6">Generate Tree canopy cover</td>
+						<td>
+							<boolean-field [(value)]="configuration.generateTreeCanopyCover" label="Generate"
+								[disabled]="true"></boolean-field>
+						</td>
+					</tr>
+					<tr class="artifact-row">
+						<td colspan="6">Generate ground surface model</td>
+						<td>
+							<boolean-field [(value)]="configuration.generateGSM" label="Generate"
+								[disabled]="true"></boolean-field>
+						</td>
+					</tr>
+					<!--
+					<tr class="artifact-row">
+						<td colspan="6">Generate tree structure</td>
+						<td>
+							<boolean-field [(value)]="configuration.generateTreeStructure" label="Generate"
+								[disabled]="true"></boolean-field>
+						</td>
+					</tr>
+					-->
+					<tr class="artifact-row">
+						<td colspan="6">Generate terrain model</td>
+						<td>
+							<boolean-field [(value)]="configuration.generateTerrainModel" label="Generate"
+								[disabled]="true"></boolean-field>
+						</td>
+					</tr>
+				</table>
+			</div>
+
+		</div>
+
+		<div class="modal-footer">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="btn-holder" style="text-align: right;">
+						<button type="button" (click)="close()" class="btn btn-default" role="button"
+							aria-disabled="false" style="padding: 4px 18px;">
+							<span class="ui-button-text">Close</span>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+</div>

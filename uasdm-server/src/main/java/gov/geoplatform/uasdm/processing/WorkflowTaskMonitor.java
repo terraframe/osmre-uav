@@ -85,13 +85,13 @@ public class WorkflowTaskMonitor implements StatusMonitorIF
   @Override
   public List<String> getErrors()
   {
-    return task.getActions().stream().filter(action -> TaskActionType.ERROR.getType().equals(action.getType())).map(action -> action.getDescription()).collect(Collectors.toList());
+    return task.getActions().stream().filter(action -> TaskActionType.ERROR.getType().equals(action.getActionType())).map(action -> action.getDescription()).collect(Collectors.toList());
   }
 
   @Override
   public List<String> getWarnings()
   {
-    return task.getActions().stream().filter(action -> TaskActionType.WARNING.getType().equals(action.getType())).map(action -> action.getDescription()).collect(Collectors.toList());
+    return task.getActions().stream().filter(action -> TaskActionType.WARNING.getType().equals(action.getActionType())).map(action -> action.getDescription()).collect(Collectors.toList());
   }
 
 }

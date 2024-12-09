@@ -4,7 +4,6 @@
 
 import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http';
-import { LngLatBounds } from 'mapbox-gl';
 import { Observable } from 'rxjs';
 
 // import 'rxjs/add/operator/toPromise';
@@ -14,7 +13,7 @@ import { AuthService } from '@shared/service/auth.service';
 import { EventService } from '@shared/service/event.service';
 import { HttpBackendClient } from '@shared/service/http-backend-client.service';
 
-import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet, TaskGroup, Selection, CollectionArtifacts, ODMRun, ODMRunConfig } from '../model/management';
+import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet, TaskGroup, Selection, CollectionArtifacts, ODMRun, ProcessConfig } from '../model/management';
 import { Sensor } from '../model/sensor';
 import { Platform } from '../model/platform';
 import { PageResult } from '@shared/model/page';
@@ -168,12 +167,12 @@ export class ManagementService {
 			.toPromise()
 	}
 
-	getDefaultODMRunConfig(collectionId: string): Promise<ODMRunConfig> {
+	getDefaultRunConfig(collectionId: string): Promise<ProcessConfig> {
 		let params: HttpParams = new HttpParams();
 		params = params.set('collectionId', collectionId);
 
 		return this.http
-			.get<ODMRunConfig>(environment.apiUrl + '/project/get-default-odm-run-config', { params: params })
+			.get<ProcessConfig>(environment.apiUrl + '/project/get-default-run-config', { params: params })
 			.toPromise()
 	}
 
@@ -186,10 +185,19 @@ export class ManagementService {
 			.toPromise()
 	}
 
-	getODMRunByTask(taskId: string): Promise<ODMRun> {
+	getConfigurationByTask(taskId: string): Promise<ProcessConfig> {
 		let params: HttpParams = new HttpParams();
 		params = params.set('taskId', taskId);
 
+		return this.http
+			.get<ProcessConfig>(environment.apiUrl + '/project/get-configuration-by-task', { params: params })
+			.toPromise()
+	}
+
+	getODMRunByTask(taskId: string): Promise<ODMRun> {
+		let params: HttpParams = new HttpParams();
+		params = params.set('taskId', taskId);
+ 
 		return this.http
 			.get<ODMRun>(environment.apiUrl + '/project/get-odm-run-by-task', { params: params })
 			.toPromise()
@@ -248,7 +256,7 @@ export class ManagementService {
 			.toPromise()
 	}
 
-	runOrtho(id: string, processPtcloud: boolean, processDem: boolean, processOrtho: boolean, configuration: any): Promise<{ item: SiteEntity, attributes: AttributeType[] }> {
+	runProcess(id: string, configuration: ProcessConfig): Promise<{ item: SiteEntity, attributes: AttributeType[] }> {
 
 		let headers = new HttpHeaders({
 			'Content-Type': 'application/json'
@@ -258,14 +266,11 @@ export class ManagementService {
 
 		const params = {
 			id: id,
-			processPtcloud: processPtcloud,
-			processDem: processDem,
-			processOrtho: processOrtho,
 			configuration: JSON.stringify(configuration)
 		};
 
 		return this.http
-			.post<{ item: SiteEntity, attributes: AttributeType[] }>(environment.apiUrl + '/project/run-ortho', JSON.stringify(params), { headers: headers })
+			.post<{ item: SiteEntity, attributes: AttributeType[] }>(environment.apiUrl + '/project/run-process', JSON.stringify(params), { headers: headers })
 			.pipe(finalize(() => {
 				//				this.eventService.complete();
 			}))
@@ -704,7 +709,7 @@ export class ManagementService {
 			.toPromise()
 	}
 
-	getMetadataOptions( input: { collectionId?: string, productId?: string } ): Promise<MetadataResponse> {
+	getMetadataOptions(input: { collectionId?: string, productId?: string }): Promise<MetadataResponse> {
 
 		let params: HttpParams = new HttpParams();
 
