@@ -186,15 +186,15 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
 
   private JsonArray getParents(LabeledPropertyGraphTypeVersion version, MdEdge mdEdge, VertexObject child)
   {
-    return this.getAncestors(version, mdEdge, child).stream().map(o -> o.toJSON()).collect(JsonCollectors.toJsonArray());
+    return this.getAncestors(version, mdEdge, child, 1, false).stream().map(o -> o.toJSON()).collect(JsonCollectors.toJsonArray());
   }
 
-  public List<GeoObject> getAncestors(LabeledPropertyGraphTypeVersion version, MdEdge mdEdge, VertexObject child)
+  public List<GeoObject> getAncestors(LabeledPropertyGraphTypeVersion version, MdEdge mdEdge, VertexObject child, Integer depth, boolean includeRoot)
   {
     StringBuffer s = new StringBuffer();
     s.append("SELECT FROM (");
     s.append(" TRAVERSE in('" + mdEdge.getDbClassName() + "') FROM :rid");
-    s.append(") WHERE $depth >= 0");
+    s.append(") WHERE $depth >= " + depth);
 
     GraphQuery<VertexObject> squery = new GraphQuery<VertexObject>(s.toString());
     squery.setParameter("rid", child.getRID());
@@ -203,9 +203,10 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
     Collections.reverse(p);
 
     // Remove the root object
-    // TODO: Figure out a configurable way to determine if the root object
-    // should be included or not
-    // p.remove(0);
+    if (!includeRoot)
+    {
+      p.remove(0);
+    }
 
     return p.stream().map(parent -> {
       MdVertexDAOIF parentVertex = (MdVertexDAOIF) parent.getMdClass();

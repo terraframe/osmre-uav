@@ -918,7 +918,7 @@ public class Product extends ProductBase implements ProductIF
 
             HierarchyTypeSnapshot hierarchyType = hTypeService.get(version, graphType.getHierarchy());
 
-            List<StacLocation> operational = service.getAncestors(version, hierarchyType.getGraphMdEdge(), location).stream().map(org -> {
+            List<StacLocation> operational = service.getAncestors(version, hierarchyType.getGraphMdEdge(), location, 0, true).stream().map(org -> {
               return StacLocation.build(org.getUid(), org.getDisplayLabel().getValue());
             }).collect(Collectors.toList());
 
