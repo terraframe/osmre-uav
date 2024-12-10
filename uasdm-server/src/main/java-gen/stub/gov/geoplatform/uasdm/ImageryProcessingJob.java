@@ -599,7 +599,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
     if (config.isLidar())
     {
-      return Arrays.asList(".las", ".laz");
+      return Arrays.asList("las", "laz");
     }
     else
     {
