@@ -68,14 +68,15 @@ EOF
 
 pdal pipeline ferry.pipeline
 
-bounds=$(pdal info ferry.copc.laz --readers.copc.resolution=1 | jq -c '.stats.bbox.native.bbox')
+bounds=$(pdal info $2 --readers.copc.resolution=1 | jq -c '.stats.bbox.native.bbox')
 
-crs=$(pdal info --metadata ferry.copc.laz --readers.copc.resolution=10 | jq -c '.metadata.srs.json.components[0].id.code')
-
-# CRS fallback
-if [ -z "$crs" ] || [ "$crs" = "null" ]; then
-    crs=$(pdal info --metadata ferry.copc.laz --readers.copc.resolution=10 | jq -c '.metadata.srs.json.id.code')
-fi
+## Read the SRS from the input pointcloud
+crs=$(pdal info --metadata $2 | jq -r '.metadata.srs.json.wkt // 
+    .metadata.srs.wkt // 
+    .metadata.srs.prettywkt // 
+    .metadata.srs.compoundwkt // 
+    .metadata.srs.prettycompoundwkt // 
+    empty')
 
 # Display nice error messages if we couldn't calculate bounds or CRS
 if [ -z "$crs" ] || [ "$crs" = "null" ]; then
@@ -91,7 +92,7 @@ rm -rf database.tdb
 silvimetric --database database.tdb \
     initialize \
     --bounds $bounds \
-    --crs $crs \
+    --crs "$crs" \
     --metrics "silvimetric_metrics.py" \
     -a "Z" -a "UserData"
 

@@ -96,6 +96,9 @@ COPY silvimetric_idm.sh /opt/silvimetric/silvimetric_idm.sh
 RUN chmod +x /opt/silvimetric/silvimetric_idm.sh
 COPY dask_distributed.yml /root/.config/dask/distributed.yaml
 
+# Install IDM special tooling
+COPY idm_pdal_translate_copc.sh /opt/idm/idm_pdal_translate_copc.sh
+
 #Revert the working directory
 WORKDIR /usr/local/tomcat
 
