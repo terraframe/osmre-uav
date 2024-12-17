@@ -22,8 +22,10 @@ import java.util.Optional;
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
+import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 
+import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -79,7 +81,9 @@ public class ArtifactQuery implements SiteObjectDocumentQueryIF
     MdAttributeDAOIF mdAttribute = mdGraph.definesAttribute(Document.S3LOCATION);
 
     StringBuilder ql = new StringBuilder();
-    ql.append("SELECT FROM " + mdGraph.getDBClassName());
+    ql.append("SELECT FROM (");
+    ql.append(" SELECT EXPAND(OUT('" + MdEdgeDAO.getMdEdgeDAO(EdgeType.PRODUCT_HAS_DOCUMENT).getDBClassName() +  "')) FROM :rid");
+    ql.append(")");
     ql.append(" WHERE " + mdAttribute.getColumnName() + " LIKE :dem");
     ql.append(" OR " + mdAttribute.getColumnName() + " LIKE :ortho");
     ql.append(" OR " + mdAttribute.getColumnName() + " LIKE :ptcloud");
@@ -95,6 +99,7 @@ public class ArtifactQuery implements SiteObjectDocumentQueryIF
     }
 
     final GraphQuery<Document> query = new GraphQuery<Document>(ql.toString());
+    query.setParameter("rid", product.getRID());
     query.setParameter("dem", component.getS3location(product, ImageryComponent.DEM) + "%");
     query.setParameter("ortho", component.getS3location(product, ImageryComponent.ORTHO) + "%");
     query.setParameter("ptcloud", component.getS3location(product, ImageryComponent.PTCLOUD) + "%");
@@ -109,7 +114,9 @@ public class ArtifactQuery implements SiteObjectDocumentQueryIF
     MdAttributeDAOIF mdAttribute = mdGraph.definesAttribute(Document.S3LOCATION);
 
     StringBuilder ql = new StringBuilder();
-    ql.append("SELECT COUNT(*) FROM " + mdGraph.getDBClassName());
+    ql.append("SELECT COUNT(*) FROM (");
+    ql.append(" SELECT EXPAND(OUT('" + MdEdgeDAO.getMdEdgeDAO(EdgeType.PRODUCT_HAS_DOCUMENT).getDBClassName() +  "')) FROM :rid");
+    ql.append(")");    
     ql.append(" WHERE " + mdAttribute.getColumnName() + " LIKE :dem");
     ql.append(" OR " + mdAttribute.getColumnName() + " LIKE :ortho");
     ql.append(" OR " + mdAttribute.getColumnName() + " LIKE :ptcloud");
