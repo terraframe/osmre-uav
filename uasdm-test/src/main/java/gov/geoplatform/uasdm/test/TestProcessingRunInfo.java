@@ -33,8 +33,6 @@ import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
 
 public class TestProcessingRunInfo
 {
-  public static final String DEFAULT_PRODUCT_NAME = "DEFAULT";
-  
   public static int COUNTING_SEQUENCE = 0;
   
   protected TestUasComponentInfo component;
@@ -57,16 +55,6 @@ public class TestProcessingRunInfo
   
   public TestProcessingRunInfo(TestCollectionInfo component, ProcessType tool, TestProductInfo product)
   {
-    init(component, tool, DEFAULT_PRODUCT_NAME, product);
-  }
-
-  public TestProcessingRunInfo(TestCollectionInfo component, ProcessType tool, String productName, TestProductInfo product)
-  {
-    init(component, tool, productName, product);
-  }
-  
-  private void init(TestCollectionInfo component, ProcessType tool, String productName, TestProductInfo product)
-  {
     this.component = component;
     this.product = product;
     
@@ -78,7 +66,7 @@ public class TestProcessingRunInfo
       throw new UnsupportedOperationException(tool.name());
     }
     
-    this.config.setProductName(productName);
+    this.config.setProductName(product.getProductName());
   }
 
   public ODMRun apply()
@@ -90,6 +78,7 @@ public class TestProcessingRunInfo
 //  odmRun.setConfig(task.getConfigurationJson());
     odmRun.setRunStart(Date.from(dateFromSequence(constructSequence).atStartOfDay(ZoneId.systemDefault()).toInstant()));
     odmRun.setComponent(component);
+    odmRun.setConfig(this.config.toJson().toString());
     odmRun.apply();
     
     this.product.getServerInputDocuments().forEach(doc -> odmRun.addODMRunInputParent(doc).apply());
@@ -133,6 +122,12 @@ public class TestProcessingRunInfo
     return LocalDate.of(2000 + seq, 1, 1);
   }
   
+  /**
+   * The assumption here is that the start date is unique. This won't be true in production but we can make it true in our test harness.
+   * 
+   * @param runStart
+   * @return
+   */
   public static ODMRun getOdmRun(LocalDate runStart)
   {
     final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(ODMRun.CLASS);

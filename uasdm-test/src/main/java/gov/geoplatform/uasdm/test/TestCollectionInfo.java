@@ -19,6 +19,7 @@ import java.util.Date;
 
 import gov.geoplatform.uasdm.bus.AllPrivilegeType;
 import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.CollectionMetadata;
 import gov.geoplatform.uasdm.graph.UasComponent;
 
 public class TestCollectionInfo extends TestUasComponentInfo
@@ -83,7 +84,11 @@ public class TestCollectionInfo extends TestUasComponentInfo
   @Override
   public void apply()
   {
-    super.apply(this.mission);
+    var col = (Collection) super.apply(this.mission);
+    
+    CollectionMetadata metadata = new CollectionMetadata();
+    metadata.setUav(col.getUav());
+    metadata.applyWithCollection(col);
   }
   
   @Override
