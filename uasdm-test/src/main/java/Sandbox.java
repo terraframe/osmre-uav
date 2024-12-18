@@ -93,6 +93,7 @@ import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.index.elastic.ElasticSearchIndex;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.StacItem;
@@ -179,7 +180,7 @@ public class Sandbox
     for(ODMRun run : results) {
       UasComponent component = run.getComponent();
       
-      int items = RemoteFileFacade.getItemCount(component.getS3location() + Collection.ODM + "/" + run.getOid());
+      int items = RemoteFileFacade.getItemCount(component.getS3location() + ImageryComponent.ORTHO + "/" + run.getOid());
       
       System.out.println("Items for version " + component.getS3location() + " - " + run.getOid() + ": " + items);      
     }

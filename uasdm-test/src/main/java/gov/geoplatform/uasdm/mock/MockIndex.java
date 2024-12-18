@@ -184,4 +184,10 @@ public class MockIndex implements Index
   {
     this.actions.add(new IndexAction(IndexActionType.DELETE_DOCUMENTS, version));
   }
+
+  @Override
+  public void deleteStacIndex()
+  {
+    
+  }
 }

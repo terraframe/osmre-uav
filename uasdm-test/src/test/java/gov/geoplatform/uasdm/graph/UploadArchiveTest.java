@@ -20,9 +20,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -38,6 +36,7 @@ import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
 
+import gov.geoplatform.uasdm.Area51DataTest;
 import gov.geoplatform.uasdm.InstanceTestClassListener;
 import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
 import gov.geoplatform.uasdm.TestConfig;
@@ -48,12 +47,13 @@ import gov.geoplatform.uasdm.mock.MockIndex;
 import gov.geoplatform.uasdm.mock.MockRemoteFileService;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.service.IndexService;
+import gov.geoplatform.uasdm.test.Area51DataSet;
 import gov.geoplatform.uasdm.util.FileTestUtils;
 import net.geoprism.GeoprismUser;
 
 @ContextConfiguration(classes = { TestConfig.class })
 @RunWith(SpringInstanceTestClassRunner.class)
-public class UploadArchiveTest implements InstanceTestClassListener
+public class UploadArchiveTest extends Area51DataTest implements InstanceTestClassListener
 {
   // private static ProjectManagementService service;
   //
@@ -188,7 +188,7 @@ public class UploadArchiveTest implements InstanceTestClassListener
   @Request
   public void testZipArchive() throws URISyntaxException, IOException
   {
-    Collection collection = Collection.get(collectionId1);
+    Collection collection = Area51DataSet.COLLECTION_FISHBED.getServerObject();
 
     WorkflowTask task = new WorkflowTask();
     task.setGeoprismUser(newUser);
@@ -201,7 +201,7 @@ public class UploadArchiveTest implements InstanceTestClassListener
 
     final FileResource resource = new FileResource(file);
 
-    List<String> results = collection.uploadArchive(task, resource, "raw");
+    List<String> results = collection.uploadArchive(task, resource, "raw", Area51DataSet.PRODUCT.getServerObject());
 
     Assert.assertEquals(5, results.size());
 
@@ -214,7 +214,7 @@ public class UploadArchiveTest implements InstanceTestClassListener
   @Request
   public void testUploadUnknownUploadTarget() throws URISyntaxException, IOException
   {
-    Collection collection = Collection.get(collectionId1);
+    Collection collection = Area51DataSet.COLLECTION_FISHBED.getServerObject();
 
     WorkflowTask task = new WorkflowTask();
     task.setGeoprismUser(newUser);
@@ -227,14 +227,14 @@ public class UploadArchiveTest implements InstanceTestClassListener
 
     final FileResource resource = new FileResource(file);
 
-    collection.uploadArchive(task, resource, "RAW");
+    collection.uploadArchive(task, resource, "RAW", Area51DataSet.PRODUCT.getServerObject());
   }
 
   @Test
   @Request
   public void testTarGzArchive() throws URISyntaxException, IOException
   {
-    Collection collection = Collection.get(collectionId1);
+    Collection collection = Area51DataSet.COLLECTION_FISHBED.getServerObject();
 
     WorkflowTask task = new WorkflowTask();
     task.setGeoprismUser(newUser);
@@ -247,7 +247,7 @@ public class UploadArchiveTest implements InstanceTestClassListener
 
     final FileResource resource = new FileResource(file);
 
-    List<String> results = collection.uploadArchive(task, resource, "raw");
+    List<String> results = collection.uploadArchive(task, resource, "raw", Area51DataSet.PRODUCT.getServerObject());
 
     Assert.assertEquals(5, results.size());
 
@@ -260,7 +260,7 @@ public class UploadArchiveTest implements InstanceTestClassListener
   @Request
   public void testUploadOrtho() throws URISyntaxException
   {
-    Collection collection = Collection.get(collectionId1);
+    Collection collection = Area51DataSet.COLLECTION_FISHBED.getServerObject();
 
     WorkflowTask task = new WorkflowTask();
     task.setGeoprismUser(newUser);
@@ -273,7 +273,7 @@ public class UploadArchiveTest implements InstanceTestClassListener
 
     final FileResource resource = new FileResource(file);
 
-    List<String> results = collection.uploadArchive(task, resource, "ortho");
+    List<String> results = collection.uploadArchive(task, resource, "ortho", Area51DataSet.PRODUCT.getServerObject());
 
     Assert.assertEquals(1, results.size());
 
@@ -286,7 +286,7 @@ public class UploadArchiveTest implements InstanceTestClassListener
   @Request
   public void testUploadDem() throws URISyntaxException
   {
-    Collection collection = Collection.get(collectionId1);
+    Collection collection = Area51DataSet.COLLECTION_FISHBED.getServerObject();
 
     WorkflowTask task = new WorkflowTask();
     task.setGeoprismUser(newUser);
@@ -299,7 +299,7 @@ public class UploadArchiveTest implements InstanceTestClassListener
 
     final FileResource resource = new FileResource(file);
 
-    List<String> results = collection.uploadArchive(task, resource, "dem");
+    List<String> results = collection.uploadArchive(task, resource, "dem", Area51DataSet.PRODUCT.getServerObject());
 
     Assert.assertEquals(1, results.size());
 
@@ -312,7 +312,7 @@ public class UploadArchiveTest implements InstanceTestClassListener
   @Request
   public void testUploadPtcloud() throws URISyntaxException
   {
-    Collection collection = Collection.get(collectionId1);
+    Collection collection = Area51DataSet.COLLECTION_FISHBED.getServerObject();
 
     WorkflowTask task = new WorkflowTask();
     task.setGeoprismUser(newUser);
@@ -325,7 +325,7 @@ public class UploadArchiveTest implements InstanceTestClassListener
 
     final FileResource resource = new FileResource(file);
 
-    List<String> results = collection.uploadArchive(task, resource, "ptcloud");
+    List<String> results = collection.uploadArchive(task, resource, "ptcloud", Area51DataSet.PRODUCT.getServerObject());
 
     Assert.assertEquals(1, results.size());
 

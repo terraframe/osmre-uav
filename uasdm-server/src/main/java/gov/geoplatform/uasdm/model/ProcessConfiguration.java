@@ -21,6 +21,8 @@ public interface ProcessConfiguration
   public ProcessType getType();
 
   public String getProductName();
+  
+  public void setProductName(String productName);
 
   public JsonObject toJson();
 

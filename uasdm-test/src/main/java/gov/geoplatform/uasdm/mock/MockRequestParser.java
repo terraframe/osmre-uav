@@ -333,4 +333,10 @@ public class MockRequestParser implements RequestParserIF
     return 100;
   }
 
+  @Override
+  public String getProductName()
+  {
+    return null;
+  }
+
 }

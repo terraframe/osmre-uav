@@ -24,6 +24,7 @@ import gov.geoplatform.uasdm.graph.PlatformType;
 import gov.geoplatform.uasdm.graph.SensorType;
 import gov.geoplatform.uasdm.graph.WaveLength;
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ProcessConfiguration.ProcessType;
 
 public class Area51DataSet extends TestDataSet
 {
@@ -55,6 +56,10 @@ public class Area51DataSet extends TestDataSet
   public static final TestDocumentInfo     ORTHO_DOCUMENT        = new TestDocumentInfo(COLLECTION_FISHBED, ImageryComponent.ORTHO + "/test.cog.tif", "test.cog.tif");
 
   public static final TestDocumentInfo     IMAGE_DOCUMENT        = new TestDocumentInfo(COLLECTION_FISHBED, ImageryComponent.ORTHO + "/test.png", "test.png");
+  
+  public static final TestProductInfo      PRODUCT               = new TestProductInfo(COLLECTION_FISHBED, "fishbed_p1", new TestDocumentInfo[] {ORTHO_DOCUMENT, IMAGE_DOCUMENT}, RAW_DOCUMENT);
+  
+  public static final TestProcessingRunInfo ODM_RUN              = new TestProcessingRunInfo(COLLECTION_FISHBED, ProcessType.ODM, PRODUCT);
 
   {
     managedOrganizations.add(ORGANIZATION);
@@ -78,6 +83,10 @@ public class Area51DataSet extends TestDataSet
     managedDocuments.add(RAW_DOCUMENT);
     managedDocuments.add(ORTHO_DOCUMENT);
     managedDocuments.add(IMAGE_DOCUMENT);
+    
+    managedProducts.add(PRODUCT);
+    
+    managedProcessingRuns.add(ODM_RUN);
   }
 
   @Override

@@ -123,8 +123,7 @@ public class TestDocumentInfo
 
   public Document getServerObject()
   {
-    UasComponent collection = this.component.getServerObject();
-    String key = collection.getS3location() + this.key;
+    String key = this.component.getS3Location() + this.key;
 
     return Document.find(key);
   }

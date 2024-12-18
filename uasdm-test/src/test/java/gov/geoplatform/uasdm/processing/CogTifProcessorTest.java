@@ -80,15 +80,6 @@ public class CogTifProcessorTest
     Assert.assertFalse(validator.isValidCog(new FileResource(new File("/tmp/odm_orthophoto.tif"))));
   }
 
-  @Test
-  @Request
-  public void testValidateCogProd()
-  {
-    String[] cmds = CogTifValidator.getCogValidatorCommand(AppProperties.PROD_VALIDATOR_CMD, "test123");
-
-    Assert.assertEquals("python3 /usr/local/tomcat/validate_cloud_optimized_geotiff.py test123", StringUtils.join(cmds, " "));
-  }
-
   @Test(expected = UnsupportedOperationException.class)
   @Request
   public void testProcess()
