@@ -166,16 +166,11 @@ public class SiteQueryTest implements InstanceTestClassListener
   @Request
   public void testCollectionCondition()
   {
-    // TODO : No idea how this used to work
     // Create the bureau condition
-//    JSONObject bureau = new JSONObject();
-//    bureau.put("field", Collection.COLLECTIONDATE);
-//    bureau.put("value", Util.formatIso8601(collection.getCollectionDate(), false));
-    
     JSONObject bureau = new JSONObject();
-    bureau.put("field", "bureau");
-    bureau.put("value", site.getBureauOid());
-
+    bureau.put("field", Collection.COLLECTIONDATE);
+    bureau.put("value", Util.formatIso8601(collection.getCollectionDate(), false));
+    
     JSONArray array = new JSONArray();
     array.put(bureau);
 
@@ -272,16 +267,15 @@ public class SiteQueryTest implements InstanceTestClassListener
     bureau.put("field", "bureau");
     bureau.put("value", site.getBureauOid());
 
-    // TODO : I can't figure out how this ever worked
     // Create the bureau condition
-//    JSONObject collectionDate = new JSONObject();
-//    collectionDate.put("field", Collection.COLLECTIONDATE);
-//    collectionDate.put("value", Util.formatIso8601(collection.getCollectionDate(), false));
+    JSONObject collectionDate = new JSONObject();
+    collectionDate.put("field", Collection.COLLECTIONDATE);
+    collectionDate.put("value", Util.formatIso8601(collection.getCollectionDate(), false));
 
     JSONArray array = new JSONArray();
     // array.put(bounds);
     array.put(bureau);
-//    array.put(collectionDate);
+    array.put(collectionDate);
 
     JSONObject hierarchy = new JSONObject();
     hierarchy.put("oid", synchronization.getOid());

@@ -88,6 +88,8 @@ public class TestCollectionInfo extends TestUasComponentInfo
     
     CollectionMetadata metadata = new CollectionMetadata();
     metadata.setUav(col.getUav());
+    metadata.setSensor(col.getSensor());
+    metadata.setCollectionDate(this.getCollectionDate());
     metadata.applyWithCollection(col);
   }
   
