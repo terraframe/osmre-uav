@@ -20,10 +20,8 @@ import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -44,6 +42,8 @@ import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.mock.MockRemoteFileService;
 import gov.geoplatform.uasdm.mock.MockRemoteFileService.RemoteFileAction;
 import gov.geoplatform.uasdm.mock.MockRequestParser;
+import gov.geoplatform.uasdm.model.ProcessConfiguration;
+import gov.geoplatform.uasdm.model.ProcessConfiguration.ProcessType;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.service.WorkflowService;
 import gov.geoplatform.uasdm.test.Area51DataSet;
@@ -83,6 +83,7 @@ public class ImageryProcessingJobTest extends Area51DataTest
     String sessionId = testData.clientRequest.getSessionId();
 
     MockRequestParser parser = new MockRequestParser(collection.getOid());
+    parser.getCustomParams().put(ProcessConfiguration.TYPE, ProcessType.ODM.name());
 
     JSONObject job = new WorkflowService().createUploadTask(sessionId, parser);
     JSONObject task = job.getJSONObject("currentTask");

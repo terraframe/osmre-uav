@@ -27,6 +27,7 @@ import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.UasComponent;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 
 public class TestProductInfo
 {
@@ -38,24 +39,20 @@ public class TestProductInfo
   
   protected String productName;
   
-  protected List<TestDocumentInfo> outputs;
+  protected List<TestDocumentInfo> outputs = new ArrayList<TestDocumentInfo>();
   
-  protected List<TestDocumentInfo> inputs;
+  protected List<TestDocumentInfo> inputs = new ArrayList<TestDocumentInfo>();
   
-  public TestProductInfo(TestCollectionInfo component, TestDocumentInfo[] output, TestDocumentInfo... input)
+  public TestProductInfo(TestCollectionInfo component)
   {
     this.component = component;
     this.productName = COUNTING_SEQUENCE++ + "!@#" + DEFAULT_PRODUCT_NAME;
-    this.outputs = Arrays.asList(output);
-    this.inputs = Arrays.asList(input);
   }
 
-  public TestProductInfo(TestCollectionInfo component, String productName, TestDocumentInfo[] output, TestDocumentInfo... input)
+  public TestProductInfo(TestCollectionInfo component, String productName)
   {
     this.component = component;
     this.productName = productName;
-    this.outputs = Arrays.asList(output);
-    this.inputs = Arrays.asList(input);
   }
 
   public Product apply()
@@ -93,6 +90,11 @@ public class TestProductInfo
     this.productName = name;
   }
   
+  public String getS3location()
+  {
+    return ImageryComponent.PRODUCTS + "/" + this.getProductName() + "/";
+  }
+  
   public List<TestDocumentInfo> getInputDocuments()
   {
     return this.inputs;
@@ -105,16 +107,12 @@ public class TestProductInfo
   
   public List<Document> getServerInputDocuments()
   {
-    UasComponent collection = this.component.getServerObject();
-    
-    return this.inputs.stream().map(i -> Document.find(collection.getS3location() + i.getKey())).collect(Collectors.toList());
+    return this.inputs.stream().map(i -> i.getServerObject()).collect(Collectors.toList());
   }
   
   public List<Document> getServerOutputDocuments()
   {
-    UasComponent collection = this.component.getServerObject();
-    
-    return this.outputs.stream().map(i -> Document.find(collection.getS3location() + i.getKey())).collect(Collectors.toList());
+    return this.outputs.stream().map(i -> i.getServerObject()).collect(Collectors.toList());
   }
 
   public Product getServerObject()

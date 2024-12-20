@@ -24,7 +24,7 @@ public class TestProjectInfo extends TestUasComponentInfo
 
   public TestProjectInfo(String name, TestSiteInfo site)
   {
-    super(name, name, name, null);
+    super(name, name, site.getS3location() + name, null);
 
     this.site = site;
   }

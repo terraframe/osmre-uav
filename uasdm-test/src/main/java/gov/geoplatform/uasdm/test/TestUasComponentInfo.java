@@ -21,6 +21,8 @@ import java.util.List;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.session.Request;
+
+import org.apache.commons.lang.StringUtils;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -28,6 +30,8 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
 import gov.geoplatform.uasdm.graph.UasComponent;
+import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ProductIF;
 
 abstract public class TestUasComponentInfo
 {
@@ -49,8 +53,12 @@ abstract public class TestUasComponentInfo
   {
     this.name = name;
     this.folderName = folderName;
-    this.s3Location = s3Location;
     this.geoPoint = geoPoint;
+    
+    if (!s3Location.endsWith("/"))
+      s3Location = s3Location + "/";
+    
+    this.s3Location = s3Location;
   }
 
   public String getName()
@@ -110,13 +118,27 @@ abstract public class TestUasComponentInfo
   {
     this.geoPoint = wkt;
   }
+  
+  public String getS3location(TestProductInfo product, String folderOrFilename)
+  {
+    if (StringUtils.isBlank(folderOrFilename)) folderOrFilename = ImageryComponent.RAW;
+    
+    String ending = "";
+    if (!folderOrFilename.contains(".")) ending = "/";
+    
+    if (product == null) {
+      return this.getS3location() + folderOrFilename + ending;
+    }
 
-  public String getS3Location()
+    return this.getS3location() + product.getS3location() + folderOrFilename + ending;
+  }
+
+  public String getS3location()
   {
     return s3Location;
   }
 
-  public void setS3Location(String s3Location)
+  public void setS3location(String s3Location)
   {
     this.s3Location = s3Location;
   }
@@ -178,7 +200,7 @@ abstract public class TestUasComponentInfo
     
     component.setFolderName(this.getFolderName());
     
-    component.setS3location(this.getS3Location());
+    component.setS3location(this.getS3location());
     
     component.setDescription(this.getDescription());
     
