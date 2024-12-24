@@ -30,7 +30,7 @@ sudo mkdir -p /docker-tmp/test-results && sudo chmod -R 777 /docker-tmp/test-res
 
 ## Run any Docker containers that this program depends on ##
 sudo docker rm -f $(docker ps -a -q --filter="name=postgres") || true
-sudo docker run --name postgres -e POSTGRES_PASSWORD=postgres -d -p 5432:5432 mdillon/postgis:9.5
+sudo docker run --name postgres -e POSTGRES_PASSWORD=postgres -d -p 5432:5432 postgis/postgis:14-3.2
   
 sudo docker rm -f $(docker ps -a -q --filter="name=orientdb") || true
 sudo docker run -d --name orientdb -p 2424:2424 -p 2480:2480  -e ORIENTDB_ROOT_PASSWORD=root orientdb:3.2
@@ -52,6 +52,10 @@ ln -s uasdm-test/src/build/docker/.dockerignore .dockerignore
 
 ## Docker Build ##
 sudo docker build -t uasdm-test .
+
+## Database Build ##
+cd $WORKSPACE/uasdm/uasdm-server
+mvn install -B -P database -Ddb.clean=true -Ddatabase.port=5432 -Ddb.patch=false -Ddb.rootUser=postgres -Ddb.rootPass=postgres -Ddb.rootDb=postgres
 
 ## Docker Run ##
 set +e
