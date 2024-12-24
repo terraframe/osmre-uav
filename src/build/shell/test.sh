@@ -14,6 +14,10 @@
 # limitations under the License.
 #
 
+### The IDM test code intentionally looks quite a bit different than with GPR, and this is because it needs
+# to build its own Dockerfile in order to run. This is because it has a bunch of additional tools which
+# are required to function, and these tools must be built into a Docker image
+
 
 ## Hack to allow Jenkins to utilize test files which were created by a super user ##
 sudo rm -rf /docker-tmp || true
@@ -29,7 +33,7 @@ sudo docker rm -f $(docker ps -a -q --filter="name=orientdb") || true
 sudo docker run -d --name orientdb -p 2424:2424 -p 2480:2480  -e ORIENTDB_ROOT_PASSWORD=root orientdb:3.2
 
 sudo docker rm -f $(docker ps -a -q --filter="name=elasticsearch") || true
-#sysctl -w vm.max_map_count=262144
+sysctl -w vm.max_map_count=262144
 sudo docker run -d -p 9200:9200 -p 9300:9300 -e ES_JAVA_OPTS="-Xms512m -Xmx512m" -e ELASTIC_PASSWORD=elastic -e xpack.security.enabled=false -e discovery.type=single-node --name elasticsearch docker.elastic.co/elasticsearch/elasticsearch:8.3.2
 
 sudo docker rm -f $(docker ps -a -q --filter="name=uasdm-nodeodm") || true
