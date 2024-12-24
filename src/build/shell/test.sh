@@ -37,7 +37,7 @@ sudo docker run -d --name orientdb -p 2424:2424 -p 2480:2480  -e ORIENTDB_ROOT_P
 
 sudo docker rm -f $(docker ps -a -q --filter="name=elasticsearch") || true
 # sysctl -w vm.max_map_count=262144 # Only works on Ubuntu. Our host OS is currently AL2
-echo 262144 > /proc/sys/vm/max_map_count # Should be the equivalent command for AL2
+echo 262144 | sudo tee /proc/sys/vm/max_map_count > /dev/null # Should be the equivalent command for AL2
 sudo docker run -d -p 9200:9200 -p 9300:9300 -e ES_JAVA_OPTS="-Xms512m -Xmx512m" -e ELASTIC_PASSWORD=elastic -e xpack.security.enabled=false -e discovery.type=single-node --name elasticsearch docker.elastic.co/elasticsearch/elasticsearch:8.3.2
 
 sudo docker rm -f $(docker ps -a -q --filter="name=nodeodm") || true
