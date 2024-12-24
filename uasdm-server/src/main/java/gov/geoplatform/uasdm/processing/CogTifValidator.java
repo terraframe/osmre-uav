@@ -71,22 +71,19 @@ public class CogTifValidator
         
         if (exec.execute(cmd.toArray(new String[0])))
         {
-          if (!exec.getStdOut().contains("it is recommended to include internal overviews")) throw new RuntimeException(exec.getStdOut() + "\n" + exec.getStdErr());
           return !exec.getStdOut().contains("it is recommended to include internal overviews");
         }
         else
         {
-          throw new RuntimeException(exec.getStdOut() + "\n" + exec.getStdErr());
-//          return false;
+          return false;
         }
       }
     }
     catch(Throwable t)
     {
       logger.info("Error validating cog", t);
-      throw new RuntimeException(t);
     }
     
-//    return false;
+    return false;
   }
 }
