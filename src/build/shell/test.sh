@@ -55,7 +55,12 @@ sudo docker build -t uasdm-test .
 
 ## Database Build ##
 cd $WORKSPACE/uasdm/uasdm-server
-mvn install -B -P database -Ddb.clean=true -Ddatabase.port=5432 -Ddb.patch=false -Ddb.rootUser=postgres -Ddb.rootPass=postgres -Ddb.rootDb=postgres
+sudo -E docker run --name uasdm-test --rm --network=host \
+-e MAVEN_OPTS="-Xmx3500M -Xms256M -XX:+HeapDumpOnOutOfMemoryError" \
+-w /workspace/uasdm-server \
+--entrypoint mvn \
+uasdm-test \
+install -B -P database -Ddb.clean=true -Ddatabase.port=5432 -Ddb.patch=false -Ddb.rootUser=postgres -Ddb.rootPass=postgres -Ddb.rootDb=postgres
 
 ## Docker Run ##
 set +e
