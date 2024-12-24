@@ -37,6 +37,7 @@ RUN wget https://raw.githubusercontent.com/OSGeo/gdal/master/swig/python/gdal-ut
 
 # Copy the source in
 COPY uasdm-server $WORKSPACE/uasdm-server
+COPY uasdm-ui $WORKSPACE/uasdm-ui
 COPY uasdm-test $WORKSPACE/uasdm-test
 COPY uasdm-web $WORKSPACE/uasdm-web
 COPY envcfg $WORKSPACE/envcfg
