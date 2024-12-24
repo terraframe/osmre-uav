@@ -124,6 +124,7 @@ RUN sed -i -e "s/<Root level=\"error\">/<Root level=\"$LOG_LEVEL\">/g" $WORKSPAC
 RUN echo "appcfg=osmre-dev\nproject.basedir=$WORKSPACE" > $WORKSPACE/envcfg/envcfg.properties
 
 # Generate class files
+WORKDIR $WORKSPACE
 RUN mvn clean install -B
 
 RUN mkdir $WORKSPACE/bin
