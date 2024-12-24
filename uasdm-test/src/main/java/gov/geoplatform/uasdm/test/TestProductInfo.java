@@ -39,20 +39,24 @@ public class TestProductInfo
   
   protected String productName;
   
+  protected boolean isPrimary;
+  
   protected List<TestDocumentInfo> outputs = new ArrayList<TestDocumentInfo>();
   
   protected List<TestDocumentInfo> inputs = new ArrayList<TestDocumentInfo>();
   
-  public TestProductInfo(TestCollectionInfo component)
+  public TestProductInfo(TestCollectionInfo component, boolean isPrimary)
   {
     this.component = component;
+    this.isPrimary = isPrimary;
     this.productName = COUNTING_SEQUENCE++ + "!@#" + DEFAULT_PRODUCT_NAME;
   }
 
-  public TestProductInfo(TestCollectionInfo component, String productName)
+  public TestProductInfo(TestCollectionInfo component, String productName, boolean isPrimary)
   {
     this.component = component;
     this.productName = productName;
+    this.isPrimary = isPrimary;
   }
 
   public Product apply()
@@ -60,6 +64,11 @@ public class TestProductInfo
     UasComponent component = this.component.getServerObject();
     
     Product product = (Product) component.createProductIfNotExist(productName);
+    
+    if (isPrimary) {
+      product.setPrimary(isPrimary);
+      product.apply();
+    }
     
     List<Document> inDocs = new ArrayList<Document>();
     for (TestDocumentInfo obj : inputs)

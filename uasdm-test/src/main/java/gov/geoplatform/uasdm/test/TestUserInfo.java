@@ -18,6 +18,7 @@ package gov.geoplatform.uasdm.test;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.session.Request;
+import com.runwaysdk.system.SingleActor;
 
 import net.geoprism.GeoprismUser;
 import net.geoprism.GeoprismUserQuery;
@@ -49,7 +50,7 @@ public class TestUserInfo
   @Request
   public GeoprismUser apply()
   {
-    GeoprismUser user = this.getGeoprismUser();
+    GeoprismUser user = this.getServerObject();
     
     if (user != null)
     {
@@ -61,7 +62,7 @@ public class TestUserInfo
     }
   }
   
-  public GeoprismUser getGeoprismUser()
+  public GeoprismUser getServerObject()
   {
     GeoprismUserQuery query = new GeoprismUserQuery(new QueryFactory());
     query.WHERE(query.getUsername().EQ(this.username));

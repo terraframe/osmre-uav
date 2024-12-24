@@ -51,10 +51,13 @@ public class TestDocumentInfo
     this.description = description;
     this.tool = tool;
     
-    if (key.startsWith(ImageryComponent.RAW))
-      this.product.getInputDocuments().add(this);
-    else
-      this.product.getOutputDocuments().add(this);
+    if (product != null)
+    {
+      if (key.startsWith(ImageryComponent.RAW))
+        this.product.getInputDocuments().add(this);
+      else
+        this.product.getOutputDocuments().add(this);
+    }
   }
 
   public TestCollectionInfo getComponent()
@@ -120,21 +123,24 @@ public class TestDocumentInfo
   public void populate(Document document)
   {
   }
+  
+  public String getS3Location()
+  {
+    return key.startsWith(ImageryComponent.RAW) ? component.getS3location(null, this.key) : component.getS3location(this.product, this.key);
+  }
 
   public Document apply()
   {
     UasComponent collection = this.component.getServerObject();
 
     Metadata metadata = DocumentIF.Metadata.build(this.description, this.tool, this.ptEpsg, null, null, 0L);
-
-    return Document.createIfNotExist(collection, collection.getS3location(this.product.getServerObject(), this.key), this.fileName, metadata);
+    
+    return Document.createIfNotExist(collection, getS3Location(), this.fileName, metadata);
   }
 
   public Document getServerObject()
   {
-    String s3 = this.component.getS3location(product, this.key);
-
-    return Document.find(s3);
+    return Document.find(getS3Location());
   }
 
   public void delete()

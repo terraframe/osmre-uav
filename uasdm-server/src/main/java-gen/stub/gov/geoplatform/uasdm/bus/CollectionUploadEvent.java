@@ -288,7 +288,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
       parentFolder = new File(FileUtils.getTempDirectory(), name);
       parentFolder.mkdirs();
 
-      if (FilenameUtils.getExtension(name).equalsIgnoreCase("zip"))
+      if (FilenameUtils.getExtension(resource.getName()).equalsIgnoreCase("zip"))
       {
         try (ZipFile zipFile = new ZipFile(resource.getUnderlyingFile()))
         {

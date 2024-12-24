@@ -147,13 +147,14 @@ public class ProductTest extends Area51DataTest
 
   @Test
   @Request
-  public void testDelete()
+  public void testDelete() throws InterruptedException
   {
     product.delete();
 
     Assert.assertNull(Product.get(product.getOid()));
     Assert.assertNull(Document.get(target.getOid()));
 
+    Thread.sleep(1000); // The QueuedCollectionReportProcessor should come along and clean this up for us.
     CollectionReport report = CollectionReport.getForCollection(collection).get(0);
 
     Assert.assertEquals(Integer.valueOf(0), report.getNumberOfProducts());

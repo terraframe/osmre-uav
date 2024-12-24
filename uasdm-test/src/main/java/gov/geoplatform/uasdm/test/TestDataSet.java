@@ -372,6 +372,11 @@ abstract public class TestDataSet
   @Transaction
   protected void cleanUpClassInTrans()
   {
+    for (TestUserInfo user : this.getManagedUsers())
+    {
+      user.delete();
+    }
+    
     cleanUpTestInTrans();
   }
 
@@ -430,11 +435,6 @@ abstract public class TestDataSet
     for (TestSiteInfo obj : managedSites)
     {
       obj.delete();
-    }
-
-    for (TestUserInfo user : this.getManagedUsers())
-    {
-      user.delete();
     }
 
     for (TestSensorInfo obj : managedSensors)

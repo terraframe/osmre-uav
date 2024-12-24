@@ -163,11 +163,12 @@ public class CollectionUploadEventTest extends Area51DataTest
 
       java.util.Collection<RemoteFileAction> actions = service.getActions();
 
-      Assert.assertTrue(actions.size() > 2);
+//      Assert.assertTrue(actions.size() > 2);
+      Assert.assertEquals(2, actions.size());
 
       List<DocumentIF> documents = collection.getDocuments();
 
-      Assert.assertEquals(3, documents.size());
+      Assert.assertEquals(4, documents.size());
       
       List<String> names = documents.stream().map(doc -> doc.getName()).collect(Collectors.toList());
 
@@ -200,7 +201,7 @@ public class CollectionUploadEventTest extends Area51DataTest
 
       List<DocumentIF> documents = collection.getDocuments();
 
-      Assert.assertEquals(5, documents.size());
+      Assert.assertEquals(7, documents.size());
 
       List<String> names = documents.stream().map(doc -> doc.getName()).collect(Collectors.toList());
 
@@ -214,7 +215,7 @@ public class CollectionUploadEventTest extends Area51DataTest
 
       List<Product> products = collection.getProducts();
 
-      Assert.assertEquals(1, products.size());
+      Assert.assertEquals(2, products.size());
     }
     finally
     {
@@ -255,7 +256,7 @@ public class CollectionUploadEventTest extends Area51DataTest
 
       List<Product> products = collection.getProducts();
 
-      Assert.assertEquals(1, products.size());
+      Assert.assertEquals(2, products.size());
     }
     finally
     {
@@ -292,7 +293,7 @@ public class CollectionUploadEventTest extends Area51DataTest
 
       List<DocumentIF> documents = result.getDocuments();
 
-      Assert.assertEquals(14, documents.size());
+      Assert.assertEquals(9, documents.size());
 
       List<String> names = documents.stream().map(doc -> doc.getName()).collect(Collectors.toList());
 

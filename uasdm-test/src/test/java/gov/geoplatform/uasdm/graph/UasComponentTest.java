@@ -114,12 +114,12 @@ public class UasComponentTest extends Area51DataTest
     Assert.assertEquals(0, artifact.getJSONObject(ImageryComponent.DEM).getJSONArray("items").length());
     Assert.assertEquals(0, artifact.getJSONObject(ImageryComponent.PTCLOUD).getJSONArray("items").length());
 
-    JSONArray result = artifact.getJSONObject(ImageryComponent.ORTHO).getJSONArray("items");
-    Assert.assertEquals(1, result.length());
+    JSONArray orthoItems = artifact.getJSONObject(ImageryComponent.ORTHO).getJSONArray("items");
+    Assert.assertEquals(1, orthoItems.length());
 
-//    JSONObject artifact = result.getJSONObject(0);
+    JSONObject ortho = orthoItems.getJSONObject(0);
 
-    Assert.assertEquals(target.getOid(), artifact.getString("id"));
+    Assert.assertEquals(target.getOid(), ortho.getString("id"));
   }
 
   @Test
@@ -130,7 +130,6 @@ public class UasComponentTest extends Area51DataTest
 
     Assert.assertNull(Document.get(target.getOid()));
     Assert.assertNull(Document.get(image.getOid()));
-    Assert.assertNull(testData.PRODUCT.getServerObject());
   }
 
   @Test

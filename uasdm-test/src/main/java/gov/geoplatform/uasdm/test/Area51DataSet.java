@@ -51,7 +51,7 @@ public class Area51DataSet extends TestDataSet
 
   public static final TestCollectionInfo   COLLECTION_FISHBED    = new TestCollectionInfo("Fishbed_E", new Date(), UAV, SENSOR, TestDataSet.DEFAULT_SITE_POINT, MISSION_HAVE_DOUGHNUT);
 
-  public static final TestProductInfo      PRODUCT               = new TestProductInfo(COLLECTION_FISHBED, "fishbed_p1");
+  public static final TestProductInfo      PRODUCT               = new TestProductInfo(COLLECTION_FISHBED, "fishbed_p1", true);
   
   public static final TestDocumentInfo     RAW_DOCUMENT          = new TestDocumentInfo(PRODUCT, COLLECTION_FISHBED, ImageryComponent.RAW + "/test.jpg", "test.jpg");
 
