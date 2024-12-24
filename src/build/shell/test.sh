@@ -14,6 +14,9 @@
 # limitations under the License.
 #
 
+# Exit immediately if anything errors out
+set -e
+
 ### The IDM test code intentionally looks quite a bit different than with GPR, and this is because it needs
 # to build its own Dockerfile in order to run. This is because it has a bunch of additional tools which
 # are required to function, and these tools must be built into a Docker image
@@ -33,12 +36,12 @@ sudo docker rm -f $(docker ps -a -q --filter="name=orientdb") || true
 sudo docker run -d --name orientdb -p 2424:2424 -p 2480:2480  -e ORIENTDB_ROOT_PASSWORD=root orientdb:3.2
 
 sudo docker rm -f $(docker ps -a -q --filter="name=elasticsearch") || true
-sysctl -w vm.max_map_count=262144
+# sysctl -w vm.max_map_count=262144 # Only works on Ubuntu. Our host OS is currently AL2
+echo 262144 > /proc/sys/vm/max_map_count # Should be the equivalent command for AL2
 sudo docker run -d -p 9200:9200 -p 9300:9300 -e ES_JAVA_OPTS="-Xms512m -Xmx512m" -e ELASTIC_PASSWORD=elastic -e xpack.security.enabled=false -e discovery.type=single-node --name elasticsearch docker.elastic.co/elasticsearch/elasticsearch:8.3.2
 
-sudo docker rm -f $(docker ps -a -q --filter="name=uasdm-nodeodm") || true
-aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin 813324710591.dkr.ecr.us-east-1.amazonaws.com
-sudo docker run -d -p 3000:3000 -v $(pwd)/micasense:/opt/micasense -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -e MICASENSE_HOST_BINDING=$(pwd)/micasense --name uasdm-nodeodm 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-nodeodm
+sudo docker rm -f $(docker ps -a -q --filter="name=nodeodm") || true
+docker run -d -p 3000:3000 --name nodeodm opendronemap/nodeodm:latest --log_level debug
 
 ## Docker Setup ##
 cd $WORKSPACE/uasdm
