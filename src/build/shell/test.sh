@@ -70,8 +70,6 @@ sudo chown ec2-user:ec2-user -R "$WORKSPACE/test-results"
 sudo ls -al /docker-tmp/test-results
 ls -al "$WORKSPACE/test-results"
 
-sudo docker logs elasticsearch
-
 set -e
 [ "$ecode" != 0 ] && exit $ecode;
 exit 0;
