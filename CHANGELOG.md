@@ -2,6 +2,15 @@
 # Release Notes
 
 
+## [1.4.0](https://github.com/terraframe/osmre-uav/releases/tag/1.4.0) (2024-12-30)
+
+
+### Bug Fixes
+
+   - upgrade to tomcat 9 for ongoing security enhancements   ([b61e9](https://github.com/terraframe/osmre-uav/commit/b61e9a36f7031cfeba2d72ee4316cc8f958a1c85))
+
+
+
 ## [1.3.0](https://github.com/terraframe/osmre-uav/releases/tag/1.3.0) (2024-10-04)
 
 ### Features
