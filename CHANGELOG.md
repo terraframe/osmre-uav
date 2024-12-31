@@ -4,6 +4,9 @@
 
 ## [1.4.0](https://github.com/terraframe/osmre-uav/releases/tag/1.4.0) (2024-12-30)
 
+### Features
+
+- **major feature** - Support for LIDAR pointcloud collections with basic Silvimetric processing
 
 ### Bug Fixes
 
