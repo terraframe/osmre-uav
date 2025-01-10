@@ -15,39 +15,31 @@
  */
 package gov.geoplatform.uasdm.bus;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FilenameFilter;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.resource.ApplicationFileResource;
+import com.runwaysdk.resource.ArchiveFileResource;
 
 import gov.geoplatform.uasdm.DevProperties;
-import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
-import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ImageryODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
 import gov.geoplatform.uasdm.odm.ODMStatus;
-import gov.geoplatform.uasdm.view.FlightMetadata;
+import gov.geoplatform.uasdm.processing.raw.CollectionImageSizeCalculationProcessor;
+import gov.geoplatform.uasdm.processing.raw.FileUploadProcessor;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
 import net.geoprism.GeoprismUser;
-import net.lingala.zip4j.ZipFile;
 
 public class ImageryUploadEvent extends ImageryUploadEventBase
 {
@@ -62,7 +54,16 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
     super();
   }
 
-  public void handleUploadFinish(ImageryWorkflowTask task, String uploadTarget, ApplicationFileResource appRes, ProcessConfiguration configuration, Boolean processUpload)
+  /**
+   * TODO : This code isn't even used anywhere yet we're still maintaining it.
+   * 
+   * @param task
+   * @param uploadTarget
+   * @param fileRes
+   * @param configuration
+   * @param processUpload
+   */
+  public void handleUploadFinish(ImageryWorkflowTask task, String uploadTarget, ApplicationFileResource fileRes, ProcessConfiguration configuration, Boolean processUpload)
   {
     task.lock();
     task.setStatus(WorkflowTaskStatus.PROCESSING.toString());
@@ -77,12 +78,14 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
 
     if (DevProperties.uploadRaw())
     {
-      files = imagery.uploadArchive(task, appRes, uploadTarget, null);
+      files = new FileUploadProcessor().process(task, fileRes, imagery, uploadTarget, null);
     }
 
-    if (!DevProperties.uploadRaw() || Util.hasImages(files))
+    if (fileRes instanceof ArchiveFileResource && (!DevProperties.uploadRaw() || Util.hasImages(files)))
     {
-      calculateImageSize(appRes, imagery);
+      var archive = (ArchiveFileResource) fileRes;
+      
+      new CollectionImageSizeCalculationProcessor().process(archive, imagery);
 
       task.lock();
       task.setStatus(WorkflowTaskStatus.COMPLETE.toString());
@@ -97,7 +100,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
       {
         if (configuration.isODM())
         {
-          startODMProcessing(appRes, task, configuration.toODM());
+          startODMProcessing(archive, task, configuration.toODM());
         }
         else if (configuration.isLidar())
         {
@@ -107,7 +110,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
     }
   }
 
-  private void startODMProcessing(ApplicationFileResource appRes, ImageryWorkflowTask uploadTask, ODMProcessConfiguration configuration)
+  private void startODMProcessing(ArchiveFileResource archive, ImageryWorkflowTask uploadTask, ODMProcessConfiguration configuration)
   {
     final ImageryIF imagery = uploadTask.getImageryInstance();
 
@@ -123,71 +126,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
 
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
-    task.initiate(appRes);
-  }
-
-  private void calculateImageSize(ApplicationFileResource zip, ImageryIF imagery)
-  {
-    try
-    {
-      File parentFolder = new File(FileUtils.getTempDirectory(), zip.getName());
-
-      try (ZipFile zipFile = new ZipFile(zip.getUnderlyingFile()))
-      {
-        zipFile.extractAll(parentFolder.getAbsolutePath());
-
-        File[] files = parentFolder.listFiles(new FilenameFilter()
-        {
-          @Override
-          public boolean accept(File dir, String name)
-          {
-            String ext = FilenameUtils.getExtension(name).toLowerCase();
-
-            return ArrayUtils.contains(ImageryUploadEvent.formats, ext);
-          }
-        });
-
-        if (files.length > 0)
-        {
-          File file = files[0];
-          BufferedImage bimg = ImageIO.read(file);
-
-          int width = bimg.getWidth();
-          int height = bimg.getHeight();
-
-          imagery.appLock();
-          imagery.setImageHeight(height);
-          imagery.setImageWidth(width);
-          imagery.apply();
-        }
-
-        if (imagery instanceof CollectionIF)
-        {
-          CollectionIF collection = (CollectionIF) imagery;
-
-          FlightMetadata metadata = FlightMetadata.get(collection, Collection.RAW, collection.getFolderName() + MetadataXMLGenerator.FILENAME);
-
-          if (metadata != null)
-          {
-            metadata.getSensor().setImageWidth(Integer.toString(collection.getImageWidth()));
-            metadata.getSensor().setImageHeight(Integer.toString(collection.getImageHeight()));
-
-            MetadataXMLGenerator generator = new MetadataXMLGenerator();
-            generator.generateAndUpload(collection, null, metadata, collection.getMetadata().orElseThrow());
-          }
-        }
-
-      }
-      finally
-      {
-        FileUtils.deleteQuietly(parentFolder);
-        zip.close();
-      }
-    }
-    catch (Throwable e)
-    {
-      logger.error("Error occurred while calculating the image size.", e);
-    }
+    task.initiate(archive);
   }
 
 }

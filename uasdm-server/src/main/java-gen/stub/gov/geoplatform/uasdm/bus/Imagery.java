@@ -22,19 +22,18 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.runwaysdk.ComponentIF;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
-import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.ApplicationFileResource;
 
 import gov.geoplatform.uasdm.Util;
-import gov.geoplatform.uasdm.model.ComponentWithAttributes;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.processing.raw.FileUploadProcessor;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import net.geoprism.GeoprismUser;
@@ -153,9 +152,9 @@ public class Imagery extends ImageryBase implements ImageryComponent, ImageryIF
   }
 
   @Override
-  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget, ProductIF product)
+  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationFileResource file, String uploadTarget, ProductIF product)
   {
-    return Util.uploadArchive(task, archive, this, uploadTarget, product);
+    return new FileUploadProcessor().process(task, file, this, uploadTarget, product);
   }
 
   @Override

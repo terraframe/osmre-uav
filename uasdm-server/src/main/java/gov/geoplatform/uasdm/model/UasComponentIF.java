@@ -26,11 +26,9 @@ import org.json.JSONWriter;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 
-import com.runwaysdk.ComponentIF;
 import com.runwaysdk.Pair;
-import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.dataaccess.MdClassDAOIF;
-import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.ApplicationFileResource;
 import com.runwaysdk.system.Actor;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
@@ -107,7 +105,7 @@ public interface UasComponentIF extends ComponentWithAttributes
 
   public RemoteFileObject download(String key, List<Range> ranges);
 
-  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget, ProductIF product);
+  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationFileResource archive, String uploadTarget, ProductIF product);
 
   public DocumentIF putFile(String folder, String fileName, ProductIF product, RemoteFileMetadata metadata, InputStream stream);
 

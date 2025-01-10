@@ -30,12 +30,11 @@ import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.RunwayException;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
-import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.Util;
-import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
@@ -112,11 +111,11 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
     return new LinkedList<String>();
   }
 
-  public void initiate(ApplicationResource images)
+  public void initiate(ArchiveFileResource archive)
   {
     try
     {
-      NewResponse resp = ODMFacade.taskNew(images, false, this.getConfiguration(), (Collection) this.getImageryComponent(), this);
+      NewResponse resp = ODMFacade.taskNew(archive, false, this.getConfiguration(), (Collection) this.getImageryComponent(), this);
 
       if (resp.getHTTPResponse().isUnreachableHost())
       {

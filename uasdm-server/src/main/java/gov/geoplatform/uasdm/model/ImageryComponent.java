@@ -18,12 +18,9 @@ package gov.geoplatform.uasdm.model;
 import java.util.Arrays;
 import java.util.List;
 
-import org.slf4j.Logger;
-
-import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.ApplicationFileResource;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
-import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
 /**
@@ -50,7 +47,7 @@ public interface ImageryComponent
 
   public String getOid();
 
-  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget, ProductIF product);
+  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationFileResource file, String uploadTarget, ProductIF product);
 
   public List<UasComponentIF> getAncestors();
 

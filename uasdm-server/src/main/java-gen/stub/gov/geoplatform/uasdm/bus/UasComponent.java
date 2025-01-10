@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.sql.ResultSet;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +35,6 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
 
 import com.runwaysdk.Pair;
-import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.dataaccess.MdAttributeConcreteDAOIF;
 import com.runwaysdk.dataaccess.MdBusinessDAOIF;
 import com.runwaysdk.dataaccess.database.Database;
@@ -44,7 +42,7 @@ import com.runwaysdk.dataaccess.metadata.MdBusinessDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
-import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.ApplicationFileResource;
 import com.runwaysdk.session.Session;
 import com.runwaysdk.system.metadata.MdBusiness;
 
@@ -597,7 +595,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     throw new UnsupportedOperationException();
   }
 
-  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget, ProductIF product)
+  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationFileResource archive, String uploadTarget, ProductIF product)
   {
     throw new UnsupportedOperationException();
   }

@@ -17,36 +17,32 @@ package gov.geoplatform.uasdm.lidar;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.RunwayException;
 import com.runwaysdk.resource.ApplicationFileResource;
+import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.DocumentIF;
-import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.EmptyFileSetException;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.processing.COPCConverterProcessor;
 import gov.geoplatform.uasdm.processing.CogTifProcessor;
-import gov.geoplatform.uasdm.processing.GdalPNGGenerator;
 import gov.geoplatform.uasdm.processing.SilvimetricProcessor;
 import gov.geoplatform.uasdm.processing.StatusMonitorIF;
 import gov.geoplatform.uasdm.processing.WorkflowTaskMonitor;
-import net.lingala.zip4j.ZipFile;
 
 public class LidarProcessingTask extends LidarProcessingTaskBase
 {
@@ -81,19 +77,19 @@ public class LidarProcessingTask extends LidarProcessingTaskBase
   {
     try
     {
-      final File tempDir = Files.createTempDirectory(this.getProductId()).toFile();
       final LidarProcessConfiguration config = getConfiguration();
       final UasComponentIF component = getComponentInstance();
       final StatusMonitorIF monitor = new WorkflowTaskMonitor(this);
       
       if (config.isGenerateCopc()) {
-        // Unzip source files and find a laz
-        try (ZipFile zip = new ZipFile(pointcloud.getUnderlyingFile())) { zip.extractAll(tempDir.getAbsolutePath()); }
-        List<File> lazList = Arrays.asList(tempDir.listFiles()).stream().filter(f -> FilenameUtils.getExtension(f.getName()).toLowerCase().contains("laz")).collect(Collectors.toList());
-        if (lazList.size() == 0 || lazList.size() > 1) {
-          throw new RuntimeException("Expected a single laz file, but there were " + lazList.size());
+        if (pointcloud instanceof ArchiveFileResource)
+        {
+          var children = pointcloud.getChildrenFiles().getAll().stream().filter(f -> f.getNameExtension().equalsIgnoreCase("laz") || f.getNameExtension().equalsIgnoreCase("las")).collect(Collectors.toList());
+          if (children.size() == 0 || children.size() > 1)
+            throw new RuntimeException("Expected a single laz file, but there were " + children.size());
+          
+          pointcloud = children.get(0);
         }
-        File laz = lazList.get(0);
         
         COPCConverterProcessor processor = new COPCConverterProcessor(config, component, monitor);
         
@@ -105,7 +101,7 @@ public class LidarProcessingTask extends LidarProcessingTaskBase
               );
         }
         
-        processor.process(new FileResource(laz));
+        processor.process(pointcloud);
       } else if (config.isGenerateGSM() || config.isGenerateTerrainModel() || config.isGenerateTreeCanopyCover() || config.isGenerateTreeStructure()) {
         // If we're not generating a copc, then one must exist already. Find it because we'll need it for processing.
         List<ProductIF> copcs = component.getProducts().stream().filter(p -> p.getProductName().equals(config.getProductName())).collect(Collectors.toList());

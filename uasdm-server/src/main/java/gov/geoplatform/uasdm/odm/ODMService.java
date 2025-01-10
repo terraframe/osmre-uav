@@ -19,11 +19,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Queue;
 
-import gov.geoplatform.uasdm.GenericException;
-import gov.geoplatform.uasdm.processing.gcp.GroundControlPointFileValidator;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
@@ -37,16 +37,22 @@ import org.slf4j.LoggerFactory;
 
 import com.opencsv.exceptions.CsvValidationException;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.runwaysdk.resource.ApplicationFileResource;
 import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.GenericException;
+import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.Quality;
+import gov.geoplatform.uasdm.processing.gcp.GroundControlPointFileValidator;
 import gov.geoplatform.uasdm.processing.geolocation.GeoLocationFileValidator;
 
 public class ODMService implements ODMServiceIF
@@ -132,8 +138,9 @@ public class ODMService implements ODMServiceIF
    * https://github.com/OpenDroneMap/NodeODM/blob/master/docs/index.adoc#post-
    * tasknewinit
    */
+  @SuppressWarnings("resource")
   @Override
-  public NewResponse taskNew(ApplicationResource images, boolean isMultispectral, ODMProcessConfiguration configuration, Collection col, AbstractWorkflowTask task)
+  public NewResponse taskNew(ArchiveFileResource images, boolean isMultispectral, ODMProcessConfiguration configuration, Collection col, AbstractWorkflowTask task)
   {
     initialize();
 
@@ -168,11 +175,25 @@ public class ODMService implements ODMServiceIF
         }
 
         String uuid = resp.getUUID();
-
-        for (File child : payload.getFile().listFiles())
+        
+        Queue<ApplicationFileResource> queue = new LinkedList<>();
+        queue.add(payload.getArchive());
+        while(!queue.isEmpty())
         {
-          ODMResponse uploadResp = this.taskNewUpload(uuid, new FileResource(child));
-
+          var res = queue.poll();
+          
+          if (res.hasChildren())
+          {
+            for (var child : res.getChildrenFiles())
+              queue.add(child);
+            
+            continue;
+          }
+          
+          if (!payload.getImageNames().contains(res.getName())) continue;
+          
+          ODMResponse uploadResp = this.taskNewUpload(uuid, res);
+        
           if (uploadResp.hasError() || uploadResp.getHTTPResponse().isError())
           {
             this.taskRemove(uuid);

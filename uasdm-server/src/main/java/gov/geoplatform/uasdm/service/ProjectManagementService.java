@@ -51,6 +51,7 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.cache.DataNotFoundException;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
@@ -185,7 +186,7 @@ public class ProjectManagementService
         task.setProcessFilenameArray(array.toString());
         task.apply();
 
-        task.initiate(new FileResource(zip), collection.isMultiSpectral());
+        task.initiate(new ArchiveFileResource(new FileResource(zip)), collection.isMultiSpectral());
 
         NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
       }
@@ -243,7 +244,7 @@ public class ProjectManagementService
             downloadAll(this.collection, ImageryComponent.RAW, ostream, predicate, false);
           }
 
-          task.initiate(new FileResource(zip));
+          task.initiate(new ArchiveFileResource(new FileResource(zip)));
 
           NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
         }
