@@ -47,6 +47,7 @@ import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -463,7 +464,7 @@ public class Util
       }
       catch (Exception e)
       {
-        task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
+        task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), TaskActionType.ERROR);
       }
     }
 

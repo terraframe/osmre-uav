@@ -149,7 +149,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
           }
         }
 
-        uploadedFiles = new FileUploadProcessor().process(task, infile, (ImageryComponent) component, uploadTarget, null);
+        uploadedFiles = new FileUploadProcessor().process(task, infile, (ImageryComponent) component, uploadTarget, product);
       }
     }
     catch (IOException ex)
