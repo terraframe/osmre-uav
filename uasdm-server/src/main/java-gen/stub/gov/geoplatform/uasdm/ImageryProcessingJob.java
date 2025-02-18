@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.RunwayException;
+import com.runwaysdk.constants.CommonProperties;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.ApplicationFileResource;
@@ -120,7 +121,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
    * @return
    * @throws FileNotFoundException
    */
-  public static JobHistory processFiles(RequestParserIF parser, File inFile) throws FileNotFoundException
+  public static JobHistory processFiles(String runAsUserOid, RequestParserIF parser, File inFile) throws FileNotFoundException
   {
     VaultFile vfImageryZip = null;
     ProcessConfiguration configuration = ProcessConfiguration.parse(parser);
@@ -132,7 +133,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       Boolean processUpload = parser.getProcessUpload();
 
       ImageryProcessingJob job = new ImageryProcessingJob();
-      job.setRunAsUserId(Session.getCurrentSession().getUser().getOid());
+      job.setRunAsUserId(runAsUserOid);
       job.setWorkflowTask(task);
       job.setImageryFile(vfImageryZip.getOid());
       job.setUploadTarget(task.getUploadTarget());
@@ -159,15 +160,10 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
       task.lock();
       task.setStatus(WorkflowTaskStatus.ERROR.toString());
-      task.setMessage("An error occurred while uploading the imagery to S3. " + RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
+      task.setMessage("An error occurred while uploading the imagery to S3. " + RunwayException.localizeThrowable(t, CommonProperties.getDefaultLocale()));
       task.apply();
 
       logger.error("An error occurred while uploading the imagery to S3.", t);
-
-      if (Session.getCurrentSession() != null)
-      {
-        NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
-      }
     }
 
     return null;

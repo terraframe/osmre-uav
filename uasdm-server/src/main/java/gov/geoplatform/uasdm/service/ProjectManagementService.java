@@ -728,12 +728,12 @@ public class ProjectManagementService
     }
   }
 
-  @Request(RequestType.SESSION)
-  public void handleUploadFinish(String sessionId, RequestParserIF parser, File infile)
+  @Request // Must run as SYSTEM. The user's session may no longer be valid (depending on how long chunk merging takes)
+  public void handleUploadFinish(String runAsUserOid, RequestParserIF parser, File infile)
   {
     try
     {
-      ImageryProcessingJob.processFiles(parser, infile);
+      ImageryProcessingJob.processFiles(runAsUserOid, parser, infile);
     }
     catch (Throwable t)
     {
@@ -745,11 +745,11 @@ public class ProjectManagementService
     }
   }
 
-  @Request(RequestType.SESSION)
-  public void handleUploadMergeError(String sessionId, RequestParserIF parser, Throwable t)
+  @Request // Must run as SYSTEM. The user's session may no longer be valid (depending on how long chunk merging takes)
+  public void handleUploadMergeError(RequestParserIF parser, Throwable t)
   {
     final AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
-    final String msg = "An error occurred while merging upload chunks. " + RunwayException.localizeThrowable(t, Session.getCurrentLocale());
+    final String msg = "An error occurred while merging upload chunks. " + RunwayException.localizeThrowable(t, CommonProperties.getDefaultLocale());
 
     task.lock();
     task.setStatus(WorkflowTaskStatus.ERROR.toString());
@@ -757,11 +757,6 @@ public class ProjectManagementService
     task.apply();
 
     logger.error(msg, t);
-
-    if (Session.getCurrentSession() != null)
-    {
-      NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
-    }
   }
 
   @Request(RequestType.SESSION)

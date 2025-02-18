@@ -45,6 +45,7 @@ import com.runwaysdk.mvc.ResponseIF;
 import com.runwaysdk.mvc.RestBodyResponse;
 import com.runwaysdk.request.RequestDecorator;
 import com.runwaysdk.request.ServletRequestIF;
+import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
@@ -171,6 +172,8 @@ public class FileUploadController
 
       if (requestParser.getTotalParts() - 1 == requestParser.getPartIndex())
       {
+        String runAsUserOid = clientRequest.getSessionUser().getOid();
+        
         Thread mergeThread = new Thread(() -> {
           try {
               File[] parts = getPartitionFiles(dir, requestParser.getUuid());
@@ -182,9 +185,9 @@ public class FileUploadController
 
               this.assertCombinedFileIsValid(requestParser.getTotalFileSize(), outputFile, requestParser.getUuid());
 
-              this.pService.handleUploadFinish(clientRequest.getSessionId(), requestParser, outputFile);
+              this.pService.handleUploadFinish(runAsUserOid, requestParser, outputFile);
           } catch (Throwable t) {
-              this.pService.handleUploadMergeError(clientRequest.getSessionId(), requestParser, t);
+              this.pService.handleUploadMergeError(requestParser, t);
           } finally {
               deletePartitionFiles(dir, requestParser.getUuid());
           }
