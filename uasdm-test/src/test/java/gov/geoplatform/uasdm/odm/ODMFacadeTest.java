@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.opencsv.exceptions.CsvValidationException;
+import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 
@@ -44,11 +45,11 @@ public class ODMFacadeTest
   {
     File file = FileTestUtils.createZip(this.getClass().getResource("/raw").toURI());
 
-    final FileResource resource = new FileResource(file);
+    final ArchiveFileResource resource = new ArchiveFileResource(new FileResource(file));
 
     try (final ODMProcessingPayload result = ODMFacade.filterAndExtract(resource, new ODMProcessConfiguration("test"), null))
     {
-      CloseableFile directory = result.getFile();
+      CloseableFile directory = result.getArchive().extract();
       File[] files = directory.listFiles();
 
       Assert.assertTrue(files.length > 0);
@@ -67,11 +68,11 @@ public class ODMFacadeTest
   {
     File file = FileTestUtils.createTarGz(this.getClass().getResource("/raw").toURI());
 
-    final FileResource resource = new FileResource(file);
+    final ArchiveFileResource resource = new ArchiveFileResource(new FileResource(file));
 
     try (final ODMProcessingPayload result = ODMFacade.filterAndExtract(resource, new ODMProcessConfiguration("test"), null))
     {
-      CloseableFile directory = result.getFile();
+      CloseableFile directory = result.getArchive().extract();
       File[] files = directory.listFiles();
 
       Assert.assertTrue(files.length > 0);

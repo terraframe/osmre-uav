@@ -180,6 +180,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   {
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
     
+    final AbstractWorkflowTask task = this.getWorkflowTask();
     ApplicationFileResource res = VaultFile.get(this.getImageryFile());
     
     try
@@ -195,6 +196,20 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       
       if (res != null)
         this.uploadToS3(res, this.getUploadTarget(), this.getConfiguration());
+    }
+    catch (Throwable t)
+    {
+      task.lock();
+      task.setStatus(WorkflowTaskStatus.ERROR.toString());
+      task.setMessage("An error occurred while uploading the imagery to S3. " + RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
+      task.apply();
+
+      logger.error("An error occurred while uploading the imagery to S3.", t);
+
+      if (Session.getCurrentSession() != null)
+      {
+        NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
+      }
     }
     finally
     {

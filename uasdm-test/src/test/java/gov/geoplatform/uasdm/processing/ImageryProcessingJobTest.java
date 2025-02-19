@@ -117,7 +117,7 @@ public class ImageryProcessingJobTest extends Area51DataTest
     {
       FileUtils.copyFile(file, archive);
 
-      JobHistory history = ImageryProcessingJob.processFiles(parser, archive);
+      JobHistory history = ImageryProcessingJob.processFiles(admin, parser, archive);
 
       Assert.assertNotNull(history);
 
