@@ -25,14 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
-import com.runwaysdk.business.graph.GraphQuery;
-import com.runwaysdk.business.rbac.RoleDAO;
-import com.runwaysdk.business.rbac.UserDAO;
-import com.runwaysdk.constants.UserInfo;
-import com.runwaysdk.dataaccess.DuplicateDataException;
-import com.runwaysdk.dataaccess.MdVertexDAOIF;
-import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
-import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
 
@@ -40,16 +33,10 @@ import gov.geoplatform.uasdm.Area51DataTest;
 import gov.geoplatform.uasdm.InstanceTestClassListener;
 import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
 import gov.geoplatform.uasdm.TestConfig;
-import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.bus.WorkflowAction;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
-import gov.geoplatform.uasdm.mock.MockIndex;
-import gov.geoplatform.uasdm.mock.MockRemoteFileService;
-import gov.geoplatform.uasdm.remote.RemoteFileFacade;
-import gov.geoplatform.uasdm.service.IndexService;
 import gov.geoplatform.uasdm.test.Area51DataSet;
 import gov.geoplatform.uasdm.util.FileTestUtils;
-import net.geoprism.GeoprismUser;
 
 @ContextConfiguration(classes = { TestConfig.class })
 @RunWith(SpringInstanceTestClassRunner.class)
@@ -70,7 +57,7 @@ public class UploadArchiveTest extends Area51DataTest implements InstanceTestCla
 
     File file = FileTestUtils.createZip(this.getClass().getResource("/raw").toURI());
 
-    final FileResource resource = new FileResource(file);
+    final ArchiveFileResource resource = new ArchiveFileResource(new FileResource(file));
 
     List<String> results = collection.uploadArchive(task, resource, "raw", Area51DataSet.PRODUCT.getServerObject());
 
@@ -116,7 +103,7 @@ public class UploadArchiveTest extends Area51DataTest implements InstanceTestCla
 
     File file = FileTestUtils.createZip(this.getClass().getResource("/raw").toURI());
 
-    final FileResource resource = new FileResource(file);
+    final ArchiveFileResource resource = new ArchiveFileResource(new FileResource(file));
 
     List<String> results = collection.uploadArchive(task, resource, "raw", Area51DataSet.PRODUCT.getServerObject());
 

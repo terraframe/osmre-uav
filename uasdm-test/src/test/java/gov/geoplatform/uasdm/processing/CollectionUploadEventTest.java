@@ -21,22 +21,21 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.runwaysdk.Pair;
+import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
 
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.Area51DataTest;
 import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
 import gov.geoplatform.uasdm.TestConfig;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
 import gov.geoplatform.uasdm.bus.OrthoProcessingTask;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
@@ -109,7 +108,7 @@ public class CollectionUploadEventTest extends Area51DataTest
   {
     File file = FileTestUtils.createZip(this.getClass().getResource("/raw").toURI());
 
-    final FileResource resource = new FileResource(file);
+    final ArchiveFileResource resource = new ArchiveFileResource(new FileResource(file));
 
     String uploadTarget = ImageryComponent.RAW;
 
@@ -270,7 +269,7 @@ public class CollectionUploadEventTest extends Area51DataTest
   {
     File file = FileTestUtils.createZip(this.getClass().getResource("/raw").toURI());
 
-    final FileResource resource = new FileResource(file);
+    final ArchiveFileResource resource = new ArchiveFileResource(new FileResource(file));
 
     String uploadTarget = ImageryComponent.RAW;
 
