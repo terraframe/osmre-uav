@@ -182,6 +182,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     
     final AbstractWorkflowTask task = this.getWorkflowTask();
     ApplicationFileResource res = VaultFile.get(this.getImageryFile());
+    ApplicationFileResource validated = null;
     
     try
     {
@@ -192,10 +193,10 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         res = new ArchiveFileResource(res);
       }
       
-      res = new UploadValidationProcessor().process(res, (AbstractUploadTask) this.getWorkflowTask(), getConfiguration());
+      validated = new UploadValidationProcessor().process(res, (AbstractUploadTask) this.getWorkflowTask(), getConfiguration());
       
-      if (res != null)
-        this.uploadToS3(res, this.getUploadTarget(), this.getConfiguration());
+      if (validated != null)
+        this.uploadToS3(validated, this.getUploadTarget(), this.getConfiguration());
     }
     catch (Throwable t)
     {
@@ -214,6 +215,9 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     finally
     {
       res.delete();
+      
+      if (validated != null)
+        validated.delete();
     }
   }
 
