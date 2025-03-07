@@ -193,10 +193,11 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         res = new ArchiveFileResource(res);
       }
       
-      validated = new UploadValidationProcessor().process(res, (AbstractUploadTask) this.getWorkflowTask(), getConfiguration());
+      var validator = new UploadValidationProcessor();
+      boolean isValid = validator.process(res, (AbstractUploadTask) this.getWorkflowTask(), getConfiguration());
       
-      if (validated != null)
-        this.uploadToS3(validated, this.getUploadTarget(), this.getConfiguration());
+      if (isValid)
+        this.uploadToS3(validator.getDownstreamFile(), this.getUploadTarget(), this.getConfiguration());
     }
     catch (Throwable t)
     {

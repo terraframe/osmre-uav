@@ -49,6 +49,10 @@ public class UploadValidationProcessor
   
   protected boolean isMultispectral;
   
+  protected boolean isValid = true;
+  
+  protected ApplicationFileResource downstreamFile = null;
+  
   public static boolean isMultispectral(AbstractWorkflowTask task)
   {
     if (task instanceof ImageryWorkflowTask)
@@ -62,29 +66,42 @@ public class UploadValidationProcessor
       return CollectionUploadEvent.isMultispectral(collectionWorkflowTask.getComponentInstance());
     }
   }
+  
+  public ApplicationFileResource getDownstreamFile() { return downstreamFile; }
 
   @SuppressWarnings("resource")
-  public ApplicationFileResource process(ApplicationFileResource uploaded, AbstractUploadTask task, ProcessConfiguration configuration)
+  public boolean process(ApplicationFileResource uploaded, AbstractUploadTask task, ProcessConfiguration configuration)
   {
     this.isMultispectral = isMultispectral(task);
     
     if (uploaded instanceof ArchiveFileResource)
     {
-      return validateArchive((ArchiveFileResource) uploaded, task, configuration);
+      validateArchive((ArchiveFileResource) uploaded, task, configuration);
+      this.downstreamFile = uploaded;
     }
     else
     {
-      return validateFile(uploaded, task, configuration);
+      if (!validateFile(uploaded, task, configuration))
+      {
+        isValid = false;
+        task.lock();
+        task.setStatus(WorkflowTaskStatus.ERROR.toString());
+        task.setMessage("The uploaded file did not pass validation. Check the messages for more information.");
+        task.apply();
+      }
+      
+      if (downstreamFile == null) downstreamFile = uploaded;
     }
+    
+    return isValid;
   }
   
-  private ApplicationFileResource validateArchive(ArchiveFileResource archive, AbstractUploadTask task, ProcessConfiguration configuration)
+  private void validateArchive(ArchiveFileResource archive, AbstractUploadTask task, ProcessConfiguration configuration)
   {
     try
     {
       Queue<ApplicationFileResource> queue = new LinkedList<>();
       int count = 0;
-      boolean isValid = true;
       
       queue.add(archive);
       
@@ -103,11 +120,8 @@ public class UploadValidationProcessor
           continue;
         }
         
-        if (validateFile(res, task, configuration) != null) {
+        if (validateFile(res, task, configuration)) {
           count++;
-        } else {
-          isValid = false;
-          res.delete();
         }
       }
       
@@ -129,7 +143,8 @@ public class UploadValidationProcessor
             NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
           }
 
-          return null;
+          isValid = false;
+          return;
         }
 
         UasComponent component = (UasComponent) task.getImageryComponent();
@@ -152,7 +167,8 @@ public class UploadValidationProcessor
             NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
           }
 
-          return null;
+          isValid = false;
+          return;
         }
 
       }
@@ -175,18 +191,14 @@ public class UploadValidationProcessor
           NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
         }
 
-        return null;
+        isValid = false;
+        return;
       }
       
       if (Session.getCurrentSession() != null)
       {
         NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
       }
-      
-      if (count > 0 && isValid)
-        return archive;
-      else
-        return null;
     }
     catch (Throwable t)
     {
@@ -196,7 +208,7 @@ public class UploadValidationProcessor
     }
   }
   
-  private ApplicationFileResource validateFile(ApplicationFileResource res, AbstractUploadTask task, ProcessConfiguration configuration)
+  private boolean validateFile(ApplicationFileResource res, AbstractUploadTask task, ProcessConfiguration configuration)
   {
     String finalName = res.getName();
     
@@ -215,7 +227,7 @@ public class UploadValidationProcessor
           task.setMessage("The file [" + res.getName() + " is not a valid image file]");
           task.apply();
           
-          return null;
+          return false;
         }
       }
   
@@ -249,7 +261,7 @@ public class UploadValidationProcessor
             msg = "You selected a multispectral sensor. " + msg;
           
           task.createAction(msg, TaskActionType.ERROR);
-          return null;
+          return false;
         }
       }
     }
@@ -257,7 +269,7 @@ public class UploadValidationProcessor
     if (!filenameSet.add(finalName))
     {
       task.createAction("The filename [" + finalName + "] conflicts with another name in the uploaded archive. This conflict may be a result of inner directories or special characters which cannot be represented in the final collection. This will result in missing files.", TaskActionType.ERROR);
-      return null;
+      return false;
     }
     
     if (!finalName.equals(res.getName()))
@@ -265,14 +277,14 @@ public class UploadValidationProcessor
       if (res.getParentFile().isPresent()) {
         var newFile = new File(res.getParentFile().orElseThrow().getUnderlyingFile(), finalName);
         res.getUnderlyingFile().renameTo(newFile);
-        res = new FileResource(new CloseableFile(newFile));
+        this.downstreamFile = new FileResource(new CloseableFile(newFile));
       } else {
         try
         {
           var parent = Files.createTempDirectory(res.getName()).toFile();
           var newFile = new File(parent, finalName);
           IOUtils.copy(res.openNewStream(), new FileOutputStream(newFile));
-          res = new FileResource(new CloseableFile(newFile));
+          this.downstreamFile = new FileResource(new CloseableFile(newFile));
         }
         catch (IOException e)
         {
@@ -281,7 +293,7 @@ public class UploadValidationProcessor
       }
     }
 
-    return res;
+    return true;
   }
   
 }
