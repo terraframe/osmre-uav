@@ -233,7 +233,7 @@ public class ODMFacade
       {
         payload.setGroundControlPointFile(IOUtils.toString(res.openNewStream(), "UTF-8"));
       }
-      else if ( ( UasComponentIF.isValidName(res.getName()) && extensions.contains(res.getNameExtension()) ))
+      else if ( ( UasComponentIF.isValidName(res.getName()) && extensions.contains(res.getNameExtension().toLowerCase()) ))
       {
         payload.addImage(res.getName());
       }
