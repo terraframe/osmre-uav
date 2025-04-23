@@ -2,6 +2,15 @@
 # Release Notes
 
 
+## [1.5.0](https://github.com/terraframe/osmre-uav/releases/tag/1.5.0) (2025-03-13)
+
+
+### Bug Fixes
+
+   - **upload** upload task hanging when processing very large zips   ([b14ca](https://github.com/terraframe/osmre-uav/commit/b14ca6e57f52d973d3e66fd64a9ae0f05bb47f7c))
+
+
+
 ## [1.4.0](https://github.com/terraframe/osmre-uav/releases/tag/1.4.0) (2024-12-30)
 
 ### Features
