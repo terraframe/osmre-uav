@@ -29,13 +29,13 @@ public class ODMStatusServer
   @Request
   public synchronized static void startup()
   {
-    service.startup();
+//    service.startup();
   }
 
   @Request
   public synchronized static void shutdown()
   {
-    service.shutdown();
+//    service.shutdown();
   }
 
   /**
