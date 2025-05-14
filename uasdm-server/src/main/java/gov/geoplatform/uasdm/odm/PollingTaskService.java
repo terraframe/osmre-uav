@@ -52,7 +52,7 @@ public class PollingTaskService implements TaskService
     statusThread = new ODMStatusThread("ODM Status Server");
     statusThread.setDaemon(true);
 
-//    restartRunningJobs();
+    restartRunningJobs();
 
     statusThread.start();
   }
@@ -158,7 +158,7 @@ public class PollingTaskService implements TaskService
           // We want to make sure that we are sleeping OUTSIDE of any request because we don't want to hold onto a DB connection
           Thread.sleep(ODM_STATUS_UPDATE_INTERVAL);
 
-          runInRequest();
+//          runInRequest();
         }
         catch (InterruptedException t)
         {
