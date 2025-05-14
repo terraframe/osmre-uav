@@ -52,7 +52,7 @@ public class PollingTaskService implements TaskService
     statusThread = new ODMStatusThread("ODM Status Server");
     statusThread.setDaemon(true);
 
-    restartRunningJobs();
+//    restartRunningJobs();
 
     statusThread.start();
   }
