@@ -26,7 +26,7 @@ public class IndexContextListener implements ServletContextListener
   @Override
   public void contextInitialized(ServletContextEvent sce)
   {
-//    IndexService.startup();
+    IndexService.startup();
   }
 
   @Override

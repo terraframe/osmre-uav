@@ -22,11 +22,11 @@ public class ChunkManagerContextListener implements ServletContextListener
 {
   @Override
   public void contextInitialized(ServletContextEvent sce) {
-//    ChunkManager.start();
+    ChunkManager.start();
   } 
   
   @Override
   public void contextDestroyed(ServletContextEvent sce) { 
-//    ChunkManager.stop();
+    ChunkManager.stop();
   } 
 }
