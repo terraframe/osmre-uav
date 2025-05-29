@@ -16,6 +16,7 @@
 package gov.geoplatform.uasdm.processing;
 
 import java.io.File;
+import java.util.Arrays;
 
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.resource.ApplicationFileResource;
 import com.runwaysdk.resource.FileResource;
 
+import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
@@ -51,12 +53,15 @@ public class GdalPNGGenerator extends ManagedDocument
     final String basename = FilenameUtils.getBaseName(file.getName());
 
     File png = new File(file.getParent(), basename + ".png");
-
-    // gdal_translate -of PNG odm_orthophoto.tif test.png
-
-    boolean success = new SystemProcessExecutor(this.monitor).execute(new String[] {
-        "gdal_translate", "-of", "PNG", file.getAbsolutePath(), png.getAbsolutePath()
-    });
+    
+    var cmd = AppProperties.getCondaTool("gdal_translate");
+    cmd.addAll(Arrays.asList(new String[] { "-of", "PNG", file.getAbsolutePath(), png.getAbsolutePath() }));
+    
+    boolean success = new SystemProcessExecutor(this.monitor)
+        .setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath())
+        .setCommandName("gdal_translate")
+        .suppressError("Warning 6.*Defaulting to Byte")
+        .execute(cmd.toArray(new String[0]));
 
     if (success && png.exists())
     {

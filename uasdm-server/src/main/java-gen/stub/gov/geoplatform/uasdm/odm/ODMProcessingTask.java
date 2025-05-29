@@ -27,13 +27,12 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.RunwayException;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
-import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.ODMRun;
-import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 
 public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProcessingTaskIF
 {
@@ -105,7 +104,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
     return list;
   }
 
-  public void initiate(ApplicationResource images, boolean isMultispectral)
+  public void initiate(ArchiveFileResource images, boolean isMultispectral)
   {
     try
     {
@@ -167,10 +166,6 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
       this.setStatus(ODMStatus.FAILED.getLabel());
       this.setMessage(RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
       this.apply();
-    }
-    finally
-    {
-      images.close();
     }
   }
 

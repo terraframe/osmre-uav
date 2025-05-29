@@ -190,9 +190,9 @@
 <ng-template #lidarConfig>
   <ng-container *ngIf="processUpload">
     <div class="form-group">
-      <label for="productNamePrefix">Product name prefix</label>
-      <input [(ngModel)]="config.productNamePrefix" name="productNamePrefix" type="input" class="form-control"
-        placeholder="Prefix" required forbiddenName />
+      <label for="productName">Product name prefix</label>
+      <input [(ngModel)]="config.productName" name="productName" type="input" class="form-control"
+        placeholder="Prefix" forbiddenName />
     </div>
   </ng-container>
   <table style="width: 100%;">
@@ -218,12 +218,14 @@
         <boolean-field [(value)]="config.generateGSM" label="Generate"></boolean-field>
       </td>
     </tr>
+    <!--
     <tr class="artifact-row">
       <td colspan="6">Generate tree structure</td>
       <td>
         <boolean-field [(value)]="config.generateTreeStructure" label="Generate"></boolean-field>
       </td>
     </tr>
+    -->
     <tr class="artifact-row">
       <td colspan="6">Generate terrain model</td>
       <td>

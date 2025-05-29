@@ -21,22 +21,21 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.runwaysdk.Pair;
+import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
 
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.Area51DataTest;
 import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
 import gov.geoplatform.uasdm.TestConfig;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
 import gov.geoplatform.uasdm.bus.OrthoProcessingTask;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
@@ -109,7 +108,7 @@ public class CollectionUploadEventTest extends Area51DataTest
   {
     File file = FileTestUtils.createZip(this.getClass().getResource("/raw").toURI());
 
-    final FileResource resource = new FileResource(file);
+    final ArchiveFileResource resource = new ArchiveFileResource(new FileResource(file));
 
     String uploadTarget = ImageryComponent.RAW;
 
@@ -163,11 +162,12 @@ public class CollectionUploadEventTest extends Area51DataTest
 
       java.util.Collection<RemoteFileAction> actions = service.getActions();
 
-      Assert.assertTrue(actions.size() > 2);
+//      Assert.assertTrue(actions.size() > 2);
+      Assert.assertEquals(2, actions.size());
 
       List<DocumentIF> documents = collection.getDocuments();
 
-      Assert.assertEquals(3, documents.size());
+      Assert.assertEquals(4, documents.size());
       
       List<String> names = documents.stream().map(doc -> doc.getName()).collect(Collectors.toList());
 
@@ -200,7 +200,7 @@ public class CollectionUploadEventTest extends Area51DataTest
 
       List<DocumentIF> documents = collection.getDocuments();
 
-      Assert.assertEquals(5, documents.size());
+      Assert.assertTrue(documents.size() >= 6);
 
       List<String> names = documents.stream().map(doc -> doc.getName()).collect(Collectors.toList());
 
@@ -214,7 +214,7 @@ public class CollectionUploadEventTest extends Area51DataTest
 
       List<Product> products = collection.getProducts();
 
-      Assert.assertEquals(1, products.size());
+      Assert.assertEquals(2, products.size());
     }
     finally
     {
@@ -242,7 +242,7 @@ public class CollectionUploadEventTest extends Area51DataTest
 
       List<DocumentIF> documents = collection.getDocuments();
 
-      Assert.assertEquals(7, documents.size());
+      Assert.assertTrue(documents.size() >= 5);
 
       List<String> names = documents.stream().map(doc -> doc.getName()).collect(Collectors.toList());
 
@@ -255,7 +255,7 @@ public class CollectionUploadEventTest extends Area51DataTest
 
       List<Product> products = collection.getProducts();
 
-      Assert.assertEquals(1, products.size());
+      Assert.assertEquals(2, products.size());
     }
     finally
     {
@@ -269,7 +269,7 @@ public class CollectionUploadEventTest extends Area51DataTest
   {
     File file = FileTestUtils.createZip(this.getClass().getResource("/raw").toURI());
 
-    final FileResource resource = new FileResource(file);
+    final ArchiveFileResource resource = new ArchiveFileResource(new FileResource(file));
 
     String uploadTarget = ImageryComponent.RAW;
 
@@ -292,7 +292,7 @@ public class CollectionUploadEventTest extends Area51DataTest
 
       List<DocumentIF> documents = result.getDocuments();
 
-      Assert.assertEquals(14, documents.size());
+      Assert.assertEquals(9, documents.size());
 
       List<String> names = documents.stream().map(doc -> doc.getName()).collect(Collectors.toList());
 

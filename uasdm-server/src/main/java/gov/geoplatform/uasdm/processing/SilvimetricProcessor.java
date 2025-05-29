@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package gov.geoplatform.uasdm.processing;
 
@@ -75,7 +75,7 @@ public class SilvimetricProcessor extends ManagedDocument
         return true;
       } else if (this.equals(TREE_STRUCTURE) && metricName.toLowerCase().equals("m_z_diff")) {
         return true;
-      } else if (this.equals(TREE_CANOPY_COVER) && metricName.toLowerCase().equals("m_Classification_veg_density")) {
+      } else if (this.equals(TREE_CANOPY_COVER) && metricName.toLowerCase().equals("m_classification_veg_density")) {
         return true;
       }
       
@@ -89,7 +89,7 @@ public class SilvimetricProcessor extends ManagedDocument
         return true;
       } else if (this.equals(TREE_STRUCTURE) && config.isGenerateTreeStructure()) {
         return true;
-      } else if (this.equals(TREE_CANOPY_COVER) && config.isGenerateTreeStructure()) {
+      } else if (this.equals(TREE_CANOPY_COVER) && config.isGenerateTreeCanopyCover()) {
         return true;
       }
       
@@ -127,6 +127,7 @@ public class SilvimetricProcessor extends ManagedDocument
 
       boolean success = new SystemProcessExecutor(this.monitor)
           .setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath())
+          .setCommandName("silvimetric")
           .suppressError("2\\d\\d\\d\\-\\d\\d-\\d\\d.*?distributed.worker.memory.*?Unmanaged memory use is high.*?Worker memory limit: [\\d|\\.]* (GiB|MiB|TiB)?")
           .execute(cmd.toArray(new String[0]));
 
@@ -143,7 +144,7 @@ public class SilvimetricProcessor extends ManagedDocument
             final Metric metric = Metric.fromSilvimetric(metricName);
             
             if (metric != null && metric.shouldGenerate(config)) {
-              this.product = Product.createIfNotExist(component, this.config.getProductName() + "_" + metric.getName());
+              this.product = (Product) component.createProductIfNotExist(this.config.getProductName() + "_" + metric.getName());
               
               this.s3Path = ImageryComponent.ORTHO + "/" + metric.getName() + ".tif";
               

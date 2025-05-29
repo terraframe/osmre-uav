@@ -51,6 +51,7 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.cache.DataNotFoundException;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
@@ -185,7 +186,7 @@ public class ProjectManagementService
         task.setProcessFilenameArray(array.toString());
         task.apply();
 
-        task.initiate(new FileResource(zip), collection.isMultiSpectral());
+        task.initiate(new ArchiveFileResource(new FileResource(zip)), collection.isMultiSpectral());
 
         NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
       }
@@ -243,7 +244,7 @@ public class ProjectManagementService
             downloadAll(this.collection, ImageryComponent.RAW, ostream, predicate, false);
           }
 
-          task.initiate(new FileResource(zip));
+          task.initiate(new ArchiveFileResource(new FileResource(zip)));
 
           NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
         }
@@ -727,12 +728,12 @@ public class ProjectManagementService
     }
   }
 
-  @Request(RequestType.SESSION)
-  public void handleUploadFinish(String sessionId, RequestParserIF parser, File infile)
+  @Request // Must run as SYSTEM. The user's session may no longer be valid (depending on how long chunk merging takes)
+  public void handleUploadFinish(String runAsUserOid, RequestParserIF parser, File infile)
   {
     try
     {
-      ImageryProcessingJob.processFiles(parser, infile);
+      ImageryProcessingJob.processFiles(runAsUserOid, parser, infile);
     }
     catch (Throwable t)
     {
@@ -744,11 +745,11 @@ public class ProjectManagementService
     }
   }
 
-  @Request(RequestType.SESSION)
-  public void handleUploadMergeError(String sessionId, RequestParserIF parser, Throwable t)
+  @Request // Must run as SYSTEM. The user's session may no longer be valid (depending on how long chunk merging takes)
+  public void handleUploadMergeError(RequestParserIF parser, Throwable t)
   {
     final AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
-    final String msg = "An error occurred while merging upload chunks. " + RunwayException.localizeThrowable(t, Session.getCurrentLocale());
+    final String msg = "An error occurred while merging upload chunks. " + RunwayException.localizeThrowable(t, CommonProperties.getDefaultLocale());
 
     task.lock();
     task.setStatus(WorkflowTaskStatus.ERROR.toString());
@@ -756,11 +757,6 @@ public class ProjectManagementService
     task.apply();
 
     logger.error(msg, t);
-
-    if (Session.getCurrentSession() != null)
-    {
-      NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
-    }
   }
 
   @Request(RequestType.SESSION)

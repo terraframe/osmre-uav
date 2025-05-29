@@ -18,10 +18,13 @@ package gov.geoplatform.uasdm.test;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.DocumentIF.Metadata;
 
 public class TestDocumentInfo
 {
+  protected TestProductInfo    product;
+  
   protected TestCollectionInfo component;
 
   protected String             key;
@@ -34,18 +37,27 @@ public class TestDocumentInfo
 
   protected Integer            ptEpsg;
 
-  public TestDocumentInfo(TestCollectionInfo component, String key, String fileName)
+  public TestDocumentInfo(TestProductInfo product, TestCollectionInfo component, String key, String fileName)
   {
-    this(component, key, fileName, "", "");
+    this(product, component, key, fileName, "", "");
   }
 
-  public TestDocumentInfo(TestCollectionInfo component, String key, String fileName, String description, String tool)
+  public TestDocumentInfo(TestProductInfo product, TestCollectionInfo component, String key, String fileName, String description, String tool)
   {
+    this.product = product;
     this.component = component;
     this.key = key;
     this.fileName = fileName;
     this.description = description;
     this.tool = tool;
+    
+    if (product != null)
+    {
+      if (key.startsWith(ImageryComponent.RAW))
+        this.product.getInputDocuments().add(this);
+      else
+        this.product.getOutputDocuments().add(this);
+    }
   }
 
   public TestCollectionInfo getComponent()
@@ -111,22 +123,24 @@ public class TestDocumentInfo
   public void populate(Document document)
   {
   }
+  
+  public String getS3Location()
+  {
+    return key.startsWith(ImageryComponent.RAW) ? component.getS3location(null, this.key) : component.getS3location(this.product, this.key);
+  }
 
   public Document apply()
   {
     UasComponent collection = this.component.getServerObject();
 
     Metadata metadata = DocumentIF.Metadata.build(this.description, this.tool, this.ptEpsg, null, null, 0L);
-
-    return Document.createIfNotExist(collection, collection.getS3location() + this.key, this.fileName, metadata);
+    
+    return Document.createIfNotExist(collection, getS3Location(), this.fileName, metadata);
   }
 
   public Document getServerObject()
   {
-    UasComponent collection = this.component.getServerObject();
-    String key = collection.getS3location() + this.key;
-
-    return Document.find(key);
+    return Document.find(getS3Location());
   }
 
   public void delete()

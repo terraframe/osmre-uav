@@ -30,7 +30,9 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.opencsv.exceptions.CsvValidationException;
+import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.resource.CloseableFile;
+import com.runwaysdk.resource.FileResource;
 
 import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
 import gov.geoplatform.uasdm.TestConfig;
@@ -67,7 +69,7 @@ public class RX1R2GeoFileConverterTest
   @Test
   public void testValidate()
   {
-    ODMProcessingPayload payload = new ODMProcessingPayload(new CloseableFile(""));
+    ODMProcessingPayload payload = new ODMProcessingPayload(new ArchiveFileResource(new FileResource(new CloseableFile(""))));
     
     payload.addImage("DSC00001.jpg");
     payload.addImage("DSC00002.jpg");
@@ -80,7 +82,7 @@ public class RX1R2GeoFileConverterTest
   @Test(expected = GeoLocationFileInvalidFormatException.class)
   public void testValidateBadCase()
   {
-    ODMProcessingPayload payload = new ODMProcessingPayload(new CloseableFile(""));
+    ODMProcessingPayload payload = new ODMProcessingPayload(new ArchiveFileResource(new FileResource(new CloseableFile(""))));
     
     payload.addImage("DSC00001.JPG");
     payload.addImage("DSC00002.JPG");
@@ -108,7 +110,7 @@ public class RX1R2GeoFileConverterTest
   @Test(expected = GeoLocationFileInvalidFormatException.class)
   public void testValidateLatBounds()
   {
-    ODMProcessingPayload payload = new ODMProcessingPayload(new CloseableFile(""));
+    ODMProcessingPayload payload = new ODMProcessingPayload(new ArchiveFileResource(new FileResource(new CloseableFile(""))));
     
     payload.addImage("DSC00001.jpg");
     payload.addImage("DSC00002.jpg");
@@ -121,7 +123,7 @@ public class RX1R2GeoFileConverterTest
   @Test(expected = GeoLocationFileInvalidFormatException.class)
   public void testValidateLongBounds()
   {
-    ODMProcessingPayload payload = new ODMProcessingPayload(new CloseableFile(""));
+    ODMProcessingPayload payload = new ODMProcessingPayload(new ArchiveFileResource(new FileResource(new CloseableFile(""))));
     
     payload.addImage("DSC00001.jpg");
     payload.addImage("DSC00002.jpg");

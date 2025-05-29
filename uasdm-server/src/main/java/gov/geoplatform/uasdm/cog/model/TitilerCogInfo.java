@@ -34,6 +34,9 @@ public class TitilerCogInfo
   private Integer height;
   private List<Integer> overviews;
   private Integer count;
+  private List<Float> scales;
+  private List<Float> offsets;
+  private Object nodata_value;
   
   public TitilerCogInfo()
   {
@@ -168,5 +171,35 @@ public class TitilerCogInfo
   public void setCount(Integer count)
   {
     this.count = count;
+  }
+
+  public List<Float> getScales()
+  {
+    return scales;
+  }
+
+  public void setScales(List<Float> scales)
+  {
+    this.scales = scales;
+  }
+
+  public List<Float> getOffsets()
+  {
+    return offsets;
+  }
+
+  public void setOffsets(List<Float> offsets)
+  {
+    this.offsets = offsets;
+  }
+
+  public Object getNodata_value()
+  {
+    return nodata_value;
+  }
+
+  public void setNodata_value(Object nodata_value)
+  {
+    this.nodata_value = nodata_value;
   }
 }

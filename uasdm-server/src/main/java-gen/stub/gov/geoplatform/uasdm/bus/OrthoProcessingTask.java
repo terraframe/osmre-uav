@@ -131,7 +131,7 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
 
     this.appLock();
     this.setStatus(ODMStatus.COMPLETED.getLabel());
-    this.setMessage("Ortho has been processed");
+    this.setMessage("Artifact has been processed");
     this.apply();
   }
 

@@ -18,6 +18,8 @@ package gov.geoplatform.uasdm.remote;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 
@@ -30,10 +32,18 @@ import com.runwaysdk.request.ResponseDecorator;
 public class RemoteFileGetResponse implements ResponseIF
 {
   private RemoteFileObject object;
+  
+  private Map<String, String> headers = new HashMap<String, String>();
 
   public RemoteFileGetResponse(RemoteFileObject object)
   {
     this.object = object;
+  }
+  
+  public RemoteFileGetResponse setHeader(String key, String value)
+  {
+    headers.put(key, value);
+    return this;
   }
 
   @Override
@@ -56,6 +66,11 @@ public class RemoteFileGetResponse implements ResponseIF
       resp.setHeader("Content-Disposition", contentDisposition);
       resp.setHeader("Content-Length", Long.toString(metadata.getContentLength()));
       resp.setHeader("ETag", metadata.getETag());
+      
+      for (String key : headers.keySet())
+      {
+        resp.setHeader(key, headers.get(key));
+      }
       
       if (metadata.getLastModified() != null)
       {

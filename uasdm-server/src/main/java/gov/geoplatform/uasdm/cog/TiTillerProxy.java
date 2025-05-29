@@ -215,7 +215,7 @@ public class TiTillerProxy
 
       params.addParameters(parameters);
 
-      addMultispectralRGBParams(document, parameters);
+      addBandStatParams(document, parameters);
 
       stream = authenticatedInvokeURL(new URI(AppProperties.getTitilerUrl()), "/cog/preview", parameters);
 
@@ -328,7 +328,7 @@ public class TiTillerProxy
     parameters.put("minzoom", Arrays.asList("0"));
     parameters.put("maxzoom", Arrays.asList("24"));
 
-    addMultispectralRGBParams(document, parameters);
+    addBandStatParams(document, parameters);
 
     try
     {
@@ -367,16 +367,17 @@ public class TiTillerProxy
     }
   }
 
-  protected void addMultispectralRGBParams(DocumentIF document, Map<String, List<String>> parameters)
+  protected void addBandStatParams(DocumentIF document, Map<String, List<String>> parameters)
   {
     try
     {
       Product p = ((Document) document).getProductHasDocumentParentProducts().get(0);
-      CollectionMetadata m = p.getMetadata().orElseThrow();
+      CollectionMetadata m = p.getMetadata().orElse(null);
       
-      if (m.isMultiSpectral() && document.getS3location().matches(Product.MAPPABLE_ORTHO_REGEX))
+      if (m != null && m.isMultiSpectral() && document.getS3location().matches(Product.MAPPABLE_ORTHO_REGEX))
       {
         TitilerCogInfo info = this.getCogInfo(document);
+        
         if (info != null)
         {
           int redIdx = info.getColorinterp().indexOf("red");
@@ -392,9 +393,9 @@ public class TiTillerProxy
             parameters.put("bidx", Arrays.asList(new String[] { String.valueOf(redIdx), String.valueOf(greenIdx), String.valueOf(blueIdx) }));
   
             TitilerCogStatistics stats = this.getCogStatistics(document);
-            TitilerCogBandStatistic redStat = stats.getBandStatistic(redIdx);
-            TitilerCogBandStatistic greenStat = stats.getBandStatistic(greenIdx);
-            TitilerCogBandStatistic blueStat = stats.getBandStatistic(blueIdx);
+            TitilerCogBandStatistic redStat = stats.getBandStatistic(String.valueOf(redIdx));
+            TitilerCogBandStatistic greenStat = stats.getBandStatistic(String.valueOf(greenIdx));
+            TitilerCogBandStatistic blueStat = stats.getBandStatistic(String.valueOf(blueIdx));
   
             Double min = Math.min(redStat.getMin(), Math.min(greenStat.getMin(), blueStat.getMin()));
             Double max = Math.max(redStat.getMax(), Math.max(greenStat.getMax(), blueStat.getMax()));
@@ -405,6 +406,18 @@ public class TiTillerProxy
   
             parameters.put("rescale", Arrays.asList(String.valueOf(min) + "," + String.valueOf(max)));
           }
+        }
+      }
+      else if (document.getS3location().matches(Product.SILVIMETRIC_ORTHO_REGEX))
+      {
+        TitilerCogInfo info = this.getCogInfo(document);
+        
+        if (info != null)
+        {
+          TitilerCogStatistics stats = this.getCogStatistics(document);
+          TitilerCogBandStatistic bandStat = stats.getBandStatistic();
+
+          parameters.put("rescale", Arrays.asList(String.valueOf(bandStat.getMin()) + "," + String.valueOf(bandStat.getMax())));
         }
       }
     }

@@ -42,10 +42,12 @@ import com.runwaysdk.RunwayException;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -235,160 +237,160 @@ public class Util
     return mimeType != null && mimeType.startsWith("video");
   }
 
-  public static List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget, ProductIF product)
-  {
-    String extension = archive.getNameExtension();
+//  public static List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget, ProductIF product)
+//  {
+//    String extension = archive.getNameExtension();
+//
+//    if (extension.equalsIgnoreCase("zip"))
+//    {
+//      return uploadZipArchive(task, archive, imageryComponent, uploadTarget, product);
+//    }
+//    else if (extension.equalsIgnoreCase("gz"))
+//    {
+//      return uploadTarGzArchive(task, archive, imageryComponent, uploadTarget, product);
+//    }
+//    else
+//    {
+//      return uploadFile(task, archive, imageryComponent, uploadTarget, product);
+//    }
+//  }
 
-    if (extension.equalsIgnoreCase("zip"))
-    {
-      return uploadZipArchive(task, archive, imageryComponent, uploadTarget, product);
-    }
-    else if (extension.equalsIgnoreCase("gz"))
-    {
-      return uploadTarGzArchive(task, archive, imageryComponent, uploadTarget, product);
-    }
-    else
-    {
-      return uploadFile(task, archive, imageryComponent, uploadTarget, product);
-    }
-  }
+//  public static List<String> uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget, ProductIF product)
+//  {
+//    List<UasComponentIF> ancestors = imageryComponent.getAncestors();
+//    List<String> filenames = new LinkedList<String>();
+//
+//    byte[] buffer = new byte[BUFFER_SIZE];
+//
+//    try (CloseableFile fArchive = archive.openNewFile())
+//    {
+//      try (ZipFile zipFile = new ZipFile(fArchive))
+//      {
+//        Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
+//
+//        while (entries.hasMoreElements())
+//        {
+//          ZipArchiveEntry entry = entries.nextElement();
+//
+//          try (CloseableFile tmp = new CloseableFile(File.createTempFile("raw", "tmp")))
+//          {
+//            try (FileOutputStream fos = new FileOutputStream(tmp))
+//            {
+//              try (InputStream zis = zipFile.getInputStream(entry))
+//              {
+//                int len;
+//                while ( ( len = zis.read(buffer) ) > 0)
+//                {
+//                  fos.write(buffer, 0, len);
+//                }
+//              }
+//            }
+//
+//            // Upload the file to S3
+//            String filename = entry.getName();
+//            String folder = uploadTarget;
+//
+//            if (uploadTarget.equals(ImageryComponent.RAW) && isVideoFile(filename))
+//            {
+//              folder = ImageryComponent.VIDEO;
+//            }
+//
+//            if (!ImageryComponent.isValidTarget(uploadTarget))
+//            {
+//              throw new UnsupportedOperationException("Unknown upload target [" + uploadTarget + "]");
+//            }
+//
+//            boolean success = uploadFile(task, ancestors, imageryComponent.getS3location(product, folder), filename, tmp, imageryComponent);
+//
+//            if (success)
+//            {
+//              filenames.add(filename);
+//            }
+//          }
+//        }
+//      }
+//    }
+//    catch (IOException e)
+//    {
+//      task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
+//
+//      throw new InvalidZipException();
+//    }
+//
+//    return filenames;
+//  }
 
-  public static List<String> uploadZipArchive(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget, ProductIF product)
-  {
-    List<UasComponentIF> ancestors = imageryComponent.getAncestors();
-    List<String> filenames = new LinkedList<String>();
-
-    byte[] buffer = new byte[BUFFER_SIZE];
-
-    try (CloseableFile fArchive = archive.openNewFile())
-    {
-      try (ZipFile zipFile = new ZipFile(fArchive))
-      {
-        Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
-
-        while (entries.hasMoreElements())
-        {
-          ZipArchiveEntry entry = entries.nextElement();
-
-          try (CloseableFile tmp = new CloseableFile(File.createTempFile("raw", "tmp")))
-          {
-            try (FileOutputStream fos = new FileOutputStream(tmp))
-            {
-              try (InputStream zis = zipFile.getInputStream(entry))
-              {
-                int len;
-                while ( ( len = zis.read(buffer) ) > 0)
-                {
-                  fos.write(buffer, 0, len);
-                }
-              }
-            }
-
-            // Upload the file to S3
-            String filename = entry.getName();
-            String folder = uploadTarget;
-
-            if (uploadTarget.equals(ImageryComponent.RAW) && isVideoFile(filename))
-            {
-              folder = ImageryComponent.VIDEO;
-            }
-
-            if (!ImageryComponent.isValidTarget(uploadTarget))
-            {
-              throw new UnsupportedOperationException("Unknown upload target [" + uploadTarget + "]");
-            }
-
-            boolean success = uploadFile(task, ancestors, imageryComponent.getS3location(product, folder), filename, tmp, imageryComponent);
-
-            if (success)
-            {
-              filenames.add(filename);
-            }
-          }
-        }
-      }
-    }
-    catch (IOException e)
-    {
-      task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
-
-      throw new InvalidZipException();
-    }
-
-    return filenames;
-  }
-
-  public static List<String> uploadTarGzArchive(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget, ProductIF product)
-  {
-    List<UasComponentIF> ancestors = imageryComponent.getAncestors();
-    List<String> filenames = new LinkedList<String>();
-
-    byte data[] = new byte[BUFFER_SIZE];
-
-    try (GzipCompressorInputStream gzipIn = new GzipCompressorInputStream(archive.openNewStream()))
-    {
-      try (TarArchiveInputStream tarIn = new TarArchiveInputStream(gzipIn))
-      {
-        TarArchiveEntry entry;
-
-        while ( ( entry = (TarArchiveEntry) tarIn.getNextEntry() ) != null)
-        {
-          /** If the entry is a directory, create the directory. **/
-          String filename = entry.getName();
-          if (entry.isDirectory())
-          {
-            File f = new File(filename);
-            boolean created = f.mkdir();
-            if (!created)
-            {
-              System.out.printf("Unable to create directory '%s', during extraction of archive contents.\n", f.getAbsolutePath());
-            }
-          }
-          else
-          {
-            try (CloseableFile tmp = new CloseableFile(File.createTempFile("raw", "tmp")))
-            {
-              try (FileOutputStream fos = new FileOutputStream(tmp))
-              {
-                int count;
-
-                try (BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER_SIZE))
-                {
-                  while ( ( count = tarIn.read(data, 0, BUFFER_SIZE) ) != -1)
-                  {
-                    dest.write(data, 0, count);
-                  }
-                }
-              }
-
-              // Upload the file to S3
-              String folder = uploadTarget;
-
-              if (uploadTarget.equals(ImageryComponent.RAW) && isVideoFile(filename))
-              {
-                folder = ImageryComponent.VIDEO;
-              }
-
-              boolean success = uploadFile(task, ancestors, imageryComponent.getS3location(product, folder), filename, tmp, imageryComponent);
-
-              if (success)
-              {
-                filenames.add(filename);
-              }
-            }
-          }
-        }
-      }
-    }
-    catch (IOException e)
-    {
-      task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
-
-      throw new ProgrammingErrorException(e);
-    }
-
-    return filenames;
-  }
+//  public static List<String> uploadTarGzArchive(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget, ProductIF product)
+//  {
+//    List<UasComponentIF> ancestors = imageryComponent.getAncestors();
+//    List<String> filenames = new LinkedList<String>();
+//
+//    byte data[] = new byte[BUFFER_SIZE];
+//
+//    try (GzipCompressorInputStream gzipIn = new GzipCompressorInputStream(archive.openNewStream()))
+//    {
+//      try (TarArchiveInputStream tarIn = new TarArchiveInputStream(gzipIn))
+//      {
+//        TarArchiveEntry entry;
+//
+//        while ( ( entry = (TarArchiveEntry) tarIn.getNextEntry() ) != null)
+//        {
+//          /** If the entry is a directory, create the directory. **/
+//          String filename = entry.getName();
+//          if (entry.isDirectory())
+//          {
+//            File f = new File(filename);
+//            boolean created = f.mkdir();
+//            if (!created)
+//            {
+//              System.out.printf("Unable to create directory '%s', during extraction of archive contents.\n", f.getAbsolutePath());
+//            }
+//          }
+//          else
+//          {
+//            try (CloseableFile tmp = new CloseableFile(File.createTempFile("raw", "tmp")))
+//            {
+//              try (FileOutputStream fos = new FileOutputStream(tmp))
+//              {
+//                int count;
+//
+//                try (BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER_SIZE))
+//                {
+//                  while ( ( count = tarIn.read(data, 0, BUFFER_SIZE) ) != -1)
+//                  {
+//                    dest.write(data, 0, count);
+//                  }
+//                }
+//              }
+//
+//              // Upload the file to S3
+//              String folder = uploadTarget;
+//
+//              if (uploadTarget.equals(ImageryComponent.RAW) && isVideoFile(filename))
+//              {
+//                folder = ImageryComponent.VIDEO;
+//              }
+//
+//              boolean success = uploadFile(task, ancestors, imageryComponent.getS3location(product, folder), filename, tmp, imageryComponent);
+//
+//              if (success)
+//              {
+//                filenames.add(filename);
+//              }
+//            }
+//          }
+//        }
+//      }
+//    }
+//    catch (IOException e)
+//    {
+//      task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
+//
+//      throw new ProgrammingErrorException(e);
+//    }
+//
+//    return filenames;
+//  }
 
   public static List<String> uploadFile(AbstractWorkflowTask task, ApplicationResource archive, ImageryComponent imageryComponent, String uploadTarget, ProductIF product)
   {
@@ -462,7 +464,7 @@ public class Util
       }
       catch (Exception e)
       {
-        task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), "error");
+        task.createAction(RunwayException.localizeThrowable(e, Session.getCurrentLocale()), TaskActionType.ERROR);
       }
     }
 

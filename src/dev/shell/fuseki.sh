@@ -27,4 +27,4 @@ set -e
 # Kill any running containers by name of what we're about to run
 docker rm -f $(docker ps -a -q --filter="name=fuseki") > /dev/null || true
 
-sudo docker run -d -p 3030:3030 --name fuseki -e ADMIN_PASSWORD=admin -e ENABLE_DATA_WRITE=true -e ENABLE_UPDATE=true -e ENABLE_SHACL=true -e QUERY_TIMEOUT=9999999 secoresearch/fuseki
+sudo docker run -d -p 3030:3030 --name fuseki -e JAVA_OPTIONS="-Xms512m -Xmx4g" -e ADMIN_PASSWORD=admin -e ENABLE_DATA_WRITE=true -e ENABLE_UPDATE=true -e ENABLE_SHACL=true -e QUERY_TIMEOUT=9999999 secoresearch/fuseki

@@ -170,7 +170,7 @@ public class SiteQueryTest implements InstanceTestClassListener
     JSONObject bureau = new JSONObject();
     bureau.put("field", Collection.COLLECTIONDATE);
     bureau.put("value", Util.formatIso8601(collection.getCollectionDate(), false));
-
+    
     JSONArray array = new JSONArray();
     array.put(bureau);
 

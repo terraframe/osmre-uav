@@ -316,6 +316,12 @@ public class AppProperties
     return Singleton.getProps().getBoolean("conda.enabled", true);
   }
 
+  
+  public static List<String> getCopcTranslateCommand()
+  {
+    return new ArrayList<String>(Arrays.asList(Singleton.getProps().getString("copc.translate.cmd", "/opt/idm/idm_pdal_translate_copc.sh /opt/conda/etc/profile.d/conda.sh").split(" ")));
+  }
+  
   public static List<String> getCondaTool(String tool)
   {
     return new ArrayList<String>(Arrays.asList(new String(Singleton.getProps().getString("conda.cmd", "conda run -n silvimetric") + " " + tool).split(" ")));

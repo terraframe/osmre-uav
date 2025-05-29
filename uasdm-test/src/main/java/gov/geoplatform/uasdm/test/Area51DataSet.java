@@ -24,6 +24,7 @@ import gov.geoplatform.uasdm.graph.PlatformType;
 import gov.geoplatform.uasdm.graph.SensorType;
 import gov.geoplatform.uasdm.graph.WaveLength;
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ProcessConfiguration.ProcessType;
 
 public class Area51DataSet extends TestDataSet
 {
@@ -50,11 +51,15 @@ public class Area51DataSet extends TestDataSet
 
   public static final TestCollectionInfo   COLLECTION_FISHBED    = new TestCollectionInfo("Fishbed_E", new Date(), UAV, SENSOR, TestDataSet.DEFAULT_SITE_POINT, MISSION_HAVE_DOUGHNUT);
 
-  public static final TestDocumentInfo     RAW_DOCUMENT          = new TestDocumentInfo(COLLECTION_FISHBED, ImageryComponent.RAW + "/test.jpg", "test.jpg");
+  public static final TestProductInfo      PRODUCT               = new TestProductInfo(COLLECTION_FISHBED, "fishbed_p1", true);
+  
+  public static final TestDocumentInfo     RAW_DOCUMENT          = new TestDocumentInfo(PRODUCT, COLLECTION_FISHBED, ImageryComponent.RAW + "/test.jpg", "test.jpg");
 
-  public static final TestDocumentInfo     ORTHO_DOCUMENT        = new TestDocumentInfo(COLLECTION_FISHBED, ImageryComponent.ORTHO + "/test.cog.tif", "test.cog.tif");
+  public static final TestDocumentInfo     ORTHO_DOCUMENT        = new TestDocumentInfo(PRODUCT, COLLECTION_FISHBED, ImageryComponent.ORTHO + "/test.cog.tif", "test.cog.tif");
 
-  public static final TestDocumentInfo     IMAGE_DOCUMENT        = new TestDocumentInfo(COLLECTION_FISHBED, ImageryComponent.ORTHO + "/test.png", "test.png");
+  public static final TestDocumentInfo     IMAGE_DOCUMENT        = new TestDocumentInfo(PRODUCT, COLLECTION_FISHBED, ImageryComponent.ORTHO + "/test.png", "test.png");
+  
+  public static final TestProcessingRunInfo ODM_RUN              = new TestProcessingRunInfo(COLLECTION_FISHBED, ProcessType.ODM, PRODUCT);
 
   {
     managedOrganizations.add(ORGANIZATION);
@@ -78,6 +83,10 @@ public class Area51DataSet extends TestDataSet
     managedDocuments.add(RAW_DOCUMENT);
     managedDocuments.add(ORTHO_DOCUMENT);
     managedDocuments.add(IMAGE_DOCUMENT);
+    
+    managedProducts.add(PRODUCT);
+    
+    managedProcessingRuns.add(ODM_RUN);
   }
 
   @Override

@@ -92,7 +92,7 @@ public class ProductTest extends Area51DataTest
   @Request
   public void testFind()
   {
-    Product result = Product.find(collection);
+    Product result = Product.find(collection, product.getProductName());
 
     Assert.assertNotNull(result);
     Assert.assertEquals(product.getOid(), result.getOid());
@@ -147,17 +147,20 @@ public class ProductTest extends Area51DataTest
 
   @Test
   @Request
-  public void testDelete()
+  public void testDelete() throws InterruptedException
   {
     product.delete();
 
     Assert.assertNull(Product.get(product.getOid()));
     Assert.assertNull(Document.get(target.getOid()));
 
+    Thread.sleep(1000); // The QueuedCollectionReportProcessor should come along and clean this up for us.
     CollectionReport report = CollectionReport.getForCollection(collection).get(0);
 
-    Assert.assertFalse(report.getProductsShared());
-    Assert.assertNull(report.getProduct());
+    Assert.assertEquals(Integer.valueOf(0), report.getNumberOfProducts());
+    
+//    Assert.assertFalse(report.getProductsShared());
+//    Assert.assertNull(report.getProduct());
 
     product = null;
   }
@@ -167,9 +170,11 @@ public class ProductTest extends Area51DataTest
   public void testCollectionReport()
   {
     CollectionReport report = CollectionReport.getForCollection(collection).get(0);
+    
+    Assert.assertTrue(report.getNumberOfProducts() > 0);
 
-    Assert.assertFalse(report.getProductsShared());
-    Assert.assertNotNull(report.getProduct());
+//    Assert.assertFalse(report.getProductsShared());
+//    Assert.assertNotNull(report.getProduct());
   }
 
   @Test

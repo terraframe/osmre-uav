@@ -49,6 +49,12 @@ public class Product extends ProductBase implements ProductIF
   {
     super();
   }
+  
+  @Override
+  public Object getRID()
+  {
+    return null;
+  }
 
   @Override
   public String getProductName()
