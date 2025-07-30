@@ -423,7 +423,7 @@ export class UploadComponent implements OnInit {
             let minutes = Math.floor((ct % 3600) / 60);
             let seconds = Math.floor(ct % 60);
 
-            let hoursStr = minutes < 10 ? "0" + hours : hours;
+            let hoursStr = hours < 10 ? "0" + hours : hours;
             let minutesStr = minutes < 10 ? "0" + minutes : minutes;
             let secondsStr = seconds < 10 ? "0" + seconds : seconds;
 

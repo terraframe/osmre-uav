@@ -17,6 +17,7 @@ package gov.geoplatform.uasdm.model;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -88,7 +89,7 @@ public interface ProcessConfiguration
       }
     }
 
-    throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException("TYPE parameter missing. jsonString: " + jsonString);
   }
 
   public static ProcessConfiguration parse(RequestParserIF parser)
@@ -105,7 +106,15 @@ public interface ProcessConfiguration
       return ODMProcessConfiguration.parse(parser);
     }
 
-    throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException("TYPE parameter missing. Params: " + serialize(parser.getCustomParams()));
+  }
+  
+  private static String serialize(Object obj) {
+    try {
+      return new ObjectMapper().writeValueAsString(obj);
+    } catch (Throwable t) {
+      return String.valueOf(obj);
+    }
   }
 
 }

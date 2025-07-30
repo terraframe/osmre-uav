@@ -566,52 +566,21 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 	}
 
 	handleUpload(): void {
+		// - IMPORTANT -
+		// There is a 'hidden' usecase here (which is hard to test) which happens during upload resume (it happens when this.existingTask == true)
+		// In this usecase, you MUST make sure that the uploader params are set properly, otherwise it will cause hell for our customer (but you as a dev probably won't even notice)
+		// You can test this usecase, if needed, by setting the keycloak session expiration to 2 minutes and uploading a medium/large size collection.
+	
+		this.config.uploadTarget = this.uploadTarget;
+		this.config.uasComponentOid = this.component.id;
+		this.config.processUpload = this.processUpload;
 
-
-		if (!this.existingTask) {
-
-			const execute = () => {
-				/*
-				 * Validate form values before uploading
-				 */
-				// const selection = this.selections[this.selections.length - 1];
-
-				//            if ( selection.value == null  ) {
-				//                this.message = "A [" + selection.type + "] must first be selected before the file can be uploaded";
-				//            }
-				//            else {
-				//                this.config.uasComponentOid = selection.value;
-				// this.config.selections = JSON.stringify(this.selections);
-				this.config.uploadTarget = this.uploadTarget;
-				this.config.uasComponentOid = this.component.id;
-				this.config.processUpload = this.processUpload;
-
-				if (this.config.productName == null) {
-					delete this.config.productName;
-				}
-
-				this.uploader.setParams(this.config);
-				this.uploader.uploadStoredFiles();
-				//            }
-			};
-
-			// if (this.uploadTarget === 'raw' && this.component.hasProduct && this.processUpload) {
-			// 	const modal = this.modalService.show(BasicConfirmModalComponent, {
-			// 		animated: true,
-			// 		backdrop: true,
-			// 		ignoreBackdropClick: true,
-			// 	});
-			// 	modal.content.message = 'An orthorectified image already exists in this collection. It will be deleted if you create another one. Do you still wish to proceed and create an orthorectified image?';
-			// 	modal.content.submitText = 'Continue';
-			// 	modal.content.onConfirm.subscribe(execute);
-			// }
-			// else {
-			execute();
-			// }
+		if (this.config.productName == null) {
+			delete this.config.productName;
 		}
-		else {
-			this.uploader.uploadStoredFiles();
-		}
+
+		this.uploader.setParams(this.config);
+		this.uploader.uploadStoredFiles();
 	}
 
 
