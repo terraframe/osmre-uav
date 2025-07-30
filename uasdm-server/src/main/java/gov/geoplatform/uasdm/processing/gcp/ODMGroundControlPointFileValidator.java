@@ -15,11 +15,17 @@
  */
 package gov.geoplatform.uasdm.processing.gcp;
 
-import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
-
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.math.BigDecimal;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
 
 /**
  *
@@ -27,6 +33,7 @@ import java.math.BigDecimal;
  * https://docs.opendronemap.org/gcp/#gcp-file-format
  *
  * @author jsmethie
+ * @author rrowlands
  *
  */
 public class ODMGroundControlPointFileValidator extends GroundControlPointFileValidator {
@@ -56,7 +63,7 @@ public class ODMGroundControlPointFileValidator extends GroundControlPointFileVa
 
                     for (int i = 0; i < vals.length; ++i) {
                         switch (i) {
-                            case 1:
+                            case 0:
                                 try {
                                     BigDecimal longitude = new BigDecimal(vals[i]);
                                     if (longitude.compareTo(new BigDecimal(180)) > 0 || longitude.compareTo(new BigDecimal(-180)) < 0) {
@@ -66,7 +73,7 @@ public class ODMGroundControlPointFileValidator extends GroundControlPointFileVa
                                     results.addError("Line [" + num + "] contains a non-numeric longitude.");
                                 }
                                 break;
-                            case 2:
+                            case 1:
                                 try {
                                     BigDecimal latitude = new BigDecimal(vals[i]);
                                     if (latitude.compareTo(new BigDecimal(90)) > 0 || latitude.compareTo(new BigDecimal(-90)) < 0) {
@@ -76,8 +83,9 @@ public class ODMGroundControlPointFileValidator extends GroundControlPointFileVa
                                     results.addError("Line [" + num + "] contains a non-numeric latitude.");
                                 }
                                 break;
-                            case 3:
-                            case 4:
+                            case 2: // elevation
+                            case 3: // im_x
+                            case 4: // im_y
                                 try {
                                     new BigDecimal(vals[i]);
                                 } catch (Throwable t) {
@@ -106,5 +114,5 @@ public class ODMGroundControlPointFileValidator extends GroundControlPointFileVa
 
         return results;
     }
-
+    
 }
