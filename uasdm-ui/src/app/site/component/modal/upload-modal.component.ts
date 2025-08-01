@@ -28,6 +28,7 @@ import {
 	fadeOutOnLeaveAnimation
 } from 'angular-animations';
 import EnvironmentUtil from '@core/utility/environment-util';
+import { NgModel } from '@angular/forms';
 
 export class Page {
 	index?: number;
@@ -156,6 +157,8 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 	constructor(private service: ManagementService, private metadataService: MetadataService, private modalService: BsModalService, public bsModalRef: BsModalRef, differs: KeyValueDiffers) {
 		this.differ = differs.find([]).create();
 	}
+
+	@ViewChild('productName') productNameControl: NgModel;
 
 	@ViewChild('uploader') set content(elem: ElementRef) {
 
@@ -425,6 +428,11 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 	}
 
 	isPageValid(page: Page): boolean {
+		if (this.productNameControl) {
+			this.productNameControl.control.updateValueAndValidity();
+			if (!this.productNameControl.valid) return false;
+		}
+
 		if (page.type === 'CATEGORY') {
 			if (page.selection != null) {
 				if (page.selection.value != null && page.selection.value.length > 0) {
