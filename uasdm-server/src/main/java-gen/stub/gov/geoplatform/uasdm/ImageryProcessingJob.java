@@ -125,7 +125,13 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   {
     VaultFile vfImageryZip = null;
     ProcessConfiguration configuration = ProcessConfiguration.parse(parser);
+    
     AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
+    if (task instanceof WorkflowTask) {
+      ((WorkflowTask)task).setProcessDem(parser.getProcessDem());
+      ((WorkflowTask)task).setProcessOrtho(parser.getProcessOrtho());
+      ((WorkflowTask)task).setProcessPtcloud(parser.getProcessPtcloud());
+    }
     
     try (FileInputStream istream = new FileInputStream(inFile))
     {
