@@ -565,7 +565,7 @@ public class ODMProcessConfiguration implements ProcessConfiguration
 
       if (!element.isJsonNull())
       {
-        configuration.setProcessDem(object.get(PROCESS_PT_CLOUD).getAsBoolean());
+        configuration.setProcessPtcloud(object.get(PROCESS_PT_CLOUD).getAsBoolean());
       }
     }
 
