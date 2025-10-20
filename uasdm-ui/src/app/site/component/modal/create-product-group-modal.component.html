@@ -20,8 +20,9 @@
 
             <div class="form-group">
                 <label for="productName">Product name</label>
-                <input [(ngModel)]="productName" name="productName" type="input" class="form-control"
+                <input #productNameEl="ngModel" [(ngModel)]="productName" name="productName" type="input" class="form-control"
                     placeholder="Product name" required forbiddenName/>
+                <div class="text-danger" *ngIf="productNameEl.invalid && (productNameEl.dirty || productNameEl.touched)"><div *ngIf="productNameEl.errors?.required">Product name is required.</div><div *ngIf="productNameEl.errors?.forbiddenName">No spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/, \ or apostrophes are allowed.</div></div>
             </div>
         </div>
         <div class="modal-footer">

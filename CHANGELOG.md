@@ -2,6 +2,16 @@
 # Release Notes
 
 
+## [1.5.3](https://github.com/terraframe/osmre-uav/releases/tag/1.5.3) (2025-07-31)
+
+
+### Bug Fixes
+
+   - gcp validator checking long/lat against wrong columns   ([c8abd](https://github.com/terraframe/osmre-uav/commit/c8abd2afe65f04a3f6fb27eece7d06fff8d96d30))
+   - **upload** upload hangs in "processing" after resuming   ([5a601](https://github.com/terraframe/osmre-uav/commit/5a601a557a544c3b0c9e9f1d198019686d20fb7c))
+
+
+
 ## [1.5.2](https://github.com/terraframe/osmre-uav/releases/tag/1.5.2) (2025-04-24)
 
 

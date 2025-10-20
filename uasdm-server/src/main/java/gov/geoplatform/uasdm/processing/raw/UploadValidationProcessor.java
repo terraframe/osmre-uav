@@ -89,6 +89,16 @@ public class UploadValidationProcessor
   {
     this.isMultispectral = isMultispectral(task);
     
+    if (!UasComponentIF.isValidName(configuration.getProductName())) {
+      task.lock();
+      task.setStatus(WorkflowTaskStatus.ERROR.toString());
+      task.setMessage("Invalid Product Name [" + configuration.getProductName() + "]. No spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/, \\ or apostrophes are allowed.");
+      task.apply();
+      
+      isValid = false;
+      return false;
+    }
+    
     if (uploaded instanceof ArchiveFileResource)
     {
       validateArchive((ArchiveFileResource) uploaded, task, configuration);

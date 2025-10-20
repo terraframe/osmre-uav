@@ -20,7 +20,7 @@
 
   <groupId>gov.osmre.uasdm</groupId>
   <artifactId>uasdm</artifactId>
-  <version>1.5.3-SNAPSHOT</version>
+  <version>1.5.4-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>UASDM</name>

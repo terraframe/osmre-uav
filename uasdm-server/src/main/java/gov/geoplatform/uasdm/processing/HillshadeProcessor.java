@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.resource.ApplicationFileResource;
 import com.runwaysdk.resource.FileResource;
 
+import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
@@ -54,11 +55,13 @@ public class HillshadeProcessor extends ManagedDocument
 
     File hillshade = new File(file.getParent(), basename + "-gdal" + CogTifProcessor.COG_EXTENSION);
 
-    List<String> args = new LinkedList<>(Arrays.asList("gdaldem", "hillshade", file.getAbsolutePath(), hillshade.getAbsolutePath()));
-    args.add("-co");
-    args.add("BIGTIFF=YES");
+    var cmd = AppProperties.getCondaTool("gdaldem");
+    cmd.addAll(Arrays.asList(new String[] { "hillshade", file.getAbsolutePath(), hillshade.getAbsolutePath(), "-co", "BIGTIFF=YES" }));
 
-    boolean success = new SystemProcessExecutor(this.monitor).execute(args.toArray(new String[args.size()]));
+    boolean success = new SystemProcessExecutor(this.monitor)
+        .setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath())
+        .setCommandName("gdaldem")
+        .execute(cmd.toArray(new String[0]));
 
     if (success && hillshade.exists())
     {

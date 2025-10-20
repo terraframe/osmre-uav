@@ -26,7 +26,7 @@
     "region": "us-east-1",
     "tags": ["type,clusterodm"],
     
-    "ami": "ami-026c8acd92718196b",
+    "ami": "ami-020cba7c55df1f615",
     
     "instanceLimit": 5,
 

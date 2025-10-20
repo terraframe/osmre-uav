@@ -8,8 +8,9 @@
   <ng-container *ngIf="processUpload">
     <div class="form-group">
       <label for="productName">Product name</label>
-      <input [(ngModel)]="config.productName" name="productName" type="input" class="form-control"
+      <input #productName="ngModel" [(ngModel)]="config.productName" name="productName" type="input" class="form-control"
         placeholder="Product name" required forbiddenName />
+      <div class="text-danger" *ngIf="productName.invalid && (productName.dirty || productName.touched)"><div *ngIf="productName.errors?.required">Product name is required.</div><div *ngIf="productName.errors?.forbiddenName">No spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/, \ or apostrophes are allowed.</div></div>
     </div>
   </ng-container>
 
