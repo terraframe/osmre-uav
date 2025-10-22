@@ -4,6 +4,8 @@
 
 -->
 <div class="modal-body">
+    <h1 *ngIf="header" style="text-align:center;">{{header}}</h1>
+
     <div *ngIf="message != null" class="error-container">
         <div class="label-holder">
             <strong>Error</strong>
@@ -19,7 +21,8 @@
         <i class="fa fa-times btn btn-close" style="min-width:0;" (click)="bsModalRef.hide()"></i>
         <div class="image-container">
             <p *ngIf="loading" style="text-align: left;">Loading image...</p>
-            <img *ngIf="!loading" class="image-preview img-responsive center-block" [src]="imageToShow | safeHtml" alt="Image">
+            <img *ngIf="!loading" class="image-preview img-responsive center-block" [src]="imageToShow | safeHtml" alt="Image"
+            (click)="download()" style="cursor:pointer;" title="Click to download">
         </div>
     </div>
 

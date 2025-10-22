@@ -160,11 +160,12 @@
                     <a class="thumbnail"
                       [ngClass]="{'card-disabled' : item.exclude, 'non-clickable' : !enableSelectableImages}">
                       <input type="checkbox" class="x-box" *ngIf="enableSelectableImages" [checked]="item.exclude"
-                        (change)="toggleExcludeImage($event, item)" />
+                        (change)="toggleExcludeImage($event, item)" [title]="item.exclude ? 'Include image in processing' : 'Exclude image from processing'" style="cursor: pointer;" />
                       <img style="max-height: 150px"
-                        (click)="enableSelectableImages ? toggleExcludeImage($event, item) : false"
+                        (click)="previewImage(item)"
                         [ngClass]="{'img-disabled' : item.exclude}"
                         [src]="thumbnails[item.key] != null ? (thumbnails[item.key] | safeHtml) : (context + '/assets/thumbnail-default.png')"
+                        title="View or download image"
                         alt="Image">
                       <div class="caption">
                         <h4 class="media-heading">
