@@ -4,7 +4,7 @@
 
 -->
 <div class="modal-body">
-    <h1 *ngIf="header" style="text-align:center;">{{header}}</h1>
+    <h1 *ngIf="header" style="text-align:center;">{{header}} <i class="fa fa-download" (click)="download()" style="cursor:pointer;" title="Click to download"></i></h1>
 
     <div *ngIf="message != null" class="error-container">
         <div class="label-holder">
