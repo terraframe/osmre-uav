@@ -38,6 +38,28 @@
     margin-bottom: 0;
 }
 
+
+.dropdown-menu {
+  font-size: 18px;
+}
+.dropdown-menu>li>a:hover, 
+.dropdown-menu>li>a:focus {
+    background: #D7BD0C; 
+    background: var(--theme-primary-color-hover);
+    color:white;
+}
+
+.dropdown-item:hover {
+    color:white;
+}
+.dropdown-menu>.active>a, 
+.dropdown-menu>.active>a:focus, 
+.dropdown-menu>.active>a:hover {
+    background: #007276; 
+    background: var(--theme-primary-color-hover);
+    color:white;
+}
+
 /* 
 
 
