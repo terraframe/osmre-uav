@@ -21,13 +21,13 @@
       <div class="col-md-2"></div>
     </div>
     
-    <div *ngIf="config" class="panel panel-default">
-    	<div class="panel-heading">
+    <div *ngIf="config" class="card bg-default">
+    	<div class="card-header">
     		Basic Information
     	</div>
-	    <div class="panel-body" style="padding:10px;">
+	    <div class="card-body" style="padding:10px;">
 	    	<div class="form-group">
-		    	<label>
+		    	<label class="form-label">
 		    		Start Time
 		    	</label>
 			    <div>
@@ -36,7 +36,7 @@
 		    </div>
 		    
 		    <div *ngIf="odmRun.runEnd" class="form-group">
-			    <label>
+			    <label class="form-label">
 		    		End Time
 		    	</label>
 			    <div>
@@ -45,7 +45,7 @@
 		    </div>
 		    
 		    <div *ngIf="odmRun.runEnd" class="form-group">
-			    <label>
+			    <label class="form-label">
 		    		Total Runtime
 		    	</label>
 			    <div>
@@ -55,11 +55,11 @@
 	    </div>
 	</div>
     
-    <div *ngIf="config" class="panel panel-default">
-    	<div class="panel-heading">
+    <div *ngIf="config" class="card bg-default">
+    	<div class="card-header">
     		Configuration
     	</div>
-	    <div class="panel-body" style="padding:10px;">
+	    <div class="card-body" style="padding:10px;">
 	        <div class="form-group">
 	            <label for="outFileNamePrefix">Output Product Name Prefix</label>
 	            <input [(ngModel)]="config.outFileNamePrefix" name="outFileNamePrefix" type="input" class="form-control"
@@ -149,11 +149,11 @@
 	    </div>
 	</div>
 	
-	<div *ngIf="odmRun && odmRun.output" class="panel panel-default">
-    	<div class="panel-heading">
+	<div *ngIf="odmRun && odmRun.output" class="card bg-default">
+    	<div class="card-header">
     		Output
     	</div>
-	    <div class="panel-body">
+	    <div class="card-body">
 	      <textarea style="color: grey; width: 100%; height: 500px;" [innerHTML]="odmRun.output"></textarea>
 	    </div>
 	</div>

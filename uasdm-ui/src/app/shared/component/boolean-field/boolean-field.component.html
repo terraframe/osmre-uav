@@ -4,17 +4,18 @@
 
 -->
 <div>
-  <div class="check-block">
-    <div (click)="toggle()" [ngClass]="{'chk-checked' : value, 'chk-disabled' : disabled}" [style]="!inline ? '' : 'margin: 0 5px 0 0;'" ng-style="chkstyle" class="jcf-unselectable chk-area">
+  <div class="form-check">
+    <div (click)="toggle()" [ngClass]="{'chk-checked' : value, 'chk-disabled' : disabled}" [style]="!inline ? '' : 'margin: 0 5px 0 0;'" ng-style="chkstyle" class="jcf-unselectable chk-area form-check-input">
       <span></span>
     </div>
 
-    <label *ngIf="label.length > 0" class="checkbox-label">{{label}}</label>
-    <label *ngIf="localizeLabelKey.length > 0" class="checkbox-label">
+    <label *ngIf="label.length > 0" class="form-check-label">{{label}}</label>
+    <label *ngIf="localizeLabelKey.length > 0" class="form-check-label">
       <localize key="{{localizeLabelKey}}"></localize>
     </label>
   </div>
-  <!-- Force a line break somehow -->
+  <!-- Force a line break somehow 
   <div *ngIf="!inline" class="row">
   </div>
+  -->
 </div>

@@ -51,7 +51,6 @@ import { ProductService } from "@site/service/product.service";
 import { ProductModalComponent } from "./modal/product-modal.component";
 import { isMapboxURL, transformMapboxUrl } from "maplibregl-mapbox-request-transformer";
 
-
 const enum PANEL_TYPE {
   SITE = 0,
   STAC = 1,
@@ -500,9 +499,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!Boolean(this.cookieService.get("acceptedDisclaimer"))) {
 
       this.bsModalRef = this.modalService.show(NotificationModalComponent, {
-        animated: true,
+        animated: false,
         backdrop: true,
         ignoreBackdropClick: true,
+        class: "modal-xl"        
       });
       this.bsModalRef.content.messageTitle = "Disclaimer";
       this.bsModalRef.content.message = this.configuration.getAppDisclaimer();
@@ -701,10 +701,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   handleCreateCollection(): void {
 
     this.bsModalRef = this.modalService.show(CreateCollectionModalComponent, {
-      animated: true,
+      animated: false,
       backdrop: true,
       ignoreBackdropClick: true,
-      "class": "upload-modal"
+      "class": "upload-modal modal-xl"
     });
     this.bsModalRef.content.init(this.breadcrumbs.filter(b => b.type === SELECTION_TYPE.SITE).map(b => b.data as SiteEntity));
 
@@ -717,10 +717,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   handleUploadProducts(): void {
 
     this.bsModalRef = this.modalService.show(CreateStandaloneProductModalComponent, {
-      animated: true,
+      animated: false,
       backdrop: true,
       ignoreBackdropClick: true,
-      "class": "upload-modal"
+      "class": "upload-modal modal-xl"
     });
     this.bsModalRef.content.init(this.breadcrumbs.filter(b => b.type === SELECTION_TYPE.SITE).map(b => b.data as SiteEntity));
 
@@ -736,10 +736,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.service.newChild(parentId, type).then(data => {
       this.bsModalRef = this.modalService.show(EntityModalComponent, {
-        animated: true,
+        animated: false,
         backdrop: true,
         ignoreBackdropClick: true,
-        "class": "upload-modal"
+        "class": "upload-modal modal-xl"
       });
       this.bsModalRef.content.init(true, this.userName, this.admin, data.item, data.attributes, this.map.getCenter(), this.map.getZoom());
 
@@ -776,10 +776,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.service.view(this.existingTask.task.collection).then(resp => {
       const modal = this.modalService.show(UploadModalComponent, {
-        animated: true,
+        animated: false,
         backdrop: true,
         ignoreBackdropClick: true,
-        "class": "upload-modal"
+        "class": "upload-modal modal-xl"
       });
       modal.content.init(resp.item, this.existingTask.task.uploadTarget);
       modal.content.onUploadCancel.subscribe(() => {
@@ -798,10 +798,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.service.edit(node.id).then(data => {
       this.bsModalRef = this.modalService.show(EntityModalComponent, {
-        animated: true,
+        animated: false,
         backdrop: true,
         ignoreBackdropClick: true,
-        "class": "edit-modal"
+        "class": "edit-modal modal-xl"
       });
       this.bsModalRef.content.init(false, this.userName, this.admin, data.item, data.attributes, this.map.getCenter(), this.map.getZoom());
 
@@ -859,9 +859,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     sText += " This can <b>NOT</b> be undone";
 
     this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
-      animated: true,
+      animated: false,
       backdrop: true,
       ignoreBackdropClick: true,
+      class: "modal-xl"
     });
     this.bsModalRef.content.message = "Are you sure you want to delete [" + node.name + "]?";
     this.bsModalRef.content.subText = sText;
@@ -1024,10 +1025,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   handleViewStandaloneProduct(id: string): void {
     this.pService.getDetail(id, 1, 20).then(detail => {
       this.bsModalRef = this.modalService.show(ProductModalComponent, {
-        animated: true,
+        animated: false,
         backdrop: true,
         ignoreBackdropClick: true,
-        'class': 'product-info-modal'
+        'class': 'product-info-modal modal-xl'
       });
       this.bsModalRef.content.init(detail);
     });
@@ -1396,19 +1397,19 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (collection.type === "Mission") {
       this.bsModalRef = this.modalService.show(AccessibleSupportModalComponent, {
-        animated: true,
+        animated: false,
         backdrop: true,
         ignoreBackdropClick: true,
-        class: "leaf-modal modal-lg"
+        class: "leaf-modal modal-xl"
       });
       this.bsModalRef.content.init(collection, folders, breadcrumbs);
     }
     else {
       this.bsModalRef = this.modalService.show(CollectionModalComponent, {
-        animated: true,
+        animated: false,
         backdrop: true,
         ignoreBackdropClick: true,
-        class: "leaf-modal modal-lg"
+        class: "leaf-modal modal-xl"
       });
       this.bsModalRef.content.init(collection, folders, breadcrumbs);
     }
@@ -1859,9 +1860,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
     this.bsModalRef = this.modalService.show(FilterModalComponent, {
-      animated: true,
+      animated: false,
       backdrop: true,
       ignoreBackdropClick: true,
+      class: "modal-xl"
     });
     this.bsModalRef.content.init(this.filter);
 

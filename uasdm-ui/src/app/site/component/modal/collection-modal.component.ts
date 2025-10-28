@@ -285,10 +285,10 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	handleRunOrtho(): void {
 
 		const confirmModalRef = this.modalService.show(RunProcessModalComponent, {
-			animated: true,
+			animated: false,
 			backdrop: true,
 			ignoreBackdropClick: true,
-			'class': 'confirmation-modal'
+			'class': 'confirmation-modal modal-xl'
 		});
 		confirmModalRef.content.init(this.entity);
 		confirmModalRef.content.onConfirm.subscribe(configuration => {
@@ -330,10 +330,10 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	handleCreateProductGroup(): void {
 
 		const confirmModalRef = this.modalService.show(CreateProductGroupModalComponent, {
-			animated: true,
+			animated: false,
 			backdrop: true,
 			ignoreBackdropClick: true,
-			'class': 'confirmation-modal'
+			'class': 'confirmation-modal modal-xl'
 		});
 		confirmModalRef.content.init(this.entity);
 	}
@@ -372,10 +372,10 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 
 	editMetadata(): void {
 		let modalRef = this.modalService.show(MetadataModalComponent, {
-			animated: true,
+			animated: false,
 			backdrop: true,
 			ignoreBackdropClick: true,
-			'class': 'upload-modal'
+			'class': 'upload-modal modal-xl'
 		});
 		modalRef.content.initCollection(this.entity.id, this.entity.name);
 
@@ -386,10 +386,10 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 
 	handleAccessManagement(): void {
 		let modalRef = this.modalService.show(UserAccessModalComponent, {
-			animated: true,
+			animated: false,
 			backdrop: true,
 			ignoreBackdropClick: true,
-			'class': 'upload-modal'
+			'class': 'upload-modal modal-xl'
 		});
 		modalRef.content.init(this.entity);
 	}
@@ -398,10 +398,10 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	handleUpload(): void {
 
 		const modal = this.modalService.show(UploadModalComponent, {
-			animated: true,
+			animated: false,
 			backdrop: true,
 			ignoreBackdropClick: true,
-			'class': 'upload-modal'
+			'class': 'upload-modal modal-xl'
 		});
 		modal.content.init(this.entity, "raw");
 

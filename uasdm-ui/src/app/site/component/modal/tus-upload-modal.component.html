@@ -1,0 +1,209 @@
+<form #myForm="ngForm">
+  <div class="modal-body" tabindex="-1" role="dialog">
+    <div *ngIf="message != null && message.length > 0" class="row error-container">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">
+        <div class="label-holder">
+          <strong style="color:#8c0000;">Error</strong>
+        </div>
+        <div class="holder">
+          <div>
+            <p class="error-message">{{message}}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2"></div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">
+
+        <!-- Existing task panel -->
+        <div *ngIf="existingTask && !currentTask">
+          <div class="card bg-warning" style="margin: 30px 0 30px 0;">
+            <div class="card-header" style="font-size: 20px;">Partial Upload Detected</div>
+            <div class="card-body">
+              <h4>A partial upload was detected. You can either cancel that partial upload or attempt to
+                continue.</h4>
+              <h4>
+                <b>To continue an upload</b>
+                please re-upload your file and we will try our best to continue where you left off.
+              </h4>
+
+              <!-- 
+                            <button type="button" class="btn btn-primary" style="margin-top: 20px;"
+                                (click)="showUploadPanel()">
+                                <i class="icon-upload icon-white"></i>
+                                Continue Upload
+                            </button>
+ -->
+            </div>
+          </div>
+        </div> <!-- End existing task panel -->
+
+        <!-- Task finished upload notification -->
+        <div *ngFor="let note of taskFinishedNotifications" class="card bg-success" style="margin: 30px 0 30px 0;">
+          <div class="card-header" style="font-size: 20px;">
+            Upload Details
+            <i class="btn btn-close float-end" style="min-width:20px;padding:0;line-height: 27px;"
+              (click)="closeTaskFinishedNotification(note.id)"></i>
+          </div>
+          <div class="card-body">
+            <h4>
+              Status:
+              <b> Upload successfully completed </b>
+            </h4>
+            <h4>
+              Message:
+              <b> {{note.message}} </b>
+              <!-- You can view your uploads on the <a href="management#/site/tasks" >Workflow Task page</a>. -->
+            </h4>
+          </div>
+        </div> <!-- End task finished upload notification -->
+
+        <div>
+
+          <div class="well">
+            <h4>All uploaded files</h4>
+            <ul>
+              <li *ngIf="uploadTarget === 'raw'">Must be compressed into a .zip or .tar.gz format.</li>
+              <li *ngIf="uploadTarget !== 'raw'">Can optionally be compressed into a .zip or .tar.gz format.</li>
+              <li>Containing spaces or special characters such as &lt;, &gt;, -, +, =, !, &#64;, #, $, %, ^, &amp;, *,
+                ?,/, \ or apostrophes are allowed or
+                apostrophes will be replaced with underscores</li>
+            </ul>
+
+            <h4>
+              Supported File Formats
+            </h4>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Formats</th>
+                </tr>
+              </thead>
+              <tbody *ngIf="uploadTarget === 'raw'">
+                <ng-container *ngIf="!component.isLidar">
+                  <tr>
+                    <td>RGB Image Data</td>
+                    <td>jpg, jpeg, png</td>
+                  </tr>
+                  <tr>
+                    <td>Multispectral Image Data</td>
+                    <td>tif</td>
+                  </tr>
+                </ng-container>
+                <ng-container *ngIf="component.isLidar">
+                  <tr>
+                    <td>Pointcloud</td>
+                    <td>laz, las</td>
+                  </tr>
+                </ng-container>
+                <tr>
+                  <td>Video</td>
+                  <td>mp4</td>
+                </tr>
+              </tbody>
+              <tbody *ngIf="uploadTarget === 'ptcloud'">
+                <tr>
+                  <td>Pointcloud</td>
+                  <td>laz, las</td>
+                </tr>
+              </tbody>
+              <tbody *ngIf="uploadTarget === 'dem'">
+                <tr>
+                  <td>Digital Elevation Model (DEM)</td>
+                  <td>tif</td>
+                </tr>
+              </tbody>
+              <tbody *ngIf="uploadTarget === 'ortho'">
+                <tr>
+                  <td>Orthomosaic</td>
+                  <td>tif, png</td>
+                </tr>
+              </tbody>
+              <tbody *ngIf="uploadTarget === 'video'">
+                <tr>
+                  <td>Video</td>
+                  <td>mp4</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+
+          <div *ngIf="currentTask" class="card card-warning" style="margin: 30px 0 30px 0;">
+            <div class="card-header" style="font-size: 20px;">Upload Details</div>
+            <div class="card-body">
+              <h4>
+                Status:
+                <b> {{currentTask.status}} </b>
+              </h4>
+              <h4>
+                Message:
+                <b> {{currentTask.message}} </b>
+              </h4>
+              <h4>
+                Upload Started On:
+                <b> {{currentTask.createDate | idmdate}} </b>
+              </h4>
+              <h4>
+                Last Updated:
+                <b> {{currentTask.lastUpdateDate | idmdate}} </b>
+              </h4>
+              <h4>
+                Elapsed Time:
+                <b> {{uploadCounter}} </b>
+              </h4>
+            </div>
+          </div>
+
+          <div *ngIf="progress" class="card card-warning" style="margin: 30px 0 30px 0;">
+            <div class="card-header" style="font-size: 20px;">Upload Details</div>
+            <div class="card-body">
+              <h4>
+                Progress:
+                <b> {{ progress.percentage | number: '1.0-0' }}% </b>
+              </h4>
+            </div>
+          </div>
+
+
+
+          <!-- <uppy-dashboard [uppy]="uppy"> </uppy-dashboard> -->
+          <input type="file" (change)="onFileSelected($event)" [attr.aria-label]="'Choose file to upload'" />
+        </div> <!-- End current upload indicator -->
+      </div>
+      <div class="col-md-2"></div>
+    </div>
+  </div>
+  <div class="modal-footer">
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="btn-holder" style="text-align: right;">
+          <button *ngIf="existingTask && !currentTask" type="button" [disabled]="disabled" class="btn btn-danger"
+            (click)="removeUpload()">
+            <i class="icon-upload icon-white"></i>
+            Cancel Upload
+          </button>
+
+          <button type="button" (click)="close()" [disabled]="disabled" class="btn btn-default" role="button"
+            aria-disabled="false" style="padding: 4px 18px;">
+            <span class="ui-button-text">Close</span>
+          </button>
+
+          <button type="button btn btn-primary" [disabled]="myForm.invalid || !isPageValid() || disabled"
+            class="btn btn-primary" (click)="handleUpload()">
+            <i class="icon-upload icon-white"></i>
+            Upload
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</form>

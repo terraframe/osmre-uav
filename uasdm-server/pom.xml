@@ -327,6 +327,13 @@
       <artifactId>jcl-over-slf4j</artifactId>
       <version>1.7.30</version>
     </dependency>
+    
+<!-- https://mvnrepository.com/artifact/me.desair.tus/tus-java-server -->
+<dependency>
+    <groupId>me.desair.tus</groupId>
+    <artifactId>tus-java-server</artifactId>
+    <version>1.0.0-2.1</version>
+</dependency>    
   </dependencies>
 
   <!-- These profiles allow for Maven execution of Runway-SDK's Java Tools, 

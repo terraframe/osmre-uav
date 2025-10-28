@@ -25,11 +25,13 @@
 
       <div class="row">
         <div class="col-md-12">
-          <ul class="breadcrumb" style="margin-bottom: 10px;">
-            <li *ngFor="let prev of previous">
-              <span> {{prev.name}}</span>
-            </li>
-          </ul>
+          <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item" *ngFor="let prev of previous">
+                <span> {{prev.name}}</span>
+              </li>
+            </ol>
+          </nav>          
         </div>
       </div>
 

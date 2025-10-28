@@ -9,6 +9,7 @@ import { PageResult } from '@shared/model/page';
 
 import { Subject } from 'rxjs';
 import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
+import { TableLazyLoadEvent } from 'primeng/table';
 @Component({
     selector: 'generic-table',
     templateUrl: './generic-table.component.html',
@@ -36,7 +37,7 @@ export class GenericTableComponent implements OnInit, OnDestroy {
 
     booleanOptions: any = [];
 
-    event: LazyLoadEvent = null;
+    event: TableLazyLoadEvent = null;
 
     constructor() {
         this.booleanOptions = [{ label: '', value: null }, { value: true, label: 'True' }, { value: false, label: 'False' }];
@@ -60,7 +61,7 @@ export class GenericTableComponent implements OnInit, OnDestroy {
         }
     }
 
-    onPageChange(event: LazyLoadEvent): void {
+    onPageChange(event: TableLazyLoadEvent): void {
         this.loading = true;
         this.event = event;
 
@@ -89,8 +90,8 @@ export class GenericTableComponent implements OnInit, OnDestroy {
         return col.type;
     }
 
-    handleInput(dt: any, target: EventTarget, col: GenericTableColumn, operation: string): void {
-        dt.filter(((<HTMLTextAreaElement>target)).value, col.field, operation)
+    handleInput(dt: any, event: any, col: GenericTableColumn, operation: string): void {
+        dt.filter(event.value, col.field, operation)
     }
 
 }

@@ -7,8 +7,8 @@
     <div class="row">
         <div class="col-sm-12">
             <div style="padding:10px 15px;">
-                <label>
-                    <label>Order available products</label>
+                <label class="form-label">
+                    <label class="form-label">Order available products</label>
                 </label>
                 <select [(ngModel)]="sortField" name="sortField" (change)="refresh()">
                     <option></option>
@@ -42,25 +42,28 @@
                         </span>
                     </h5>
 
-                    <ul class="breadcrumb" style="margin: 5px 0 5px 0;">
-                        <li *ngFor="let entity of view.product.entities">
-                            <span> {{entity.name}} </span>
-                        </li>
-                    </ul>
+                    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                        <ol class="breadcrumb" style="margin: 5px 0 5px 0;">
+                            <li class="breadcrumb-item" *ngFor="let entity of view.product.entities">
+                                <span> {{entity.name}}</span>
+                            </li>
+                        </ol>
+                    </nav>
 
                     <div *ngIf="view.componentType === 'collection'" style="padding:10px 15px;">
-                        <label>
-                            <label>Versions</label>
+                        <label class="form-label">
+                            <label class="form-label">Versions</label>
                         </label>
                         <select [(ngModel)]="view.productId" name="productId" (change)="setVersion(view)">
-                            <option *ngFor="let product of view.products" [value]="product.id">{{product.productName}}</option>
+                            <option *ngFor="let product of view.products" [value]="product.id">{{product.productName}}
+                            </option>
                         </select>
-                    </div>       
+                    </div>
 
 
                     <div *ngIf="thumbnails[view.product.id] != null">
                         <a class="thumbnail" (click)="previewImage(view.product)">
-                            <img class="" [src]="thumbnails[view.product.id] | safeHtml"
+                            <img class="mx-auto d-block img-thumbnail" [src]="thumbnails[view.product.id] | safeHtml"
                                 (error)="getDefaultImgURL($event)" alt="Image">
                         </a>
                     </div>
@@ -98,7 +101,8 @@
                             </a>
                         </div>
 
-                        <div class="col-sm-4" *ngIf="view.product.removable && !view.product.locked && !view.product.published">
+                        <div class="col-sm-4"
+                            *ngIf="view.product.removable && !view.product.locked && !view.product.published">
                             <a class="fa fa-trash-alt product-icon" (click)="handleDelete(view, $event)"
                                 title="Deletes the product and all associated data and public map services.">Delete</a>
                         </div>

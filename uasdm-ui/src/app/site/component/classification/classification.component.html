@@ -24,12 +24,12 @@
 
     <form #ngForm="ngForm">
       <div class="form-group">
-        <label>Name</label>
+        <label class="form-label">Name</label>
         <input [(ngModel)]="classification.name" name="label" type="input" class="form-control" placeholder="Name"
           [disabled]="mode === 'READ'" required />
       </div>
       <div *ngFor="let column of metadata.columns" class="form-group">
-        <label></label>
+        <label class="form-label"></label>
         <boolean-field *ngIf="column.type === 'boolean'" [value]="classification[column.name]" [label]="column.label"
           (valueChange)="classification[column.name] = $event" [disabled]="mode === 'READ'">
         </boolean-field>

@@ -15,7 +15,7 @@ import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { CookieService } from 'ngx-cookie-service';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
-import { TreeModule } from "@circlon/angular-tree-component";
+import { TreeModule } from "@ali-hm/angular-tree-component";
 
 import './rxjs-extensions';
 
@@ -28,7 +28,6 @@ import { ForgotPasswordService } from './core/service/forgotpassword.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HttpErrorInterceptor } from './core/service/http-error.interceptor';
 
-import { HubHeaderComponent } from './core/component/hub/hub-header.component';
 import { LoginHeaderComponent } from './core/component/login/login-header.component';
 
 import { NgxPaginationModule } from 'ngx-pagination';
@@ -55,7 +54,6 @@ import { ConfigurationService } from '@core/service/configuration.service';
     ],
     declarations: [
         UasdmAppComponent,
-        HubHeaderComponent,
         LoginHeaderComponent,
 
         // Routing components
@@ -88,7 +86,6 @@ import { ConfigurationService } from '@core/service/configuration.service';
             'multi': true,
         }
     ],
-    bootstrap: [UasdmAppComponent],
-    entryComponents: []
+    bootstrap: [UasdmAppComponent]
 } )
 export class UasdmAppModule { }

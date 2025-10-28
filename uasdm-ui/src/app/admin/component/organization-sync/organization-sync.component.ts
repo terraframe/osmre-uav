@@ -93,8 +93,8 @@ export class OrganizationSyncComponent implements OnInit {
 
         this.service.execute(this.sync.oid).then(data => {
             const bsModalRef = this.modalService.show(NotificationModalComponent, {
-                animated: true,
-                backdrop: true,
+                animated: false,
+                backdrop: true, class: 'modal-xl',
                 ignoreBackdropClick: true,
             });
             bsModalRef.content.messageTitle = "";

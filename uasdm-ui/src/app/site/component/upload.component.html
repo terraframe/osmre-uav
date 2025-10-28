@@ -24,9 +24,9 @@
 
                 <!-- Existing task panel -->
                 <div class="" *ngIf="existingTask && !currentTask">
-                    <div class="panel panel-warning" style="margin: 30px 0 30px 0;">
-                        <div class="panel-heading" style="font-size: 20px;">Partial Upload Detected</div>
-                        <div class="panel-body">
+                    <div class="card bg-warning" style="margin: 30px 0 30px 0;">
+                        <div class="card-header" style="font-size: 20px;">Partial Upload Detected</div>
+                        <div class="card-body">
                             <h4>A partial upload was detected. You can either cancel that partial upload or attempt to
                                 continue.</h4>
                             <h4>
@@ -51,15 +51,15 @@
                 </div> <!-- End existing task panel -->
 
                 <!-- Task finished upload notification -->
-                <div *ngFor="let note of taskFinishedNotifications" class="panel panel-success"
+                <div *ngFor="let note of taskFinishedNotifications" class="card bg-success"
                     style="margin: 30px 0 30px 0;">
-                    <div class="panel-heading" style="font-size: 20px;">
+                    <div class="card-header" style="font-size: 20px;">
                         Upload Details
-                        <i class="fa fa-times btn btn-close pull-right"
+                        <i class="btn btn-close float-end"
                             style="min-width:20px;padding:0;line-height: 27px;"
                             (click)="closeTaskFinishedNotification(note.id)"></i>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         <h4>
                             Status:
                             <b> Upload successfully completed </b>
@@ -166,9 +166,9 @@
 
                 <!-- Current upload indicator -->
                 <div class="" [hidden]="!uploadVisible">
-                    <div *ngIf="currentTask" class="panel panel-warning" style="margin: 30px 0 30px 0;">
-                        <div class="panel-heading" style="font-size: 20px;">Upload Details</div>
-                        <div class="panel-body">
+                    <div *ngIf="currentTask" class="card card-warning" style="margin: 30px 0 30px 0;">
+                        <div class="card-header" style="font-size: 20px;">Upload Details</div>
+                        <div class="card-body">
                             <h4>
                                 Status:
                                 <b> {{currentTask.status}} </b>

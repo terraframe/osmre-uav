@@ -82,10 +82,10 @@ export class ReportsComponent implements OnInit {
                 if (oid != null && oid.length > 0) {
                     this.pService.getDetail(oid, 1, 20).then(detail => {
                         const bsModalRef = this.modalService.show(ProductModalComponent, {
-                            animated: true,
+                            animated: false,
                             backdrop: true,
                             ignoreBackdropClick: true,
-                            'class': 'product-info-modal'
+                            'class': 'product-info-modal modal-xl'
                         });
                         bsModalRef.content.init(detail);
                     });

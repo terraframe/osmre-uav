@@ -113,9 +113,10 @@ export class ProductPanelComponent implements OnDestroy {
 
     clipboardPublicStacUrl(product: Product, clipboardPopover) {
         const bsModalRef = this.modalService.show(ShareProductModalComponent, {
-            animated: true,
+            animated: false,
             backdrop: true,
             ignoreBackdropClick: true,
+            class: 'modal-xl'
         });
         bsModalRef.content.init(product);
 
@@ -295,9 +296,10 @@ export class ProductPanelComponent implements OnDestroy {
         event.stopPropagation();
 
         this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
-            animated: true,
+            animated: false,
             backdrop: true,
             ignoreBackdropClick: true,
+            class: 'modal-xl'
         });
         this.bsModalRef.content.message = 'Are you sure you want to delete [' + view.product.productName + ']?';
         this.bsModalRef.content.data = view.product;
@@ -331,10 +333,10 @@ export class ProductPanelComponent implements OnDestroy {
             const component: string = product.entities[product.entities.length - 1].id;
 
             this.bsModalRef = this.modalService.show(ImagePreviewModalComponent, {
-                animated: true,
+                animated: false,
                 backdrop: true,
                 ignoreBackdropClick: false,
-                'class': 'image-preview-modal'
+                'class': 'image-preview-modal modal-xl'
             });
             this.bsModalRef.content.initProduct(product.id, product.productName);
         }
@@ -343,10 +345,10 @@ export class ProductPanelComponent implements OnDestroy {
     handleGetInfo(product: Product): void {
         this.pService.getDetail(product.id, 1, 20).then(detail => {
             this.bsModalRef = this.modalService.show(ProductModalComponent, {
-                animated: true,
+                animated: false,
                 backdrop: true,
                 ignoreBackdropClick: true,
-                'class': 'product-info-modal'
+                'class': 'product-info-modal modal-xl'
             });
             this.bsModalRef.content.init(detail);
         });

@@ -118,8 +118,8 @@ export class AccessibleSupportModalComponent implements OnInit {
 
     handleDelete(item: SiteEntity): void {
         let modalRef: BsModalRef = this.modalService.show(BasicConfirmModalComponent, {
-            animated: true,
-            backdrop: true,
+            animated: false,
+            backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true,
         });
         modalRef.content.message = 'Are you sure you want to delete the file [' + item.name + ']?';

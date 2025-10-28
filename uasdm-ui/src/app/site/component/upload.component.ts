@@ -361,11 +361,11 @@ export class UploadComponent implements OnInit {
          * Validate form values before uploading
          */
         if (!this.values.create && this.values.collection == null && !this.existingTask) {
-            this.bsModalRef = this.modalService.show(ErrorModalComponent, { backdrop: true });
+            this.bsModalRef = this.modalService.show(ErrorModalComponent, { backdrop: true, class: 'modal-xl' });
             this.bsModalRef.content.message = "A collection must first be selected before the file can be uploaded";
         }
         else if (this.values.create && (this.values.mission == null || this.values.name == null || this.values.name.length == 0) && !this.existingTask) {
-            this.bsModalRef = this.modalService.show(ErrorModalComponent, { backdrop: true });
+            this.bsModalRef = this.modalService.show(ErrorModalComponent, { backdrop: true, class: 'modal-xl' });
             this.bsModalRef.content.message = "Name is required";
         }
         else {
@@ -379,8 +379,8 @@ export class UploadComponent implements OnInit {
         let that = this;
 
         this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
-            animated: true,
-            backdrop: true,
+            animated: false,
+            backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true,
         });
         this.bsModalRef.content.message = 'Are you sure you want to cancel the upload of [' + this.uploader.getResumableFilesData()[0].name + ']';
@@ -446,7 +446,7 @@ export class UploadComponent implements OnInit {
 
     error(message: string): void {
         if (message !== null) {
-            this.bsModalRef = this.modalService.show(ErrorModalComponent, { backdrop: true });
+            this.bsModalRef = this.modalService.show(ErrorModalComponent, { backdrop: true, class: 'modal-xl' });
             this.bsModalRef.content.message = message;
         }
     }

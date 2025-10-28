@@ -25,11 +25,13 @@
 
       <div class="row">
         <div class="col-md-12">
-          <ul class="breadcrumb" style="margin-bottom: 10px;">
-            <li *ngFor="let entity of product.entities">
-              <span> {{entity.name}}</span>
-            </li>
-          </ul>
+          <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item" *ngFor="let entity of product.entities">
+                <span> {{entity.name}}</span>
+              </li>
+            </ol>
+          </nav>          
         </div>
       </div>
 
@@ -37,7 +39,7 @@
         <div class="col-md-12">
           <div class="" *ngIf="thumbnails[product.id] != null">
             <a class="thumbnail" (click)="viewOrtho()" title="View ortho">
-              <img [src]="thumbnails[product.id] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
+              <img class="mx-auto d-block img-thumbnail" [src]="thumbnails[product.id] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
             </a>
           </div>
         </div>
@@ -45,25 +47,25 @@
 
       <div class="row">
         <div class="col-md-12">
-          <label>Pilot Name: </label> &nbsp; {{product.pilotName}}
+          <label class="form-label">Pilot Name: </label> &nbsp; {{product.pilotName}}
         </div>
       </div>
 
       <div class="row">
         <div class="col-md-12">
-          <label>Creation Date: </label> &nbsp; {{product.dateTime | idmdate : "MMM dd, yyyy"}}
+          <label class="form-label">Creation Date: </label> &nbsp; {{product.dateTime | idmdate : "MMM dd, yyyy"}}
         </div>
       </div>
       
       <div class="row">
         <div class="col-md-12">
-          <label>Collection Date: </label> &nbsp; {{product.collectionDate | idmdate : "MMM dd, yyyy" : false}}
+          <label class="form-label">Collection Date: </label> &nbsp; {{product.collectionDate | idmdate : "MMM dd, yyyy" : false}}
         </div>
       </div>
 
       <div class="row">
         <div class="col-md-12">
-          <label>Collection End Date: </label> &nbsp; {{product.collectionEndDate | idmdate : "MMM dd, yyyy" : false}}
+          <label class="form-label">Collection End Date: </label> &nbsp; {{product.collectionEndDate | idmdate : "MMM dd, yyyy" : false}}
         </div>
       </div>
 
@@ -71,7 +73,7 @@
       
       <div class="row">
         <div class="col-md-6">
-          <label>Sensor:</label>
+          <label class="form-label">Sensor:</label>
           
           <table *ngIf="product.sensor" class="table table-bordered">
             <tbody>
@@ -98,7 +100,7 @@
         </div>
         
         <div class="col-md-6">
-          <label>Platform:</label>
+          <label class="form-label">Platform:</label>
           
           <table *ngIf="product.platform" class="table table-bordered">
             <tbody>
@@ -124,7 +126,7 @@
       
       <div class="row">
         <div class="col-md-12">
-          <label>UAV:</label>
+          <label class="form-label">UAV:</label>
           
           <table *ngIf="product.uav" class="table table-bordered">
             <tbody>
@@ -151,7 +153,7 @@
 
       <!-- <div class="row">
       <div class="col-md-12">
-        <label>Raw Images</label> 
+        <label class="form-label">Raw Images</label> 
       </div>
     </div> -->
       <div *ngIf="!isStandalone()">
@@ -161,11 +163,11 @@
               <div class="row">
                 <div class="col-md-12">
                   <div id="image-list-container">
-                    <ul class="list-group row">
-                      <li *ngFor="let item of product.page.resultSet | paginate: { itemsPerPage: product.page.pageSize, currentPage: product.page.pageNumber, totalItems: product.page.count }" class="list-group-item col-xs-3" style="background:none;">
+                    <ul class="list-group list-group-horizontal flex-wrap">
+                      <li *ngFor="let item of product.page.resultSet | paginate: { itemsPerPage: product.page.pageSize, currentPage: product.page.pageNumber, totalItems: product.page.count }" class="list-group-item col-3" style="background:none;">
                         <div class="" *ngIf="thumbnails[item.id] != null">
                           <a class="thumbnail" (click)="previewImage(item)">
-                            <img [src]="thumbnails[item.id] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
+                            <img class="mx-auto d-block img-thumbnail" [src]="thumbnails[item.id] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
                             <div class="caption">
                               <h4 class="media-heading">{{item.name}}</h4>
                             </div>

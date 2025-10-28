@@ -24,23 +24,23 @@
 
     <form #ngForm="ngForm">
       <div class="form-group">
-        <label>Name</label>
+        <label class="form-label">Name</label>
         <input [(ngModel)]="sensor.name" name="name" type="input" class="form-control" placeholder="Name"
           [disabled]="mode === 'READ'" required />
       </div>
       <div class="form-group">
-        <label>Description</label>
+        <label class="form-label">Description</label>
         <textarea [(ngModel)]="sensor.description" name="description" type="input" class="form-control"
           [disabled]="mode === 'READ'" placeholder="Description">
         </textarea>
       </div>
       <div class="form-group">
-        <label>Model</label>
+        <label class="form-label">Model</label>
         <input [(ngModel)]="sensor.model" name="model" type="input" class="form-control" placeholder="Model"
           [disabled]="mode === 'READ'" required />
       </div>
       <div class="form-group">
-        <label>Type</label>
+        <label class="form-label">Type</label>
         <select [(ngModel)]="sensor.sensorTypeOid" name="sensorType" type="input" class="form-control"
           [disabled]="mode === 'READ'" required>
           <option></option>
@@ -56,32 +56,32 @@
           [label]="'High Resolution'" [disabled]="mode === 'READ'"></boolean-field>
       </div>
       <div class="form-group">
-        <label>Pixel Size Width</label>
+        <label class="form-label">Pixel Size Width</label>
         <input [(ngModel)]="sensor.pixelSizeWidth" name="pixelSizeWidth" type="number" step="0" class="form-control"
           [disabled]="mode === 'READ'" required />
       </div>
       <div class="form-group">
-        <label>Pixel Size Height</label>
+        <label class="form-label">Pixel Size Height</label>
         <input [(ngModel)]="sensor.pixelSizeHeight" name="pixelSizeHeight" type="number" step="0" class="form-control"
           [disabled]="mode === 'READ'" required />
       </div>
       <div class="form-group">
-        <label>Sensor Width</label> (millimeters)
+        <label class="form-label">Sensor Width</label> (millimeters)
         <input [(ngModel)]="sensor.sensorWidth" name="sensorWidth" type="number" step="0" class="form-control"
           [disabled]="mode === 'READ'" required />
       </div>
       <div class="form-group">
-        <label>Sensor Height</label> (millimeters)
+        <label class="form-label">Sensor Height</label> (millimeters)
         <input [(ngModel)]="sensor.sensorHeight" name="sensorHeight" type="number" step="0" class="form-control"
           [disabled]="mode === 'READ'" required />
       </div>
       <div class="form-group">
-        <label>Focal Length</label> (millimeters)
+        <label class="form-label">Focal Length</label> (millimeters)
         <input [(ngModel)]="sensor.focalLength" name="focalLength" type="number" class="form-control"
           [disabled]="mode === 'READ'" required />
       </div>
       <div class="form-group">
-        <label>Wave Length</label>
+        <label class="form-label">Wave Length</label>
         <span *ngIf="sensor.wavelengths.length === 0" class="error-message">
           A sensor requires at least one Wave Length
         </span>
@@ -92,7 +92,7 @@
         </div>
       </div>
       <div *ngIf="mode === 'READ' && sensor.platforms != null && sensor.platforms.length > 0" class="form-group">
-        <label>Used on Platforms</label>
+        <label class="form-label">Used on Platforms</label>
         <ul>
           <li *ngFor="let platform of sensor.platforms">
             <a [routerLink]="['/site/platform', platform.oid]">{{platform.name}}</a>

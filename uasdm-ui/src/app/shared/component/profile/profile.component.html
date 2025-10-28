@@ -11,19 +11,19 @@
     </div>
     <hr>
     <div class="form-group">
-      <label>
+      <label class="form-label">
         <localize key="account.firstname"></localize>
       </label>
       <input [disabled]="externalProfile" type="text" [(ngModel)]="profile.firstName" name="firstname" required>
     </div>
     <div class="form-group">
-      <label>
+      <label class="form-label">
         <localize key="account.lastname"></localize>
       </label>
       <input [disabled]="externalProfile" type="text" [(ngModel)]="profile.lastName" name="lastname" required>
     </div>
     <div class="form-group">
-      <label>
+      <label class="form-label">
         <localize key="account.email"></localize>
       </label>
       <input [disabled]="externalProfile" type="email" [(ngModel)]="profile.email" name="email" #aemail="ngModel" required email>
@@ -40,14 +40,14 @@
     <hr>
     
     <div *ngIf="profile.bureau != null" class="form-group">
-      <label>
+      <label class="form-label">
         Bureau
       </label>
       <input [disabled]="true" type="text" [(ngModel)]="profile.bureau" name="bureau" required>
     </div>
 
     <div class="form-group">
-      <label>
+      <label class="form-label">
         <localize key="account.username"></localize>
       </label>
       <input [disabled]="profile.username === 'admin' || externalProfile" type="text" [(ngModel)]="profile.username" name="username" required>
@@ -59,17 +59,17 @@
 
     <div *ngIf="profile.changePassword && !externalProfile">
       <div class="form-group">
-        <label>
+        <label class="form-label">
           <localize key="account.password"></localize>
         </label>
         <input type="password" [(ngModel)]="profile.password" name="password" #password="ngModel" required minlength="5" maxlength="50" passwordValidator>
         <password-strength-bar [passwordToCheck]="profile.password"></password-strength-bar>
         <div *ngIf="password.errors?.passwordStrength" class="inline-error-message">
-          The password must be at least 14 characters in length and must contain at least: Two uppercase letters [A-Z], two lowercase letters [a-z], two digits [0-9], and two special characters [e.g.: !@#$*&]
+          The password must be at least 14 characters in length and must contain at least: Two uppercase letters [A-Z], two lowercase letters [a-z], two digits [0-9], and two special characters [e.g.: !&#64;#$*&amp;]
         </div>                  
       </div>
       <div class="form-group">
-        <label>
+        <label class="form-label">
           <localize key="account.certainPassword"></localize>
         </label>
         <input type="password" name="certainPassword" [ngModel]="certainPassword" #certainPassword="ngModel" required />

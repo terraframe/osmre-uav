@@ -6,6 +6,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+
 //import { TreeModule } from 'angular-tree-component';
 //import { ContextMenuModule } from 'ngx-contextmenu';
 import { NgxFileDropModule } from 'ngx-file-drop';
@@ -72,10 +73,10 @@ import { CreateProductGroupModalComponent } from './component/modal/create-produ
 import { ShareProductModalComponent } from './component/modal/share-product-modal.component';
 import { UserAccessService } from './service/user-access.service';
 import { UserAccessModalComponent } from './component/modal/user-access-modal.component';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RunProcessModalComponent } from './component/modal/run-process-modal.component';
 import { ProcessRunModalComponent } from './component/modal/process-run-modal.component';
+import { UploadService } from './service/upload.service';
+import { TusUploadModalComponent } from './component/modal/tus-upload-modal.component';
 
 @NgModule({
 	imports: [
@@ -106,6 +107,7 @@ import { ProcessRunModalComponent } from './component/modal/process-run-modal.co
 		CreateCollectionModalComponent,
 		CreateStandaloneProductModalComponent,
 		UploadModalComponent,
+		TusUploadModalComponent,
 		ODMRunModalComponent,
 		ArtifactPageComponent,
 		RunProcessModalComponent,
@@ -127,11 +129,11 @@ import { ProcessRunModalComponent } from './component/modal/process-run-modal.co
 		ClassificationsComponent,
 		ClassificationComponent,
 		UAVsComponent,
-        UAVsPageComponent,
+		UAVsPageComponent,
 		UAVComponent,
 		MetadataPageComponent,
 		ReportsComponent,
-        EquipmentComponent,
+		EquipmentComponent,
 		LayerPanelComponent,
 		ArtifactUploadComponent,
 		CreateProductGroupModalComponent,
@@ -150,24 +152,8 @@ import { ProcessRunModalComponent } from './component/modal/process-run-modal.co
 		ClassificationService,
 		UAVService,
 		ReportService,
-		UserAccessService
-	],
-	entryComponents: [
-		FilterModalComponent,
-		RunProcessModalComponent,
-		CreateCollectionModalComponent,
-		CreateStandaloneProductModalComponent,
-		UploadModalComponent,
-		ODMRunModalComponent,
-		EntityModalComponent,
-		ImagePreviewModalComponent,
-		MetadataModalComponent,
-		CollectionModalComponent,
-		ProductModalComponent,
-		CreateProductGroupModalComponent,
-		ShareProductModalComponent,
-		UserAccessModalComponent,
-		ProcessRunModalComponent
+		UserAccessService,
+		UploadService
 	]
 })
 export class SiteModule { }
