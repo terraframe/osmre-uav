@@ -38,7 +38,7 @@
       <div class="row">
         <div class="col-md-12">
           <div class="" *ngIf="thumbnails[product.id] != null">
-            <a class="thumbnail non-clickable">
+            <a class="thumbnail" (click)="viewOrtho()" title="View ortho">
               <img class="mx-auto d-block img-thumbnail" [src]="thumbnails[product.id] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
             </a>
           </div>

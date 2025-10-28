@@ -33,7 +33,7 @@ import { APP_BASE_HREF } from '@angular/common';
 import { CreateProductGroupModalComponent } from './create-product-group-modal.component';
 import { UserAccessModalComponent } from './user-access-modal.component';
 import { AuthService } from '@shared/service/auth.service';
-import { TusUploadModalComponent } from './tus-upload-modal.component';
+import { ImagePreviewModalComponent } from './image-preview-modal.component';
 
 @Component({
 	selector: 'collection-modal',
@@ -69,6 +69,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	tabName: string;
 	showOrthoRerunMessage: boolean = false;
 	canReprocessImagery: boolean = false;
+	rawImagePreviewModal: BsModalRef;
 
 	constPageSize: number = 25;
 
@@ -246,21 +247,20 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		return false;
 	}
 
-	previewImage(event: any, image: any): void {
-		//        this.bsModalRef = this.modalService.show( ImagePreviewModalComponent, {
-		//            animated: false,
-		//            backdrop: true, class: 'modal-xl',
-		//            ignoreBackdropClick: true,
-		//            'class': 'image-preview-modal'
-		//        } );
-		//        this.bsModalRef.content.image = image;
-		//        this.bsModalRef.content.src = event.target.src;
-	}
-
 	toggleExcludeImage(event: any, image: any): void {
 		this.service.setExclude(image.id, !image.exclude).then(result => {
 			image.exclude = result.exclude;
 		});
+	}
+
+	previewImage(document: any): void {
+		this.rawImagePreviewModal = this.modalService.show(ImagePreviewModalComponent, {
+			animated: true,
+			backdrop: true,
+			ignoreBackdropClick: false,
+			'class': 'image-preview-modal'
+		});
+		this.rawImagePreviewModal.content.initRaw(this.entity.id, document.key, document.name);
 	}
 
 	isProcessable(item: any): boolean {

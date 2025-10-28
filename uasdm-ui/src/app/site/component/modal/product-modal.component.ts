@@ -187,7 +187,18 @@ export class ProductModalComponent implements OnInit {
 		}
 	}
 
+	viewOrtho(): void {
+		this.rawImagePreviewModal = this.modalService.show(ImagePreviewModalComponent, {
+			animated: true,
+			backdrop: true,
+			ignoreBackdropClick: false,
+			'class': 'image-preview-modal'
+		});
+		this.rawImagePreviewModal.content.initProduct(this.product.id, this.product.productName);
+	}
+
 	previewImage(document: ProductDocument): void {
+		const componentId: string = this.product.entities[this.product.entities.length - 1].id;
 
 		this.rawImagePreviewModal = this.modalService.show(ImagePreviewModalComponent, {
 			animated: false,
@@ -195,7 +206,7 @@ export class ProductModalComponent implements OnInit {
 			ignoreBackdropClick: false,
 			'class': 'image-preview-modal modal-xl'
 		});
-		this.rawImagePreviewModal.content.init(this.product.id);
+		this.rawImagePreviewModal.content.initRaw(componentId, document.key, document.name);
 	}
 
     handleDownload(): void {
