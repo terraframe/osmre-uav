@@ -87,10 +87,10 @@ export class ProductModalComponent implements OnInit {
 		let entity = this.product.entities[this.product.entities.length-1];
 
 		let modalRef = this.modalService.show(MetadataModalComponent, {
-			animated: true,
+			animated: false,
 			backdrop: true,
 			ignoreBackdropClick: true,
-			'class': 'upload-modal'
+			'class': 'upload-modal modal-xl'
 		});
 		modalRef.content.initStandaloneProduct(this.product.id, this.product.productName);
 
@@ -190,10 +190,10 @@ export class ProductModalComponent implements OnInit {
 	previewImage(document: ProductDocument): void {
 
 		this.rawImagePreviewModal = this.modalService.show(ImagePreviewModalComponent, {
-			animated: true,
+			animated: false,
 			backdrop: true,
 			ignoreBackdropClick: false,
-			'class': 'image-preview-modal'
+			'class': 'image-preview-modal modal-xl'
 		});
 		this.rawImagePreviewModal.content.init(this.product.id);
 	}

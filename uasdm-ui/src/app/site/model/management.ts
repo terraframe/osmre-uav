@@ -385,13 +385,13 @@ export class MapLayer {
 //}
 
 export class ProductDetail extends Product {
-	pilotName: string;
-	dateTime: string;
-	collectionDate: string;
+	pilotName?: string;
+	dateTime?: string;
+	collectionDate?: string;
 	collectionEndDate?: string;
-	sensor: Sensor;
-	platform: Platform;
-	uav: UAV;
+	sensor?: Sensor;
+	platform?: Platform;
+	uav?: UAV;
 	page?: PageResult<ProductDocument>;
 }
 

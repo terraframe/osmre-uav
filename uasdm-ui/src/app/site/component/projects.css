@@ -6,5 +6,10 @@ h3.object-label {
 	margin: 10px;
 }
 
+.sidebar {
+	flex-basis: 25%
+}
 
- 
+.main {
+	flex-basis: 75%
+}

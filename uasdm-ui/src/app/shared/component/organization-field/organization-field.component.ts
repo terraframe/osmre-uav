@@ -81,8 +81,8 @@ export class OrganizationFieldComponent implements OnInit, OnDestroy {
 
     onViewTree(): void {
         const bsModalRef = this.modalService.show(OrganizationHierarchyModalComponent, {
-            animated: true,
-            backdrop: true,
+            animated: false,
+            backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true
         });
         this.subscription = bsModalRef.content.init(this.disabled, this.value, (organization:Organization) => {

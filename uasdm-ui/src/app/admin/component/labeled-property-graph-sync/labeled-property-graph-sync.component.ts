@@ -15,6 +15,7 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { WebSocketSubject, webSocket } from 'rxjs/webSocket';
 import { WebSockets } from '@core/utility/web-sockets';
 import { EventService } from '@shared/service/event.service';
+import { ModalTypes } from '@shared/model/modal';
 
 @Component({
     selector: 'labeled-property-graph-sync',
@@ -223,12 +224,12 @@ export class LPGSyncComponent implements OnInit, OnDestroy {
                 const version = versions[versions.length - 1];
 
                 const bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
-                    animated: true,
-                    backdrop: true,
+                    animated: false,
+                    backdrop: true, class: 'modal-xl',
                     ignoreBackdropClick: true,
                 });
                 bsModalRef.content.message = "A new version of the labeled property graph has been released.  Do you want to upgrade to version [" + version.versionNumber + "]? This action cannot be undone.";
-                bsModalRef.content.type = 'DANGER';
+                bsModalRef.content.type = ModalTypes.danger;
                 bsModalRef.content.submitText = "Upgrade";
 
                 bsModalRef.content.onConfirm.subscribe(data => {
@@ -241,8 +242,8 @@ export class LPGSyncComponent implements OnInit, OnDestroy {
             }
             else {
                 const bsModalRef = this.modalService.show(NotificationModalComponent, {
-                    animated: true,
-                    backdrop: true,
+                    animated: false,
+                    backdrop: true, class: 'modal-xl',
                     ignoreBackdropClick: true,
                 });
                 bsModalRef.content.messageTitle = "";

@@ -18,11 +18,18 @@
 }
 
 
-#tasks .panel-body {
+#tasks .card-body {
     background: #e9e9e9;
 }
-#tasks .panel-footer {
+#tasks .card-footer {
     background: #e9e9e9;
+}
+
+.card-title {
+	margin-top: 0;
+	margin-bottom: 0;
+	font-size: 16px;
+	color: inherit;
 }
 
 .task-container{
@@ -31,13 +38,13 @@
     margin-bottom: 20px;
 }
 
-.panel-body{
+.card-body{
     background: white;
 }
-.panel-body.collapse{
+.card-body.collapse{
     padding: 0;
 }
-.panel-body.collapse.in.show{
+.card-body.collapse.in.show{
     padding: 20px;
     max-height: fit-content;
 }
@@ -46,35 +53,35 @@
     margin-bottom: 0;
 }
 
-.panel-heading{
+.card-header{
   background-color: #e9e9e9;
 }
 
-.panel-heading.panel-heading-light {
+.card-header.card-header-light {
   background: none;
   border-bottom: 2px solid lightgrey;
   padding-left: 0;
   padding-right: 0;
 }
 
-.panel-heading.panel-heading-light .panel-title {
+.card-header.card-header-light .card-title {
     display: inline-block;
 }
-.panel-heading.panel-heading-light .heading-status-label {
+.card-header.card-header-light .heading-status-label {
     display: inline-block;
     vertical-align: middle;
     line-height: 40px;
 }
-.panel-heading.panel-heading-light .heading-status-label .success {
+.card-header.card-header-light .heading-status-label .success {
     color: #6CB46F;
 }
-.panel-heading.panel-heading-light .heading-status-label .warning {
+.card-header.card-header-light .heading-status-label .warning {
     color: #2C88CB;
 }
-.panel-heading.panel-heading-light .heading-status-label .pending {
+.card-header.card-header-light .heading-status-label .pending {
     color: #FF8C42;
 }
-.panel-heading.panel-heading-light .heading-status-label .fail {
+.card-header.card-header-light .heading-status-label .fail {
     color: #BF1E1E;
 }
 

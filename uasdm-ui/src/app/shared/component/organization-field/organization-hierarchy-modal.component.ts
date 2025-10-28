@@ -8,7 +8,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { ErrorHandler } from '@shared/component';
 
-import { TreeComponent, TreeNode } from '@circlon/angular-tree-component';
+import { TreeComponent, TreeNode } from '@ali-hm/angular-tree-component';
 import { Organization, OrganizationNode } from '@shared/model/organization';
 import { PageResult } from '@shared/model/page';
 import { OrganizationService } from '@shared/service/organization.service';
@@ -100,7 +100,7 @@ export class OrganizationHierarchyModalComponent implements OnInit, OnDestroy {
 	}
 
 
-	init(disabled: boolean, value: { code: string }, observer: Partial<Observer<Organization>>): Subscription {
+	init(disabled: boolean, value: { code: string }, observer: ((value: Organization) => void)): Subscription {
 		this.disabled = disabled;
 
 		if (value != null) {
@@ -224,7 +224,7 @@ export class OrganizationHierarchyModalComponent implements OnInit, OnDestroy {
 
 	treeNodeOnClick(treeNode: TreeNode, $event: any): void {
 		const node: PaginatedTreeNode<Organization> = treeNode != null ? treeNode.data : null;
-		
+
 		this.onSelect(treeNode);
 
 		if (node != null && node.type === TreeNodeType.LINK) {

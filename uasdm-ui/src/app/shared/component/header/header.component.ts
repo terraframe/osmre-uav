@@ -61,7 +61,7 @@ export class UasdmHeaderComponent {
 
     account(): void {
         this.profileService.get().then(profile => {
-            this.bsModalRef = this.modalService.show(ProfileComponent, { backdrop: 'static', class: 'gray modal-lg' });
+            this.bsModalRef = this.modalService.show(ProfileComponent, { backdrop: 'static', class: 'gray modal-xl' });
             this.bsModalRef.content.profile = profile;
         });
     }

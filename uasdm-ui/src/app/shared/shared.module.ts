@@ -57,7 +57,7 @@ import { LPGSyncService } from './service/lpg-sync.service';
 import { OrganizationSyncService } from './service/organization-sync.service';
 import { OrganizationService } from './service/organization.service';
 import { ContextMenuModule } from '@perfectmemory/ngx-contextmenu';
-import { TreeModule } from '@circlon/angular-tree-component';
+import { TreeModule } from '@ali-hm/angular-tree-component';
 import { OrganizationFieldComponent } from './component/organization-field/organization-field.component';
 import { OrganizationHierarchyModalComponent } from './component/organization-field/organization-hierarchy-modal.component';
 
@@ -128,13 +128,6 @@ import { OrganizationHierarchyModalComponent } from './component/organization-fi
 		GenericTableComponent,
 		OrganizationFieldComponent,
 		OrganizationHierarchyModalComponent
-	],
-	entryComponents: [
-		ErrorModalComponent,
-		BasicConfirmModalComponent,
-		NotificationModalComponent,
-		LoadingBarComponent,
-		ProfileComponent
 	]
 })
 export class SharedModule {

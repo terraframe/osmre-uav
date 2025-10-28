@@ -29,6 +29,7 @@ import {
 } from 'angular-animations';
 import EnvironmentUtil from '@core/utility/environment-util';
 import { NgModel } from '@angular/forms';
+import { ModalTypes } from '@shared/model/modal';
 
 export class Page {
 	index?: number;
@@ -493,12 +494,12 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 
 	handleAddMetadata(task: Task): void {
 		let modalRef = this.modalService.show(MetadataModalComponent, {
-			animated: true,
+			animated: false,
 			backdrop: true,
 			ignoreBackdropClick: true,
-			'class': 'upload-modal'
+			'class': 'upload-modal modal-xl'
 		});
-		modalRef.content.init(task.collection);
+		modalRef.content.initCollection(task.collection, task.collectionLabel);
 	}
 
 	handleNextPage(): void {
@@ -578,7 +579,7 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		// There is a 'hidden' usecase here (which is hard to test) which happens during upload resume (it happens when this.existingTask == true)
 		// In this usecase, you MUST make sure that the uploader params are set properly, otherwise it will cause hell for our customer (but you as a dev probably won't even notice)
 		// You can test this usecase, if needed, by setting the keycloak session expiration to 2 minutes and uploading a medium/large size collection.
-	
+
 		this.config.uploadTarget = this.uploadTarget;
 		this.config.uasComponentOid = this.component.id;
 		this.config.processUpload = this.processUpload;
@@ -599,12 +600,12 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 
 	removeUpload(): void {
 		const modal = this.modalService.show(BasicConfirmModalComponent, {
-			animated: true,
-			backdrop: true,
+			animated: false,
+			backdrop: true, class: 'modal-xl',
 			ignoreBackdropClick: true,
 		});
 		modal.content.message = 'Are you sure you want to cancel the upload of [' + this.uploader.getResumableFilesData()[0].name + ']';
-		modal.content.type = 'DANGER';
+		modal.content.type = ModalTypes.danger;
 		modal.content.submitText = 'Cancel Upload';
 
 		modal.content.onConfirm.subscribe(data => {

@@ -20,6 +20,7 @@ import { WebSockets } from '@core/utility/web-sockets';
 import { ConfigurationService } from '@core/service/configuration.service';
 import { APP_BASE_HREF } from '@angular/common';
 import { ODMRunModalComponent } from './odmrun-modal.component';
+import { ModalTypes } from '@shared/model/modal';
 
 @Component({
 	selector: 'artifact-page',
@@ -115,10 +116,10 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 
 	showODMRun(artifact): void {
 		const modal = this.modalService.show(ODMRunModalComponent, {
-			animated: true,
+			animated: false,
 			backdrop: true,
 			ignoreBackdropClick: false,
-			'class': ''
+			'class': 'modal-xl'
 		});
 
 		modal.content.initOnArtifact(artifact);
@@ -132,10 +133,10 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 	handleUpload(productName: string, folderName: string): void {
 
 		const modal = this.modalService.show(UploadModalComponent, {
-			animated: true,
+			animated: false,
 			backdrop: true,
 			ignoreBackdropClick: true,
-			'class': 'upload-modal'
+			'class': 'upload-modal modal-xl'
 		});
 		modal.content.init(this.entity, folderName, productName);
 
@@ -148,12 +149,12 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 	handleRemove(productName: string, section: { label: string, folder: string }): void {
 
 		const modal = this.modalService.show(BasicConfirmModalComponent, {
-			animated: true,
-			backdrop: true,
+			animated: false,
+			backdrop: true, class: 'modal-xl',
 			ignoreBackdropClick: true,
 		});
 		modal.content.message = 'Do you want to delete the [' + section.label + '] products? This action cannot be undone.';
-		modal.content.type = 'DANGER';
+		modal.content.type = ModalTypes.danger;
 		modal.content.submitText = 'Delete';
 
 		modal.content.onConfirm.subscribe(() => {
@@ -170,12 +171,13 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 	handleRemoveGroup(productName: string): void {
 
 		const modal = this.modalService.show(BasicConfirmModalComponent, {
-			animated: true,
-			backdrop: true,
+			animated: false,
+			backdrop: true, 
+			class: 'modal-xl',
 			ignoreBackdropClick: true,
 		});
 		modal.content.message = 'Do you want to delete the product group [' + productName + ']? This action cannot be undone.';
-		modal.content.type = 'DANGER';
+		modal.content.type = ModalTypes.danger;
 		modal.content.submitText = 'Delete';
 
 		modal.content.onConfirm.subscribe(() => {

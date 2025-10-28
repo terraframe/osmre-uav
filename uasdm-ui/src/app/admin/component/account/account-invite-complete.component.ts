@@ -59,7 +59,7 @@ export class AccountInviteCompleteComponent implements OnInit {
 	error(err: HttpErrorResponse): void {
 		// Handle error
 		if (err !== null) {
-			this.bsModalRef = this.modalService.show(ErrorModalComponent, { backdrop: true });
+			this.bsModalRef = this.modalService.show(ErrorModalComponent, { backdrop: true, class: 'modal-xl' });
 			this.bsModalRef.content.message = ErrorHandler.getMessageFromError(err);
 		}
 	}

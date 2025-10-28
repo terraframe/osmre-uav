@@ -12,21 +12,21 @@
 
         <div class="row">
             <div class="col-md-12" style="padding-top: 10px;">
-                <label>Layer Name</label>
+                <label class="form-label">Layer Name</label>
                 <input type="text" placeholder="Layer name..." [(ngModel)]="layer.layerName" name="layerName" required
                     [disabled]="readonly" />
             </div>
         </div>
         <div class="row">
             <div class="col-md-12" style="padding-top: 10px;">
-                <label>Start Date</label>
+                <label class="form-label">Start Date</label>
                 <input type="date" [(ngModel)]="layer.startDate" name="startDate" style="width: 100%;"
                     [disabled]="readonly" />
             </div>
         </div>
         <div class="row">
             <div class="col-md-12" style="padding-top: 10px;">
-                <label>End Date</label>
+                <label class="form-label">End Date</label>
                 <input type="date" class="form-element" [(ngModel)]="layer.endDate" name="endDate" style="width: 100%;"
                     [disabled]="readonly" />
             </div>
@@ -34,7 +34,7 @@
 
         <div class="row">
             <div class="col-md-12" style="padding-top: 10px;">
-                <label>Search</label>
+                <label class="form-label">Search</label>
                 <input class="form-control search-input" type="text" name="search" placeholder="Search for products..."
                     autocomplete="off" [(ngModel)]="search" [typeaheadAsync]="true" [typeahead]="dataSource"
                     (typeaheadOnSelect)="handleClick($event)" [typeaheadOptionsLimit]="10" [typeaheadMinLength]="2"
@@ -45,7 +45,7 @@
         <hr>
         <div class="row">
             <div class="col-md-12">
-                <label>Filters</label>
+                <label class="form-label">Filters</label>
             </div>
         </div>
         <ng-container *ngFor="let filter of layer.filters">
@@ -73,7 +73,7 @@
                                     {{result.properties.title}}
                                 </h5>
 
-                                <div>Date: <label>{{result.properties.datetime}}</label></div>
+                                <div>Date: <label class="form-label">{{result.properties.datetime}}</label></div>
 
                                 <div class="card-left" style="width:calc(100% - 13em); padding:0px;">
                                     <span class="thumbnail">
@@ -85,10 +85,10 @@
                                 <div class="card-right" style="width: 13em;">
                                     <ul style="list-style: none;padding: 0;">
                                         <li style="padding: 3px 0 3px 0; min-width:6em;">
-                                            Platform: <label>{{result.properties.platform}}</label>
+                                            Platform: <label class="form-label">{{result.properties.platform}}</label>
                                         </li>
                                         <li style="padding: 3px 0 3px 0; min-width:6em;">
-                                            Sensor: <label>{{result.properties.sensor}}</label>
+                                            Sensor: <label class="form-label">{{result.properties.sensor}}</label>
                                         </li>
                                         <li style="padding: 3px 0 3px 0; min-width:6em;">
                                             Asset

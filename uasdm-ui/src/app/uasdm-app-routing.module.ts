@@ -9,7 +9,6 @@ import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './core/component/login/login.component'
 import { ForgotPasswordComponent } from './core/component/forgotpassword/forgotpassword.component'
 import { ForgotPasswordCompleteComponent } from './core/component/forgotpassword-complete/forgotpassword-complete.component'
-import { HubComponent } from './core/component/hub/hub.component';
 
 const routes: Routes = [
     {
@@ -56,4 +55,4 @@ const routes: Routes = [
 } )
 export class UasdmAppRoutingModule { }
 
-export const routedComponents = [LoginComponent, HubComponent, ForgotPasswordComponent, ForgotPasswordCompleteComponent];
+export const routedComponents = [LoginComponent, ForgotPasswordComponent, ForgotPasswordCompleteComponent];

@@ -14,7 +14,6 @@ import {
 	slideInLeftOnEnterAnimation,
 	slideInRightOnEnterAnimation,
 } from 'angular-animations';
-import { InitEditableRow } from 'primeng/table';
 import { Observable, Subject } from 'rxjs';
 import { SensorService } from '@site/service/sensor.service';
 import { PlatformService } from '@site/service/platform.service';

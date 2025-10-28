@@ -96,8 +96,8 @@ export class ClassificationsComponent implements OnInit {
 
     onRemove(classification: Classification): void {
         this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
-            animated: true,
-            backdrop: true,
+            animated: false,
+            backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true,
         });
         this.bsModalRef.content.message = "Are you sure you want to remove the " + this._metadata.label + " [" + classification.name + "]";

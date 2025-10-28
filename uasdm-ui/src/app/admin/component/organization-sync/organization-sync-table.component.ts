@@ -63,8 +63,8 @@ export class OrganizationSyncTableComponent implements OnInit {
 
     onRemove(sync: OrganizationSync): void {
         this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
-            animated: true,
-            backdrop: true,
+            animated: false,
+            backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true,
         });
         this.bsModalRef.content.message = "Are you sure you want to remove the synchronization profile for [" + sync.url + "]";

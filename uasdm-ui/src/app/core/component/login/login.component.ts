@@ -43,7 +43,7 @@ export class LoginComponent {
     this.sub = this.route.params.subscribe(params => {
 
       if (params['errorMsg'] != null) {
-        this.bsModalRef = this.modalService.show(ErrorModalComponent, { backdrop: true });
+        this.bsModalRef = this.modalService.show(ErrorModalComponent, { backdrop: true, class: 'modal-xl' });
 
         let encodedError = params['errorMsg'];
         let decodedError = encodedError.replaceAll("+", " ");

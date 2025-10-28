@@ -301,10 +301,10 @@ export class TasksComponent implements OnInit {
 
     if (message.type === 'MissingMetadataMessage') {
       this.bsModalRef = this.modalService.show(MetadataModalComponent, {
-        animated: true,
+        animated: false,
         backdrop: true,
         ignoreBackdropClick: true,
-        'class': 'upload-modal'
+        'class': 'upload-modal modal-xl'
       });
       this.bsModalRef.content.init(message.data.collectionId);
 
@@ -324,10 +324,10 @@ export class TasksComponent implements OnInit {
 
       this.managementService.getItems(collectionId, null, null).then(nodes => {
         this.bsModalRef = this.modalService.show(CollectionModalComponent, {
-          animated: true,
+          animated: false,
           backdrop: true,
           ignoreBackdropClick: true,
-          class: 'leaf-modal'
+          class: 'leaf-modal modal-xl'
         });
         this.bsModalRef.content.init(entity, nodes, breadcrumbs);
       })
@@ -342,10 +342,10 @@ export class TasksComponent implements OnInit {
     } else {
       this.pService.getDetail(task.productId, 1, 20).then(detail => {
         this.bsModalRef = this.modalService.show(ProductModalComponent, {
-            animated: true,
+            animated: false,
             backdrop: true,
             ignoreBackdropClick: true,
-            'class': 'product-info-modal'
+            'class': 'product-info-modal modal-xl'
         });
         this.bsModalRef.content.init(detail);
       });
