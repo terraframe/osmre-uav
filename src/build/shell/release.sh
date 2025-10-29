@@ -22,7 +22,7 @@
 git config --global user.name "$GIT_TF_BUILDER_USERNAME"
 git config --global user.email builder@terraframe.com
 
-. $NVM_DIR/nvm.sh && nvm install lts/hydrogen
+. $NVM_DIR/nvm.sh && nvm install lts/jod
 
 if [ "$release_uasdm" == "true" ]; then
   ## Update IDM Version in System Component and Commit Compiled NodeJS Source
