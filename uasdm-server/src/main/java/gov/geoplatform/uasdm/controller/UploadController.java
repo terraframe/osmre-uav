@@ -69,10 +69,10 @@ public class UploadController extends RunwaySpringController
     return ResponseEntity.of(task.map(t -> t.toString()));
   }
 
-  @PostMapping("/upload/remove-task")
-  public ResponseEntity<Void> uploadTask(@RequestBody RemoveRequest request) throws IOException
+  @PostMapping("/upload/remove-upload")
+  public ResponseEntity<Void> removeUpload(@RequestBody RemoveRequest request) throws IOException
   {
-    this.uploadService.getTask(getSessionId(), request.getUploadUrl());
+    this.uploadService.removeUpload(getSessionId(), request.getUploadUrl());
 
     return ResponseEntity.ok(null);
   }

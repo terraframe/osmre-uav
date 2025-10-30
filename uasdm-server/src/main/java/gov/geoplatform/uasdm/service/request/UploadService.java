@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 import com.runwaysdk.session.Session;
@@ -124,23 +125,6 @@ public class UploadService
     }
   }
 
-  @Scheduled(fixedDelayString = "PT24H")
-  private void cleanup()
-  {
-    // Path locksDir = this.tusUploadDirectory.resolve("locks");
-    // if (Files.exists(locksDir))
-    // {
-    try
-    {
-      this.tusFileUploadService.cleanup();
-    }
-    catch (IOException e)
-    {
-      log.error("error during cleanup", e);
-    }
-    // }
-  }
-
   @Request(RequestType.SESSION)
   public Optional<JSONObject> getTask(String sessionId, String uploadUrl)
   {
@@ -161,6 +145,52 @@ public class UploadService
     }
 
     return Optional.empty();
+  }
+
+  @Request(RequestType.SESSION)
+  public void removeUpload(String sessionId, String uploadUrl)
+  {
+    String userOid = Session.getCurrentSession().getUser().getOid();
+
+    UploadInfo uploadInfo = this.getUploadInfo(userOid, uploadUrl);
+
+    if (uploadInfo != null)
+    {
+      String uploadId = uploadInfo.getId().toString();
+
+      AbstractUploadTask task = AbstractUploadTask.getTaskByUploadId(uploadId);
+
+      if (task != null)
+      {
+        task.delete();
+      }
+
+      try
+      {
+        this.tusFileUploadService.deleteUpload(uploadUrl, userOid);
+      }
+      catch (IOException | TusException e)
+      {
+        throw new ProgrammingErrorException(e);
+      }
+    }
+  }
+
+  @Scheduled(fixedDelayString = "PT24H")
+  private void cleanup()
+  {
+    // Path locksDir = this.tusUploadDirectory.resolve("locks");
+    // if (Files.exists(locksDir))
+    // {
+    try
+    {
+      this.tusFileUploadService.cleanup();
+    }
+    catch (IOException e)
+    {
+      log.error("error during cleanup", e);
+    }
+    // }
   }
 
 }
