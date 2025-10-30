@@ -2507,3 +2507,20 @@ a.navbar-brand {
 
 
 
+/**
+ * Bootstrap 5 Refactor
+ * After migrating to bootstrap 5, our font sizes were massively off. This is an attempt to restore some of the older sizes that our app is expecting
+ */
+:root {
+  /* Tweak to taste: .9375rem ≈ 15px, .875rem ≈ 14px */
+  --bs-body-font-size: .9375rem;
+  --bs-body-line-height: 1.5;
+}
+
+/* If headings look oversized due to RFS, tame them a touch */
+h1 { font-size: calc(1.75rem + .5vw); }
+h2 { font-size: calc(1.5rem + .25vw); }
+h3 { font-size: 24px; }
+h4 { font-size: 18px; }
+
+
