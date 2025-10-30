@@ -15,7 +15,7 @@
 #
 
 # This tells the build which version of npm to use:
-. $NVM_DIR/nvm.sh && nvm install lts/hydrogen
+. $NVM_DIR/nvm.sh && nvm install lts/jod
 
 :
 : ----------------------------------

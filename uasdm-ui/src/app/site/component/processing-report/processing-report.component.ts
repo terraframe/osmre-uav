@@ -11,7 +11,7 @@ import { environment } from 'src/environments/environment';
 })
 export class ProcessingReportComponent {
 
-    date: any;
+    date: string = new Date(new Date().setMonth(new Date().getMonth() - 6)).toISOString().split('T')[0];
 
 	constructor() { }
 	

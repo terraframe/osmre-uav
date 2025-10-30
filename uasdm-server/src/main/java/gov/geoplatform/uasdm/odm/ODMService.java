@@ -197,13 +197,13 @@ public class ODMService implements ODMServiceIF
           if (uploadResp.hasError() || uploadResp.getHTTPResponse().isError())
           {
             this.taskRemove(uuid);
-            return new HttpNewResponse(uploadResp.getHTTPResponse(), uuid);
+            return new HttpNewResponse(uploadResp.getHTTPResponse(), uuid, payload);
           }
         }
 
         ODMResponse commitResp = this.taskNewCommit(uuid);
 
-        return new HttpNewResponse(commitResp.getHTTPResponse(), uuid);
+        return new HttpNewResponse(commitResp.getHTTPResponse(), uuid, payload);
       }
       else
       {
