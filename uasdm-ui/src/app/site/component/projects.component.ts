@@ -15,7 +15,7 @@ import { BasicConfirmModalComponent } from "@shared/component/modal/basic-confir
 import { NotificationModalComponent } from "@shared/component/modal/notification-modal.component";
 import { AuthService } from "@shared/service/auth.service";
 
-import { SiteEntity, Product, Task, MapLayer, ViewerSelection, SELECTION_TYPE, Filter } from "../model/management";
+import { SiteEntity, Product, Task, MapLayer, ViewerSelection, SELECTION_TYPE, Filter, UploadTask } from "../model/management";
 
 import { EntityModalComponent } from "./modal/entity-modal.component";
 import { CollectionModalComponent } from "./modal/collection-modal.component";
@@ -50,6 +50,8 @@ import { LocalizedValue } from "@shared/model/organization";
 import { ProductService } from "@site/service/product.service";
 import { ProductModalComponent } from "./modal/product-modal.component";
 import { isMapboxURL, transformMapboxUrl } from "maplibregl-mapbox-request-transformer";
+import { UploadService } from "@site/service/upload.service";
+import { TusUploadModalComponent } from "./modal/tus-upload-modal.component";
 
 const enum PANEL_TYPE {
   SITE = 0,
@@ -172,10 +174,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   tasks: Task[] = [];
 
-  existingTask: {
-    task: Task,
-    filename: string
-  } = null;
+  existingTask: UploadTask | null = null;
 
   /* 
    * Filter by bureau
@@ -242,7 +241,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     private metadataService: MetadataService,
     private route: ActivatedRoute,
     private cookieService: CookieService,
-    private syncService: LPGSyncService
+    private syncService: LPGSyncService,
+    private uploadService: UploadService
   ) {
 
     this.subject = new Subject();
@@ -295,71 +295,20 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.handleViewSite(oid);
     }
 
-    let uiOptions: UIOptions = {
-      debug: false,
-      autoUpload: false,
-      multiple: false,
-      request: {
-        endpoint: EnvironmentUtil.getApiUrl() + "/file/upload",
-        forceMultipart: true
-      },
-      resume: {
-        enabled: true,
-        recordsExpireIn: 1
-      },
-      chunking: {
-        enabled: true
-      },
-      retry: {
-        enableAuto: true
-      },
-      text: {
-        defaultResponseError: "Upload failed"
-      },
-      failedUploadTextDisplay: {
-        mode: "none"
-      },
-      validation: {
-        allowedExtensions: ["zip", "tar.gz"]
-      },
-      showMessage: function (message: string) {
-        // 
-      },
-      callbacks: {
-        onUpload: function (id: any, name: any): void {
-        },
-        onProgress: function (id: any, name: any, uploadedBytes: any, totalBytes: any): void {
-        },
-        onUploadChunk: function (id: any, name: any, chunkData: any): void {
-        },
-        onUploadChunkSuccess: function (id: any, chunkData: any, responseJSON: any, xhr: any): void {
-        },
-        onComplete: function (id: any, name: any, responseJSON: any, xhrOrXdr: any): void {
-        },
-        onCancel: function (id: number, name: string) {
-        },
-        onError: function (id: number, errorReason: string, xhrOrXdr: string) {
-        }
 
+    this.uploadService.findAllUploads().then(resumables => {
+      if (resumables.length > 0) {
+        const resumable = resumables[0];
+
+        this.service.getUploadTask(resumable.uploadUrl).then(task => {
+          this.existingTask = {
+            task: task,
+            filename: resumable.metadata.filename,
+            resumable: resumable
+          };
+        })
       }
-    };
-
-    const uploader = new FineUploaderBasic(uiOptions);
-
-    let resumables = uploader.getResumableFilesData() as any[];
-    if (resumables.length > 0) {
-      const resumable = resumables[0];
-
-      this.service.getUploadTask(resumable.uuid).then(task => {
-        this.existingTask = {
-          task: task,
-          filename: resumable.name
-        };
-      })
-    }
-
-
-
+    });
   }
 
 
@@ -502,7 +451,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         animated: false,
         backdrop: true,
         ignoreBackdropClick: true,
-        class: "modal-xl"        
+        class: "modal-xl"
       });
       this.bsModalRef.content.messageTitle = "Disclaimer";
       this.bsModalRef.content.message = this.configuration.getAppDisclaimer();
@@ -775,13 +724,13 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   handleExistingTask(): void {
 
     this.service.view(this.existingTask.task.collection).then(resp => {
-      const modal = this.modalService.show(UploadModalComponent, {
+      const modal = this.modalService.show(TusUploadModalComponent, {
         animated: false,
         backdrop: true,
         ignoreBackdropClick: true,
         "class": "upload-modal modal-xl"
       });
-      modal.content.init(resp.item, this.existingTask.task.uploadTarget);
+      modal.content.init(resp.item, this.existingTask.task.uploadTarget, this.existingTask);
       modal.content.onUploadCancel.subscribe(() => {
         this.existingTask = null;
       });

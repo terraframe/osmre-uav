@@ -87,4 +87,11 @@ export class UploadService {
             this.upload.abort()
         }
     }
+
+    clearUpload(urlStorageKey): void {
+        return this.storage.removeUpload(urlStorageKey);
+    }
+
+
+
 }

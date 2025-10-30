@@ -3,15 +3,15 @@
 ///
 
 import { Component, OnInit, KeyValueDiffers, HostListener, OnDestroy } from '@angular/core';
-import { BsModalRef } from 'ngx-bootstrap/modal';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
 
 import { Subject } from 'rxjs';
 
 
-import { ErrorHandler } from '@shared/component';
+import { BasicConfirmModalComponent, ErrorHandler } from '@shared/component';
 
-import { SiteEntity, ProcessConfigType } from '@site/model/management';
+import { SiteEntity, UploadTask } from '@site/model/management';
 import { MetadataService } from '@site/service/metadata.service';
 
 import {
@@ -19,10 +19,11 @@ import {
 	fadeOutOnLeaveAnimation
 } from 'angular-animations';
 import EnvironmentUtil from '@core/utility/environment-util';
-import { NgModel } from '@angular/forms';
-import { ModalTypes } from '@shared/model/modal';
 import { UploadService } from '@site/service/upload.service';
 import { UploadProgress } from '@site/model/upload';
+import { ModalTypes } from '@shared/model/modal';
+import { ManagementService } from '@site/service/management.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
 	selector: 'tus-upload-modal',
@@ -40,7 +41,7 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 	/*
 	 * List of hierarchies
 	 */
-	hierarchy: string[] = [];
+	existingTask: UploadTask | null;
 
 	component: SiteEntity = null;
 
@@ -52,18 +53,21 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 
 	isUploading: boolean = false
 	isSuccessful: boolean = false
+	invalidFile: boolean = false;
 
 	message: string | null = null;
 
 	extensions: string = ".zip,.tar.gz"
 
+
 	public onUploadComplete: Subject<void>;
 	public onUploadCancel: Subject<void>;
 
-	constructor(private metadataService: MetadataService,
+	constructor(
+		private service: ManagementService,
+		private modalService: BsModalService,
 		private uploadService: UploadService,
-		public bsModalRef: BsModalRef,
-		differs: KeyValueDiffers) {
+		public bsModalRef: BsModalRef) {
 	}
 
 
@@ -102,15 +106,17 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 		// }
 	}
 
-	init(component: SiteEntity, uploadTarget: string, productName?: string): void {
+	init(component: SiteEntity, uploadTarget: string, existingTask?: UploadTask, productName?: string): void {
 
 		this.component = component;
 		this.uploadTarget = uploadTarget;
+		this.existingTask = existingTask;
+
+		if (this.existingTask != null) {
+			// this.extensions = this.existingTask.filename;
+		}
 
 		// this.processUpload = this.uploadTarget === 'raw';
-
-		this.hierarchy = this.metadataService.getHierarchy();
-		// this.selections = [];
 
 	}
 
@@ -121,11 +127,14 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 	onFileSelected(event: Event): void {
 		const input = event.target as HTMLInputElement
 		if (input.files && input.files.length > 0) {
-			this.selectedFile = input.files[0];
-			this.progress = null;
 
-			// if (!['image/zip', 'image/png', 'application/pdf'].includes(this.selectedFile.type)) {
-			// }
+			if (this.existingTask == null || this.existingTask.filename === input.files[0].name) {
+				this.selectedFile = input.files[0];
+				this.progress = null;
+			}
+			else {
+				this.invalidFile = true;
+			}
 		}
 	}
 
@@ -160,6 +169,9 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 				this.isUploading = false;
 				this.isSuccessful = true;
 				this.progress = null;
+				this.existingTask = null;
+
+				this.onUploadComplete.next();
 			},
 			(error: Error) => {
 				this.error(error);
@@ -169,34 +181,28 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 	}
 
 	removeUpload(): void {
-		// const modal = this.modalService.show(BasicConfirmModalComponent, {
-		// 	animated: false,
-		// 	backdrop: true, class: 'modal-xl',
-		// 	ignoreBackdropClick: true,
-		// });
-		// modal.content.message = 'Are you sure you want to cancel the upload of [' + this.uploader.getResumableFilesData()[0].name + ']';
-		// modal.content.type = ModalTypes.danger;
-		// modal.content.submitText = 'Cancel Upload';
+		const modal = this.modalService.show(BasicConfirmModalComponent, {
+			animated: false,
+			backdrop: true, class: 'modal-xl',
+			ignoreBackdropClick: true,
+		});
+		modal.content.message = 'Are you sure you want to cancel the upload of [' + this.existingTask.filename + ']';
+		modal.content.type = ModalTypes.danger;
+		modal.content.submitText = 'Cancel Upload';
 
-		// modal.content.onConfirm.subscribe(data => {
-		// 	this.service.removeUploadTask(this.uploader.getResumableFilesData()[0].uuid)
-		// 		.then(() => {
-		// 			//that.uploader.clearStoredFiles();
-		// 			//that.uploader.cancelAll()
+		modal.content.onConfirm.subscribe(data => {
+			this.service.removeUpload(this.existingTask.resumable.uploadUrl)
+				.then(() => {
+					this.uploadService.clearUpload(this.existingTask.resumable.urlStorageKey);
 
-		// 			// The above clearStoredFiles() and cancelAll() methods don't appear to work so 
-		// 			// we are clearing localStorage manually.
-		// 			localStorage.clear();
+					this.existingTask = null;
 
-		// 			this.existingTask = false;
-
-		// 			this.onUploadCancel.next();
-
-		// 			this.bsModalRef.hide();
-		// 		}).catch((err: HttpErrorResponse) => {
-		// 			this.error(err);
-		// 		});
-		// });
+					this.onUploadCancel.next();
+					this.bsModalRef.hide();
+				}).catch((err: HttpErrorResponse) => {
+					this.error(err);
+				});
+		});
 	}
 
 	public canDeactivate(): boolean {

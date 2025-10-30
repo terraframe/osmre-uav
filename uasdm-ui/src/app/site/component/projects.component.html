@@ -291,7 +291,7 @@
 
         <!-- <hr> -->
 
-        <div class="sidebar-content flex-fill overflow-y bg-white">
+        <div class="sidebar-content flex-fill overflow-auto bg-white">
           <div id="hierarchy-tree-container"
             class="location-management-widget-section location-management-list-container">
 
@@ -402,7 +402,7 @@
     </aside>
 
 
-    <main class="main flex-fill overflow-y">
+    <main class="main flex-fill overflow-hidden">
       <div id="site-explorer-map">
         <article style="position: absolute;z-index: 5;margin-left: 100px;margin-top: 10px;">
           <alert *ngIf="existingTask != null" type="danger" [dismissible]="false">

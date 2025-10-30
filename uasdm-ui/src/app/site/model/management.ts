@@ -443,3 +443,9 @@ export class Filter {
 	projectType?: string;
 	organization?: { code: string, label: LocalizedValue };
 }
+
+export class UploadTask {
+	task: Task;
+	filename: string;
+	resumable: any;
+};

@@ -359,7 +359,7 @@ export class UploadModalComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	init(component: SiteEntity, uploadTarget: string, productName?: string): void {
+	init(component: SiteEntity, uploadTarget: string, existingTask: any, productName?: string): void {
 		this.component = component;
 		this.uploadTarget = uploadTarget;
 

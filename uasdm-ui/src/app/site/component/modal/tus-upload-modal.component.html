@@ -16,10 +16,28 @@
     </div>
 
 
+
     <div class="row">
       <div class="col-md-2"></div>
       <div class="col-md-8">
-        <div>
+
+        <div *ngIf="existingTask">
+          <div class="card border border-warning" style="margin: 30px 0 30px 0;">
+            <div class="card-header bg-warning" style="font-size: 20px;">Partial Upload Detected</div>
+            <div class="card-body">
+              <h4>A partial upload was detected for file <b>{{existingTask.filename}}</b>. You can either cancel that
+                partial upload or attempt to continue.</h4>
+              <h4>
+                <b>To continue an upload</b>
+                please re-upload your file and we will try our best to continue where you left off.
+              </h4>
+
+            </div>
+          </div>
+        </div> <!-- End existing task panel -->
+
+
+        <div *ngIf="!existingTask">
 
           <div class="well">
             <h4>All uploaded files</h4>
@@ -90,7 +108,8 @@
             </table>
 
           </div>
-
+        </div>
+        <div>
 
           <div *ngIf="progress" class="card border border-warning" style="margin: 30px 0 30px 0;">
             <div class="card-header bg-warning" style="font-size: 20px;">Upload Details</div>
@@ -117,7 +136,10 @@
           <div class="mb-3">
             <label for="formFile" class="form-label">Upload File</label>
             <input [disabled]="isUploading" type="file" class="form-control" id="formFile"
-            (change)="onFileSelected($event)" [attr.accept]="extensions" [attr.aria-label]="'Choose file to upload'">
+              (change)="onFileSelected($event)" [attr.accept]="extensions" [attr.aria-label]="'Choose file to upload'">
+            <div *ngIf="existingTask && invalidFile" class="alert">
+              Must upload the file: {{existingTask.filename}}
+            </div>
           </div>
 
 
@@ -132,9 +154,14 @@
     <div class="row">
       <div class="col-md-12">
         <div class="btn-holder" style="text-align: right;">
+          <button *ngIf="existingTask" type="button" [disabled]="isUploading" class="btn btn-danger"
+            (click)="removeUpload()">
+            <i class="icon-upload icon-white"></i>
+            Cancel Upload
+          </button>
 
           <button type="button" (click)="close()" [disabled]="isUploading" class="btn btn-default" role="button"
-            aria-disabled="false" style="padding: 4px 18px;">
+            aria-disabled="false">
             <span class="ui-button-text">Close</span>
           </button>
 

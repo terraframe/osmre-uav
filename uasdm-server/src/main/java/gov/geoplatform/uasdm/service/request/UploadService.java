@@ -3,10 +3,12 @@ package gov.geoplatform.uasdm.service.request;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,6 +18,7 @@ import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 import com.runwaysdk.session.Session;
 
+import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.service.WorkflowService;
 import me.desair.tus.server.TusFileUploadService;
@@ -136,6 +139,28 @@ public class UploadService
       log.error("error during cleanup", e);
     }
     // }
+  }
+
+  @Request(RequestType.SESSION)
+  public Optional<JSONObject> getTask(String sessionId, String uploadUrl)
+  {
+    String userOid = Session.getCurrentSession().getUser().getOid();
+
+    UploadInfo uploadInfo = this.getUploadInfo(userOid, uploadUrl);
+
+    if (uploadInfo != null)
+    {
+      String uploadId = uploadInfo.getId().toString();
+
+      AbstractUploadTask task = AbstractUploadTask.getTaskByUploadId(uploadId);
+
+      if (task != null)
+      {
+        return Optional.of(task.toJSON());
+      }
+    }
+
+    return Optional.empty();
   }
 
 }

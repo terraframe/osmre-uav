@@ -4,7 +4,7 @@
 
 import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 
 // import 'rxjs/add/operator/toPromise';
 import { finalize, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
@@ -197,7 +197,7 @@ export class ManagementService {
 	getODMRunByTask(taskId: string): Promise<ODMRun> {
 		let params: HttpParams = new HttpParams();
 		params = params.set('taskId', taskId);
- 
+
 		return this.http
 			.get<ODMRun>(environment.apiUrl + '/project/get-odm-run-by-task', { params: params })
 			.toPromise()
@@ -510,15 +510,6 @@ export class ManagementService {
 			.toPromise();
 	}
 
-	getUploadTask(uploadId: string): Promise<Task> {
-
-		let params: HttpParams = new HttpParams();
-		params = params.set('uploadId', uploadId);
-
-		return this.http
-			.get<Task>(environment.apiUrl + '/project/get-upload-task', { params: params })
-			.toPromise();
-	}
 
 
 
@@ -778,5 +769,32 @@ export class ManagementService {
 		return this.http
 			.get<PageResult<StacItem>>(environment.apiUrl + '/project/get-stac-items', { params: params })
 			.toPromise()
+	}
+
+	getUploadTask(uploadUrl: string): Promise<Task> {
+
+		let params: HttpParams = new HttpParams();
+		params = params.set('uploadUrl', uploadUrl);
+
+		return firstValueFrom(this.http
+			.get<Task>(environment.apiUrl + '/api/upload/get-task', { params: params }));
+	}
+
+	removeUpload(uploadUrl: string): Promise<void> {
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
+
+		const params = {
+			uploadUrl: uploadUrl,
+		};
+
+		this.eventService.start();
+
+		return firstValueFrom(this.http
+			.post<void>(environment.apiUrl + '/api/upload/get-task', JSON.stringify(params), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			})));
 	}
 }
