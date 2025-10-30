@@ -110,6 +110,10 @@
       <param-name>cors.allowed.origins</param-name>
       <param-value>https://localhost:4200</param-value>
     </init-param>    
+    <init-param>
+      <param-name>cors.allowed.methods</param-name>
+      <param-value>GET,POST,HEAD,OPTIONS,PATCH,DELETE</param-value>
+    </init-param>    
 	</filter>
 	<filter-mapping>
 	  <filter-name>CorsFilter</filter-name>

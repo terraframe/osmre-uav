@@ -34,6 +34,7 @@ import { CreateProductGroupModalComponent } from './create-product-group-modal.c
 import { UserAccessModalComponent } from './user-access-modal.component';
 import { AuthService } from '@shared/service/auth.service';
 import { ImagePreviewModalComponent } from './image-preview-modal.component';
+import { TusUploadModalComponent } from './tus-upload-modal.component';
 
 @Component({
 	selector: 'collection-modal',
@@ -397,7 +398,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 
 	handleUpload(): void {
 
-		const modal = this.modalService.show(UploadModalComponent, {
+		const modal = this.modalService.show(TusUploadModalComponent, {
 			animated: false,
 			backdrop: true,
 			ignoreBackdropClick: true,

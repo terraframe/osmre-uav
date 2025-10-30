@@ -2365,7 +2365,7 @@ i.fa.fa-sitemap{
  /* Inputs */
 input,
 input.form-control {
-  height:40px;
+  /* height:40px; */
 /*      margin:0 11px 0 0; */
   padding:6px 10px;
   font-size:14px;

@@ -31,6 +31,7 @@
 		"@types/google-libphonenumber": "^7.4.17",
 		"@types/proj4": "2.5.0",
 		"@types/uuid": "8.0.0",
+		"@uppy/angular": "^1.0.0",
 		"angular-animations": "0.0.10",
 		"bootstrap": "^5.2.3",
 		"file-saver": "2.0.2",

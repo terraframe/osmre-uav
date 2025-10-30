@@ -24,8 +24,8 @@
 
                 <!-- Existing task panel -->
                 <div class="" *ngIf="existingTask && !currentTask">
-                    <div class="card bg-warning" style="margin: 30px 0 30px 0;">
-                        <div class="card-header" style="font-size: 20px;">Partial Upload Detected</div>
+                    <div class="card border border-warning" style="margin: 30px 0 30px 0;">
+                        <div class="card-header bg-warning" style="font-size: 20px;">Partial Upload Detected</div>
                         <div class="card-body">
                             <h4>A partial upload was detected. You can either cancel that partial upload or attempt to
                                 continue.</h4>
@@ -51,9 +51,9 @@
                 </div> <!-- End existing task panel -->
 
                 <!-- Task finished upload notification -->
-                <div *ngFor="let note of taskFinishedNotifications" class="card bg-success"
+                <div *ngFor="let note of taskFinishedNotifications" class="card border border-success"
                     style="margin: 30px 0 30px 0;">
-                    <div class="card-header" style="font-size: 20px;">
+                    <div class="card-header bg-success text-white mb-3" style="font-size: 20px;">
                         Upload Details
                         <i class="btn btn-close float-end"
                             style="min-width:20px;padding:0;line-height: 27px;"

@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.service;
 
@@ -19,6 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.session.Request;
@@ -28,8 +29,8 @@ import gov.geoplatform.uasdm.CollectionStatus;
 import gov.geoplatform.uasdm.bus.AbstractMessage;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
-import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
+import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.MetadataMessage;
@@ -38,6 +39,7 @@ import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.ProcessingInProgressException;
 import gov.geoplatform.uasdm.view.RequestParserIF;
 
+@Service
 public class WorkflowService
 {
   final Logger log = LoggerFactory.getLogger(WorkflowService.class);
@@ -71,10 +73,8 @@ public class WorkflowService
         workflowTask.setProcessOrtho(parser.getProcessOrtho());
         workflowTask.setProcessPtcloud(parser.getProcessPtcloud());
       }
-      
-      if (uasComponent instanceof gov.geoplatform.uasdm.graph.Collection &&
-          ((gov.geoplatform.uasdm.graph.Collection) uasComponent).getStatus().equals("Processing")
-          )
+
+      if (uasComponent instanceof gov.geoplatform.uasdm.graph.Collection && ( (gov.geoplatform.uasdm.graph.Collection) uasComponent ).getStatus().equals("Processing"))
       {
         ProcessingInProgressException ex = new ProcessingInProgressException();
         throw ex;
@@ -102,21 +102,21 @@ public class WorkflowService
   @Request(RequestType.SESSION)
   public JSONObject updateUploadTask(String sessionId, RequestParserIF parser)
   {
-    return this.updateUploadTaskInTransaction(sessionId, parser);
+    return this.updateUploadTaskInTransaction(parser.getUuid());
   }
 
   @Transaction
-  public JSONObject updateUploadTaskInTransaction(String sessionId, RequestParserIF parser)
+  public JSONObject updateUploadTaskInTransaction(String uploadId)
   {
-    AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForUpload(parser);
+    AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForUpload(uploadId);
 
     if (task != null)
     {
       task.lock();
       task.setStatus(WorkflowTaskStatus.UPLOADING.toString());
       task.setMessage("Uploading to the staging environment..."); // parser.getPercent()
-                                                                  // + "%
-                                                                  // complete"
+      // + "%
+      // complete"
       task.apply();
     }
 
@@ -124,6 +124,44 @@ public class WorkflowService
     message.put("currentTask", task.toJSON());
 
     return message;
+  }
+
+  @Transaction
+  public void updateOrCreateUploadTask(String userOid, String uploadId, String componentId, String uploadTarget)
+  {
+    AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForUpload(uploadId);
+
+    if (task == null)
+    {
+      UasComponentIF uasComponent = ComponentFacade.getComponent(componentId);
+
+      task = uasComponent.createWorkflowTask(userOid, uploadId, uploadTarget);
+
+      if (task instanceof WorkflowTask)
+      {
+        WorkflowTask workflowTask = (WorkflowTask) task;
+        workflowTask.setProcessDem(false);
+        workflowTask.setProcessOrtho(false);
+        workflowTask.setProcessPtcloud(false);
+      }
+
+      if (uasComponent instanceof gov.geoplatform.uasdm.graph.Collection && ( (gov.geoplatform.uasdm.graph.Collection) uasComponent ).getStatus().equals("Processing"))
+      {
+        throw new ProcessingInProgressException();
+      }
+    }
+    else
+    {
+      task.lock();
+    }
+
+    if (task.getStatus().length() == 0)
+    {
+      task.setStatus(WorkflowTaskStatus.STARTED.toString());
+    }
+
+    task.setMessage("Uploading to the staging environment...");
+    task.apply();
   }
 
   @Request(RequestType.SESSION)

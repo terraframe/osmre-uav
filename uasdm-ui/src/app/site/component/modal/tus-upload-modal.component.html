@@ -19,50 +19,6 @@
     <div class="row">
       <div class="col-md-2"></div>
       <div class="col-md-8">
-
-        <!-- Existing task panel -->
-        <div *ngIf="existingTask && !currentTask">
-          <div class="card bg-warning" style="margin: 30px 0 30px 0;">
-            <div class="card-header" style="font-size: 20px;">Partial Upload Detected</div>
-            <div class="card-body">
-              <h4>A partial upload was detected. You can either cancel that partial upload or attempt to
-                continue.</h4>
-              <h4>
-                <b>To continue an upload</b>
-                please re-upload your file and we will try our best to continue where you left off.
-              </h4>
-
-              <!-- 
-                            <button type="button" class="btn btn-primary" style="margin-top: 20px;"
-                                (click)="showUploadPanel()">
-                                <i class="icon-upload icon-white"></i>
-                                Continue Upload
-                            </button>
- -->
-            </div>
-          </div>
-        </div> <!-- End existing task panel -->
-
-        <!-- Task finished upload notification -->
-        <div *ngFor="let note of taskFinishedNotifications" class="card bg-success" style="margin: 30px 0 30px 0;">
-          <div class="card-header" style="font-size: 20px;">
-            Upload Details
-            <i class="btn btn-close float-end" style="min-width:20px;padding:0;line-height: 27px;"
-              (click)="closeTaskFinishedNotification(note.id)"></i>
-          </div>
-          <div class="card-body">
-            <h4>
-              Status:
-              <b> Upload successfully completed </b>
-            </h4>
-            <h4>
-              Message:
-              <b> {{note.message}} </b>
-              <!-- You can view your uploads on the <a href="management#/site/tasks" >Workflow Task page</a>. -->
-            </h4>
-          </div>
-        </div> <!-- End task finished upload notification -->
-
         <div>
 
           <div class="well">
@@ -135,34 +91,9 @@
 
           </div>
 
-          <div *ngIf="currentTask" class="card card-warning" style="margin: 30px 0 30px 0;">
-            <div class="card-header" style="font-size: 20px;">Upload Details</div>
-            <div class="card-body">
-              <h4>
-                Status:
-                <b> {{currentTask.status}} </b>
-              </h4>
-              <h4>
-                Message:
-                <b> {{currentTask.message}} </b>
-              </h4>
-              <h4>
-                Upload Started On:
-                <b> {{currentTask.createDate | idmdate}} </b>
-              </h4>
-              <h4>
-                Last Updated:
-                <b> {{currentTask.lastUpdateDate | idmdate}} </b>
-              </h4>
-              <h4>
-                Elapsed Time:
-                <b> {{uploadCounter}} </b>
-              </h4>
-            </div>
-          </div>
 
-          <div *ngIf="progress" class="card card-warning" style="margin: 30px 0 30px 0;">
-            <div class="card-header" style="font-size: 20px;">Upload Details</div>
+          <div *ngIf="progress" class="card border border-warning" style="margin: 30px 0 30px 0;">
+            <div class="card-header bg-warning" style="font-size: 20px;">Upload Details</div>
             <div class="card-body">
               <h4>
                 Progress:
@@ -171,10 +102,26 @@
             </div>
           </div>
 
+          <div *ngIf="isSuccessful" class="card border border-success" style="margin: 30px 0 30px 0;">
+            <div class="card-header bg-success text-white mb-3" style="font-size: 20px;">
+              Upload Details
+            </div>
+            <div class="card-body">
+              <h4>
+                Status:
+                <b> Upload successfully completed </b>
+              </h4>
+            </div>
+          </div> <!-- End task finished upload notification -->
+
+          <div class="mb-3">
+            <label for="formFile" class="form-label">Upload File</label>
+            <input [disabled]="isUploading" type="file" class="form-control" id="formFile"
+            (change)="onFileSelected($event)" [attr.accept]="extensions" [attr.aria-label]="'Choose file to upload'">
+          </div>
 
 
-          <!-- <uppy-dashboard [uppy]="uppy"> </uppy-dashboard> -->
-          <input type="file" (change)="onFileSelected($event)" [attr.aria-label]="'Choose file to upload'" />
+
         </div> <!-- End current upload indicator -->
       </div>
       <div class="col-md-2"></div>
@@ -185,18 +132,13 @@
     <div class="row">
       <div class="col-md-12">
         <div class="btn-holder" style="text-align: right;">
-          <button *ngIf="existingTask && !currentTask" type="button" [disabled]="disabled" class="btn btn-danger"
-            (click)="removeUpload()">
-            <i class="icon-upload icon-white"></i>
-            Cancel Upload
-          </button>
 
-          <button type="button" (click)="close()" [disabled]="disabled" class="btn btn-default" role="button"
+          <button type="button" (click)="close()" [disabled]="isUploading" class="btn btn-default" role="button"
             aria-disabled="false" style="padding: 4px 18px;">
             <span class="ui-button-text">Close</span>
           </button>
 
-          <button type="button btn btn-primary" [disabled]="myForm.invalid || !isPageValid() || disabled"
+          <button type="button btn btn-primary" [disabled]="myForm.invalid || !selectedFile || isUploading"
             class="btn btn-primary" (click)="handleUpload()">
             <i class="icon-upload icon-white"></i>
             Upload

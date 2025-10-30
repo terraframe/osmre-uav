@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -393,12 +393,12 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
 
   @Override
-  public AbstractWorkflowTask createWorkflowTask(String uploadId, String uploadTarget)
+  public AbstractWorkflowTask createWorkflowTask(String userOid, String uploadId, String uploadTarget)
   {
     WorkflowTask workflowTask = new WorkflowTask();
     workflowTask.setUploadId(uploadId);
     workflowTask.setComponent(this.getOid());
-    workflowTask.setGeoprismUser(GeoprismUser.getCurrentUser());
+    workflowTask.setGeoprismUserId(userOid);
     workflowTask.setTaskLabel("UAV data upload for collection [" + this.getName() + "]");
 
     return workflowTask;

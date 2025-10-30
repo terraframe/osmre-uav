@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm;
 
@@ -27,6 +27,8 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
+import me.desair.tus.server.TusFileUploadService;
+import me.desair.tus.server.upload.UUIDUploadIdFactory;
 import net.geoprism.EncodingFilter;
 import net.geoprism.registry.service.SessionFilter;
 import net.geoprism.spring.web.JsonExceptionHandler;
@@ -97,4 +99,12 @@ public class SpringAppConfig extends WebMvcConfigurationSupport
     return new EncodingFilter();
   }
 
+  @Bean
+  TusFileUploadService tusFileUploadService()
+  {
+    return new TusFileUploadService() //
+        .withStoragePath(AppProperties.getUploadDirectory().getAbsolutePath()) //
+        .withUploadURI("/uasdm/api/tus-upload") //
+        .withUploadIdFactory(new UUIDUploadIdFactory());
+  }
 }

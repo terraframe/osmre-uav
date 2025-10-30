@@ -1,23 +1,24 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -84,7 +85,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   {
     this.setConfigurationJson(configuration.toJson().toString());
   }
-  
+
   public static List<String> getSupportedExtensions(String uploadTarget, boolean isMultispectral, ProcessConfiguration config)
   {
     if (isMultispectral || uploadTarget.equals(ImageryComponent.DEM))
@@ -117,7 +118,9 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   /**
    * 
    * @param parser
-   * @param inFile Can be either an archive (.zip or .tar.gz) or an individual file such as a ptcloud or .tif
+   * @param inFile
+   *          Can be either an archive (.zip or .tar.gz) or an individual file
+   *          such as a ptcloud or .tif
    * @return
    * @throws FileNotFoundException
    */
@@ -125,14 +128,15 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   {
     VaultFile vfImageryZip = null;
     ProcessConfiguration configuration = ProcessConfiguration.parse(parser);
-    
+
     AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
-    if (task instanceof WorkflowTask) {
-      ((WorkflowTask)task).setProcessDem(parser.getProcessDem());
-      ((WorkflowTask)task).setProcessOrtho(parser.getProcessOrtho());
-      ((WorkflowTask)task).setProcessPtcloud(parser.getProcessPtcloud());
+    if (task instanceof WorkflowTask)
+    {
+      ( (WorkflowTask) task ).setProcessDem(parser.getProcessDem());
+      ( (WorkflowTask) task ).setProcessOrtho(parser.getProcessOrtho());
+      ( (WorkflowTask) task ).setProcessPtcloud(parser.getProcessPtcloud());
     }
-    
+
     try (FileInputStream istream = new FileInputStream(inFile))
     {
       vfImageryZip = VaultFile.createAndApply(parser.getFilename(), istream);
@@ -155,7 +159,61 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     catch (Throwable t)
     {
       t.printStackTrace();
-      
+
+      try
+      {
+        vfImageryZip.delete();
+      }
+      catch (Throwable t2)
+      {
+      }
+
+      task.lock();
+      task.setStatus(WorkflowTaskStatus.ERROR.toString());
+      task.setMessage("An error occurred while uploading the imagery to S3. " + RunwayException.localizeThrowable(t, CommonProperties.getDefaultLocale()));
+      task.apply();
+
+      logger.error("An error occurred while uploading the imagery to S3.", t);
+    }
+
+    return null;
+  }
+
+  /**
+   * 
+   * @param parser
+   * @param inFile
+   *          Can be either an archive (.zip or .tar.gz) or an individual file
+   *          such as a ptcloud or .tif
+   * @return
+   * @throws FileNotFoundException
+   */
+  public static JobHistory processFiles(String runAsUserOid, String uploadId, String filename, InputStream istream) throws FileNotFoundException
+  {
+    AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(uploadId);
+    VaultFile vfImageryZip = null;
+    
+    try
+    {
+      vfImageryZip = VaultFile.createAndApply(filename, istream);
+
+      ImageryProcessingJob job = new ImageryProcessingJob();
+      job.setRunAsUserId(runAsUserOid);
+      job.setWorkflowTask(task);
+      job.setImageryFile(vfImageryZip.getOid());
+      job.setUploadTarget(task.getUploadTarget());
+      job.setProcessUpload(false);
+      // job.setOutFileNamePrefix(configuration.getOutFileNamePrefix());
+      job.apply();
+
+      JobHistory history = job.start();
+
+      return history;
+    }
+    catch (Throwable t)
+    {
+      t.printStackTrace();
+
       try
       {
         vfImageryZip.delete();
@@ -185,23 +243,23 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   public void execute(ExecutionContext executionContext)
   {
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
-    
+
     final AbstractWorkflowTask task = this.getWorkflowTask();
     ApplicationFileResource res = VaultFile.get(this.getImageryFile());
     ApplicationFileResource validated = null;
-    
+
     try
     {
       final String ext = res.getNameExtension().toLowerCase();
-      
+
       if (ext.endsWith("gz") || ext.endsWith("zip"))
       {
         res = new ArchiveFileResource(res);
       }
-      
+
       var validator = new UploadValidationProcessor();
       boolean isValid = validator.process(res, (AbstractUploadTask) this.getWorkflowTask(), getConfiguration());
-      
+
       if (isValid)
         this.uploadToS3(validator.getDownstreamFile(), this.getUploadTarget(), this.getConfiguration());
     }
@@ -222,7 +280,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     finally
     {
       res.delete();
-      
+
       if (validated != null)
         validated.delete();
     }

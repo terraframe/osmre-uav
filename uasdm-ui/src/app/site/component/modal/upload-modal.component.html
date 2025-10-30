@@ -116,7 +116,7 @@
       style="margin-top:20px;">Advanced Settings
     </button>
     <div style="padding-top:10px;" [collapse]="isAdvancedSettingsCollapsed" [isAnimated]="true">
-      <div class="card bg-default" style="padding:10px;">
+      <div class="card  border border-secondary" style="padding:10px;">
 
         <div class="card-body" style="padding:10px;">
           <div style="padding:10px;">
@@ -384,8 +384,8 @@
 
         <!-- Existing task panel -->
         <div *ngIf="existingTask && !currentTask">
-          <div class="card bg-warning" style="margin: 30px 0 30px 0;">
-            <div class="card-header" style="font-size: 20px;">Partial Upload Detected</div>
+          <div class="card border border-warning" style="margin: 30px 0 30px 0;">
+            <div class="card-header bg-warning" style="font-size: 20px;">Partial Upload Detected</div>
             <div class="card-body">
               <h4>A partial upload was detected. You can either cancel that partial upload or attempt to
                 continue.</h4>
@@ -497,8 +497,8 @@
 
           </div>
 
-          <div *ngIf="currentTask" class="card bg-warning" style="margin: 30px 0 30px 0;">
-            <div class="card-header" style="font-size: 20px;">Upload Details</div>
+          <div *ngIf="currentTask" class="card border border-warning" style="margin: 30px 0 30px 0;">
+            <div class="card-header bg-warning" style="font-size: 20px;">Upload Details</div>
             <div class="card-body">
               <h4>
                 Status:

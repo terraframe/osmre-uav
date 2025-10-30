@@ -249,14 +249,14 @@ public class Imagery extends ImageryBase implements ImageryIF
   }
 
   @Override
-  public AbstractWorkflowTask createWorkflowTask(String uploadId, String uploadTarget)
+  public AbstractWorkflowTask createWorkflowTask(String userOid, String uploadId, String uploadTarget)
   {
     ImageryWorkflowTask task = new ImageryWorkflowTask();
     task.setUploadId(uploadId);
     task.setImagery(this.getOid());
-    task.setGeoprismUser(GeoprismUser.getCurrentUser());
+    task.setGeoprismUserId(userOid);
     task.setTaskLabel("UAV data upload for imagery [" + this.getName() + "]");
-
+    
     return task;
   }
 

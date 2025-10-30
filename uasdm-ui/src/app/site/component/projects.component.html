@@ -375,7 +375,7 @@
         <footer class="flex-shrink-1 sidebar-footer">
           <div class="row" *ngIf="current != null && current.type === 0" style="background:white;">
             <div class="col-md-12" style="text-align: center;padding: 10px;border-top: 1px solid lightgrey;">
-              <button (click)="handleCreateCollection()" class="btn btn-primary" style="margin-bottom: 5px;">Create
+              <button (click)="handleCreateCollection()" class="btn btn-primary">Create
                 Collection</button>
               <button *ngIf="current.data.type !== 'Site'" (click)="handleUploadProducts()"
                 class="btn btn-primary">Upload Products</button>
