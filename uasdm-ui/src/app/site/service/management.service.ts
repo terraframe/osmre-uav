@@ -792,7 +792,7 @@ export class ManagementService {
 		this.eventService.start();
 
 		return firstValueFrom(this.http
-			.post<void>(environment.apiUrl + '/api/upload/get-task', JSON.stringify(params), { headers: headers })
+			.post<void>(environment.apiUrl + '/api/upload/remove-upload', JSON.stringify(params), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			})));
