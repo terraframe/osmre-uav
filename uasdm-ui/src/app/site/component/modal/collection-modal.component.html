@@ -161,11 +161,11 @@
                   <li
                     *ngFor="let item of page.results | paginate: { itemsPerPage: page.pageSize, currentPage: page.pageNumber, totalItems: page.count }"
                     class="list-group-item col-3">
-                    <a class="thumbnail"
+                    <a class="thumb d-block text-decoration-none text-reset"
                       [ngClass]="{'card-disabled' : item.exclude, 'non-clickable' : !enableSelectableImages}">
                       <input type="checkbox" class="x-box" *ngIf="enableSelectableImages" [checked]="item.exclude"
                         (change)="toggleExcludeImage($event, item)" [title]="item.exclude ? 'Include image in processing' : 'Exclude image from processing'" style="cursor: pointer;" />
-                      <img class="mx-auto d-block img-thumbnail" style="max-height: 150px"
+                      <img class="mx-auto d-block" style="max-height: 150px"
                         (click)="previewImage(item)"
                         [ngClass]="{'img-disabled' : item.exclude}"
                         [src]="thumbnails[item.key] != null ? (thumbnails[item.key] | safeHtml) : (context + '/assets/thumbnail-default.png')"
@@ -239,12 +239,12 @@
               <div class="image-list-container">
                 <ul class="list-group row">
                   <li *ngFor="let item of page.results" class="list-group-item col-xs-3">
-                    <a class="thumbnail" (click)="showVideo(item)">
+                    <div class="thumbnail" (click)="showVideo(item)">
                       <img [src]="context + '/assets/thumbnail-video.png'" alt="Video">
                       <div class="caption">
                         <h4 class="media-heading">{{item.name}}</h4>
                       </div>
-                    </a>
+                    </div>
                   </li>
                 </ul>
               </div>

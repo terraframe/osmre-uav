@@ -74,13 +74,6 @@
     <div class="col-md-12">
       <div class="row" style="margin-right: 10px;">
         <div class="col-sm-12" style="text-align: right; padding-top: 10px; padding-right: 0;">
-        <!-- 
-          <button (click)="onFilterOpen()" type="button" class="btn btn-secondary">
-            Advanced filter
-            <i class="fa" [ngClass]="{'fa-filter' : !hasFilter, 'fa-funnel-dollar': hasFilter}"></i>
-          </button>
-          -->
-          
           <button
 			  type="button"
 			  class="advanced-filter btn btn-outline-secondary btn-sm rounded-pill d-inline-flex align-items-center gap-1 advanced-filter fs-6"
@@ -488,7 +481,7 @@
                     </div>
                   </div>
                   <div class="row-form">
-                    <a class="fa fa-plus" (click)="handleStacLayer()" title="Create a layer">&nbsp;Create layer</a>
+                    <button class="btn btn-outline-secondary btn-sm" (click)="handleStacLayer()" title="Create a layer"><i class="fa fa-plus"></i>&nbsp;Create layer</button>
                   </div>
 
                   <ng-container *ngIf="hierarchy.oid != null && hierarchy.oid.length > 0">

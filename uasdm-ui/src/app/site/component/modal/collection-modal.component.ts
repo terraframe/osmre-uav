@@ -39,7 +39,7 @@ import { TusUploadModalComponent } from './tus-upload-modal.component';
 @Component({
 	selector: 'collection-modal',
 	templateUrl: './collection-modal.component.html',
-	styleUrls: [],
+	styleUrls: ['./collection-modal.component.scss'],
 	providers: [BasicConfirmModalComponent, ArtifactPageComponent],
 	animations: [
 		fadeInOnEnterAnimation(),

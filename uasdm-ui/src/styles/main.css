@@ -2179,13 +2179,6 @@ li.list-group-item.active {
 }
 
 /* Buttons */
-input[type=button],
-input[type=submit],
-button.btn,
-.btn {
-    min-width: 104px;
-    height: 40px;
-}
 input[type=button]:focus,
 input[type=button]:active,
 input[type=submit]:focus,
