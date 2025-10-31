@@ -31,6 +31,7 @@ import { ShareProductModalComponent } from '../modal/share-product-modal.compone
 @Component({
     selector: 'product-panel',
     templateUrl: './product-panel.component.html',
+    styleUrl: './product-panel.component.scss',
     animations: [
         fadeInOnEnterAnimation(),
         fadeOutOnLeaveAnimation(),

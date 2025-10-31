@@ -13,3 +13,19 @@ h3.object-label {
 .main {
 	flex-basis: 75%
 }
+
+
+button.advanced-filter {
+  padding: 0.1rem 0.35rem;
+  font-size: 0.7rem !important;
+  height: 30px;
+  line-height: 1.05;
+  border-radius: 9999px !important;       /* keep the pill look */
+  white-space: nowrap;
+}
+
+button.advanced-filter .fa {
+  font-size: 0.75rem;
+  line-height: 1;
+  margin-right: 0.2rem;
+}
