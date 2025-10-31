@@ -7,7 +7,8 @@ import { environment } from 'src/environments/environment';
 
 @Component({
 	selector: 'processing-report',
-	templateUrl: './processing-report.component.html'
+	templateUrl: './processing-report.component.html',
+	styleUrl: './processing-report.component.scss'
 })
 export class ProcessingReportComponent {
 

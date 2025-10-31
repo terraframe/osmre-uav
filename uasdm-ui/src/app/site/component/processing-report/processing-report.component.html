@@ -1,19 +1,30 @@
-<!--
+<!-- Processing Quality (comfortable spacing) -->
+<section class="processing-bar bg-body-tertiary border rounded-2 px-4 py-3 mb-3">
+  <div class="row row-cols-1 row-cols-md-auto g-3 align-items-end" style="column-gap: 20px; align-items: center !important;">
+    <div class="col">
+      <strong class="text-body fs-6">Processing Quality Report</strong>
+    </div>
 
+    <div class="col">
+      <label for="sinceDate" class="form-label mb-1 small text-secondary">Since Date</label>
+      <input
+        id="sinceDate"
+        type="date"
+        [(ngModel)]="date"
+        name="sinceDate"
+        class="form-control form-control-sm"
+      />
+    </div>
 
-
--->
-<div >
-
-<h2>Processing Quality Report</h2>
-
-<!-- =COUNTIF(E1:E517, "Complete") / 516 -->
-
-<div class="col-sm-12">
-  <label class="form-label">Since Date</label>
-  <input type="date" [(ngModel)]="date" name="sinceDate" class="form-control">
-</div>
-
-<button (click)="generate()" class="btn btn-primary" style="margin:10px 0;">Generate</button>
-
-</div>
+    <div class="col">
+      <label class="form-label d-none d-md-block mb-1">&nbsp;</label>
+      <button
+        type="button"
+        class="btn btn-primary btn-sm px-4"
+        (click)="generate()"
+      >
+        Generate
+      </button>
+    </div>
+  </div>
+</section>

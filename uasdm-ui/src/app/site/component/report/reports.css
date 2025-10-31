@@ -5,3 +5,30 @@
     background: #6BA542 !important; /* IE fallback */
     background: var(--theme-submit-button-color) !important;
 }
+
+.reports-page {
+  /* Section header with a title, a horizontal rule, and a right-aligned button */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin: .25rem 0 .5rem;
+    min-height: 34px; /* keeps Export aligned even if fonts vary a bit */
+  }
+  .section-header .rule {
+    border-bottom: 1px solid var(--bs-border-color);
+    transform: translateY(2px); /* visually centers the rule with the text baseline */
+  }
+
+  /* Table card is tight and only scrolls horizontally inside */
+  .card--table {
+    border-radius: .5rem;
+  }
+  .card--table .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+
+
