@@ -14,7 +14,7 @@
 		<ng-template pTemplate="header" let-columns>
 			<tr>
 				<th *ngFor="let col of columns" [pSortableColumn]="col.field"
-					[pSortableColumnDisabled]="col.type === 'STRING-ARRAY' || col.field === 'product'"
+					[pSortableColumnDisabled]="!col.sortable || col.type === 'STRING-ARRAY' || col.field === 'product'"
 					[ngClass]="{'actions-col' : col.type === 'ACTIONS', 'map-service-col' : col.type === 'STRING-ARRAY'}"
 					pResizableColumn [style]="{'min-width':'200px'}">
 					{{col.header}}
