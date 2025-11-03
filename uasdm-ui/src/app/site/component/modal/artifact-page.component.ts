@@ -11,7 +11,6 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { CollectionArtifacts, ProductDetail, SiteEntity } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 
-import { UploadModalComponent } from './upload-modal.component';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { BasicConfirmModalComponent } from '@shared/component';
 import EnvironmentUtil from '@core/utility/environment-util';
@@ -21,6 +20,7 @@ import { ConfigurationService } from '@core/service/configuration.service';
 import { APP_BASE_HREF } from '@angular/common';
 import { ODMRunModalComponent } from './odmrun-modal.component';
 import { ModalTypes } from '@shared/model/modal';
+import { TusUploadModalComponent } from './tus-upload-modal.component';
 
 @Component({
 	selector: 'artifact-page',
@@ -132,13 +132,13 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 
 	handleUpload(productName: string, folderName: string): void {
 
-		const modal = this.modalService.show(UploadModalComponent, {
+		const modal = this.modalService.show(TusUploadModalComponent, {
 			animated: false,
 			backdrop: true,
 			ignoreBackdropClick: true,
 			'class': 'upload-modal modal-xl'
 		});
-		modal.content.init(this.entity, folderName, productName);
+		modal.content.init(this.entity, folderName, null, productName);
 
 		// modal.content.onUploadComplete.subscribe(oid => {
 

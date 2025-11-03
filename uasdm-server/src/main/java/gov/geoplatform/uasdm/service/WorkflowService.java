@@ -15,6 +15,8 @@
  */
 package gov.geoplatform.uasdm.service;
 
+import java.util.Map;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -35,9 +37,11 @@ import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.MetadataMessage;
 import gov.geoplatform.uasdm.model.Page;
+import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.ProcessingInProgressException;
 import gov.geoplatform.uasdm.view.RequestParserIF;
+import me.desair.tus.server.upload.UploadInfo;
 
 @Service
 public class WorkflowService
@@ -127,25 +131,46 @@ public class WorkflowService
   }
 
   @Transaction
-  public void updateOrCreateUploadTask(String userOid, String uploadId, String componentId, String uploadTarget)
+  public void updateOrCreateUploadTask(String userOid, UploadInfo uploadInfo)
   {
+    ProcessConfiguration configuration = ProcessConfiguration.parse(uploadInfo);
+
+    String uploadId = uploadInfo.getId().toString();
+
     AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForUpload(uploadId);
 
     if (task == null)
     {
+      Map<String, String> metadata = uploadInfo.getMetadata();
+
+      String componentId = metadata.get("componentId");
+      String uploadTarget = metadata.get("uploadTarget");
+
       UasComponentIF uasComponent = ComponentFacade.getComponent(componentId);
 
       task = uasComponent.createWorkflowTask(userOid, uploadId, uploadTarget);
+      task.setDescription(metadata.getOrDefault("description", null));
+      task.setTool(metadata.getOrDefault("tool", null));
+      task.setProjectionName(metadata.getOrDefault("projectionName", null));
+      task.setOrthoCorrectionModel(metadata.getOrDefault("orthoCorrectionModel", null));
+      task.setProductName(configuration.getProductName());
 
-      if (task instanceof WorkflowTask)
+      if (metadata.containsKey("ptEpsg"))
       {
-        WorkflowTask workflowTask = (WorkflowTask) task;
-        workflowTask.setProcessDem(false);
-        workflowTask.setProcessOrtho(false);
-        workflowTask.setProcessPtcloud(false);
+        task.setPtEpsg(Integer.valueOf(metadata.get("ptEpsg")));
       }
 
-      if (uasComponent instanceof gov.geoplatform.uasdm.graph.Collection && ( (gov.geoplatform.uasdm.graph.Collection) uasComponent ).getStatus().equals("Processing"))
+      if (task instanceof WorkflowTask && configuration.isODM())
+      {
+        WorkflowTask workflowTask = (WorkflowTask) task;
+
+        workflowTask.setProcessDem(configuration.toODM().getProcessDem());
+        workflowTask.setProcessOrtho(configuration.toODM().getProcessOrtho());
+        workflowTask.setProcessPtcloud(configuration.toODM().getProcessPtcloud());
+      }
+
+      if (uasComponent instanceof gov.geoplatform.uasdm.graph.Collection && //
+          ( (gov.geoplatform.uasdm.graph.Collection) uasComponent ).getStatus().equals("Processing"))
       {
         throw new ProcessingInProgressException();
       }

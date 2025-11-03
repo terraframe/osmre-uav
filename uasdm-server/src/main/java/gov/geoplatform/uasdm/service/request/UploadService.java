@@ -72,12 +72,8 @@ public class UploadService
       }
       else
       {
-        // Update of create the workflow task
-        Map<String, String> metadata = uploadInfo.getMetadata();
-        String entityId = metadata.get("entityId");
-        String uploadTarget = metadata.get("uploadTarget");
-
-        this.wService.updateOrCreateUploadTask(userOid, uploadInfo.getId().toString(), entityId, uploadTarget);
+        // Ensure the task exists workflow task
+        this.wService.updateOrCreateUploadTask(userOid, uploadInfo);
       }
     }
 
@@ -100,13 +96,13 @@ public class UploadService
   @Request
   private void handleTusUpdate(String userOid, String uploadURI, UploadInfo uploadInfo)
   {
+    // Ensure the task exists workflow task
+    this.wService.updateOrCreateUploadTask(userOid, uploadInfo);
+
     try (InputStream is = this.tusFileUploadService.getUploadedBytes(uploadURI, userOid))
     {
-      Map<String, String> metadata = uploadInfo.getMetadata();
-      String filename = metadata.get("filename");
-
       // Handle the file
-      this.pService.handleUploadFinish(userOid, uploadInfo.getId().toString(), filename, is);
+      this.pService.handleUploadFinish(userOid, uploadInfo, is);
     }
     catch (IOException | TusException e)
     {

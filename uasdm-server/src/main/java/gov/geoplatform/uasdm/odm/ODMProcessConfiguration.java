@@ -1,21 +1,22 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.odm;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -25,6 +26,7 @@ import com.google.gson.JsonParser;
 
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.view.RequestParserIF;
+import me.desair.tus.server.upload.UploadInfo;
 
 public class ODMProcessConfiguration implements ProcessConfiguration
 {
@@ -401,6 +403,84 @@ public class ODMProcessConfiguration implements ProcessConfiguration
     object.addProperty(PRODUCT_NAME, this.productName);
 
     return object;
+  }
+
+  public static ODMProcessConfiguration parse(UploadInfo uploadInfo)
+  {
+    Map<String, String> metadata = uploadInfo.getMetadata();
+
+    ODMProcessConfiguration configuration = new ODMProcessConfiguration();
+
+    if (metadata.containsKey(PRODUCT_NAME))
+    {
+      configuration.setProductName(metadata.get(PRODUCT_NAME));
+    }
+
+    if (metadata.containsKey(INCLUDE_GEO_LOCATION_FILE))
+    {
+      configuration.setIncludeGeoLocationFile(Boolean.valueOf(metadata.get(INCLUDE_GEO_LOCATION_FILE)));
+    }
+
+    if (metadata.containsKey(GEO_LOCATION_FORMAT))
+    {
+      configuration.setGeoLocationFormat(FileFormat.valueOf(metadata.get(GEO_LOCATION_FORMAT)));
+    }
+
+    if (metadata.containsKey(GEO_LOCATION_FILE_NAME))
+    {
+      configuration.setGeoLocationFileName(metadata.get(GEO_LOCATION_FILE_NAME));
+    }
+
+    if (metadata.containsKey(INCLUDE_GROUND_CONTROL_POINT_FILE))
+    {
+      configuration.setIncludeGroundControlPointFile(Boolean.valueOf(metadata.get(INCLUDE_GROUND_CONTROL_POINT_FILE)));
+    }
+
+    if (metadata.containsKey(GROUND_CONTROL_POINT_FILE_NAME))
+    {
+      configuration.setGroundControlPointFileName(metadata.get(GROUND_CONTROL_POINT_FILE_NAME));
+    }
+
+    if (metadata.containsKey(OUT_FILE_NAME_PREFIX))
+    {
+      configuration.setOutFileNamePrefix(metadata.get(OUT_FILE_NAME_PREFIX));
+    }
+
+    if (metadata.containsKey(RESOLUTION))
+    {
+      configuration.setResolution(new BigDecimal(metadata.get(RESOLUTION)));
+    }
+
+    if (metadata.containsKey(MATCHING_NEIGHBORS))
+    {
+      configuration.setMatcherNeighbors(Integer.valueOf(metadata.get(MATCHING_NEIGHBORS)));
+    }
+
+    if (metadata.containsKey(MIN_NUM_FEATURES))
+    {
+      configuration.setMinNumFeatures(Integer.valueOf(metadata.get(MIN_NUM_FEATURES)));
+    }
+
+    if (metadata.containsKey(PC_QUALITY))
+    {
+      configuration.setPcQuality(Quality.valueOf(metadata.get(PC_QUALITY)));
+    }
+
+    if (metadata.containsKey(FEATURE_QUALITY))
+    {
+      configuration.setFeatureQuality(Quality.valueOf(metadata.get(FEATURE_QUALITY)));
+    }
+
+    if (metadata.containsKey(RADIOMETRIC_CALIBRATION))
+    {
+      configuration.setRadiometricCalibration(RadiometricCalibration.valueOf(metadata.get(RADIOMETRIC_CALIBRATION)));
+    }
+
+    configuration.setProcessOrtho(Boolean.valueOf(metadata.getOrDefault(PROCESS_ORTHO, "false")));
+    configuration.setProcessDem(Boolean.valueOf(metadata.getOrDefault(PROCESS_DEM, "false")));
+    configuration.setProcessPtcloud(Boolean.valueOf(metadata.getOrDefault(PROCESS_PT_CLOUD, "false")));
+
+    return configuration;
   }
 
   public static ODMProcessConfiguration parse(String jsonString)

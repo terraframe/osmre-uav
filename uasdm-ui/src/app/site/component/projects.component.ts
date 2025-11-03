@@ -33,9 +33,6 @@ import {
 import { ActivatedRoute } from "@angular/router";
 import { CreateCollectionModalComponent } from "./modal/create-collection-modal.component";
 import { CreateStandaloneProductModalComponent } from "./modal/create-standalone-product-group-modal.component";
-import { UIOptions } from "fine-uploader";
-import { FineUploaderBasic } from "fine-uploader/lib/core";
-import { UploadModalComponent } from "./modal/upload-modal.component";
 import { StacLayer } from "@site/model/layer";
 
 import { bbox, bboxPolygon, envelope, featureCollection } from "@turf/turf";

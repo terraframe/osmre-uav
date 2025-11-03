@@ -40,6 +40,7 @@ import com.runwaysdk.system.scheduler.JobHistoryRecord;
 
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
 import gov.geoplatform.uasdm.bus.CollectionUploadEventQuery;
@@ -57,6 +58,7 @@ import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
 import gov.geoplatform.uasdm.ws.UserNotificationMessage;
+import me.desair.tus.server.upload.UploadInfo;
 
 public class ImageryProcessingJob extends ImageryProcessingJobBase
 {
@@ -181,6 +183,8 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
   /**
    * 
+   * @param uploadInfo
+   *          TODO
    * @param parser
    * @param inFile
    *          Can be either an archive (.zip or .tar.gz) or an individual file
@@ -188,21 +192,25 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
    * @return
    * @throws FileNotFoundException
    */
-  public static JobHistory processFiles(String runAsUserOid, String uploadId, String filename, InputStream istream) throws FileNotFoundException
+  public static JobHistory processFiles(String runAsUserOid, UploadInfo uploadInfo, InputStream istream) throws FileNotFoundException
   {
+    ProcessConfiguration configuration = ProcessConfiguration.parse(uploadInfo);
+    String uploadId = uploadInfo.getId().toString();
+
     AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(uploadId);
     VaultFile vfImageryZip = null;
-    
+
     try
     {
-      vfImageryZip = VaultFile.createAndApply(filename, istream);
+      vfImageryZip = VaultFile.createAndApply(uploadInfo.getFileName(), istream);
 
       ImageryProcessingJob job = new ImageryProcessingJob();
       job.setRunAsUserId(runAsUserOid);
       job.setWorkflowTask(task);
       job.setImageryFile(vfImageryZip.getOid());
       job.setUploadTarget(task.getUploadTarget());
-      job.setProcessUpload(false);
+      job.setProcessUpload(!task.getUploadTarget().equals(Collection.RAW));
+      job.setConfiguration(configuration);
       // job.setOutFileNamePrefix(configuration.getOutFileNamePrefix());
       job.apply();
 

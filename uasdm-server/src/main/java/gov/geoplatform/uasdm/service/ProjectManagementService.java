@@ -121,6 +121,7 @@ import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
 import gov.geoplatform.uasdm.ws.UserNotificationMessage;
+import me.desair.tus.server.upload.UploadInfo;
 import net.geoprism.GeoprismUser;
 import net.geoprism.localization.LocalizationService;
 
@@ -751,11 +752,11 @@ public class ProjectManagementService
   // Must run as SYSTEM. The user's session may no longer be valid
   // (depending on how long chunk merging takes)
   @Request
-  public void handleUploadFinish(String runAsUserOid, String uploadId, String filename, InputStream istream)
+  public void handleUploadFinish(String runAsUserOid, UploadInfo uploadInfo, InputStream istream)
   {
     try
     {
-      ImageryProcessingJob.processFiles(runAsUserOid, uploadId, filename, istream);
+      ImageryProcessingJob.processFiles(runAsUserOid, uploadInfo, istream);
     }
     catch (Throwable t)
     {
