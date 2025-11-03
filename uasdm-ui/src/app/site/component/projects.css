@@ -20,7 +20,6 @@ button.advanced-filter {
   font-size: 0.7rem !important;
   height: 30px;
   line-height: 1.05;
-  border-radius: 9999px !important;       /* keep the pill look */
   white-space: nowrap;
 }
 
