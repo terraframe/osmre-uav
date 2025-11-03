@@ -2,9 +2,7 @@
 ///
 ///
 
-import { CommonModule } from '@angular/common';
-import { BrowserModule } from '@angular/platform-browser';
-import { Component, OnInit, Input, Output, EventEmitter, OnDestroy, Inject } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalService } from 'ngx-bootstrap/modal';
 
@@ -16,8 +14,6 @@ import { BasicConfirmModalComponent } from '@shared/component';
 import EnvironmentUtil from '@core/utility/environment-util';
 import { environment } from 'src/environments/environment';
 import { WebSockets } from '@core/utility/web-sockets';
-import { ConfigurationService } from '@core/service/configuration.service';
-import { APP_BASE_HREF } from '@angular/common';
 import { ODMRunModalComponent } from './odmrun-modal.component';
 import { ModalTypes } from '@shared/model/modal';
 import { TusUploadModalComponent } from './tus-upload-modal.component';
@@ -98,17 +94,13 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 		this.loading = true;
 		this.service.getArtifacts(this.entity.id).then(groups => {
 
-			if (this.standaloneProduct != null) { groups = groups.filter(g => g.productName === this.standaloneProduct.productName) }
+			if (this.standaloneProduct != null) {
+				groups = groups.filter(g => g.productName === this.standaloneProduct.productName)
+			}
 
 			this.loading = false;
 
 			this.groups = groups;
-
-			// TODO: IS THIS NEEDED ANYMORE
-			// this.config.processDem = (this.artifacts.dem == null || this.artifacts.dem.items.length === 0);
-			// this.config.processOrtho = (this.artifacts.ortho == null || this.artifacts.ortho.items.length === 0);
-			// this.config.processPtcloud = (this.artifacts.ptcloud == null || this.artifacts.ptcloud.items.length === 0);
-
 		}).catch((err: HttpErrorResponse) => {
 			this.error(err);
 		});
@@ -172,7 +164,7 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 
 		const modal = this.modalService.show(BasicConfirmModalComponent, {
 			animated: false,
-			backdrop: true, 
+			backdrop: true,
 			class: 'modal-xl',
 			ignoreBackdropClick: true,
 		});

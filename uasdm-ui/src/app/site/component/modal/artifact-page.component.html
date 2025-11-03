@@ -8,7 +8,8 @@
   <i *ngIf="loading" class="fa fa-spinner fa-spin" style="margin-left:50%;"></i>
 
   <div class="list-group" *ngIf="groups != null">
-    <div class="list-group-item" *ngFor="let group of groups" [ngStyle]="{'border': standaloneProduct == null ? '1px solid #ddd' : ''}">
+    <div class="list-group-item" *ngFor="let group of groups"
+      [ngStyle]="{'border': standaloneProduct == null ? '1px solid #ddd' : ''}">
       <div class="row" *ngIf="standaloneProduct == null">
         <div class="col-sm-4">
           <h3> {{group.productName}} </h3>
@@ -101,30 +102,43 @@
                   </ng-container>
                 </td>
                 <td *ngIf="!edit" class="no-edit-actions">
-                  <span class="action-col">
-                    <button *ngIf="group[section.folder] != null && group[section.folder].items.length > 0"
-                      type="button" class="btn btn-warning" [disabled]="processRunning"
-                      (click)="handleRemove(group.productName, section)">
-                      Remove
+                  <div dropdown [dropup]="true" class="btn-group dropup">
+                    <button class="btn btn-secondary btn-sm dropdown-toggle" dropdownToggle type="button"
+                      data-bs-toggle="dropdown" aria-expanded="false">
+                      Actions
                     </button>
-                    <button *ngIf="group[section.folder] == null || group[section.folder].items.length == 0"
-                      type="button" class="btn btn-primary" [disabled]="processRunning"
-                      (click)="handleUpload(group.productName, section.folder)">
-                      Upload
-                    </button>
-                  </span>
+                    <ol *dropdownMenu class="dropdown-menu dropdown-menu-right">
+                      <li *ngIf="group[section.folder] == null || group[section.folder].items.length == 0">
+                        <a [ngClass]="{'disabled': processRunning}"
+                          (click)="handleUpload(group.productName, section.folder)" class="dropdown-item">
+                          Upload
+                        </a>
+                      </li>
+                      <ng-container *ngIf="group[section.folder] != null">
+                        <li *ngIf="group[section.folder].items.length > 0">
+                          <a [ngClass]="{'disabled': processRunning}" (click)="handleRemove(group.productName, section)"
+                            class="dropdown-item text-danger">
+                            Remove
+                          </a>
+                        </li>
+                        <li>
+                          <artifact-upload-item [componentId]="entity.id" [productName]="group.productName"
+                            [folder]="section.folder" [replaceName]="'report.pdf'" [accept]="'.pdf'"
+                            [label]="group[section.folder].report ? 'Reupload report' : 'Upload report'"
+                            (success)="group[section.folder].report = true"
+                            (error)="error($event)">
+                          </artifact-upload-item>
+                        </li>
+                        <li *ngIf="group[section.folder].report">
+                          <a [ngClass]="{'disabled': processRunning}"
+                            (click)="handleDownloadReport(group.productName, section)" class="dropdown-item">
+                            Download report
+                          </a>
+                        </li>      
+                      </ng-container>
 
-                  <span class="action-col" *ngIf="group[section.folder] != null" style="width:9em;">
-                    <artifact-upload [componentId]="entity.id" [productName]="group.productName"
-                      [folder]="section.folder" [replaceName]="'report.pdf'" [accept]="'.pdf'"
-                      [label]="group[section.folder].report ? 'Reupload report' : 'Upload report'">
-                    </artifact-upload>
-                    <button style="width:100%;" *ngIf="group[section.folder].report" type="button"
-                      class="btn btn-secondary" [disabled]="processRunning"
-                      (click)="handleDownloadReport(group.productName, section)">
-                      Download report
-                    </button>
-                  </span>
+                    </ol>
+                  </div>
                 </td>
                 <td *ngIf="edit">
                   <boolean-field *ngIf="section.folder === 'ptcloud'" [(value)]="config.processPtcloud"
