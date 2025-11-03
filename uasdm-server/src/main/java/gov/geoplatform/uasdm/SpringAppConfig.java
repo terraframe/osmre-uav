@@ -102,9 +102,13 @@ public class SpringAppConfig extends WebMvcConfigurationSupport
   @Bean
   TusFileUploadService tusFileUploadService()
   {
+    String storagePath = AppProperties.getUploadDirectory().getAbsolutePath();
+    long expirationPeriod = AppProperties.getChunkExpireTime() * 1000 * 60 * 60 * 24;
+
     return new TusFileUploadService() //
-        .withStoragePath(AppProperties.getUploadDirectory().getAbsolutePath()) //
-        .withUploadURI("/uasdm/api/tus-upload") //
+        .withUploadExpirationPeriod(expirationPeriod) //
+        .withStoragePath(storagePath) //
+        .withUploadURI("/.*api/tus-upload") //
         .withUploadIdFactory(new UUIDUploadIdFactory());
   }
 }

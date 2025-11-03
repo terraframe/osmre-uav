@@ -127,9 +127,6 @@
     <listener-class>net.geoprism.SchedulerContextListener</listener-class>
   </listener>
   <listener>
-    <listener-class>gov.geoplatform.uasdm.chunk.ChunkManagerContextListener</listener-class>
-  </listener>
-  <listener>
     <listener-class>gov.geoplatform.uasdm.index.IndexContextListener</listener-class>
   </listener>
   <listener>
