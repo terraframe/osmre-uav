@@ -51,6 +51,17 @@
  --theme-submit-button-color-light-hover: #98c6c8;
 
  --theme-alert-button-color: #e30000;
+ 
+.btn-outline-secondary{
+  --bs-btn-color: var(--bs-secondary);
+  --bs-btn-border-color: var(--bs-secondary);
+  --bs-btn-hover-color: var(--bs-secondary);
+  --bs-btn-hover-border-color: var(--bs-secondary);
+  --bs-btn-hover-bg: rgba(124,134,141,.08);
+  --bs-btn-active-color: var(--bs-secondary);
+  --bs-btn-active-border-color: var(--bs-secondary);
+  --bs-btn-active-bg: rgba(124,134,141,.08);
+}
 
   /* Text */
  --theme-text-dark: #767676;
