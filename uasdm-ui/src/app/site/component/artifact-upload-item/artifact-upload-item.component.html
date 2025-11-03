@@ -1,0 +1,10 @@
+<!--
+
+
+
+-->
+<input type="file" class="file-input" (change)="onFileSelected($event)" [accept]="accept" #fileUpload>
+
+<a class="dropdown-item" (click)="fileUpload.click()">
+  {{label}}
+</a>

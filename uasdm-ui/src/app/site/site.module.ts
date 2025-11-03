@@ -74,6 +74,7 @@ import { RunProcessModalComponent } from './component/modal/run-process-modal.co
 import { ProcessRunModalComponent } from './component/modal/process-run-modal.component';
 import { UploadService } from './service/upload.service';
 import { TusUploadModalComponent } from './component/modal/tus-upload-modal.component';
+import { ArtifactUploadItemComponent } from './component/artifact-upload-item/artifact-upload-item.component';
 
 @NgModule({
 	imports: [
@@ -106,6 +107,7 @@ import { TusUploadModalComponent } from './component/modal/tus-upload-modal.comp
 		TusUploadModalComponent,
 		ODMRunModalComponent,
 		ArtifactPageComponent,
+		ArtifactUploadItemComponent,
 		RunProcessModalComponent,
 		CollectionModalComponent,
 		AccessibleSupportModalComponent,
