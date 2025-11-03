@@ -40,74 +40,12 @@ import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.ProcessingInProgressException;
-import gov.geoplatform.uasdm.view.RequestParserIF;
 import me.desair.tus.server.upload.UploadInfo;
 
 @Service
 public class WorkflowService
 {
   final Logger log = LoggerFactory.getLogger(WorkflowService.class);
-
-  @Request(RequestType.SESSION)
-  public JSONObject createUploadTask(String sessionId, RequestParserIF parser)
-  {
-    return this.createUploadTaskInTransaction(parser);
-  }
-
-  @Transaction
-  private JSONObject createUploadTaskInTransaction(RequestParserIF parser)
-  {
-    AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForUpload(parser);
-
-    if (task == null)
-    {
-      UasComponentIF uasComponent = ImageryWorkflowTaskIF.getOrCreateUasComponentFromRequestParser(parser);
-      task = uasComponent.createWorkflowTask(parser.getUuid(), parser.getUploadTarget());
-      task.setDescription(parser.getDescription());
-      task.setTool(parser.getTool());
-      task.setPtEpsg(parser.getPtEpsg());
-      task.setProjectionName(parser.getProjectionName());
-      task.setOrthoCorrectionModel(parser.getOrthoCorrectionModel());
-      task.setProductName(parser.getProductName());
-
-      if (task instanceof WorkflowTask)
-      {
-        WorkflowTask workflowTask = (WorkflowTask) task;
-        workflowTask.setProcessDem(parser.getProcessDem());
-        workflowTask.setProcessOrtho(parser.getProcessOrtho());
-        workflowTask.setProcessPtcloud(parser.getProcessPtcloud());
-      }
-
-      if (uasComponent instanceof gov.geoplatform.uasdm.graph.Collection && ( (gov.geoplatform.uasdm.graph.Collection) uasComponent ).getStatus().equals("Processing"))
-      {
-        ProcessingInProgressException ex = new ProcessingInProgressException();
-        throw ex;
-      }
-    }
-    else
-    {
-      task.lock();
-    }
-
-    if (task.getStatus().length() == 0)
-    {
-      task.setStatus(WorkflowTaskStatus.STARTED.toString());
-    }
-
-    task.setMessage(parser.getPercent() + "% complete");
-    task.apply();
-
-    JSONObject message = new JSONObject();
-    message.put("currentTask", task.toJSON());
-
-    return message;
-  }
-
-  @Request(RequestType.SESSION)
-  public JSONObject updateUploadTask(String sessionId, RequestParserIF parser)
-  {
-    return this.updateUploadTaskInTransaction(parser.getUuid());
-  }
 
   @Transaction
   public JSONObject updateUploadTaskInTransaction(String uploadId)
@@ -187,26 +125,6 @@ public class WorkflowService
 
     task.setMessage("Uploading to the staging environment...");
     task.apply();
-  }
-
-  @Request(RequestType.SESSION)
-  public void errorUploadTask(String sessionId, RequestParserIF parser, String message)
-  {
-    this.errorUploadTaskInTransaction(sessionId, parser, message);
-  }
-
-  @Transaction
-  public void errorUploadTaskInTransaction(String sessionId, RequestParserIF parser, String message)
-  {
-    AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForUpload(parser);
-
-    if (task != null)
-    {
-      task.lock();
-      task.setStatus(WorkflowTaskStatus.ERROR.toString());
-      task.setMessage(message);
-      task.apply();
-    }
   }
 
   @Request(RequestType.SESSION)

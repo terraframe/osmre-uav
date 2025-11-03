@@ -35,7 +35,6 @@
 		"angular-animations": "0.0.10",
 		"bootstrap": "^5.2.3",
 		"file-saver": "2.0.2",
-		"fine-uploader": "5.16.2",
 		"google-libphonenumber": "^3.2.43",
 		"maplibre-gl": "^2.4.0",
 		"maplibregl-mapbox-request-transformer": "^0.0.2",

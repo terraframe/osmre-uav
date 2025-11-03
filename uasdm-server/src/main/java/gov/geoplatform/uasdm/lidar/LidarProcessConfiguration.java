@@ -24,7 +24,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
-import gov.geoplatform.uasdm.view.RequestParserIF;
 import me.desair.tus.server.upload.UploadInfo;
 
 public class LidarProcessConfiguration implements ProcessConfiguration
@@ -256,48 +255,6 @@ public class LidarProcessConfiguration implements ProcessConfiguration
       {
         configuration.setGenerateTreeStructure(object.get(GENERATE_TREE_STRUCTURE).getAsBoolean());
       }
-    }
-
-    return configuration;
-  }
-
-  public static LidarProcessConfiguration parse(RequestParserIF parser)
-  {
-    LidarProcessConfiguration configuration = new LidarProcessConfiguration();
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(GENERATE_COPC)))
-    {
-      Boolean value = Boolean.valueOf(parser.getCustomParams().get(GENERATE_COPC));
-      configuration.setGenerateCopc(value);
-    }
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(GENERATE_GSM)))
-    {
-      Boolean value = Boolean.valueOf(parser.getCustomParams().get(GENERATE_GSM));
-      configuration.setGenerateGSM(value);
-    }
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(GENERATE_TERRAIN_MODEL)))
-    {
-      Boolean value = Boolean.valueOf(parser.getCustomParams().get(GENERATE_TERRAIN_MODEL));
-      configuration.setGenerateTerrainModel(value);
-    }
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(GENERATE_TREE_CANOPY_COVER)))
-    {
-      Boolean value = Boolean.valueOf(parser.getCustomParams().get(GENERATE_TREE_CANOPY_COVER));
-      configuration.setGenerateTreeCanopyCover(value);
-    }
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(GENERATE_TREE_STRUCTURE)))
-    {
-      Boolean value = Boolean.valueOf(parser.getCustomParams().get(GENERATE_TREE_STRUCTURE));
-      configuration.setGenerateTreeStructure(value);
-    }
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(PRODUCT_NAME)))
-    {
-      configuration.setProductName(parser.getCustomParams().get(PRODUCT_NAME));
     }
 
     return configuration;

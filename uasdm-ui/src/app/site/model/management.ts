@@ -449,3 +449,10 @@ export class UploadTask {
 	filename: string;
 	resumable: any;
 };
+
+export class Page {
+	index?: number;
+	selection?: Selection;
+	options?: SiteEntity[];
+	type?: string
+};

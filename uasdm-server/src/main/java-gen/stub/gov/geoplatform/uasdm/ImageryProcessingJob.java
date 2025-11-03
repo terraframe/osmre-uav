@@ -15,8 +15,6 @@
  */
 package gov.geoplatform.uasdm;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -40,8 +38,8 @@ import com.runwaysdk.system.scheduler.JobHistoryRecord;
 
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
-import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
+import gov.geoplatform.uasdm.bus.Collection;
 import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
 import gov.geoplatform.uasdm.bus.CollectionUploadEventQuery;
 import gov.geoplatform.uasdm.bus.ImageryUploadEvent;
@@ -53,7 +51,6 @@ import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
 import gov.geoplatform.uasdm.processing.raw.UploadValidationProcessor;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
-import gov.geoplatform.uasdm.view.RequestParserIF;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
@@ -115,70 +112,6 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     {
       return Arrays.asList("jpg", "jpeg", "png", "tif", "tiff");
     }
-  }
-
-  /**
-   * 
-   * @param parser
-   * @param inFile
-   *          Can be either an archive (.zip or .tar.gz) or an individual file
-   *          such as a ptcloud or .tif
-   * @return
-   * @throws FileNotFoundException
-   */
-  public static JobHistory processFiles(String runAsUserOid, RequestParserIF parser, File inFile) throws FileNotFoundException
-  {
-    VaultFile vfImageryZip = null;
-    ProcessConfiguration configuration = ProcessConfiguration.parse(parser);
-
-    AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
-    if (task instanceof WorkflowTask)
-    {
-      ( (WorkflowTask) task ).setProcessDem(parser.getProcessDem());
-      ( (WorkflowTask) task ).setProcessOrtho(parser.getProcessOrtho());
-      ( (WorkflowTask) task ).setProcessPtcloud(parser.getProcessPtcloud());
-    }
-
-    try (FileInputStream istream = new FileInputStream(inFile))
-    {
-      vfImageryZip = VaultFile.createAndApply(parser.getFilename(), istream);
-      Boolean processUpload = parser.getProcessUpload();
-
-      ImageryProcessingJob job = new ImageryProcessingJob();
-      job.setRunAsUserId(runAsUserOid);
-      job.setWorkflowTask(task);
-      job.setImageryFile(vfImageryZip.getOid());
-      job.setUploadTarget(task.getUploadTarget());
-      job.setProcessUpload(processUpload);
-      job.setConfiguration(configuration);
-      // job.setOutFileNamePrefix(configuration.getOutFileNamePrefix());
-      job.apply();
-
-      JobHistory history = job.start();
-
-      return history;
-    }
-    catch (Throwable t)
-    {
-      t.printStackTrace();
-
-      try
-      {
-        vfImageryZip.delete();
-      }
-      catch (Throwable t2)
-      {
-      }
-
-      task.lock();
-      task.setStatus(WorkflowTaskStatus.ERROR.toString());
-      task.setMessage("An error occurred while uploading the imagery to S3. " + RunwayException.localizeThrowable(t, CommonProperties.getDefaultLocale()));
-      task.apply();
-
-      logger.error("An error occurred while uploading the imagery to S3.", t);
-    }
-
-    return null;
   }
 
   /**

@@ -38,8 +38,6 @@ import gov.geoplatform.uasdm.graph.Mission;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.Project;
 import gov.geoplatform.uasdm.graph.UasComponent;
-import gov.geoplatform.uasdm.view.RequestParser;
-import gov.geoplatform.uasdm.view.RequestParserIF;
 import net.geoprism.GeoprismUser;
 
 public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
@@ -67,32 +65,6 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
    * {@link Entity#apply()}
    */
   public void apply();
-
-  /**
-   * If the {@link RequestParser} contains an ID of a {@link UasComponent}, then
-   * return the component or return null.
-   * 
-   * @param parser
-   * @return the {@link RequestParser} contains an ID of a {@link UasComponent},
-   *         then return the component or return null.
-   */
-  public static UasComponentIF getOrCreateUasComponentFromRequestParser(RequestParserIF parser)
-  {
-    if (parser.getUasComponentOid() != null && !parser.getUasComponentOid().trim().equals(""))
-    {
-      return ComponentFacade.getComponent(parser.getUasComponentOid());
-    }
-    else if (parser.getSelections() != null)
-    {
-      JSONArray selections = parser.getSelections();
-
-      return createUasComponent(selections);
-    }
-    else
-    {
-      return null;
-    }
-  }
 
   public static UasComponentIF createUasComponent(JSONArray selections)
   {
@@ -340,19 +312,6 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
         child.setValue(attributeName, null);
       }
     }
-  }
-
-  /**
-   * Returns the {@link AbstractWorkflowTask} for the given {@link UasComponent}
-   * or null if none exists.
-   * 
-   * @param parser
-   * 
-   * @return
-   */
-  public static AbstractWorkflowTask getWorkflowTaskForUpload(RequestParserIF parser)
-  {
-    return AbstractUploadTask.getTaskByUploadId(parser.getUuid());
   }
 
   /**

@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -65,7 +64,6 @@ import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
-import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.UasComponentCompositeDeleteException;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.cog.CogPreviewParams;
@@ -112,7 +110,6 @@ import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.ODMRunView;
 import gov.geoplatform.uasdm.view.QueryResult;
 import gov.geoplatform.uasdm.view.QuerySiteResult;
-import gov.geoplatform.uasdm.view.RequestParserIF;
 import gov.geoplatform.uasdm.view.SiteItem;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
@@ -731,24 +728,6 @@ public class ProjectManagementService
     }
   }
 
-  @Request // Must run as SYSTEM. The user's session may no longer be valid
-           // (depending on how long chunk merging takes)
-  public void handleUploadFinish(String runAsUserOid, RequestParserIF parser, File infile)
-  {
-    try
-    {
-      ImageryProcessingJob.processFiles(runAsUserOid, parser, infile);
-    }
-    catch (Throwable t)
-    {
-      logger.error("Error occurred in 'handleUploadFinish'.", t);
-    }
-    finally
-    {
-      FileUtils.deleteQuietly(infile);
-    }
-  }
-
   // Must run as SYSTEM. The user's session may no longer be valid
   // (depending on how long chunk merging takes)
   @Request
@@ -762,53 +741,6 @@ public class ProjectManagementService
     {
       logger.error("Error occurred in 'handleUploadFinish'.", t);
     }
-  }
-
-  @Request // Must run as SYSTEM. The user's session may no longer be valid
-           // (depending on how long chunk merging takes)
-  public void handleUploadMergeError(RequestParserIF parser, Throwable t)
-  {
-    final AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
-    final String msg = "An error occurred while merging upload chunks. " + RunwayException.localizeThrowable(t, CommonProperties.getDefaultLocale());
-
-    task.lock();
-    task.setStatus(WorkflowTaskStatus.ERROR.toString());
-    task.setMessage(msg);
-    task.apply();
-
-    logger.error(msg, t);
-  }
-
-  @Request(RequestType.SESSION)
-  public void handleUploadMergeStart(String sessionId, RequestParserIF parser)
-  {
-    final AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
-    final String msg = "Processing uploaded files...";
-
-    task.lock();
-    task.setStatus(WorkflowTaskStatus.PROCESSING.toString());
-    task.setMessage(msg);
-    task.apply();
-
-    if (Session.getCurrentSession() != null)
-    {
-      NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
-    }
-  }
-
-  @Request(RequestType.SESSION)
-  public void validate(String sessionId, RequestParserIF parser)
-  {
-    // Map<String, String> params = parser.getCustomParams();
-    // Boolean createCollection = Boolean.valueOf(params.get("create"));
-    //
-    // if (createCollection)
-    // {
-    // String missionId = params.get("mission");
-    // String folderName = params.get("folderName");
-    //
-    // UasComponent.validateFolderName(missionId, folderName);
-    // }
   }
 
   @Request(RequestType.SESSION)

@@ -18,14 +18,11 @@ package gov.geoplatform.uasdm.odm;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
-import gov.geoplatform.uasdm.view.RequestParserIF;
 import me.desair.tus.server.upload.UploadInfo;
 
 public class ODMProcessConfiguration implements ProcessConfiguration
@@ -647,90 +644,6 @@ public class ODMProcessConfiguration implements ProcessConfiguration
       {
         configuration.setProcessPtcloud(object.get(PROCESS_PT_CLOUD).getAsBoolean());
       }
-    }
-
-    return configuration;
-  }
-
-  public static ODMProcessConfiguration parse(RequestParserIF parser)
-  {
-    ODMProcessConfiguration configuration = new ODMProcessConfiguration();
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(OUT_FILE_NAME_PREFIX)))
-    {
-      String outFileNamePrefix = parser.getCustomParams().get(OUT_FILE_NAME_PREFIX);
-      configuration.setOutFileNamePrefix(outFileNamePrefix);
-    }
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(INCLUDE_GEO_LOCATION_FILE)))
-    {
-      Boolean includeGeoLocationFile = Boolean.valueOf(parser.getCustomParams().get(INCLUDE_GEO_LOCATION_FILE));
-      configuration.setIncludeGeoLocationFile(includeGeoLocationFile);
-    }
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(GEO_LOCATION_FORMAT)))
-    {
-      FileFormat geoLocationFormat = FileFormat.valueOf(parser.getCustomParams().get(GEO_LOCATION_FORMAT));
-      configuration.setGeoLocationFormat(geoLocationFormat);
-    }
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(GEO_LOCATION_FILE_NAME)))
-    {
-      String geoLocationFileName = parser.getCustomParams().get(GEO_LOCATION_FILE_NAME);
-      configuration.setGeoLocationFileName(geoLocationFileName);
-    }
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(INCLUDE_GROUND_CONTROL_POINT_FILE)))
-    {
-      Boolean includeGroundControlPointFile = Boolean.valueOf(parser.getCustomParams().get(INCLUDE_GROUND_CONTROL_POINT_FILE));
-      configuration.setIncludeGroundControlPointFile(includeGroundControlPointFile);
-    }
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(GROUND_CONTROL_POINT_FILE_NAME)))
-    {
-      String groundControlPointFileName = parser.getCustomParams().get(GROUND_CONTROL_POINT_FILE_NAME);
-      configuration.setGeoLocationFileName(groundControlPointFileName);
-    }
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(RESOLUTION)))
-    {
-      BigDecimal resolution = new BigDecimal(parser.getCustomParams().get(RESOLUTION));
-      configuration.setResolution(resolution);
-    }
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(MATCHING_NEIGHBORS)))
-    {
-      Integer matcherNeighbors = Integer.valueOf(parser.getCustomParams().get(MATCHING_NEIGHBORS));
-      configuration.setMatcherNeighbors(matcherNeighbors);
-    }
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(MIN_NUM_FEATURES)))
-    {
-      Integer minNumFeatures = Integer.valueOf(parser.getCustomParams().get(MIN_NUM_FEATURES));
-      configuration.setMinNumFeatures(minNumFeatures);
-    }
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(PC_QUALITY)))
-    {
-      Quality pcQuality = Quality.valueOf(parser.getCustomParams().get(PC_QUALITY));
-      configuration.setPcQuality(pcQuality);
-    }
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(FEATURE_QUALITY)))
-    {
-      Quality pcQuality = Quality.valueOf(parser.getCustomParams().get(FEATURE_QUALITY));
-      configuration.setFeatureQuality(pcQuality);
-    }
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(RADIOMETRIC_CALIBRATION)))
-    {
-      RadiometricCalibration rc = RadiometricCalibration.valueOf(parser.getCustomParams().get(RADIOMETRIC_CALIBRATION));
-      configuration.setRadiometricCalibration(rc);
-    }
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(PRODUCT_NAME)))
-    {
-      configuration.setProductName(parser.getCustomParams().get(PRODUCT_NAME));
     }
 
     return configuration;

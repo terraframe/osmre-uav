@@ -7,10 +7,8 @@ import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
 
 import { ProjectsComponent } from './component/projects.component';
-import { UploadComponent } from './component/upload.component';
 import { TasksComponent } from './component/tasks.component';
 
-import { CanDeactivateGuardService } from "./service/can.deactivate.guard.service";
 import { AuthGuard, AdminGuardService } from '../shared/service/guard.service';
 import { PlatformComponent } from './component/platform/platform.component';
 import { SensorComponent } from './component/sensor/sensor.component';
@@ -36,11 +34,6 @@ const routes: Routes = [
         path: 'viewer/:action/:oid',
         canActivate: [AuthGuard],
         component: ProjectsComponent
-    },
-    {
-        path: 'upload',
-        component: UploadComponent,
-        canDeactivate: [CanDeactivateGuardService]
     },
     {
         path: 'tasks',

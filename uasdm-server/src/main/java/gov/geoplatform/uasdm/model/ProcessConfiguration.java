@@ -26,7 +26,6 @@ import com.google.gson.JsonParser;
 
 import gov.geoplatform.uasdm.lidar.LidarProcessConfiguration;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
-import gov.geoplatform.uasdm.view.RequestParserIF;
 import me.desair.tus.server.upload.UploadInfo;
 
 public interface ProcessConfiguration
@@ -93,23 +92,6 @@ public interface ProcessConfiguration
     }
 
     throw new UnsupportedOperationException("TYPE parameter missing. jsonString: " + jsonString);
-  }
-
-  public static ProcessConfiguration parse(RequestParserIF parser)
-  {
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(TYPE)))
-    {
-      ProcessType type = ProcessType.valueOf(parser.getCustomParams().get(TYPE));
-
-      if (type.equals(ProcessType.LIDAR))
-      {
-        return LidarProcessConfiguration.parse(parser);
-      }
-
-      return ODMProcessConfiguration.parse(parser);
-    }
-
-    throw new UnsupportedOperationException("TYPE parameter missing. Params: " + serialize(parser.getCustomParams()));
   }
 
   public static ProcessConfiguration parse(UploadInfo uploadInfo)

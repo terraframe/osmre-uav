@@ -24,13 +24,11 @@ import { ProductPanelComponent } from './component/product-panel/product-panel.c
 import { EntityModalComponent } from './component/modal/entity-modal.component';
 import { MetadataModalComponent } from './component/modal/metadata-modal.component';
 import { ImagePreviewModalComponent } from './component/modal/image-preview-modal.component';
-import { UploadModalComponent } from './component/modal/upload-modal.component';
 import { ODMRunModalComponent } from './component/modal/odmrun-modal.component';
 import { CollectionModalComponent } from './component/modal/collection-modal.component';
 import { AccessibleSupportModalComponent } from './component/modal/accessible-support-modal.component';
 import { ProductModalComponent } from './component/modal/product-modal.component';
 import { ProjectsComponent } from './component/projects.component';
-import { UploadComponent } from './component/upload.component';
 import { TasksComponent } from './component/tasks.component';
 import { TasksPanelComponent } from './component/tasks/tasks-panel.component';
 import { SensorsComponent } from './component/sensor/sensors.component';
@@ -48,7 +46,6 @@ import { OnlyNumber } from './directive/number-only.directive';
 import { ProductService } from './service/product.service';
 import { ManagementService } from './service/management.service';
 import { MapService } from './service/map.service';
-import { CanDeactivateGuardService } from './service/can.deactivate.guard.service';
 import { SensorService } from './service/sensor.service';
 import { PlatformService } from './service/platform.service';
 import { MetadataService } from './service/metadata.service';
@@ -106,7 +103,6 @@ import { TusUploadModalComponent } from './component/modal/tus-upload-modal.comp
 		ImagePreviewModalComponent,
 		CreateCollectionModalComponent,
 		CreateStandaloneProductModalComponent,
-		UploadModalComponent,
 		TusUploadModalComponent,
 		ODMRunModalComponent,
 		ArtifactPageComponent,
@@ -116,7 +112,6 @@ import { TusUploadModalComponent } from './component/modal/tus-upload-modal.comp
 		ProductModalComponent,
 		FilterModalComponent,
 		ProjectsComponent,
-		UploadComponent,
 		ProcessingReportComponent,
 		TasksComponent,
 		ForbiddenNameDirective,
@@ -142,7 +137,6 @@ import { TusUploadModalComponent } from './component/modal/tus-upload-modal.comp
 		ProcessRunModalComponent
 	],
 	providers: [
-		CanDeactivateGuardService,
 		ManagementService,
 		ProductService,
 		MapService,
