@@ -146,6 +146,17 @@ a.blueactive,
   vertical-align: middle;
 }
 
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin: .25rem 0 .5rem;
+    min-height: 34px; /* keeps Export aligned even if fonts vary a bit */
+  }
+.section-header .rule {
+    border-bottom: 1px solid var(--bs-border-color);
+    transform: translateY(2px); /* visually centers the rule with the text baseline */
+  }
 
 
 /** 
@@ -153,6 +164,14 @@ a.blueactive,
 * ACCOUNT MANAGEMENT  
 *
 */
+.settings-header {
+	padding-top: 1rem;
+}
+
+.settings-subheader {
+	padding-top: 1rem;
+}
+
 #usersTable {
 	margin-left: 0;
 	width: 100%;

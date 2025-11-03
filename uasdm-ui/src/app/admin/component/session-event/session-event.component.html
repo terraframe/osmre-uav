@@ -8,9 +8,14 @@
 
 <!--     <div id="app-container" class="container"> -->
 
-<!--         <h2> -->
-<!--             Session Event Log -->
-<!--         </h2> -->
+	<div class="section-header">
+	  <h3>Session Event Log</h3>
+	  <div class="rule flex-grow-1 mx-2"></div>
+	  <button type="submit" (click)="onExport()"
+               class="btn btn-primary" role="button">
+               Export Session Log
+           </button>
+	</div>
 
         <div class="row">
             <div class="col-md-12">
@@ -45,10 +50,6 @@
                   <pagination-controls (pageChange)="onPageChange($event)" [maxSize]="10"></pagination-controls>
               </div>
             </div>
-            <button type="submit" (click)="onExport()"
-                class="btn btn-primary" role="button">
-                Export Session Log
-            </button>
         </div>
 <!--     </div> -->
 </div>
