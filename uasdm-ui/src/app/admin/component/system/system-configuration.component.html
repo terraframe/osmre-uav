@@ -8,7 +8,7 @@
 
   <div id="app-container" class="container">
 
-    <h2>System Configuration</h2>
+    <h2 class="settings-header">System Configuration</h2>
     
     <accounts></accounts>
 
@@ -18,17 +18,23 @@
     <button (click)="open()" class="btn btn-primary" style="margin:0;">Configure Email</button>
     <br><br>
 
-    <h3>Session Event Log</h3>
+    
     <session-events></session-events>
 
     <div class="col-md-12">
-      <h3>
-        Organizations
-
-        <span style="float: right;">
-          <a class="fa fa-sitemap" (click)="onManageHierarchy()" title="View Hierarchy"></a>
-        </span>
-      </h3>
+      <div class="section-header">
+		  <h3>Organizations</h3>
+		  <div class="rule flex-grow-1 mx-2"></div>
+		  <button
+	        type="button"
+	        class="btn btn-primary btn-sm"
+	        (click)="onManageHierarchy()"
+	        aria-label="View Hierarchy"
+	      >
+	        <i class="fa fa-sitemap"></i>
+	        View Hierarchy
+	      </button>
+	  </div>
 
       <div class="content-wrapper">
         <div class="list-table-wrapper">

@@ -8,9 +8,9 @@
 
     <div id="app-container" class="container">
     
-        <h2>Equipment Management</h2>
+        <h2 class="settings-header">Equipment Management</h2>
         
-        <h3>Sensor Options</h3>
+        <h3 class="settings-subheader">Sensor Options</h3>
         <section style="padding:20px;border:solid 1px lightgrey;background:#efefef;">
             
             <a (click)="isSensorTypeCollapsed = !isSensorTypeCollapsed">
@@ -33,8 +33,8 @@
         
         <br><br>
         
-        <h3>Plaform Options</h3>
-        <section style="padding:20px;border:solid 1px lightgrey;background:#efefef;">
+        <h3 class="settings-subheader">Plaform Options</h3>
+        <section style="border:solid 1px lightgrey;background:#efefef;">
         
             <a (click)="isPlatformTypeCollapsed = !isPlatformTypeCollapsed">
                 <h4><i class="fa fa-fw collapsible-link" [ngClass]="{'fa-chevron-down': !isPlatformTypeCollapsed, 'fa-chevron-right': isPlatformTypeCollapsed}"></i>Platform Types</h4>
