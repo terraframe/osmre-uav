@@ -2,25 +2,22 @@
 ///
 ///
 
-import { Component, OnInit, KeyValueDiffers, HostListener, OnDestroy } from '@angular/core';
+import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
-
-
-import { Subject } from 'rxjs';
-
-
-import { BasicConfirmModalComponent, ErrorHandler } from '@shared/component';
-
-import { SiteEntity, UploadTask } from '@site/model/management';
-import { MetadataService } from '@site/service/metadata.service';
-
 import {
 	fadeInOnEnterAnimation,
 	fadeOutOnLeaveAnimation
 } from 'angular-animations';
+
+import { Subject } from 'rxjs';
+
+import { BasicConfirmModalComponent, ErrorHandler } from '@shared/component';
+
+import { ProcessConfigType, SiteEntity, UploadForm, UploadTask } from '@site/model/management';
+
 import EnvironmentUtil from '@core/utility/environment-util';
 import { UploadService } from '@site/service/upload.service';
-import { UploadProgress } from '@site/model/upload';
+import { UploadMetadata, UploadProgress } from '@site/model/upload';
 import { ModalTypes } from '@shared/model/modal';
 import { ManagementService } from '@site/service/management.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -47,6 +44,8 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 
 	uploadTarget: string = null;
 
+	productName: string | null = null;
+
 	selectedFile: File | null = null
 
 	progress: UploadProgress | null = null
@@ -59,6 +58,11 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 
 	extensions: string = ".zip,.tar.gz"
 
+	metadata: UploadMetadata | null = null;
+
+	/* 
+	 * Form values
+	 */
 
 	public onUploadComplete: Subject<void>;
 	public onUploadCancel: Subject<void>;
@@ -111,12 +115,26 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 		this.component = component;
 		this.uploadTarget = uploadTarget;
 		this.existingTask = existingTask;
+		this.productName = productName;
 
-		if (this.existingTask != null) {
-			// this.extensions = this.existingTask.filename;
+		this.metadata = {
+			componentId: this.component.id,
+			uploadTarget: this.uploadTarget,
+			type: ProcessConfigType.ODM
 		}
-
-		// this.processUpload = this.uploadTarget === 'raw';
+		
+		if (this.uploadTarget != null && this.uploadTarget === 'ptcloud') {
+			this.extensions = ".laz,.las";
+		}
+		if (this.uploadTarget != null && this.uploadTarget === 'dem') {
+			this.extensions = ".tif";
+		}
+		if (this.uploadTarget != null && this.uploadTarget === 'ortho') {
+			this.extensions = ".tif,.png";
+		}
+		if (this.uploadTarget != null && this.uploadTarget === 'video') {
+			this.extensions = ".mp4";
+		}
 
 	}
 
@@ -157,11 +175,15 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 
 		const uploadEndpoint = EnvironmentUtil.getApiUrl() + "/api/tus-upload"
 
+
+		if (this.productName != null) {
+			this.metadata.productName = this.productName;
+		}
+
 		this.uploadService.startUpload(
 			this.selectedFile,
 			uploadEndpoint,
-			this.component.id,
-			this.uploadTarget,
+			this.metadata,
 			(progress) => {
 				this.progress = progress
 			},

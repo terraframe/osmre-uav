@@ -1,8 +1,11 @@
 <form #myForm="ngForm">
-  <div class="modal-body" tabindex="-1" role="dialog">
+  <div class="modal-header">
+    <h5 class="modal-title text-center">Upload</h5>
+  </div>
+  <div class="modal-body container-fluid" tabindex="-1" role="dialog">
     <div *ngIf="message != null && message.length > 0" class="row error-container">
-      <div class="col-md-2"></div>
-      <div class="col-md-8">
+      <div class="col-md-1"></div>
+      <div class="col-md-10">
         <div class="label-holder">
           <strong style="color:#8c0000;">Error</strong>
         </div>
@@ -12,14 +15,103 @@
           </div>
         </div>
       </div>
-      <div class="col-md-2"></div>
+      <div class="col-md-1"></div>
     </div>
+    <ng-container *ngIf="!existingTask && metadata != null && uploadTarget !== 'raw'">
+
+      <ng-container *ngIf="uploadTarget === 'ortho'">
+        <div [@fadeInOnEnter] class="row">
+          <div class="col-md-1"></div>
+          <div class="col-md-10">
+            <div class="form-group">
+              <boolean-field [(value)]="metadata.processOrtho" label="Generate png from upload"></boolean-field>
+            </div>
+          </div>
+        </div>
+        <div [@fadeInOnEnter] class="row">
+          <div class="col-md-1"></div>
+          <div class="col-md-10">
+            <div class="form-group">
+              <label for="orthoCorrectionModel">Ortho Correction Model</label>
+              <select [(ngModel)]="metadata.orthoCorrectionModel" name="orthoCorrectionModel" class="form-control">
+                <option></option>
+                <option value="DSM">DSM</option>
+                <option value="DTM">DTM</option>
+                <option value="unknown">Unknown</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <div [@fadeInOnEnter] *ngIf="uploadTarget === 'dem'" class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+          <div class="form-group">
+            <boolean-field [(value)]="metadata.processDem" label="Generate hillshade from tif"></boolean-field>
+          </div>
+        </div>
+      </div>
+
+      <ng-container *ngIf="uploadTarget === 'ptcloud'">
+        <div [@fadeInOnEnter] class="row">
+          <div class="col-md-1"></div>
+          <div class="col-md-10">
+            <div class="form-group">
+              <boolean-field [(value)]="metadata.processPtcloud" label="Enable Potree viewer for point cloud">
+              </boolean-field>
+            </div>
+          </div>
+        </div>
+        <div [@fadeInOnEnter] class="row">
+          <div class="col-md-1"></div>
+          <div class="col-md-10">
+            <div class="form-group">
+              <label for="ptEpsg">Point Cloud EPSG Number</label>
+              <input [(ngModel)]="metadata.ptEpsg" name="ptEpsg" type="number" step="1" min="0" class="form-control" />
+            </div>
+          </div>
+        </div>
+        <div [@fadeInOnEnter] class="row">
+          <div class="col-md-1"></div>
+          <div class="col-md-10">
+            <div class="form-group">
+              <label for="projectionName">Point Cloud Projection Name</label>
+              <input [(ngModel)]="metadata.projectionName" name="projectionName" type="text" class="form-control"
+                placeholder="" />
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <div [@fadeInOnEnter] class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+          <div class="form-group">
+            <label for="description">Description</label>
+            <input [(ngModel)]="metadata.description" name="description" type="input" class="form-control"
+              placeholder="Description..." />
+          </div>
+        </div>
+      </div>
+      <div [@fadeInOnEnter] class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+          <div class="form-group">
+            <label for="description">Processing Software</label>
+            <input [(ngModel)]="metadata.tool" name="tool" type="input" class="form-control"
+              placeholder="Software..." />
+          </div>
+        </div>
+      </div>
+    </ng-container>
 
 
 
-    <div class="row">
-      <div class="col-md-2"></div>
-      <div class="col-md-8">
+
+    <div class="row mt-2">
+      <div class="col-md-1"></div>
+      <div class="col-md-10">
 
         <div *ngIf="existingTask">
           <div class="card border border-warning" style="margin: 30px 0 30px 0;">
@@ -39,7 +131,7 @@
 
         <div *ngIf="!existingTask">
 
-          <div class="well">
+          <div class="card card-body bg-light">
             <h4>All uploaded files</h4>
             <ul>
               <li *ngIf="uploadTarget === 'raw'">Must be compressed into a .zip or .tar.gz format.</li>
@@ -133,7 +225,7 @@
             </div>
           </div> <!-- End task finished upload notification -->
 
-          <div class="mb-3">
+          <div class="mb-2 mt-2">
             <label for="formFile" class="form-label">Upload File</label>
             <input [disabled]="isUploading" type="file" class="form-control" id="formFile"
               (change)="onFileSelected($event)" [attr.accept]="extensions" [attr.aria-label]="'Choose file to upload'">
@@ -146,7 +238,7 @@
 
         </div> <!-- End current upload indicator -->
       </div>
-      <div class="col-md-2"></div>
+      <div class="col-md-1"></div>
     </div>
   </div>
   <div class="modal-footer">

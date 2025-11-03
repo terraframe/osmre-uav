@@ -21,7 +21,6 @@ import {
 	slideInLeftOnEnterAnimation,
 	slideInRightOnEnterAnimation,
 } from 'angular-animations';
-import { UploadModalComponent } from './upload-modal.component';
 import { ArtifactPageComponent } from './artifact-page.component';
 import { RunProcessModalComponent } from './run-process-modal.component';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';

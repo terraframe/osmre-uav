@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { UploadProgress } from '@site/model/upload'
+import { UploadMetadata, UploadProgress } from '@site/model/upload'
 import { Upload, UploadOptions } from 'tus-js-client'
 import { WebStorageUrlStorage } from 'tus-js-client/lib/browser/urlStorage.js'
 
@@ -21,22 +21,19 @@ export class UploadService {
     startUpload(
         file: File,
         endpoint: string,
-        entityId: string,
-        uploadTarget: string,
+        metadata: UploadMetadata,
         onProgress: (progress: UploadProgress) => void,
         onSuccess: () => void,
         onError: (error: Error) => void,
     ): void {
+        metadata.filename = file.name;
+        metadata.filetype = file.type;
+
         const options: UploadOptions = {
             endpoint,
             retryDelays: [0, 1000, 3000, 5000],
             chunkSize: 5 * 1024 * 1024, // 5MB chunks for optimal performance
-            metadata: {
-                filename: file.name,
-                filetype: file.type,
-                entityId: entityId,
-                uploadTarget: uploadTarget
-            },
+            metadata: (metadata as any),
             onError: (error) => {
                 if (error.name === 'AbortError') {
                     onError(new Error('Upload was aborted'))
