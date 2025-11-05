@@ -20,7 +20,8 @@ import EnvironmentUtil from '@core/utility/environment-util';
 
 @Component({
 
-    selector: 'system-logos',
+    standalone: false,
+  selector: 'system-logos',
     templateUrl: './system-logos.component.html',
     styleUrls: []
 })
@@ -45,7 +46,7 @@ export class SystemLogosComponent implements OnInit {
 
     onClickRemove(icon): void {
         this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
-            animated: false,
+            animated: true,
             backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true,
         });
@@ -71,7 +72,7 @@ export class SystemLogosComponent implements OnInit {
         // this.router.navigate( ['/admin/logo', icon.oid] );
 
         let bsModalRef = this.modalService.show(SystemLogoComponent, {
-            animated: false,
+            animated: true,
             backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true,
         });

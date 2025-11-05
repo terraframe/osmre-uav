@@ -20,7 +20,8 @@ import {
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
-	selector: 'odmrun-modal',
+	standalone: false,
+  selector: 'odmrun-modal',
 	templateUrl: './odmrun-modal.component.html',
 	styleUrls: ['./odmrun-modal.component.css'],
 	animations: [

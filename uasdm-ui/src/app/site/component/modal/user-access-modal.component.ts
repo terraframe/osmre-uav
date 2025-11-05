@@ -12,7 +12,8 @@ import { UserAccessService } from '@site/service/user-access.service';
 
 
 @Component({
-    selector: 'user-access-modal',
+    standalone: false,
+  selector: 'user-access-modal',
     templateUrl: './user-access-modal.component.html',
     styleUrls: []
 })

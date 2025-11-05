@@ -12,7 +12,8 @@ import { SessionEventService } from '../../service/session-event.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
-	selector: 'session-events',
+	standalone: false,
+  selector: 'session-events',
 	templateUrl: './session-event.component.html',
 	styleUrls: []
 })

@@ -20,7 +20,8 @@ import {
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
-	selector: 'process-run-modal',
+	standalone: false,
+  selector: 'process-run-modal',
 	templateUrl: './process-run-modal.component.html',
 	styleUrls: [],
 	animations: [

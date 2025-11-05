@@ -56,7 +56,7 @@ public class COPCConverterProcessor extends ManagedDocument
   }
   
   @Override
-  public boolean process(ApplicationFileResource res)
+  public ProcessResult process(ApplicationFileResource res)
   {
     this.product = (Product) component.createProductIfNotExist(this.config.getProductName());
     this.s3Path = ImageryComponent.PTCLOUD + "/pointcloud.copc.laz";
@@ -83,6 +83,6 @@ public class COPCConverterProcessor extends ManagedDocument
       FileUtils.deleteQuietly(out);
     }
 
-    return false;
+    return ProcessResult.fail();
   }
 }

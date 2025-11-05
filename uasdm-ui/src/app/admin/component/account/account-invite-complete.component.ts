@@ -17,7 +17,8 @@ import { ErrorHandler, ErrorModalComponent } from '@shared/component';
 import { environment } from 'src/environments/environment';
 
 @Component({
-	selector: 'account-invite-complete',
+	standalone: false,
+  selector: 'account-invite-complete',
 	templateUrl: './account-invite-complete.component.html',
 	styles: ['.modal-form .check-block .chk-area { margin: 10px 0px 0 0;}']
 })

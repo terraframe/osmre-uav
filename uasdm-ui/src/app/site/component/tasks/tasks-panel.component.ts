@@ -15,7 +15,8 @@ import { ProcessRunModalComponent } from '../modal/process-run-modal.component';
 
 
 @Component({
-	selector: 'tasks-panel',
+	standalone: false,
+  selector: 'tasks-panel',
 	templateUrl: './tasks-panel.component.html',
 	styleUrls: ['./tasks-panel.css']
 })
@@ -66,7 +67,7 @@ export class TasksPanelComponent implements OnInit {
 	
 	viewOdmRun(task: Task): void {
 		const modal = this.modalService.show(ODMRunModalComponent, {
-			animated: false,
+			animated: true,
 			backdrop: true, class: 'modal-xl',
 			ignoreBackdropClick: false,
 		});
@@ -76,7 +77,7 @@ export class TasksPanelComponent implements OnInit {
 
 	viewConfiguration(task: Task): void {
 		const modal = this.modalService.show(ProcessRunModalComponent, {
-			animated: false,
+			animated: true,
 			backdrop: true, class: 'modal-xl',
 			ignoreBackdropClick: false,
 		});
@@ -88,7 +89,7 @@ export class TasksPanelComponent implements OnInit {
 	removeTask(task: Task): void {
 
 		this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
-			animated: false,
+			animated: true,
 			backdrop: true, class: 'modal-xl',
 			ignoreBackdropClick: true,
 		});

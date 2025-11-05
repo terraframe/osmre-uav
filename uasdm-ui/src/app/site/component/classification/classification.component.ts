@@ -14,7 +14,8 @@ import { ClassificationService } from '@site/service/classification.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-	selector: 'classification',
+	standalone: false,
+  selector: 'classification',
 	templateUrl: './classification.component.html',
 	styleUrls: []
 })

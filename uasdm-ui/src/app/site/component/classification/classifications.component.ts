@@ -15,7 +15,8 @@ import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/mode
 import { Subject } from 'rxjs';
 
 @Component({
-    selector: 'classifications',
+    standalone: false,
+  selector: 'classifications',
     templateUrl: './classifications.component.html',
     styleUrls: ['./classifications.css']
 })
@@ -96,7 +97,7 @@ export class ClassificationsComponent implements OnInit {
 
     onRemove(classification: Classification): void {
         this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
-            animated: false,
+            animated: true,
             backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true,
         });

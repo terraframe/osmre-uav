@@ -14,7 +14,8 @@ import { AuthService } from '@shared/service/auth.service';
 
 
 @Component({
-    selector: 'reports',
+    standalone: false,
+  selector: 'reports',
     templateUrl: './reports.component.html',
     styleUrls: ['./reports.css']
 })
@@ -82,7 +83,7 @@ export class ReportsComponent implements OnInit {
                 if (oid != null && oid.length > 0) {
                     this.pService.getDetail(oid, 1, 20).then(detail => {
                         const bsModalRef = this.modalService.show(ProductModalComponent, {
-                            animated: false,
+                            animated: true,
                             backdrop: true,
                             ignoreBackdropClick: true,
                             'class': 'product-info-modal modal-xl'

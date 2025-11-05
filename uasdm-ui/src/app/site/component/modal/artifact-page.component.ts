@@ -19,7 +19,8 @@ import { ModalTypes } from '@shared/model/modal';
 import { TusUploadModalComponent } from './tus-upload-modal.component';
 
 @Component({
-	selector: 'artifact-page',
+	standalone: false,
+  selector: 'artifact-page',
 	templateUrl: './artifact-page.component.html',
 	styleUrls: ['./artifact-page.component.css'],
 	providers: []
@@ -108,7 +109,7 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 
 	showODMRun(artifact): void {
 		const modal = this.modalService.show(ODMRunModalComponent, {
-			animated: false,
+			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: false,
 			'class': 'modal-xl'
@@ -125,7 +126,7 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 	handleUpload(productName: string, folderName: string): void {
 
 		const modal = this.modalService.show(TusUploadModalComponent, {
-			animated: false,
+			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: true,
 			'class': 'upload-modal modal-xl'
@@ -141,7 +142,7 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 	handleRemove(productName: string, section: { label: string, folder: string }): void {
 
 		const modal = this.modalService.show(BasicConfirmModalComponent, {
-			animated: false,
+			animated: true,
 			backdrop: true, class: 'modal-xl',
 			ignoreBackdropClick: true,
 		});
@@ -163,7 +164,7 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 	handleRemoveGroup(productName: string): void {
 
 		const modal = this.modalService.show(BasicConfirmModalComponent, {
-			animated: false,
+			animated: true,
 			backdrop: true,
 			class: 'modal-xl',
 			ignoreBackdropClick: true,

@@ -12,7 +12,8 @@ import { AuthService } from '@shared/service/auth.service';
 
 
 @Component({
-    selector: 'system-info',
+    standalone: false,
+  selector: 'system-info',
     templateUrl: './system-info.component.html',
     styleUrls: ['./system-info.css']
 })

@@ -17,9 +17,10 @@ package gov.geoplatform.uasdm.processing;
 
 import com.runwaysdk.resource.ApplicationFileResource;
 
-public interface Processor
+public class ArchiveValidator
 {
-
-  public ProcessResult process(ApplicationFileResource res);
-
+  public boolean isValidArchive(ApplicationFileResource res)
+  {
+    return res.getName().endsWith(".zip") || res.getName().endsWith(".tar.gz");
+  }
 }

@@ -13,7 +13,8 @@ import { ManagementService } from '@site/service/management.service';
 import { Page, Selection } from '@site/model/management';
 
 @Component({
-	selector: 'metadata-modal',
+	standalone: false,
+  selector: 'metadata-modal',
 	templateUrl: './metadata-modal.component.html',
 	styleUrls: []
 })

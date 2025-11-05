@@ -17,7 +17,8 @@ import { AuthService } from '@shared/service/auth.service';
 
 
 @Component({
-	selector: 'sensor',
+	standalone: false,
+  selector: 'sensor',
 	templateUrl: './sensor.component.html',
 	styleUrls: []
 })

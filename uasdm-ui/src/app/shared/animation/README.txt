@@ -10,7 +10,8 @@ How to use these animations:
 import { slideInOut } from '../../shared/animation/animation';  <--- HERE
 
 @Component( {
-    selector: 'example',
+    standalone: false,
+  selector: 'example',
     templateUrl: './example.component.html',
     styles: [],
     animations: [ slideInOut ]  <--- HERE

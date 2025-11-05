@@ -16,7 +16,8 @@ import { LngLat } from 'maplibre-gl';
 
 
 @Component({
-	selector: 'entity-modal',
+	standalone: false,
+  selector: 'entity-modal',
 	templateUrl: './entity-modal.component.html',
 	styleUrls: []
 })

@@ -13,7 +13,8 @@ export function forbiddenNameValidator( nameRe: RegExp ): ValidatorFn {
 }
 
 @Directive( {
-    selector: '[forbiddenName]',
+    standalone: false,
+  selector: '[forbiddenName]',
     providers: [{ provide: NG_VALIDATORS, useExisting: ForbiddenNameDirective, multi: true }]
 } )
 export class ForbiddenNameDirective implements Validator {

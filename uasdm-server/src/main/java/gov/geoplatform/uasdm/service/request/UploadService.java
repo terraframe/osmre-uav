@@ -64,7 +64,7 @@ public class UploadService
           @Override
           public void run()
           {
-            handleTusUpdate(userOid, uploadURI, uploadInfo);
+            handleTusComplete(userOid, uploadURI, uploadInfo);
           }
         });
         t.start();
@@ -93,7 +93,7 @@ public class UploadService
   }
 
   @Request
-  private void handleTusUpdate(String userOid, String uploadURI, UploadInfo uploadInfo)
+  private void handleTusComplete(String userOid, String uploadURI, UploadInfo uploadInfo)
   {
     // Ensure the task exists workflow task
     this.wService.updateOrCreateUploadTask(userOid, uploadInfo);

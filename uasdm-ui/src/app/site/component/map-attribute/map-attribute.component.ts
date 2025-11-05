@@ -16,7 +16,8 @@ import { isMapboxURL, transformMapboxUrl } from 'maplibregl-mapbox-request-trans
 
 
 @Component({
-    selector: 'map-attribute',
+    standalone: false,
+  selector: 'map-attribute',
     templateUrl: './map-attribute.component.html',
     styleUrls: [],
 })

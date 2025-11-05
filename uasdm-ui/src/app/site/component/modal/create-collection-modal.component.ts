@@ -32,7 +32,8 @@ export class Page {
 };
 
 @Component({
-	selector: 'create-collection-modal',
+	standalone: false,
+  selector: 'create-collection-modal',
 	templateUrl: './create-collection-modal.component.html',
 	styleUrls: ['./upload-modal.component.css'],
 	animations: [

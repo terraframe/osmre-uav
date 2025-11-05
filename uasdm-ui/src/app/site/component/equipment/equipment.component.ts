@@ -7,7 +7,8 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
 @Component({
-    selector: 'equipment',
+    standalone: false,
+  selector: 'equipment',
     templateUrl: './equipment.component.html',
     styleUrls: ['./equipment.css']
 })

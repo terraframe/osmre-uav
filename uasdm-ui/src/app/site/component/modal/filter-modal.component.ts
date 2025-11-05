@@ -20,7 +20,8 @@ import { PlatformService } from '@site/service/platform.service';
 import { UAVService } from '@site/service/uav.service';
 
 @Component({
-	selector: 'filter-modal',
+	standalone: false,
+  selector: 'filter-modal',
 	templateUrl: './filter-modal.component.html',
 	styleUrls: [],
 	animations: [

@@ -19,7 +19,8 @@ const enum VIEW_MODE {
 }
 
 @Component({
-	selector: 'layer-panel',
+	standalone: false,
+  selector: 'layer-panel',
 	templateUrl: './layer-panel.component.html',
 	styleUrls: []
 })

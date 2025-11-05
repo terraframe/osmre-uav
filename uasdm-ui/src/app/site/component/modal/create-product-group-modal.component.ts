@@ -14,7 +14,8 @@ import { ProductService } from '@site/service/product.service';
 
 
 @Component({
-    selector: 'create-product-group-modal',
+    standalone: false,
+  selector: 'create-product-group-modal',
     templateUrl: './create-product-group-modal.component.html',
     styleUrls: []
 })

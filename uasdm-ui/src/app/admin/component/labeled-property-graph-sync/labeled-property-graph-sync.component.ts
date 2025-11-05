@@ -18,7 +18,8 @@ import { EventService } from '@shared/service/event.service';
 import { ModalTypes } from '@shared/model/modal';
 
 @Component({
-    selector: 'labeled-property-graph-sync',
+    standalone: false,
+  selector: 'labeled-property-graph-sync',
     templateUrl: './labeled-property-graph-sync.component.html',
     styleUrls: []
 })
@@ -224,7 +225,7 @@ export class LPGSyncComponent implements OnInit, OnDestroy {
                 const version = versions[versions.length - 1];
 
                 const bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
-                    animated: false,
+                    animated: true,
                     backdrop: true, class: 'modal-xl',
                     ignoreBackdropClick: true,
                 });
@@ -242,7 +243,7 @@ export class LPGSyncComponent implements OnInit, OnDestroy {
             }
             else {
                 const bsModalRef = this.modalService.show(NotificationModalComponent, {
-                    animated: false,
+                    animated: true,
                     backdrop: true, class: 'modal-xl',
                     ignoreBackdropClick: true,
                 });

@@ -36,7 +36,8 @@ import { ImagePreviewModalComponent } from './image-preview-modal.component';
 import { TusUploadModalComponent } from './tus-upload-modal.component';
 
 @Component({
-	selector: 'collection-modal',
+	standalone: false,
+  selector: 'collection-modal',
 	templateUrl: './collection-modal.component.html',
 	styleUrls: ['./collection-modal.component.scss'],
 	providers: [BasicConfirmModalComponent, ArtifactPageComponent],
@@ -285,7 +286,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	handleRunOrtho(): void {
 
 		const confirmModalRef = this.modalService.show(RunProcessModalComponent, {
-			animated: false,
+			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: true,
 			'class': 'confirmation-modal modal-xl'
@@ -330,7 +331,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	handleCreateProductGroup(): void {
 
 		const confirmModalRef = this.modalService.show(CreateProductGroupModalComponent, {
-			animated: false,
+			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: true,
 			'class': 'confirmation-modal modal-xl'
@@ -372,7 +373,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 
 	editMetadata(): void {
 		let modalRef = this.modalService.show(MetadataModalComponent, {
-			animated: false,
+			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: true,
 			'class': 'upload-modal modal-xl'
@@ -386,7 +387,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 
 	handleAccessManagement(): void {
 		let modalRef = this.modalService.show(UserAccessModalComponent, {
-			animated: false,
+			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: true,
 			'class': 'upload-modal modal-xl'
@@ -398,7 +399,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	handleUpload(): void {
 
 		const modal = this.modalService.show(TusUploadModalComponent, {
-			animated: false,
+			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: true,
 			'class': 'upload-modal modal-xl'

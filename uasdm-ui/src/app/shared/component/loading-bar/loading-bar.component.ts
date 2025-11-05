@@ -8,6 +8,7 @@ import { EventService, IEventListener } from '../../service/event.service';
 
 @Component({
   
+  standalone: false,
   selector: 'loading-bar',
   templateUrl: './loading-bar.component.html',
   styleUrls: []

@@ -25,7 +25,8 @@ import { environment } from 'src/environments/environment';
 import { MetadataModalComponent } from './metadata-modal.component';
 
 @Component({
-	selector: 'product-modal',
+	standalone: false,
+  selector: 'product-modal',
 	templateUrl: './product-modal.component.html',
 	providers: [CollectionModalComponent],
 	styleUrls: ['./product-modal.component.css'],
@@ -87,7 +88,7 @@ export class ProductModalComponent implements OnInit {
 		let entity = this.product.entities[this.product.entities.length-1];
 
 		let modalRef = this.modalService.show(MetadataModalComponent, {
-			animated: false,
+			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: true,
 			'class': 'upload-modal modal-xl'
@@ -201,7 +202,7 @@ export class ProductModalComponent implements OnInit {
 		const componentId: string = this.product.entities[this.product.entities.length - 1].id;
 
 		this.rawImagePreviewModal = this.modalService.show(ImagePreviewModalComponent, {
-			animated: false,
+			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: false,
 			'class': 'image-preview-modal modal-xl'

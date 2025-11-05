@@ -17,8 +17,6 @@ package gov.geoplatform.uasdm.processing;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -47,7 +45,7 @@ public class HillshadeProcessor extends ManagedDocument
   }
 
   @Override
-  public boolean process(ApplicationFileResource res)
+  public ProcessResult process(ApplicationFileResource res)
   {
     File file = res.getUnderlyingFile();
 
@@ -73,6 +71,6 @@ public class HillshadeProcessor extends ManagedDocument
       monitor.addError("Problem occurred generating gdal transform. Hillshade file did not exist.");
     }
 
-    return false;
+    return ProcessResult.fail();
   }
 }

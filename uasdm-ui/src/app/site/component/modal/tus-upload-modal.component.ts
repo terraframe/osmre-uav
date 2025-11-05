@@ -21,8 +21,10 @@ import { UploadMetadata, UploadProgress } from '@site/model/upload';
 import { ModalTypes } from '@shared/model/modal';
 import { ManagementService } from '@site/service/management.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { NgxFileDropEntry } from 'ngx-file-drop';
 
 @Component({
+	standalone: false,
 	selector: 'tus-upload-modal',
 	templateUrl: './tus-upload-modal.component.html',
 	styleUrls: [
@@ -52,11 +54,12 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 
 	isUploading: boolean = false
 	isSuccessful: boolean = false
-	invalidFile: boolean = false;
+
+	validation: string = null;
 
 	message: string | null = null;
 
-	extensions: string = ".zip,.tar.gz"
+	extensions: string = ".zip,.gz"
 
 	metadata: UploadMetadata | null = null;
 
@@ -78,36 +81,11 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 	ngOnInit(): void {
 		this.onUploadComplete = new Subject();
 		this.onUploadCancel = new Subject();
-
-		// this.service.getMetadataOptions(null).then((options) => {
-		// 	this.sensors = options.sensors;
-		// 	this.platforms = options.platforms;
-		// }).catch((err: HttpErrorResponse) => {
-		// 	this.error(err);
-		// });
-
-		this.uploadService.findAllUploads().then(uploads => {
-			uploads.forEach(upload => console.log('Found upload', upload));
-		})
 	}
 
 	ngOnDestroy(): void {
 		this.onUploadComplete.unsubscribe();
 		this.onUploadCancel.unsubscribe();
-	}
-
-	ngAfterViewInit() {
-
-	}
-
-	ngDoCheck() {
-
-		// if (this.uploader) {
-		// 	const change = this.differ.diff(this.uploader);
-		// 	if (change) {
-		// 		this.setExistingTask();
-		// 	}
-		// }
 	}
 
 	init(component: SiteEntity, uploadTarget: string, existingTask?: UploadTask, productName?: string): void {
@@ -120,9 +98,12 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 		this.metadata = {
 			componentId: this.component.id,
 			uploadTarget: this.uploadTarget,
-			type: ProcessConfigType.ODM
+			type: ProcessConfigType.ODM,
+			processOrtho: true,
+			processPtcloud: true,
+			processDem: true
 		}
-		
+
 		if (this.uploadTarget != null && this.uploadTarget === 'ptcloud') {
 			this.extensions = ".laz,.las";
 		}
@@ -130,7 +111,7 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 			this.extensions = ".tif";
 		}
 		if (this.uploadTarget != null && this.uploadTarget === 'ortho') {
-			this.extensions = ".tif,.png";
+			this.extensions = ".tif,.png,.zip,.gz";
 		}
 		if (this.uploadTarget != null && this.uploadTarget === 'video') {
 			this.extensions = ".mp4";
@@ -142,28 +123,28 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 		this.bsModalRef.hide();
 	}
 
-	onFileSelected(event: Event): void {
-		const input = event.target as HTMLInputElement
-		if (input.files && input.files.length > 0) {
+	onFileSelected(files: NgxFileDropEntry[]): void {
+		this.selectedFile = null;
+		this.validation = null;
 
-			if (this.existingTask == null || this.existingTask.filename === input.files[0].name) {
-				this.selectedFile = input.files[0];
-				this.progress = null;
-			}
-			else {
-				this.invalidFile = true;
+		if (files.length > 0) {
+			if (files[0].fileEntry.isFile) {
+				const entry = files[0].fileEntry as FileSystemFileEntry;
+
+				entry.file((file: File) => {
+					const allowedExtensions = this.extensions.replaceAll('.', '').split(',');
+					const fileExtension = file.name.split(".").pop().toLowerCase(); // 
+
+					if (allowedExtensions.includes(fileExtension) || (this.existingTask != null && this.existingTask.filename === file.name)) {
+						this.selectedFile = file;
+						this.progress = null;
+					}
+					else {
+						this.validation = "The file must be one of the following extensions: " + this.extensions;
+					}
+				});
 			}
 		}
-	}
-
-	isPageValid(): boolean {
-		// if (this.uploader != null) {
-		// 	const uploads: any = this.uploader.getUploads();
-
-		// 	return (uploads != null && uploads.length > 0);
-		// };
-
-		return true;
 	}
 
 	handleUpload(): void {
@@ -204,7 +185,7 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 
 	removeUpload(): void {
 		const modal = this.modalService.show(BasicConfirmModalComponent, {
-			animated: false,
+			animated: true,
 			backdrop: true, class: 'modal-xl',
 			ignoreBackdropClick: true,
 		});

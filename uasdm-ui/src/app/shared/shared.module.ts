@@ -61,7 +61,6 @@ import { TreeModule } from '@ali-hm/angular-tree-component';
 import { OrganizationFieldComponent } from './component/organization-field/organization-field.component';
 import { OrganizationHierarchyModalComponent } from './component/organization-field/organization-hierarchy-modal.component';
 
-
 @NgModule({
 	imports: [
 		CommonModule,

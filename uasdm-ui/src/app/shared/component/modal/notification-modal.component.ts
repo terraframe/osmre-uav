@@ -8,7 +8,8 @@ import { Subject } from 'rxjs';
 import { ModalTypes } from '../../model/modal';
 
 @Component( {
-    selector: 'notification-modal',
+    standalone: false,
+  selector: 'notification-modal',
     templateUrl: './notification-modal.component.html',
     styleUrls: []
 } )

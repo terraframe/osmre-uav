@@ -57,6 +57,7 @@ const enum PANEL_TYPE {
 }
 
 @Component({
+  standalone: false,
   selector: "projects",
   templateUrl: "./projects.component.html",
   styleUrls: ["./projects.css"],
@@ -445,7 +446,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!Boolean(this.cookieService.get("acceptedDisclaimer"))) {
 
       this.bsModalRef = this.modalService.show(NotificationModalComponent, {
-        animated: false,
+        animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
         class: "modal-xl"
@@ -647,7 +648,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   handleCreateCollection(): void {
 
     this.bsModalRef = this.modalService.show(CreateCollectionModalComponent, {
-      animated: false,
+      animated: true,
       backdrop: true,
       ignoreBackdropClick: true,
       "class": "upload-modal modal-xl"
@@ -663,7 +664,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   handleUploadProducts(): void {
 
     this.bsModalRef = this.modalService.show(CreateStandaloneProductModalComponent, {
-      animated: false,
+      animated: true,
       backdrop: true,
       ignoreBackdropClick: true,
       "class": "upload-modal modal-xl"
@@ -682,7 +683,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.service.newChild(parentId, type).then(data => {
       this.bsModalRef = this.modalService.show(EntityModalComponent, {
-        animated: false,
+        animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
         "class": "upload-modal modal-xl"
@@ -722,7 +723,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.service.view(this.existingTask.task.collection).then(resp => {
       const modal = this.modalService.show(TusUploadModalComponent, {
-        animated: false,
+        animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
         "class": "upload-modal modal-xl"
@@ -744,7 +745,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.service.edit(node.id).then(data => {
       this.bsModalRef = this.modalService.show(EntityModalComponent, {
-        animated: false,
+        animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
         "class": "edit-modal modal-xl"
@@ -805,7 +806,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     sText += " This can <b>NOT</b> be undone";
 
     this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
-      animated: false,
+      animated: true,
       backdrop: true,
       ignoreBackdropClick: true,
       class: "modal-xl"
@@ -971,7 +972,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   handleViewStandaloneProduct(id: string): void {
     this.pService.getDetail(id, 1, 20).then(detail => {
       this.bsModalRef = this.modalService.show(ProductModalComponent, {
-        animated: false,
+        animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
         'class': 'product-info-modal modal-xl'
@@ -1343,7 +1344,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (collection.type === "Mission") {
       this.bsModalRef = this.modalService.show(AccessibleSupportModalComponent, {
-        animated: false,
+        animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
         class: "leaf-modal modal-xl"
@@ -1352,7 +1353,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     else {
       this.bsModalRef = this.modalService.show(CollectionModalComponent, {
-        animated: false,
+        animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
         class: "leaf-modal modal-xl"
@@ -1806,7 +1807,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
     this.bsModalRef = this.modalService.show(FilterModalComponent, {
-      animated: false,
+      animated: true,
       backdrop: true,
       ignoreBackdropClick: true,
       class: "modal-xl"

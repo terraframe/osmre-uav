@@ -13,7 +13,8 @@ import { fadeInOnEnterAnimation, fadeOutOnLeaveAnimation } from 'angular-animati
 import { Page } from '@site/model/management';
 
 @Component({
-	selector: 'metadata-page',
+	standalone: false,
+  selector: 'metadata-page',
 	templateUrl: './metadata-page.component.html',
 	styleUrls: [],
 	animations: [

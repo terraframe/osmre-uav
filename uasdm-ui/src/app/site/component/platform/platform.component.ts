@@ -18,7 +18,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '@shared/service/auth.service';
 
 @Component({
-    selector: 'platform',
+    standalone: false,
+  selector: 'platform',
     templateUrl: './platform.component.html',
     styleUrls: []
 })

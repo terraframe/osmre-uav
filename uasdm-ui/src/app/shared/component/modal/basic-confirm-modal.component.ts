@@ -8,7 +8,8 @@ import { Subject } from 'rxjs';
 import { ModalTypes } from '../../model/modal';
 
 @Component( {
-    selector: 'basic-confirm-modal',
+    standalone: false,
+  selector: 'basic-confirm-modal',
     templateUrl: './basic-confirm-modal.component.html',
     styleUrls: []
 } )

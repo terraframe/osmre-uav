@@ -9,6 +9,7 @@ import { ManagementService } from '@site/service/management.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 
 @Component({
+  standalone: false,
   selector: 'artifact-upload-item',
   templateUrl: './artifact-upload-item.component.html',
   styleUrls: ['./artifact-upload-item.component.css']
