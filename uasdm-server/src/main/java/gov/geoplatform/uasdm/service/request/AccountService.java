@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gov.geoplatform.uasdm.service;
+package gov.geoplatform.uasdm.service.request;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,6 +47,7 @@ import gov.geoplatform.uasdm.UserInvite;
 import gov.geoplatform.uasdm.account.CSVUserImporter;
 import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.bus.InvalidPasswordException;
+import gov.geoplatform.uasdm.service.AccountCSVExportService;
 import gov.geoplatform.uasdm.view.IDMUserView;
 import gov.geoplatform.uasdm.view.Option;
 import net.geoprism.GeoprismUser;

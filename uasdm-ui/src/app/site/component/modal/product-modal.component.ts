@@ -213,7 +213,7 @@ export class ProductModalComponent implements OnInit {
     handleDownload(): void {
       //const entity = this.product.entities[this.product.entities.length - 1];        
 
-      window.location.href = environment.apiUrl + '/product/get-odm-all?id=' + this.product.id;
+      window.location.href = environment.apiUrl + '/api/product/get-odm-all?id=' + this.product.id;
     }
 
 

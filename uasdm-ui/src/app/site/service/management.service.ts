@@ -181,7 +181,7 @@ export class ManagementService {
 		params = params.set('artifactId', artifactId);
 
 		return this.http
-			.get<ODMRun>(environment.apiUrl + '/product/get-odm-run', { params: params })
+			.get<ODMRun>(environment.apiUrl + '/api/product/get-odm-run', { params: params })
 			.toPromise()
 	}
 
