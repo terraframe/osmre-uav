@@ -62,7 +62,8 @@ const routes: Routes = [
         data: {
             title: 'Platform Manufacturer',
             label: 'manufacturer',
-            baseUrl: Endpoint.PLATFORM_MANUFACTURER
+            baseUrl: Endpoint.PLATFORM_MANUFACTURER,
+            route: '/platform-manufacturer'
         }
     },
     {
@@ -72,7 +73,8 @@ const routes: Routes = [
         data: {
             title: 'Platform Type',
             label: 'type',
-            baseUrl: Endpoint.PLATFORM_TYPE
+            baseUrl: Endpoint.PLATFORM_TYPE,
+            route: '/platform-type'
         }
     },
     {
@@ -95,9 +97,9 @@ const routes: Routes = [
                     type: 'boolean'
                 }
 
-            ]
+            ],
+            route: '/sensor-type'
         }
-
     },
     {
         path: 'wave-length/:oid',
@@ -106,7 +108,8 @@ const routes: Routes = [
         data: {
             title: 'Wave Length',
             label: 'wave length',
-            baseUrl: Endpoint.WAVE_LENGTH
+            baseUrl: Endpoint.WAVE_LENGTH,
+            route: '/wave-length'
         }
     },
     {

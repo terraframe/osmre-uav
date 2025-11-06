@@ -17,14 +17,14 @@
                 <h4><i class="fa fa-fw collapsible-link" [ngClass]="{'fa-chevron-down': !isSensorTypeCollapsed, 'fa-chevron-right': isSensorTypeCollapsed}"></i>Sensor Types</h4>
             </a>
             <div id="sensorTypeCollabseContainer" [collapse]="isSensorTypeCollapsed">
-                <classifications [metadata]='{title: "", label: "type", baseUrl: "/sensor-type"}' ></classifications>
+                <classifications [metadata]='{title: "", label: "type", route: "/sensor-type", baseUrl: "/api/sensor-type"}' ></classifications>
             </div>
             
             <a (click)="isSensorWavelengthCollapsed = !isSensorWavelengthCollapsed">
                 <h4><i class="fa fa-fw collapsible-link" [ngClass]="{'fa-chevron-down': !isSensorWavelengthCollapsed, 'fa-chevron-right': isSensorWavelengthCollapsed}"></i>Wave Lengths</h4>
             </a>
             <div id="sensorWavelengthCollabseContainer" [collapse]="isSensorWavelengthCollapsed">
-                <classifications [metadata]='{title: "", label: "wave length", baseUrl: "/wave-length"}'></classifications>
+                <classifications [metadata]='{title: "", label: "wave length", route: "/wave-length",  baseUrl: "/api/wave-length"}'></classifications>
             </div>
             
         </section>
@@ -40,14 +40,14 @@
                 <h4><i class="fa fa-fw collapsible-link" [ngClass]="{'fa-chevron-down': !isPlatformTypeCollapsed, 'fa-chevron-right': isPlatformTypeCollapsed}"></i>Platform Types</h4>
             </a>
             <div id="platformTypeCollabseContainer" [collapse]="isPlatformTypeCollapsed">
-                <classifications [metadata]='{title: "Platform Type", label: "type", baseUrl: "/platform-type"}'></classifications>
+                <classifications [metadata]='{title: "Platform Type", label: "type", route: "/platform-type",  baseUrl: "/api/platform-type"}'></classifications>
             </div>
             
             <a (click)="isPlatformManufacturerCollapsed = !isPlatformManufacturerCollapsed">
                  <h4><i class="fa fa-fw collapsible-link" [ngClass]="{'fa-chevron-down': !isPlatformManufacturerCollapsed, 'fa-chevron-right': isPlatformManufacturerCollapsed}"></i>Platform Manufacturer</h4>
             </a>
             <div id="platformManufacturerCollabseContainer" [collapse]="isPlatformManufacturerCollapsed">
-                <classifications [metadata]='{title: "Platform Manufacturer", label: "manufacturer", baseUrl: "/platform-manufacturer"}'></classifications>
+                <classifications [metadata]='{title: "Platform Manufacturer", label: "manufacturer", route: "/platform-manufacturer",  baseUrl: "/api/platform-manufacturer"}'></classifications>
             </div>
             
         </section>

@@ -13,59 +13,61 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gov.geoplatform.uasdm.service;
+package gov.geoplatform.uasdm.service.request;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.stereotype.Service;
 
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
-import gov.geoplatform.uasdm.graph.SensorType;
+import gov.geoplatform.uasdm.graph.PlatformManufacturer;
 
-public class SensorTypeService
+@Service
+public class PlatformManufacturerService implements CrudService
 {
   @Request(RequestType.SESSION)
   public JSONObject page(String sessionId, JSONObject criteria)
   {
-    return SensorType.getPage(criteria).toJSON();
+    return PlatformManufacturer.getPage(criteria).toJSON();
   }
 
   @Request(RequestType.SESSION)
   public JSONArray getAll(String sessionId)
   {
-    return SensorType.getAll();
+    return PlatformManufacturer.getAll();
   }
 
   @Request(RequestType.SESSION)
   public JSONObject apply(String sessionId, JSONObject json)
   {
-    SensorType sensorType = SensorType.fromJSON(json);
-    sensorType.apply();
+    PlatformManufacturer manufacturer = PlatformManufacturer.fromJSON(json);
+    manufacturer.apply();
 
-    return sensorType.toJSON();
+    return manufacturer.toJSON();
   }
 
   @Request(RequestType.SESSION)
   public void remove(String sessionId, String oid)
   {
-    SensorType sensorType = SensorType.get(oid);
+    PlatformManufacturer manufacturer = PlatformManufacturer.get(oid);
 
-    if (sensorType != null)
+    if (manufacturer != null)
     {
-      sensorType.delete();
+      manufacturer.delete();
     }
   }
 
   @Request(RequestType.SESSION)
   public JSONObject get(String sessionId, String oid)
   {
-    return SensorType.get(oid).toJSON();
+    return PlatformManufacturer.get(oid).toJSON();
   }
 
   @Request(RequestType.SESSION)
   public JSONObject newInstance(String sessionId)
   {
-    return new SensorType().toJSON();
+    return new PlatformManufacturer().toJSON();
   }
 }

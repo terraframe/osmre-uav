@@ -21,8 +21,7 @@ const PROXY_CONFIG = [
     {
         context: [
             "/api", "/net/geoprism/images/", "/glyphs", "/session", "/project",
-            "/logo", "/uav", "/product", "/platform-manufacturer", "/platform",
-            "/platform-type", "/sensor", "/wave-length", "/sensor-type",
+            "/logo", "/product", 
             "/file", "/cog", "/stac", "/collection-report", "/user-access", "/keycloak"
         ],
         target: "https://localhost:8443/uasdm/",

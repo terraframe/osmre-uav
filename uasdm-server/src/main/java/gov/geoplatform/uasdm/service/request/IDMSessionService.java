@@ -59,7 +59,7 @@ public class IDMSessionService extends SessionService
       endpoints.add("api/forgotpassword/initiate");
       endpoints.add("api/forgotpassword/complete");
       endpoints.add("api/uasdm-account/inviteComplete");
-      endpoints.add("api/uasdm-account/newInstance");
+      endpoints.add("api/uasdm-account/new-instance");
     }
     
     // Public tile service endpoints

@@ -967,6 +967,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     else if (result.type === 'LOCATION') {
       this.handleViewLocation(result.synchronizationId, result.oid);
     }
+    else if (result.center != null) {
+      // Geocoded address
+      this.map.flyTo({
+        center: result.center,
+        zoom: 18
+      })
+
+    }
   }
 
   handleViewStandaloneProduct(id: string): void {
