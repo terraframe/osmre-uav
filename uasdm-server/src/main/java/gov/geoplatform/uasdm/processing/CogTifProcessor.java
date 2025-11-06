@@ -52,7 +52,7 @@ public class CogTifProcessor extends ManagedDocument
   }
 
   @Override
-  public boolean process(ApplicationFileResource res)
+  public ProcessResult process(ApplicationFileResource res)
   {
     File file = res.getUnderlyingFile();
 
@@ -68,7 +68,8 @@ public class CogTifProcessor extends ManagedDocument
       String msg = "Error copying file. Cog generation failed for [" + this.getS3Path() + "].";
       logger.error(msg, e);
       monitor.addError(msg);
-      return false;
+      
+      return ProcessResult.fail();
     }
 
     try
@@ -83,7 +84,8 @@ public class CogTifProcessor extends ManagedDocument
         String msg = "Problem occurred generating overview file. Cog generation failed for [" + this.getS3Path() + "].";
         logger.error(msg);
         monitor.addError(msg);
-        return false;
+        
+        return ProcessResult.fail();
       }
 
       File cog = new File(file.getParent(), basename + COG_EXTENSION);
@@ -100,7 +102,8 @@ public class CogTifProcessor extends ManagedDocument
           String msg = "Problem occurred generating cog file. Cog generation failed for [" + this.getS3Path() + "].";
           logger.error(msg);
           monitor.addError(msg);
-          return false;
+          
+          return ProcessResult.fail();
         }
 
         if (cog.exists())
@@ -137,6 +140,6 @@ public class CogTifProcessor extends ManagedDocument
       FileUtils.deleteQuietly(overview);
     }
 
-    return false;
+    return ProcessResult.fail();
   }
 }

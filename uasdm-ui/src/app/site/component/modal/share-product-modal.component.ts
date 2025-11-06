@@ -19,7 +19,8 @@ import {
 import EnvironmentUtil from '@core/utility/environment-util';
 
 @Component({
-	selector: 'share-product-modal',
+	standalone: false,
+  selector: 'share-product-modal',
 	templateUrl: './share-product-modal.component.html',
 	providers: [],
 	styleUrls: [],

@@ -15,7 +15,8 @@ import { ManagementService } from '@site/service/management.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
-    selector: 'accessible-support-modal',
+    standalone: false,
+  selector: 'accessible-support-modal',
     templateUrl: './accessible-support-modal.component.html',
     styleUrls: [],
 })
@@ -118,7 +119,7 @@ export class AccessibleSupportModalComponent implements OnInit {
 
     handleDelete(item: SiteEntity): void {
         let modalRef: BsModalRef = this.modalService.show(BasicConfirmModalComponent, {
-            animated: false,
+            animated: true,
             backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true,
         });

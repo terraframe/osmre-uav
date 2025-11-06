@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
 
 @Component({
 
-  selector: 'uasdm-app',
+  standalone: false, selector: 'uasdm-app',
   templateUrl: './uasdm-app.component.html',
   styleUrls: [],
 })

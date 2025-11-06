@@ -6,7 +6,7 @@ import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
 import {DatePipe} from '@angular/common';
 
 // https://github.com/angular/angular/blob/5.0.4/packages/common/src/pipes/date_pipe.ts#L137
-@Pipe({name: 'idmdate'})
+@Pipe({name: 'idmdate', standalone: false})
 export class IdmDatePipe implements PipeTransform {
     constructor(@Inject(LOCALE_ID) private locale: string) {
     }

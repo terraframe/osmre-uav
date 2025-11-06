@@ -10,7 +10,8 @@ import { Account, UserInvite } from '../../model/account';
 import { AccountService } from '../../service/account.service';
 
 @Component({
-	selector: 'account-invite',
+	standalone: false,
+  selector: 'account-invite',
 	templateUrl: './account-invite.component.html',
 	styles: []
 })

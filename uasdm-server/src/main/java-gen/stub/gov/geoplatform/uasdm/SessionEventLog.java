@@ -29,7 +29,7 @@ import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.model.JSONSerializable;
 import gov.geoplatform.uasdm.model.Page;
-import gov.geoplatform.uasdm.service.SessionEventService;
+import gov.geoplatform.uasdm.service.request.SessionEventService;
 import net.geoprism.registry.Organization;
 
 public class SessionEventLog extends SessionEventLogBase implements JSONSerializable

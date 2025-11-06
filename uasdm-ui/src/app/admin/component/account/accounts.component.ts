@@ -21,7 +21,8 @@ import { AuthService } from '@shared/service/auth.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
-	selector: 'accounts',
+	standalone: false,
+  selector: 'accounts',
 	templateUrl: './accounts.component.html',
 	styleUrls: ['./accounts.css']
 })
@@ -86,7 +87,7 @@ export class AccountsComponent implements OnInit {
 		}
 
 		this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
-			animated: false,
+			animated: true,
 			backdrop: true, class: 'modal-xl',
 			ignoreBackdropClick: true,
 		});
@@ -109,7 +110,7 @@ export class AccountsComponent implements OnInit {
 	onEdit(user: User): void {
 		this.service.edit(user.oid).then(account => {
 			this.bsModalRef = this.modalService.show(AccountComponent, {
-				animated: false,
+				animated: true,
 				backdrop: true,
 				ignoreBackdropClick: true,
 				class: 'modal-xl upload-modal'
@@ -125,7 +126,7 @@ export class AccountsComponent implements OnInit {
 	newInstance(): void {
 		this.service.newInvite().then(account => {
 			this.bsModalRef = this.modalService.show(AccountComponent, {
-				animated: false,
+				animated: true,
 				backdrop: true,
 				ignoreBackdropClick: true,
 				class: 'modal-xl upload-modal'
@@ -142,7 +143,7 @@ export class AccountsComponent implements OnInit {
 
 		this.service.newInvite().then((account: Account) => {
 			this.bsModalRef = this.modalService.show(AccountInviteComponent, {
-				animated: false,
+				animated: true,
 				backdrop: true,
 				ignoreBackdropClick: true,
 				'class': 'modal-xl upload-modal'
@@ -153,7 +154,7 @@ export class AccountsComponent implements OnInit {
 
 	uploadUsers(): void {
 		let bsModalRef = this.modalService.show(UserImportComponent, {
-			animated: false,
+			animated: true,
 			backdrop: true, class: 'modal-xl',
 			ignoreBackdropClick: true,
 		});

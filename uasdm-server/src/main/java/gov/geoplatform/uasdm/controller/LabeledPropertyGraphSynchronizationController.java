@@ -210,7 +210,7 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
 
-  @PostMapping(API_PATH + "/newInstance")
+  @PostMapping(API_PATH + "/new-instance")
   public ResponseEntity<String> newInstance() throws JSONException
   {
     JsonObject response = this.service.newInstance(this.getSessionId());

@@ -35,7 +35,8 @@ class PaginatedTreeNode<T> {
 }
 
 @Component({
-	selector: 'organization-hierarchy-modal',
+	standalone: false,
+  selector: 'organization-hierarchy-modal',
 	templateUrl: './organization-hierarchy-modal.component.html',
 	styles: ['.modal-form .check-block .chk-area { margin: 10px 0px 0 0;}']
 })

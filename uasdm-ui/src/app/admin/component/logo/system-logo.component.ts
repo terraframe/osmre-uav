@@ -17,7 +17,8 @@ import EnvironmentUtil from '@core/utility/environment-util';
 
 @Component( {
 
-    selector: 'system-logo',
+    standalone: false,
+  selector: 'system-logo',
     templateUrl: './system-logo.component.html',
     styles: []
 } )

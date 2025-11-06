@@ -15,25 +15,28 @@ import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/mode
 import { Subject } from 'rxjs';
 
 @Component({
+    standalone: false,
     selector: 'classifications',
     templateUrl: './classifications.component.html',
     styleUrls: ['./classifications.css']
 })
 export class ClassificationsComponent implements OnInit {
 
-    _metadata: ClassificationComponentMetadata = {label: "", title: "", baseUrl: ""};
+    _metadata: ClassificationComponentMetadata = { label: "", title: "", baseUrl: "", route: "" };
+
     @Input() set metadata(value: ClassificationComponentMetadata) {
         this._metadata.title = value.title;
         this._metadata.label = value.label;
         this._metadata.baseUrl = value.baseUrl;
-        
+        this._metadata.route = value.route;
+
         this.config = {
-                service: this.service,
-                remove: true,
-                view: true,
-                create: true,
-                label: value.label
-            }
+            service: this.service,
+            remove: true,
+            view: true,
+            create: true,
+            label: value.label
+        }
     }
 
     bsModalRef: BsModalRef;
@@ -50,29 +53,7 @@ export class ClassificationsComponent implements OnInit {
     }
 
     ngOnInit(): void {
-//        this.activatedroute.data.subscribe(data => {
-//            this.metadata = data as ClassificationComponentMetadata;
-//            console.log(data)
-//
-////            if (this.metadata.columns === undefined) {
-////                this.metadata.columns = [];
-////            }
-////
-////            this.config = {
-////                service: this.service,
-////                remove: true,
-////                view: true,
-////                create: true,
-////                label: this.metadata.label
-////            }
-//
-//            this.refresh = new Subject<void>();
-//
-//            // this.service.page(this.metadata.baseUrl, 1).then(res => {
-//            //     this.res = res;
-//            // });
-//
-//        })
+        this.refresh = new Subject<void>();
     }
 
     onClick(event: TableEvent): void {
@@ -96,7 +77,7 @@ export class ClassificationsComponent implements OnInit {
 
     onRemove(classification: Classification): void {
         this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
-            animated: false,
+            animated: true,
             backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true,
         });
@@ -110,10 +91,12 @@ export class ClassificationsComponent implements OnInit {
     }
 
     onView(classification: Classification): void {
-        this.router.navigate(['/site/' + this._metadata.baseUrl, classification.oid]);
+        console.log('Navigate', this._metadata.route)
+
+        this.router.navigate(['/site/' + this._metadata.route, classification.oid]);
     }
 
     newInstance(): void {
-        this.router.navigate(['/site/' + this._metadata.baseUrl, '__NEW__']);
+        this.router.navigate(['/site/' + this._metadata.route, '__NEW__']);
     }
 }

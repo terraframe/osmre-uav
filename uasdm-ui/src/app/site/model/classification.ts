@@ -12,6 +12,7 @@ export class Classification {
 export class ClassificationComponentMetadata {
     title: string;
     label: string;
+    route: string;
     baseUrl: string;
     columns?: {
         name: string,

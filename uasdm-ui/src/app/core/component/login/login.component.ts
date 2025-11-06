@@ -16,6 +16,7 @@ import { ConfigurationService } from '@core/service/configuration.service';
 import EnvironmentUtil from '@core/utility/environment-util';
 
 @Component({
+  standalone: false,
   selector: 'login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']

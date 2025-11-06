@@ -17,7 +17,6 @@ package gov.geoplatform.uasdm.service.request;
 
 import java.util.Set;
 
-import gov.geoplatform.uasdm.service.SessionEventService;
 import org.commongeoregistry.adapter.metadata.OrganizationDTO;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -59,7 +58,7 @@ public class IDMSessionService extends SessionService
       endpoints.add("api/forgotpassword/initiate");
       endpoints.add("api/forgotpassword/complete");
       endpoints.add("api/uasdm-account/inviteComplete");
-      endpoints.add("api/uasdm-account/newInstance");
+      endpoints.add("api/uasdm-account/new-instance");
     }
     
     // Public tile service endpoints

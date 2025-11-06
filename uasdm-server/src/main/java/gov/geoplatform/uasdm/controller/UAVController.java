@@ -1,109 +1,66 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.controller;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.runwaysdk.constants.ClientRequestIF;
-import com.runwaysdk.controller.ServletMethod;
-import com.runwaysdk.mvc.Controller;
-import com.runwaysdk.mvc.Endpoint;
-import com.runwaysdk.mvc.ErrorSerialization;
-import com.runwaysdk.mvc.RequestParamter;
-import com.runwaysdk.mvc.ResponseIF;
-import com.runwaysdk.mvc.RestBodyResponse;
-import com.runwaysdk.mvc.RestResponse;
+import gov.geoplatform.uasdm.service.request.CrudService;
+import gov.geoplatform.uasdm.service.request.UAVService;
 
-import gov.geoplatform.uasdm.service.UAVService;
-
-@Controller(url = "uav")
-public class UAVController
+@RestController
+@RequestMapping("/uav")
+public class UAVController extends AbstractCrudController
 {
+  @Autowired
   private UAVService service;
 
-  public UAVController()
+  @Override
+  public CrudService getService()
   {
-    this.service = new UAVService();
+    return this.service;
   }
 
-  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF page(ClientRequestIF request, @RequestParamter(name = "criteria") String criteria) throws JSONException
+  @GetMapping("/bureaus")
+  public ResponseEntity<String> bureaus()
   {
-    JSONObject page = this.service.page(request.getSessionId(), new JSONObject(criteria));
+    JSONArray response = this.service.bureaus(this.getSessionId());
 
-    return new RestBodyResponse(page);
+    return ResponseEntity.ok(response.toString());
   }
 
-  @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON, url = "apply")
-  public ResponseIF apply(ClientRequestIF request, @RequestParamter(name = "uav") String uavJSON) throws JSONException
+  @GetMapping("/search")
+  public ResponseEntity<String> search(@RequestParam(name = "text") String text, @RequestParam(name = "field") String field)
   {
-    JSONObject platform = new JSONObject(uavJSON);
+    JSONArray response = this.service.search(this.getSessionId(), text, field);
 
-    JSONObject response = this.service.apply(request.getSessionId(), platform);
-
-    return new RestBodyResponse(response);
+    return ResponseEntity.ok(response.toString());
   }
 
-  @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON, url = "remove")
-  public ResponseIF remove(ClientRequestIF request, @RequestParamter(name = "oid") String oid) throws JSONException
+  @GetMapping("/get-metadata-options")
+  public ResponseEntity<String> getMetadataOptions(@RequestParam(name = "oid") String oid)
   {
-    this.service.remove(request.getSessionId(), oid);
+    JSONObject response = this.service.getMetadataOptions(this.getSessionId(), oid);
 
-    return new RestResponse();
-  }
-
-  @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON, url = "newInstance")
-  public ResponseIF newInstance(ClientRequestIF request) throws JSONException
-  {
-    JSONObject response = this.service.newInstance(request.getSessionId());
-
-    return new RestBodyResponse(response);
-  }
-
-  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "bureaus")
-  public ResponseIF bureaus(ClientRequestIF request) throws JSONException
-  {
-    JSONArray response = this.service.bureaus(request.getSessionId());
-    
-    return new RestBodyResponse(response);
-  }
-  
-  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "get")
-  public ResponseIF get(ClientRequestIF request, @RequestParamter(name = "oid") String oid) throws JSONException
-  {
-    JSONObject response = this.service.get(request.getSessionId(), oid);
-
-    return new RestBodyResponse(response);
-  }
-
-  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "search")
-  public ResponseIF search(ClientRequestIF request, @RequestParamter(name = "text") String text, @RequestParamter(name = "field") String field) throws JSONException
-  {
-    JSONArray response = this.service.search(request.getSessionId(), text, field);
-
-    return new RestBodyResponse(response);
-  }
-
-  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "get-metadata-options")
-  public ResponseIF getMetadataOptions(ClientRequestIF request, @RequestParamter(name = "oid") String oid) throws JSONException
-  {
-    JSONObject response = this.service.getMetadataOptions(request.getSessionId(), oid);
-
-    return new RestBodyResponse(response);
+    return ResponseEntity.ok(response.toString());
   }
 }

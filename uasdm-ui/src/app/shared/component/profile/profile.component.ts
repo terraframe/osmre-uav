@@ -13,6 +13,7 @@ import { AuthService } from '../../service/auth.service';
 
 
 @Component({  
+  standalone: false,
   selector: 'profile',
   templateUrl: './profile.component.html',
   styles: ['.modal-form .check-block .chk-area { margin: 10px 0px 0 0;}']

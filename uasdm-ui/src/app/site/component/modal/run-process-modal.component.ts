@@ -13,7 +13,8 @@ import { Subject } from 'rxjs';
 
 
 @Component({
-    selector: 'run-process-modal',
+    standalone: false,
+  selector: 'run-process-modal',
     templateUrl: './run-process-modal.component.html',
     styleUrls: ['./artifact-page.component.css']
 })

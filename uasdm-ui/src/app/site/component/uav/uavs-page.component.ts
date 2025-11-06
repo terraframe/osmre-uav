@@ -5,7 +5,8 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-    selector: 'uavs-page',
+    standalone: false,
+  selector: 'uavs-page',
     templateUrl: './uavs-page.component.html'
 })
 export class UAVsPageComponent implements OnInit {

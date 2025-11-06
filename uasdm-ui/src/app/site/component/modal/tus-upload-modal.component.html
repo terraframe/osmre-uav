@@ -188,7 +188,7 @@
               <tbody *ngIf="uploadTarget === 'ortho'">
                 <tr>
                   <td>Orthomosaic</td>
-                  <td>tif, png</td>
+                  <td>tif, png, zip, tar.gz</td>
                 </tr>
               </tbody>
               <tbody *ngIf="uploadTarget === 'video'">
@@ -226,14 +226,34 @@
           </div> <!-- End task finished upload notification -->
 
           <div class="mb-2 mt-2">
-            <label for="formFile" class="form-label">Upload File</label>
-            <input [disabled]="isUploading" type="file" class="form-control" id="formFile"
-              (change)="onFileSelected($event)" [attr.accept]="extensions" [attr.aria-label]="'Choose file to upload'">
-            <div *ngIf="existingTask && invalidFile" class="alert">
-              Must upload the file: {{existingTask.filename}}
+            <ngx-file-drop [disabled]="isUploading" [accept]="extensions" [multiple]="false"
+              dropZoneLabel="Drop files here" (onFileDrop)="onFileSelected($event)">
+              <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                Drag & Drop File
+                <button type="button" class="btn btn-secondary" [disabled]="isUploading" (click)="openFileSelector()">Browse Files</button>
+              </ng-template>
+            </ngx-file-drop>
+          </div>
+          <div class="mb-2 mt-2">
+
+            <div *ngIf="selectedFile != null" class="row">
+              <label for="staticEmail" class="col-sm-2 col-form-label">Upload File</label>
+              <div class="col-sm-10">
+                <input readonly type="text" class="form-control-plaintext" id="formFile" [value]="selectedFile.name">
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-12">
+                <div *ngIf="existingTask && validation" class="text-danger">
+                  Must upload the file: {{existingTask.filename}}
+                </div>
+                <div *ngIf="validation" class="text-danger">
+                  {{validation}}
+                </div>
+              </div>
             </div>
           </div>
-
 
 
         </div> <!-- End current upload indicator -->

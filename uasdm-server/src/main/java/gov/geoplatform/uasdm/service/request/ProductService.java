@@ -1,19 +1,19 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
-package gov.geoplatform.uasdm.service;
+package gov.geoplatform.uasdm.service.request;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -24,6 +24,7 @@ import java.util.stream.Collector;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.stereotype.Service;
 
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.session.Request;
@@ -51,6 +52,7 @@ import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
 import gov.geoplatform.uasdm.ws.UserNotificationMessage;
 
+@Service
 public class ProductService
 {
   @Request(RequestType.SESSION)
@@ -118,19 +120,23 @@ public class ProductService
         return Converter.toView(product, components).toJSON();
       }).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put));
 
-      if (component instanceof CollectionIF) {
+      if (component instanceof CollectionIF)
+      {
         JSONObject object = new JSONObject();
         object.put("componentId", component.getOid());
         object.put("products", products);
         object.put("componentType", component.getClass().getSimpleName().toLowerCase());
         array.put(object);
-      } else {
-        for (int i = 0; i < products.length(); ++i) {
+      }
+      else
+      {
+        for (int i = 0; i < products.length(); ++i)
+        {
           JSONObject joProduct = products.getJSONObject(i);
-          
+
           JSONArray newProducts = new JSONArray();
           newProducts.put(joProduct);
-          
+
           JSONObject object = new JSONObject();
           object.put("componentId", component.getOid());
           object.put("products", newProducts);

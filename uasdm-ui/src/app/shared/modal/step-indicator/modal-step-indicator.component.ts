@@ -24,7 +24,8 @@ import {
 // ]};
 
 @Component( { 
-    selector: 'modal-step-indicator',
+    standalone: false,
+  selector: 'modal-step-indicator',
     templateUrl: './modal-step-indicator.component.html',
     styleUrls: ['./modal-step-indicator.css'],
         animations: [

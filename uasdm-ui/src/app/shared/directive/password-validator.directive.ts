@@ -6,7 +6,8 @@ import { Validator, NG_VALIDATORS, AbstractControl } from '@angular/forms';
 import { Directive } from '@angular/core';
 
 @Directive({
-	selector: '[passwordValidator]',
+	standalone: false,
+  selector: '[passwordValidator]',
 	providers: [{
 		provide: NG_VALIDATORS,
 		useExisting: PasswordValidatorDirective,

@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.controller;
 
@@ -42,6 +42,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,7 +53,7 @@ import com.google.gson.JsonObject;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.UserInviteDTO;
-import gov.geoplatform.uasdm.service.AccountService;
+import gov.geoplatform.uasdm.service.request.AccountService;
 import net.geoprism.account.GeoprismUserView;
 import net.geoprism.rbac.RoleView;
 import net.geoprism.registry.controller.RunwaySpringController;
@@ -63,19 +64,9 @@ import net.geoprism.spring.core.JsonObjectDeserializer;
 
 @RestController
 @Validated
+@RequestMapping("/uasdm-account")
 public class UASDMAccountController extends RunwaySpringController
 {
-  public static final String API_PATH = "uasdm-account";
-  
-  @Autowired
-  protected AccountService service;
-  
-  @Autowired
-  protected RoleServiceIF roleService;
-  
-  @Autowired
-  protected OrganizationServiceIF orgService;
-  
   public static class InviteBody
   {
     @NotNull
@@ -84,10 +75,10 @@ public class UASDMAccountController extends RunwaySpringController
 
     @JsonDeserialize(using = JsonArrayDeserializer.class)
     JsonArray  roleIds;
-    
+
     public InviteBody()
     {
-      
+
     }
 
     public JsonObject getInvite()
@@ -110,7 +101,7 @@ public class UASDMAccountController extends RunwaySpringController
       this.roleIds = roleIds;
     }
   }
-  
+
   public static class InviteCompleteBody
   {
     @NotNull
@@ -119,10 +110,10 @@ public class UASDMAccountController extends RunwaySpringController
 
     @NotEmpty
     String     token;
-    
+
     public InviteCompleteBody()
     {
-      
+
     }
 
     public JsonObject getUser()
@@ -145,20 +136,20 @@ public class UASDMAccountController extends RunwaySpringController
       this.token = token;
     }
   }
-  
+
   public static class ApplyBody
   {
     @NotEmpty
     @JsonDeserialize(using = JsonObjectDeserializer.class)
     private JsonObject account;
-    
+
     @Nullable
     @JsonDeserialize(using = JsonArrayDeserializer.class)
-    private JsonArray roleIds;
-    
+    private JsonArray  roleIds;
+
     public ApplyBody()
     {
-      
+
     }
 
     public JsonObject getAccount()
@@ -181,7 +172,7 @@ public class UASDMAccountController extends RunwaySpringController
       this.roleIds = roleIds;
     }
   }
-  
+
   public static final class UploadUsersBody
   {
     @NotNull(message = "file requires a value")
@@ -198,44 +189,51 @@ public class UASDMAccountController extends RunwaySpringController
     }
   }
 
-  public UASDMAccountController()
-  {
-  }
-  
-  @GetMapping(API_PATH + "/get")
+  @Autowired
+  protected AccountService        service;
+
+  @Autowired
+  protected RoleServiceIF         roleService;
+
+  @Autowired
+  protected OrganizationServiceIF orgService;
+
+  @GetMapping("/get")
   public GeoprismUserView get() throws JSONException
   {
     return this.service.getCurrentUser(getSessionId());
   }
-  
-  @PostMapping(API_PATH + "/uploadUsers")
+
+  @PostMapping("/uploadUsers")
   public void uploadUsers(@Valid @ModelAttribute UploadUsersBody body) throws IOException
   {
     this.service.uploadUsers(getSessionId(), body.getFile().getInputStream(), body.getFile().getName());
   }
 
-  @PostMapping(API_PATH + "/inviteUser")
+  @PostMapping("/inviteUser")
   public void inviteUser(@RequestBody InviteBody body) throws JSONException
   {
     UserInviteDTO.initiate(this.getClientRequest(), body.getInvite().toString(), body.getRoleIds().toString(), getBaseUrl());
   }
 
-  @PostMapping(API_PATH + "/newInvite")
+  @PostMapping("/newInvite")
   public ResponseEntity<String> newInvite() throws JSONException
   {
     List<RoleView> roles = this.roleService.getAllAssignableRoles(this.getSessionId());
-    
-    final String defaultRole = "geoprism.admin.DashboardBuilder"; // IDM's fieldworker role
+
+    final String defaultRole = "geoprism.admin.DashboardBuilder"; // IDM's
+                                                                  // fieldworker
+                                                                  // role
     roles.stream().forEach(role -> role.setAssigned(role.getRoleName().equals(defaultRole)));
-    
+
     JSONObject user = new JSONObject();
     user.put("newInstance", true);
-    
+
     if (AppProperties.requireKeycloakLogin())
     {
       user.put("externalProfile", true);
     }
-    
+
     JSONArray groups = this.createRoleMap(roles);
 
     JSONObject response = new JSONObject();
@@ -245,7 +243,7 @@ public class UASDMAccountController extends RunwaySpringController
     return new ResponseEntity<String>(response.toString(), HttpStatus.CREATED);
   }
 
-  @PostMapping(API_PATH + "/inviteComplete")
+  @PostMapping("/inviteComplete")
   public void inviteComplete(@RequestBody InviteCompleteBody body) throws JSONException
   {
     this.service.inviteComplete(this.getClientRequest().getSessionId(), body.getToken(), body.getUser().toString());
@@ -263,7 +261,7 @@ public class UASDMAccountController extends RunwaySpringController
   private JSONArray createRoleMap(List<RoleView> roles) throws JSONException
   {
     final String groupName = "adminRoles";
-    
+
     Map<String, JSONArray> map = new HashMap<String, JSONArray>();
 
     for (RoleView role : roles)
@@ -296,15 +294,15 @@ public class UASDMAccountController extends RunwaySpringController
     return groups;
   }
 
-  @GetMapping(API_PATH + "/page")
+  @GetMapping("/page")
   public ResponseEntity<String> page(@NotEmpty @RequestParam String criteria) throws JSONException
   {
     JSONObject response = this.service.page(this.getClientRequest().getSessionId(), new JSONObject(criteria));
 
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
-  
-  @GetMapping(API_PATH + "/export")
+
+  @GetMapping("/export")
   public ResponseEntity<?> export(HttpServletRequest request)
   {
     InputStream is = this.service.export(getSessionId());
@@ -312,11 +310,11 @@ public class UASDMAccountController extends RunwaySpringController
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.set("Content-Type", "application/zip");
     httpHeaders.set("Content-Disposition", "attachment; filename=\"idm-users.zip\"");
-    
+
     return new ResponseEntity<InputStreamResource>(new InputStreamResource(is), httpHeaders, HttpStatus.OK);
   }
 
-  @PostMapping(API_PATH + "/edit")
+  @PostMapping("/edit")
   public ResponseEntity<String> edit(@RequestBody String oid) throws JSONException
   {
     List<RoleView> roles = this.roleService.getAllAssignableRoles(this.getSessionId(), oid);
@@ -330,17 +328,17 @@ public class UASDMAccountController extends RunwaySpringController
     return new ResponseEntity<String>(response.toString(), HttpStatus.CREATED);
   }
 
-  @PostMapping(API_PATH + "/remove")
+  @PostMapping("/remove")
   public void remove(@RequestBody String oid) throws JSONException
   {
     this.service.remove(this.getClientRequest().getSessionId(), oid);
   }
 
-  @PostMapping(API_PATH + "/apply")
+  @PostMapping("/apply")
   public ResponseEntity<String> apply(@RequestBody ApplyBody body) throws JSONException
   {
     final String roleIds = body.getRoleIds() == null ? null : body.getRoleIds().toString();
-    
+
     JSONObject response = this.service.apply(this.getClientRequest().getSessionId(), new JSONObject(body.getAccount().toString()), roleIds);
 
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);

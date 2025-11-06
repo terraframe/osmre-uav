@@ -11,7 +11,8 @@ import { ManagementService } from '@site/service/management.service';
 
 
 @Component( {
-    selector: 'image-preview-modal',
+    standalone: false,
+  selector: 'image-preview-modal',
     templateUrl: './image-preview-modal.component.html',
     styleUrls: []
 } )

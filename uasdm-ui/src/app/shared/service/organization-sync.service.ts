@@ -62,7 +62,7 @@ export class OrganizationSyncService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .post<OrganizationSync>(environment.apiUrl + '/api/organization-synchronization/newInstance', JSON.stringify({}), { headers: headers })
+            .post<OrganizationSync>(environment.apiUrl + '/api/organization-synchronization/new-instance', JSON.stringify({}), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))

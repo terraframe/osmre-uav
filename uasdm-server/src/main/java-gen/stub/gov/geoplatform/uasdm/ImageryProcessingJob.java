@@ -93,7 +93,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     }
     else if (uploadTarget.equals(ImageryComponent.ORTHO))
     {
-      return Arrays.asList("png", "tif", "tiff");
+      return Arrays.asList("png", "tif", "tiff", "xml");
     }
     else if (uploadTarget.equals(ImageryComponent.PTCLOUD))
     {
@@ -202,7 +202,9 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       boolean isValid = validator.process(res, (AbstractUploadTask) this.getWorkflowTask(), getConfiguration());
 
       if (isValid)
+      {
         this.uploadToS3(validator.getDownstreamFile(), this.getUploadTarget(), this.getConfiguration());
+      }
     }
     catch (Throwable t)
     {

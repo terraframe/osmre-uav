@@ -6,7 +6,8 @@ import { Component } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
 @Component({
-	selector: 'processing-report',
+	standalone: false,
+  selector: 'processing-report',
 	templateUrl: './processing-report.component.html',
 	styleUrl: './processing-report.component.scss'
 })

@@ -25,6 +25,7 @@ import { ProductModalComponent } from './modal/product-modal.component';
 
 
 @Component({
+  standalone: false,
   selector: 'tasks',
   templateUrl: './tasks.component.html',
   styleUrls: ['./tasks.css']
@@ -301,7 +302,7 @@ export class TasksComponent implements OnInit {
 
     if (message.type === 'MissingMetadataMessage') {
       this.bsModalRef = this.modalService.show(MetadataModalComponent, {
-        animated: false,
+        animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
         'class': 'upload-modal modal-xl'
@@ -324,7 +325,7 @@ export class TasksComponent implements OnInit {
 
       this.managementService.getItems(collectionId, null, null).then(nodes => {
         this.bsModalRef = this.modalService.show(CollectionModalComponent, {
-          animated: false,
+          animated: true,
           backdrop: true,
           ignoreBackdropClick: true,
           class: 'leaf-modal modal-xl'
@@ -342,7 +343,7 @@ export class TasksComponent implements OnInit {
     } else {
       this.pService.getDetail(task.productId, 1, 20).then(detail => {
         this.bsModalRef = this.modalService.show(ProductModalComponent, {
-            animated: false,
+            animated: true,
             backdrop: true,
             ignoreBackdropClick: true,
             'class': 'product-info-modal modal-xl'

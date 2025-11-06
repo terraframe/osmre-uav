@@ -113,7 +113,7 @@ public class OrganizationSynchronizationController extends RunwaySpringControlle
     return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
   }
 
-  @PostMapping(API_PATH + "/newInstance")
+  @PostMapping(API_PATH + "/new-instance")
   public ResponseEntity<String> newInstance() throws JSONException
   {
     JsonObject response = this.service.newInstance(this.getSessionId());

@@ -17,7 +17,8 @@ import EnvironmentUtil from '@core/utility/environment-util';
 
 @Component( {
 
-    selector: 'user-import',
+    standalone: false,
+  selector: 'user-import',
     templateUrl: './user-import.component.html',
     styles: []
 } )

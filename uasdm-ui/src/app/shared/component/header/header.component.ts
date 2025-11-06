@@ -20,7 +20,8 @@ import { Router } from '@angular/router';
 
 @Component({
 
-    selector: 'uasdm-header',
+    standalone: false,
+  selector: 'uasdm-header',
     templateUrl: './header.component.html',
     styleUrls: ['./header.css']
 })

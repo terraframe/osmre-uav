@@ -14,7 +14,8 @@ import { OrganizationSync } from '@shared/model/organization';
 import { OrganizationSyncService } from '@shared/service/organization-sync.service';
 
 @Component({
-    selector: 'organization-sync',
+    standalone: false,
+  selector: 'organization-sync',
     templateUrl: './organization-sync.component.html',
     styleUrls: []
 })
@@ -93,7 +94,7 @@ export class OrganizationSyncComponent implements OnInit {
 
         this.service.execute(this.sync.oid).then(data => {
             const bsModalRef = this.modalService.show(NotificationModalComponent, {
-                animated: false,
+                animated: true,
                 backdrop: true, class: 'modal-xl',
                 ignoreBackdropClick: true,
             });

@@ -1,19 +1,19 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
-package gov.geoplatform.uasdm.service;
+package gov.geoplatform.uasdm.service.request;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.util.Random;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -42,19 +41,20 @@ import com.runwaysdk.session.SessionIF;
 import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.SessionEventLog;
+import gov.geoplatform.uasdm.service.SessionEventCSVExportService;
 
 @Service
 public class SessionEventService
 {
-  private Logger logger = LoggerFactory.getLogger(SessionEventService.class);
-  
+  private Logger                       logger = LoggerFactory.getLogger(SessionEventService.class);
+
   @Autowired
   private SessionEventCSVExportService csvExportService;
 
   public static enum EventType {
     LOGIN_SUCCESS, LOGIN_FAILURE
   }
-  
+
   @Request(RequestType.SESSION)
   public void logSuccessfulLogin(String sessionId, String username)
   {
@@ -69,29 +69,29 @@ public class SessionEventService
   {
     SessionEventLog.log(EventType.LOGIN_FAILURE.name(), username, null);
   }
- 
+
   @Request(RequestType.SESSION)
   public JSONObject page(String sessionId, Integer pageNumber, Integer pageSize)
   {
     return SessionEventLog.page(pageNumber, pageSize).toJSON();
   }
-  
+
   @Request(RequestType.SESSION)
   public InputStream export(String sessionId)
   {
     try
     {
       File file = File.createTempFile("session-event-export", ".csv");
-      
+
       try (FileOutputStream fos = new FileOutputStream(file))
       {
         csvExportService.export(fos);
         fos.flush();
-        
+
         // Zip up the entire contents of the file
         final PipedOutputStream pos = new PipedOutputStream();
         final PipedInputStream pis = new PipedInputStream(pos);
-    
+
         Thread t = new Thread(new Runnable()
         {
           @Override
@@ -103,7 +103,7 @@ public class SessionEventService
               {
                 ZipEntry entry = new ZipEntry(file.getName());
                 zipFile.putNextEntry(entry);
-  
+
                 try (FileInputStream in = new FileInputStream(file))
                 {
                   IOUtils.copy(in, zipFile);
@@ -113,7 +113,7 @@ public class SessionEventService
               {
                 pos.close();
               }
-    
+
               FileUtils.deleteQuietly(file);
             }
             catch (IOException e)
@@ -124,11 +124,11 @@ public class SessionEventService
         });
         t.setDaemon(true);
         t.start();
-    
+
         return pis;
       }
     }
-    catch(IOException ex)
+    catch (IOException ex)
     {
       throw new RuntimeException(ex);
     }

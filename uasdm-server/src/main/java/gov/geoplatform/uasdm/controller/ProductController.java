@@ -1,120 +1,187 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.controller;
 
-import java.io.IOException;
-import java.util.List;
-
+import org.hibernate.validator.constraints.NotEmpty;
 import org.json.JSONArray;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.runwaysdk.constants.ClientRequestIF;
-import com.runwaysdk.controller.ServletMethod;
-import com.runwaysdk.mvc.Controller;
-import com.runwaysdk.mvc.Endpoint;
-import com.runwaysdk.mvc.ErrorSerialization;
-import com.runwaysdk.mvc.RequestParamter;
-import com.runwaysdk.mvc.ResponseIF;
-import com.runwaysdk.mvc.RestBodyResponse;
-import com.runwaysdk.mvc.RestResponse;
-
-import gov.geoplatform.uasdm.remote.RemoteFileGetResponse;
-import gov.geoplatform.uasdm.service.ProductService;
+import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
+import gov.geoplatform.uasdm.remote.RemoteFileObject;
+import gov.geoplatform.uasdm.service.request.ProductService;
+import gov.geoplatform.uasdm.view.ODMRunView;
 import gov.geoplatform.uasdm.view.ProductCriteria;
 import gov.geoplatform.uasdm.view.ProductDetailView;
 import gov.geoplatform.uasdm.view.ProductView;
+import net.geoprism.registry.controller.RunwaySpringController;
 
-@Controller(url = "product")
-public class ProductController
+@RestController
+@Validated
+@RequestMapping("/product")
+public class ProductController extends RunwaySpringController
 {
+  public static class IdBody
+  {
+    @NotEmpty
+    private String id;
+
+    public String getId()
+    {
+      return id;
+    }
+
+    public void setId(String id)
+    {
+      this.id = id;
+    }
+  }
+
+  public static class CreateProductBody
+  {
+    @NotEmpty
+    private String collectionId;
+
+    @NotEmpty
+    private String productName;
+
+    public String getCollectionId()
+    {
+      return collectionId;
+    }
+
+    public void setCollectionId(String collectionId)
+    {
+      this.collectionId = collectionId;
+    }
+
+    public String getProductName()
+    {
+      return productName;
+    }
+
+    public void setProductName(String productName)
+    {
+      this.productName = productName;
+    }
+
+  }
+
+  @Autowired
   private ProductService service;
 
-  public ProductController()
+  @GetMapping("/get-odm-run")
+  public ResponseEntity<String> getODMRun(@RequestParam(name = "artifactId") String artifactId)
   {
-    this.service = new ProductService();
+    ODMRunView response = service.getODMRunByArtifact(this.getSessionId(), artifactId);
+
+    return ResponseEntity.ok(response.toJson().toString());
   }
 
-  @Endpoint(url = "get-odm-run", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getODMRun(ClientRequestIF request, @RequestParamter(name = "artifactId") String artifactId) throws IOException
+  @GetMapping("/get-odm-all")
+  public ResponseEntity<InputStreamResource> getAllZip(@RequestParam(name = "id") String id)
   {
-    return new RestBodyResponse(service.getODMRunByArtifact(request.getSessionId(), artifactId));
+    RemoteFileObject file = service.downloadAllZip(this.getSessionId(), id);
+
+    RemoteFileMetadata metadata = file.getObjectMetadata();
+    String contentDisposition = metadata.getContentDisposition();
+
+    if (contentDisposition == null)
+    {
+      contentDisposition = "attachment; filename=\"" + file.getName() + "\"";
+    }
+
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.set("Content-Type", metadata.getContentType());
+    httpHeaders.set("Content-Encoding", metadata.getContentEncoding());
+    httpHeaders.set("Content-Disposition", contentDisposition);
+    httpHeaders.set("Content-Length", Long.toString(metadata.getContentLength()));
+    httpHeaders.set("ETag", metadata.getETag());
+
+    if (metadata.getLastModified() != null)
+    {
+      httpHeaders.setDate("Last-Modified", metadata.getLastModified().getTime());
+    }
+
+    return new ResponseEntity<InputStreamResource>(new InputStreamResource(file.getObjectContent()), httpHeaders, HttpStatus.OK);
   }
 
-  @Endpoint(url = "get-odm-all", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getAllZip(ClientRequestIF request, @RequestParamter(name = "id") String id) throws IOException
+  @GetMapping("/get-all")
+  public ResponseEntity<String> getAll(@RequestParam(name = "criteria") String criteria)
   {
-    return new RemoteFileGetResponse(service.downloadAllZip(request.getSessionId(), id));
+    JSONArray response = service.getProducts(this.getSessionId(), ProductCriteria.deserialize(criteria));
+
+    return ResponseEntity.ok(response.toString());
   }
 
-  @Endpoint(url = "get-all", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getAll(ClientRequestIF request, @RequestParamter(name = "criteria") String criteria) throws IOException
+  @GetMapping("/detail")
+  public ResponseEntity<String> detail(@RequestParam(name = "id") String id, @RequestParam(name = "pageNumber", defaultValue = "1") Integer pageNumber, @RequestParam(name = "pageSize", defaultValue = "20") Integer pageSize)
   {
-    JSONArray response = service.getProducts(request.getSessionId(), ProductCriteria.deserialize(criteria));
+    ProductDetailView detail = service.getProductDetail(this.getSessionId(), id, pageNumber, pageSize);
 
-    return new RestBodyResponse(response);
+    return ResponseEntity.ok(detail.toJSON().toString());
   }
 
-  @Endpoint(url = "detail", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF detail(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "pageNumber") Integer pageNumber, @RequestParamter(name = "pageSize") Integer pageSize) throws IOException
+  @PostMapping("/toggle-publish")
+  public ResponseEntity<String> togglePublish(@RequestBody IdBody body)
   {
-    pageNumber = pageNumber != null ? pageNumber : 1;
-    pageSize = pageSize != null ? pageSize : 20;
+    ProductView view = service.togglePublish(this.getSessionId(), body.getId());
 
-    ProductDetailView detail = service.getProductDetail(request.getSessionId(), id, pageNumber, pageSize);
-
-    return new RestBodyResponse(detail.toJSON());
+    return ResponseEntity.ok(view.toJSON().toString());
   }
 
-  @Endpoint(url = "toggle-publish", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF togglePublish(ClientRequestIF request, @RequestParamter(name = "id") String id) throws IOException
+  @PostMapping("/toggle-lock")
+  public ResponseEntity<Void> toggleLock(@RequestBody IdBody body)
   {
-    ProductView view = service.togglePublish(request.getSessionId(), id);
+    service.toggleLock(this.getSessionId(), body.getId());
 
-    return new RestBodyResponse(view.toJSON());
+    return ResponseEntity.ok(null);
   }
 
-  @Endpoint(url = "toggle-lock", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF toggleLock(ClientRequestIF request, @RequestParamter(name = "id") String id) throws IOException
+  @PostMapping("/remove")
+  public ResponseEntity<Void> remove(@RequestBody IdBody body)
   {
-    service.toggleLock(request.getSessionId(), id);
+    this.service.remove(this.getSessionId(), body.getId());
 
-    return new RestResponse();
+    return ResponseEntity.ok(null);
   }
 
-  @Endpoint(url = "remove", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF remove(ClientRequestIF request, @RequestParamter(name = "id") String id) throws IOException
+  @PostMapping("/create")
+  public ResponseEntity<String> create(@RequestBody CreateProductBody body)
   {
-    this.service.remove(request.getSessionId(), id);
+    ProductView view = service.create(this.getSessionId(), body.getCollectionId(), body.getProductName());
 
-    return new RestResponse();
+    return ResponseEntity.ok(view.toJSON().toString());
   }
 
-  @Endpoint(url = "create", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF create(ClientRequestIF request, @RequestParamter(name = "collectionId") String collectionId, @RequestParamter(name = "productName") String productName) throws IOException
+  @PostMapping("/mappable-items")
+  public ResponseEntity<String> getMappableItems(@RequestBody IdBody body)
   {
-    ProductView view = service.create(request.getSessionId(), collectionId, productName);
+    JSONArray response = service.getMappableItems(this.getSessionId(), body.getId());
 
-    return new RestBodyResponse(view.toJSON());
+    return ResponseEntity.ok(response.toString());
   }
-
-  @Endpoint(url = "mappable-items", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getMappableItems(ClientRequestIF request, @RequestParamter(name = "id") String id) throws IOException
-  {
-    JSONArray response = service.getMappableItems(request.getSessionId(), id);
-
-    return new RestBodyResponse(response);
-  }
-
 }

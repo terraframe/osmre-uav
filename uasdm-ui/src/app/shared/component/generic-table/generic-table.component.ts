@@ -11,7 +11,8 @@ import { Subject } from 'rxjs';
 import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
 import { TableLazyLoadEvent } from 'primeng/table';
 @Component({
-    selector: 'generic-table',
+    standalone: false,
+  selector: 'generic-table',
     templateUrl: './generic-table.component.html',
     styleUrls: ['./generic-table.css']
 })

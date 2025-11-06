@@ -46,7 +46,7 @@ public class GdalPNGGenerator extends ManagedDocument
   
   @SuppressWarnings("resource")
   @Override
-  public boolean process(ApplicationFileResource res)
+  public ProcessResult process(ApplicationFileResource res)
   {
     File file = res.getUnderlyingFile();
     
@@ -73,6 +73,6 @@ public class GdalPNGGenerator extends ManagedDocument
       monitor.addError("Problem occurred generating gdal transform. PNG file did not exist.");
     }
     
-    return false;
+    return ProcessResult.fail();
   }
 }

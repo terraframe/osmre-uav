@@ -29,7 +29,8 @@ import { LocalizedValue } from '@shared/model/organization';
 import { ShareProductModalComponent } from '../modal/share-product-modal.component';
 
 @Component({
-    selector: 'product-panel',
+    standalone: false,
+  selector: 'product-panel',
     templateUrl: './product-panel.component.html',
     styleUrl: './product-panel.component.scss',
     animations: [
@@ -114,7 +115,7 @@ export class ProductPanelComponent implements OnDestroy {
 
     clipboardPublicStacUrl(product: Product, clipboardPopover) {
         const bsModalRef = this.modalService.show(ShareProductModalComponent, {
-            animated: false,
+            animated: true,
             backdrop: true,
             ignoreBackdropClick: true,
             class: 'modal-xl'
@@ -297,7 +298,7 @@ export class ProductPanelComponent implements OnDestroy {
         event.stopPropagation();
 
         this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
-            animated: false,
+            animated: true,
             backdrop: true,
             ignoreBackdropClick: true,
             class: 'modal-xl'
@@ -334,7 +335,7 @@ export class ProductPanelComponent implements OnDestroy {
             const component: string = product.entities[product.entities.length - 1].id;
 
             this.bsModalRef = this.modalService.show(ImagePreviewModalComponent, {
-                animated: false,
+                animated: true,
                 backdrop: true,
                 ignoreBackdropClick: false,
                 'class': 'image-preview-modal modal-xl'
@@ -346,7 +347,7 @@ export class ProductPanelComponent implements OnDestroy {
     handleGetInfo(product: Product): void {
         this.pService.getDetail(product.id, 1, 20).then(detail => {
             this.bsModalRef = this.modalService.show(ProductModalComponent, {
-                animated: false,
+                animated: true,
                 backdrop: true,
                 ignoreBackdropClick: true,
                 'class': 'product-info-modal modal-xl'

@@ -13,26 +13,14 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package gov.geoplatform.uasdm.controller;
+package gov.geoplatform.uasdm.processing;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.runwaysdk.resource.ApplicationFileResource;
 
-import gov.geoplatform.uasdm.service.request.CrudService;
-import gov.geoplatform.uasdm.service.request.WaveLengthService;
-
-@RestController
-@RequestMapping("/wave-length")
-public class WaveLengthController extends AbstractCrudController
+public class ArchiveValidator
 {
-  @Autowired
-  private WaveLengthService service;
-
-  @Override
-  public CrudService getService()
+  public boolean isValidArchive(ApplicationFileResource res)
   {
-    return this.service;
+    return res.getName().endsWith(".zip") || res.getName().endsWith(".tar.gz");
   }
-
 }

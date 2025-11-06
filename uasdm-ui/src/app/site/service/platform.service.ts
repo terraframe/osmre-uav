@@ -66,7 +66,7 @@ export class PlatformService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .get<Platform>(environment.apiUrl + '/api/platform/newInstance', { params: params })
+            .get<Platform>(environment.apiUrl + '/api/platform/new-instance', { params: params })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))

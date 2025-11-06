@@ -31,7 +31,7 @@ import com.runwaysdk.session.SessionFacade;
 
 import gov.geoplatform.uasdm.keycloak.KeycloakConstants;
 import gov.geoplatform.uasdm.keycloak.UnassignedKeycloakUserException;
-import gov.geoplatform.uasdm.service.SessionEventService.EventType;
+import gov.geoplatform.uasdm.service.request.SessionEventService.EventType;
 import net.geoprism.account.ExternalProfile;
 import net.geoprism.account.ExternalProfileQuery;
 import net.geoprism.account.GeoprismActorIF;

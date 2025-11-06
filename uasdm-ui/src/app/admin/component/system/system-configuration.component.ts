@@ -19,7 +19,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorHandler } from '@shared/component';
 
 @Component({
-    selector: 'system-configuration',
+    standalone: false,
+  selector: 'system-configuration',
     templateUrl: './system-configuration.component.html',
     styleUrls: []
 })
@@ -63,7 +64,7 @@ export class SystemConfigurationComponent implements OnInit {
 
     open(): void {
         this.bsModalRef = this.modalService.show(EmailComponent, {
-            animated: false,
+            animated: true,
             backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true,
         });
@@ -75,7 +76,7 @@ export class SystemConfigurationComponent implements OnInit {
 
     onManageHierarchy(): void {
         this.bsModalRef = this.modalService.show(OrganizationHierarchyModalComponent, {
-            animated: false,
+            animated: true,
             backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true,
         });

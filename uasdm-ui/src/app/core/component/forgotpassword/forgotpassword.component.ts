@@ -11,7 +11,8 @@ import { ForgotPasswordService } from '../../service/forgotpassword.service';
 
 
 @Component({
-	selector: 'forgotpassword',
+	standalone: false,
+  selector: 'forgotpassword',
 	templateUrl: './forgotpassword.component.html',
 	styleUrls: ['./forgotpassword.component.css']
 })
