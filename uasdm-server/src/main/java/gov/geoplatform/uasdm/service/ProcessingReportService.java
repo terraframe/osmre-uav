@@ -197,7 +197,16 @@ public class ProcessingReportService
     builder.append("SELECT"
         + " oid,config,runStart,runEnd,workflowTask,instanceType,"
         + " in().fileSize,"
-        + " component.oid,component.name,component.s3location,component.pocName,component.collectionSensor.oid,component.uav.oid FROM " + clazz);
+        + " component.oid,"
+        + " component.name,"
+        + " component.s3location,"
+        + " component.pocName,"
+        + " component.uav.oid,"
+        + " $meta.sensor.name AS sensorName,"
+        + " $meta.sensor.sensorType.name AS sensorType"
+        + " FROM " + clazz
+        + " LET $meta = first(component.out('collection_has_metadata'))");
+
     
     if (since != null)
     {
@@ -272,17 +281,8 @@ public class ProcessingReportService
         catch (Exception ex) {}
       }
       
-      String sensorOid = (String) map.get("component.collectionSensor.oid");
-      if (sensorOid != null && sensorOid.length() > 0)
-      {
-        try
-        {
-          Sensor sensor = Sensor.get(sensorOid);
-          result.sensorName = sensor.getName();
-          result.sensorType = sensor.getType();
-        }
-        catch (Exception ex) {}
-      }
+      result.sensorName = (String) map.get("sensorName");
+      result.sensorType = (String) map.get("sensorType");
       
       result.odmConfig = (String) map.get("config");
       ODMProcessConfiguration config = ODMProcessConfiguration.parse(result.odmConfig);
