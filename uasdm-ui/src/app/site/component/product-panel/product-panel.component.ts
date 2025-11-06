@@ -30,7 +30,7 @@ import { ShareProductModalComponent } from '../modal/share-product-modal.compone
 
 @Component({
     standalone: false,
-  selector: 'product-panel',
+    selector: 'product-panel',
     templateUrl: './product-panel.component.html',
     styleUrl: './product-panel.component.scss',
     animations: [
@@ -289,7 +289,7 @@ export class ProductPanelComponent implements OnDestroy {
         if (product.hasPointcloud) {
             let componentId: string = product.entities[product.entities.length - 1].id;
 
-            window.open(this.configuration.getContextPath() + "/pointcloud/" + componentId + "/" + product.productName + "/potree");
+            window.open(this.configuration.getContextPath() + "/api/pointcloud/potree/" + componentId + "/" + product.productName);
         }
     }
 

@@ -24,8 +24,11 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
 
 import me.desair.tus.server.TusFileUploadService;
 import me.desair.tus.server.upload.UUIDUploadIdFactory;
@@ -44,6 +47,16 @@ public class SpringAppConfig extends WebMvcConfigurationSupport
     CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
     multipartResolver.setMaxUploadSize(-1);
     return multipartResolver;
+  }
+
+  @Bean
+  public ViewResolver internalResourceViewResolver()
+  {
+    InternalResourceViewResolver bean = new InternalResourceViewResolver();
+    bean.setViewClass(JstlView.class);
+    bean.setPrefix("/WEB-INF/");
+    bean.setSuffix("");
+    return bean;
   }
 
   // @Bean
