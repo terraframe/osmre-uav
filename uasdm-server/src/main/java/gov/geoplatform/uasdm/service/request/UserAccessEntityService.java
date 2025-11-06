@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gov.geoplatform.uasdm.service;
+package gov.geoplatform.uasdm.service.request;
 
 import java.util.stream.Collector;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.stereotype.Service;
 
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
@@ -36,6 +37,7 @@ import net.geoprism.GeoprismUserQuery;
 import net.geoprism.account.ExternalProfile;
 import net.geoprism.account.ExternalProfileQuery;
 
+@Service
 public class UserAccessEntityService
 {
   @Request(RequestType.SESSION)
