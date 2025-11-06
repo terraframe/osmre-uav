@@ -335,7 +335,7 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public List<TreeComponent> getRoots(String sessionId, String id, String conditions, String sort)
+  public List<TreeComponent> getRoots(String sessionId, String conditions, String sort)
   {
     LinkedList<TreeComponent> roots = new LinkedList<TreeComponent>();
 
@@ -344,67 +344,6 @@ public class ProjectManagementService
     for (SiteIF s : sites)
     {
       roots.add(Converter.toSiteItem(s, false));
-    }
-
-    // TODO : This code is never run. The front-end always specifys a null id.
-    // And why would we want to fetch all imagery ? That could be really
-    // expensive.
-    if (id != null)
-    {
-      // UasComponent component = ComponentFactory.getComponent(id);
-      //
-      // TreeComponent child = Converter.toSiteItem(component, false, true);
-      //
-      // List<UasComponentIF> ancestors = component.getAncestors();
-      //
-      // for (int j = 0; j < ancestors.size(); j++)
-      // {
-      // TreeComponent parent = null;
-      //
-      // if (j == ( ancestors.size() - 1 ))
-      // {
-      // /*
-      // * The last ancestor in the list should be the root tree node, which
-      // * should already be in the roots list. As such use the root list node
-      // * instead and add children to it.
-      // */
-      // UasComponent root = ancestors.get(ancestors.size() - 1);
-      //
-      // for (TreeComponent r : roots)
-      // {
-      // if (r.getId().equals(root.getOid()))
-      // {
-      // parent = r;
-      // }
-      // }
-      // }
-      // else
-      // {
-      // parent = Converter.toSiteItem(ancestors.get(j), false);
-      // }
-      //
-      // if (parent instanceof SiteItem)
-      // {
-      // /*
-      // * For each ancestor get all of its children TreeComponents
-      // */
-      // List<TreeComponent> children = this.items(parent.getId(), null);
-      //
-      // for (TreeComponent chi : children)
-      // {
-      // if (!chi.getId().equals(child.getId()))
-      // {
-      // parent.addChild(chi);
-      // }
-      // else
-      // {
-      // parent.addChild(child);
-      // }
-      // }
-      //
-      // child = parent;
-      // }
-      // }
     }
 
     return roots;
@@ -744,9 +683,9 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public void applyMetadata(String sessionId, String json)
+  public void applyMetadata(String sessionId, JSONObject selection)
   {
-    applyMetadata(new JSONObject(json));
+    applyMetadata(selection);
   }
 
   @Transaction
@@ -1363,18 +1302,14 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public String createCollection(String sessionId, String json)
+  public String createCollection(String sessionId, JSONArray selections)
   {
-    JSONArray selections = new JSONArray(json);
-
     return Collection.createCollection(selections);
   }
 
   @Request(RequestType.SESSION)
-  public String createStandaloneProductGroup(String sessionId, String sJson)
+  public String createStandaloneProductGroup(String sessionId, JSONObject json)
   {
-    JSONObject json = new JSONObject(sJson);
-
     UasComponentIF component = ComponentFacade.getComponent(json.getString("component"));
 
     ProductIF product = createStandaloneProductGroupInTrans(json, component);

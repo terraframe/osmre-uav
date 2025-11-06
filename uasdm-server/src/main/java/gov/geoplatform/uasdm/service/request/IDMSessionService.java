@@ -70,8 +70,8 @@ public class IDMSessionService extends SessionService
     
     endpoints.add("api/session/ologin");
     endpoints.add("api/session/logout");
-    endpoints.add("project/management");
-    endpoints.add("project/configuration");
+    endpoints.add("api/project/management");
+    endpoints.add("api/project/configuration");
     // endpoints.add("websocket-notifier/notify");
     return endpoints;
   }

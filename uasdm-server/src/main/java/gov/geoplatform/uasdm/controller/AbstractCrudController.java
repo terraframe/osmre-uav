@@ -9,9 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import gov.geoplatform.uasdm.service.request.CrudService;
-import net.geoprism.registry.controller.RunwaySpringController;
 
-public abstract class AbstractCrudController extends RunwaySpringController
+public abstract class AbstractCrudController extends AbstractController
 {
   public abstract CrudService getService();
 

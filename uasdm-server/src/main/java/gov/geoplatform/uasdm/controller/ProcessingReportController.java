@@ -36,13 +36,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import gov.geoplatform.uasdm.service.ProcessingReportService;
-import net.geoprism.registry.controller.RunwaySpringController;
 import software.amazon.awssdk.utils.IoUtils;
 
 @Controller
 @Validated
 @RequestMapping("/processing-report")
-public class ProcessingReportController extends RunwaySpringController
+public class ProcessingReportController extends AbstractController
 {
   @Autowired
   private ProcessingReportService service;

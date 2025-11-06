@@ -42,7 +42,7 @@ export class MapService {
         }
 
         return this.http
-            .get<{ features: GeoJSONSource, bbox: number[] }>(environment.apiUrl + '/project/features', { params: params })
+            .get<{ features: GeoJSONSource, bbox: number[] }>(environment.apiUrl + '/api/project/features', { params: params })
             .toPromise()
     }
 

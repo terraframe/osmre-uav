@@ -26,11 +26,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -50,10 +48,9 @@ import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.service.PointcloudService;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
-import net.geoprism.registry.controller.RunwaySpringController;
 
 @Controller
-public class PointcloudController extends RunwaySpringController
+public class PointcloudController extends AbstractController
 {
   public static final String       JSP_DIR          = "/WEB-INF/";
 
@@ -64,9 +61,6 @@ public class PointcloudController extends RunwaySpringController
   private PointcloudService        service          = new PointcloudService();
 
   private ProjectManagementService pService         = new ProjectManagementService();
-
-  @Autowired
-  private ServletContext           context;
 
   /**
    * Serves resource requests from the Potree Viewer for files additional
@@ -92,7 +86,7 @@ public class PointcloudController extends RunwaySpringController
     {
       String resourcePath = matcher.group(1);
 
-      URL url = context.getResource(JSP_DIR + POTREE_RESOURCES + "/" + resourcePath);
+      URL url = this.getContext().getResource(JSP_DIR + POTREE_RESOURCES + "/" + resourcePath);
       Resource resource = new UrlResource(url.toURI());
       Path path = Paths.get(url.toURI());
 
@@ -144,7 +138,7 @@ public class PointcloudController extends RunwaySpringController
    * @return
    */
   @GetMapping("/pointcloud/data/**")
-  public ResponseEntity<InputStreamResource> data()
+  public ResponseEntity<InputStreamResource> data(@RequestHeader(name = "Range", required = false) String sRange)
   {
     Pattern pattern = Pattern.compile(".*pointcloud\\/data\\/([^\\/]+)(?:\\/legacypotree)?\\/(.*)$", Pattern.CASE_INSENSITIVE);
 
@@ -156,7 +150,7 @@ public class PointcloudController extends RunwaySpringController
       String dataPath = matcher.group(2);
 
       RemoteFileObject file = null;
-      String sRange =null;
+
       if (!StringUtils.isBlank(sRange))
       {
         List<Range> range = Range.decodeRange(sRange);

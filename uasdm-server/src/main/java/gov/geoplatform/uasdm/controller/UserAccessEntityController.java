@@ -15,7 +15,6 @@
  */
 package gov.geoplatform.uasdm.controller;
 
-import org.hibernate.validator.constraints.NotEmpty;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,43 +26,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.geoplatform.uasdm.controller.body.UserAccessBody;
 import gov.geoplatform.uasdm.service.request.UserAccessEntityService;
-import net.geoprism.registry.controller.RunwaySpringController;
 
 @RestController
 @RequestMapping("/user-access")
-public class UserAccessEntityController extends RunwaySpringController
+public class UserAccessEntityController extends AbstractController
 {
-  public static class AccessBody
-  {
-    @NotEmpty
-    private String componentId;
-
-    @NotEmpty
-    private String identifier;
-
-    public String getComponentId()
-    {
-      return componentId;
-    }
-
-    public void setComponentId(String componentId)
-    {
-      this.componentId = componentId;
-    }
-
-    public String getIdentifier()
-    {
-      return identifier;
-    }
-
-    public void setIdentifier(String identifier)
-    {
-      this.identifier = identifier;
-    }
-
-  }
-
   @Autowired
   private UserAccessEntityService service;
 
@@ -76,7 +45,7 @@ public class UserAccessEntityController extends RunwaySpringController
   }
 
   @PostMapping("grant-access")
-  public ResponseEntity<String> grantAccess(@RequestBody AccessBody body)
+  public ResponseEntity<String> grantAccess(@RequestBody UserAccessBody body)
   {
     JSONObject response = this.service.grantAccess(this.getSessionId(), body.getComponentId(), body.getIdentifier());
 
@@ -84,7 +53,7 @@ public class UserAccessEntityController extends RunwaySpringController
   }
 
   @PostMapping("remove-access")
-  public ResponseEntity<Void> removeAccess(@RequestBody AccessBody body)
+  public ResponseEntity<Void> removeAccess(@RequestBody UserAccessBody body)
   {
     this.service.removeAccess(this.getSessionId(), body.getComponentId(), body.getIdentifier());
 

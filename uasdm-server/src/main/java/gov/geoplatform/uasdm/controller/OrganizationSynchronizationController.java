@@ -16,7 +16,6 @@
 package gov.geoplatform.uasdm.controller;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
 import org.json.JSONException;
@@ -27,45 +26,26 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import gov.geoplatform.uasdm.controller.body.SynchronizeOrganizationBody;
 import gov.geoplatform.uasdm.service.OrganizationSynchronizationService;
-import net.geoprism.registry.controller.RunwaySpringController;
-import net.geoprism.spring.core.JsonObjectDeserializer;
 
 @RestController
 @Validated
-public class OrganizationSynchronizationController extends RunwaySpringController
+@RequestMapping("/organization-synchronization")
+public class OrganizationSynchronizationController extends AbstractController
 {
-  public static final String API_PATH = "organization-synchronization";
-
-  public static class SyncBody
-  {
-    @NotNull
-    @JsonDeserialize(using = JsonObjectDeserializer.class)
-    JsonObject sync;
-
-    public JsonObject getSync()
-    {
-      return sync;
-    }
-
-    public void setSync(JsonObject sync)
-    {
-      this.sync = sync;
-    }
-  }
-
   @Autowired
   private OrganizationSynchronizationService service;
 
-  @GetMapping(API_PATH + "/page")
+  @GetMapping("/page")
   public ResponseEntity<String> page(@NotEmpty @RequestParam String criteria) throws JSONException
   {
     JsonObject page = this.service.page(getSessionId(), JsonParser.parseString(criteria).getAsJsonObject());
@@ -73,7 +53,7 @@ public class OrganizationSynchronizationController extends RunwaySpringControlle
     return new ResponseEntity<String>(page.toString(), HttpStatus.OK);
   }
 
-  @GetMapping(API_PATH + "/get-all")
+  @GetMapping("/get-all")
   public ResponseEntity<String> getAll() throws JSONException
   {
     JsonArray list = this.service.getAll(getSessionId());
@@ -81,7 +61,7 @@ public class OrganizationSynchronizationController extends RunwaySpringControlle
     return new ResponseEntity<String>(list.toString(), HttpStatus.OK);
   }
 
-  @GetMapping(API_PATH + "/get")
+  @GetMapping("/get")
   public ResponseEntity<String> get(@NotEmpty @RequestParam String oid) throws JSONException
   {
     JsonObject response = this.service.get(getSessionId(), oid);
@@ -89,15 +69,15 @@ public class OrganizationSynchronizationController extends RunwaySpringControlle
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
 
-  @PostMapping(API_PATH + "/apply")
-  public ResponseEntity<String> apply(@Valid @RequestBody SyncBody body) throws JSONException
+  @PostMapping("/apply")
+  public ResponseEntity<String> apply(@Valid @RequestBody SynchronizeOrganizationBody body) throws JSONException
   {
-    JsonObject response = this.service.apply(this.getSessionId(), body.sync);
+    JsonObject response = this.service.apply(this.getSessionId(), body.getSync());
 
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
 
-  @PostMapping(API_PATH + "/remove")
+  @PostMapping("/remove")
   public ResponseEntity<Void> remove(@Valid @RequestBody OidBody body) throws JSONException
   {
     this.service.remove(this.getSessionId(), body.getOid());
@@ -105,7 +85,7 @@ public class OrganizationSynchronizationController extends RunwaySpringControlle
     return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
   }
 
-  @PostMapping(API_PATH + "/execute")
+  @PostMapping("/execute")
   public ResponseEntity<Void> execute(@Valid @RequestBody OidBody body) throws JSONException
   {
     this.service.execute(this.getSessionId(), body.getOid());
@@ -113,7 +93,7 @@ public class OrganizationSynchronizationController extends RunwaySpringControlle
     return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
   }
 
-  @PostMapping(API_PATH + "/new-instance")
+  @PostMapping("/new-instance")
   public ResponseEntity<String> newInstance() throws JSONException
   {
     JsonObject response = this.service.newInstance(this.getSessionId());

@@ -86,11 +86,11 @@ export class AccessibleSupportModalComponent implements OnInit {
     }
 
     handleDownload(): void {
-        window.location.href = environment.apiUrl + '/project/download-all?id=' + this.folder.component + "&key=" + this.folder.name;
+        window.location.href = environment.apiUrl + '/api/project/download-all?id=' + this.folder.component + "&key=" + this.folder.name;
     }
 
     handleDownloadFile(item: SiteEntity): void {
-        window.location.href = environment.apiUrl + '/project/download?id=' + this.folder.component + "&key=" + item.key;
+        window.location.href = environment.apiUrl + '/api/project/download?id=' + this.folder.component + "&key=" + item.key;
     }
 
     dropped(files: NgxFileDropEntry[]): void {

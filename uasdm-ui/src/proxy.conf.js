@@ -20,8 +20,8 @@ const PROXY_CONFIG = [
     },
     {
         context: [
-            "/api", "/net/geoprism/images/", "/glyphs", "/session", "/project",
-            "/logo", "/file", "/cog", "/stac", "/collection-report", "/keycloak"
+            "/api", "/net/geoprism/images/", "/glyphs", "/session",,
+            "/logo", "/file", "/cog", "/stac", "/keycloak"
         ],
         target: "https://localhost:8443/uasdm/",
         "changeOrigin": true,       // solves CORS Error in F12

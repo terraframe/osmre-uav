@@ -784,7 +784,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   handleDownloadAll(node: SiteEntity): void {
 
-    window.location.href = environment.apiUrl + "/project/download-all?id=" + node.component + "&key=" + node.name;
+    window.location.href = environment.apiUrl + "/api/project/download-all?id=" + node.component + "&key=" + node.name;
 
     //      this.service.downloadAll( data.id ).then( data => {
     //        
@@ -842,7 +842,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   handleDownload(node: SiteEntity): void {
-    window.location.href = environment.apiUrl + "/project/download?id=" + node.component + "&key=" + node.key;
+    window.location.href = environment.apiUrl + "/api/project/download?id=" + node.component + "&key=" + node.key;
 
     //this.service.download( node.data.component, node.data.key, true ).subscribe( blob => {
     //    importedSaveAs( blob, node.data.name );
@@ -850,7 +850,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleImageDownload(image: any): void {
-    window.location.href = environment.apiUrl + "/project/download?id=" + image.component + "&key=" + image.key;
+    window.location.href = environment.apiUrl + "/api/project/download?id=" + image.component + "&key=" + image.key;
 
     //this.service.download( node.data.component, node.data.key, true ).subscribe( blob => {
     //    importedSaveAs( blob, node.data.name );

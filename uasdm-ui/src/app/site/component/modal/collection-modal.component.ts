@@ -342,7 +342,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 
 	handleDownload(): void {
 
-		window.location.href = environment.apiUrl + '/project/download-all?id=' + this.entity.id + "&key=" + this.tabName;
+		window.location.href = environment.apiUrl + '/api/project/download-all?id=' + this.entity.id + "&key=" + this.tabName;
 
 		//      this.service.downloadAll( data.id ).then( data => {
 		//        
@@ -353,7 +353,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 
 	handleDownloadOdmAll(): void {
 
-		window.location.href = environment.apiUrl + '/project/download-odm-all?colId=' + this.entity.id;
+		window.location.href = environment.apiUrl + '/api/project/download-odm-all?colId=' + this.entity.id;
 
 		//      this.service.downloadAll( data.id ).then( data => {
 		//        
@@ -368,7 +368,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	}
 
 	handleDownloadFile(item: SiteEntity): void {
-		window.location.href = environment.apiUrl + '/project/download?id=' + this.entity.id + "&key=" + item.key;
+		window.location.href = environment.apiUrl + '/api/project/download?id=' + this.entity.id + "&key=" + item.key;
 	}
 
 	editMetadata(): void {
@@ -426,7 +426,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		// Otherwise the video tag does not register that the src has changed.
 		setTimeout(() => {
 			this.video.name = item.name;
-			this.video.src = environment.apiUrl + '/project/download?id=' + item.component + "&key=" + item.key; // + "#" + Math.random();
+			this.video.src = environment.apiUrl + '/api/project/download?id=' + item.component + "&key=" + item.key; // + "#" + Math.random();
 		}, 200);
 	}
 

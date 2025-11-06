@@ -17,7 +17,6 @@ package gov.geoplatform.uasdm.controller;
 
 import javax.validation.Valid;
 
-import org.hibernate.validator.constraints.NotEmpty;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,30 +32,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.geoplatform.uasdm.controller.body.PlatformBody;
 import gov.geoplatform.uasdm.service.PlatformService;
-import net.geoprism.registry.controller.RunwaySpringController;
 
 @RestController
 @Validated
 @RequestMapping("/platform")
-public class PlatformController extends RunwaySpringController
+public class PlatformController extends AbstractController
 {
-  public static class ApplyBody
-  {
-    @NotEmpty
-    String platform;
-
-    public String getPlatform()
-    {
-      return platform;
-    }
-
-    public void setPlatform(String platform)
-    {
-      this.platform = platform;
-    }
-  }
-
   @Autowired
   private PlatformService service;
 
@@ -77,9 +60,9 @@ public class PlatformController extends RunwaySpringController
   }
 
   @PostMapping("/apply")
-  public ResponseEntity<String> apply(@Valid @RequestBody ApplyBody body) throws JSONException
+  public ResponseEntity<String> apply(@Valid @RequestBody PlatformBody body) throws JSONException
   {
-    JSONObject platform = new JSONObject(body.platform);
+    JSONObject platform = new JSONObject(body.getPlatform());
 
     JSONObject response = this.service.apply(getSessionId(), platform);
 
