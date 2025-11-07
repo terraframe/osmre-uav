@@ -37,14 +37,14 @@ public class UploadController extends AbstractController
   }
 
   @RequestMapping( //
-      value = { "/tus-upload", "/tus-upload/**" }, //
+      value = { "/api/tus-upload", "/api/tus-upload/**" }, //
       method = { RequestMethod.POST, RequestMethod.PATCH, RequestMethod.HEAD, RequestMethod.DELETE, RequestMethod.GET })
   public void upload(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException
   {
     this.uploadService.upload(getSessionId(), servletRequest, servletResponse);
   }
 
-  @GetMapping("/upload/get-task")
+  @GetMapping("/api/upload/get-task")
   public ResponseEntity<String> getTask(@RequestParam(name = "uploadUrl", required = true) String uploadUrl) throws IOException
   {
     Optional<JSONObject> task = this.uploadService.getTask(getSessionId(), uploadUrl);
@@ -52,7 +52,7 @@ public class UploadController extends AbstractController
     return ResponseEntity.of(task.map(t -> t.toString()));
   }
 
-  @PostMapping("/upload/remove-upload")
+  @PostMapping("/api/upload/remove-upload")
   public ResponseEntity<Void> removeUpload(@RequestBody RemoveUploadBody request) throws IOException
   {
     this.uploadService.removeUpload(getSessionId(), request.getUploadUrl());
