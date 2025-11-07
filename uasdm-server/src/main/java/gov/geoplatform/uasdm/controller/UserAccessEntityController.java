@@ -30,7 +30,7 @@ import gov.geoplatform.uasdm.controller.body.UserAccessBody;
 import gov.geoplatform.uasdm.service.request.UserAccessEntityService;
 
 @RestController
-@RequestMapping("/user-access")
+@RequestMapping("/api/user-access")
 public class UserAccessEntityController extends AbstractController
 {
   @Autowired

@@ -1577,7 +1577,7 @@ option[selected]{ font-weight:bold}
 }
 .bg-stretch img{display:block;}
 
-/* /* animated styles */ */
+/* animated styles */
 .animated {
 	-webkit-animation-duration:1s;
 	animation-duration:1s;
@@ -1820,7 +1820,7 @@ div.alert.alertbox {
 }
  
    
-i.fa.fa-cloud-upload{
+i.fa.fa-cloud-arrow-up{
     font-size: 70px;
     padding: 40px;
     font-weight: normal;

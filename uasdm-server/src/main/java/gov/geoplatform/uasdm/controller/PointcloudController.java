@@ -39,6 +39,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
@@ -50,6 +51,7 @@ import gov.geoplatform.uasdm.service.PointcloudService;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 
 @Controller
+@RequestMapping("/api/pointcloud")
 public class PointcloudController extends AbstractController
 {
   public static final String       JSP_DIR          = "/WEB-INF/";
@@ -73,7 +75,7 @@ public class PointcloudController extends AbstractController
    * @throws IOException
    * @throws URISyntaxException
    */
-  @GetMapping("/pointcloud/resource/**")
+  @GetMapping("/resource/**")
   public ResponseEntity<Resource> resource() throws IOException, URISyntaxException
   {
     HttpServletRequest request = this.getRequest();
@@ -108,12 +110,12 @@ public class PointcloudController extends AbstractController
    * @param servletRequest
    * @return
    */
-  @GetMapping("/pointcloud/potree/{componentId}/{productName}")
+  @GetMapping("/potree/{componentId}/{productName}")
   public ModelAndView potreeViewer(@PathVariable("componentId") String componentId, @PathVariable("productName") String productName)
   {
     String resource = this.service.getPointcloudResource(this.getSessionId(), componentId, productName);
 
-    ModelAndView mav = new ModelAndView(POTREE_JSP);
+    ModelAndView mav = new ModelAndView(JSP_DIR + POTREE_JSP);
     mav.addObject("componentId", componentId);
     mav.addObject("productName", productName);
 
@@ -137,7 +139,7 @@ public class PointcloudController extends AbstractController
    * @param servletRequest
    * @return
    */
-  @GetMapping("/pointcloud/data/**")
+  @GetMapping("/data/**")
   public ResponseEntity<InputStreamResource> data(@RequestHeader(name = "Range", required = false) String sRange)
   {
     Pattern pattern = Pattern.compile(".*pointcloud\\/data\\/([^\\/]+)(?:\\/legacypotree)?\\/(.*)$", Pattern.CASE_INSENSITIVE);

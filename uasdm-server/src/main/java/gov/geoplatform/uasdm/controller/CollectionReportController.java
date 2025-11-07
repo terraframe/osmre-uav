@@ -34,7 +34,7 @@ import gov.geoplatform.uasdm.service.CollectionReportService;
 
 @Controller
 @Validated
-@RequestMapping("/collection-report")
+@RequestMapping("/api/collection-report")
 public class CollectionReportController extends AbstractController
 {
   @Autowired

@@ -23,7 +23,7 @@ import gov.geoplatform.uasdm.service.request.CrudService;
 import gov.geoplatform.uasdm.service.request.SensorTypeService;
 
 @RestController
-@RequestMapping("/sensor-type")
+@RequestMapping("/api/sensor-type")
 public class SensorTypeController extends AbstractCrudController
 {
   @Autowired

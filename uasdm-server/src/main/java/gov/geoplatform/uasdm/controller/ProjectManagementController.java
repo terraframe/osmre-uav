@@ -34,6 +34,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -79,19 +80,13 @@ import gov.geoplatform.uasdm.view.TreeComponent;
 
 @RestController
 @Validated
-@RequestMapping("/project")
+@RequestMapping("/api/project")
 public class ProjectManagementController extends AbstractController
 {
   private static final Logger      logger = LoggerFactory.getLogger(ProjectManagementController.class);
 
   @Autowired
   private ProjectManagementService service;
-
-  // @Endpoint(method = ServletMethod.GET)
-  // public ResponseEntity<String> management()
-  // {
-  // return new ViewResponse("/index.html");
-  // }
 
   @GetMapping("/configuration")
   public ResponseEntity<String> configuration()
@@ -543,7 +538,7 @@ public class ProjectManagementController extends AbstractController
   }
 
   @PostMapping("/upload")
-  public ResponseEntity<String> upload(@RequestBody @Valid UploadArtifactFileBody body) throws IOException
+  public ResponseEntity<String> upload(@Valid @ModelAttribute UploadArtifactFileBody body) throws IOException
   {
     MultipartFile file = body.getFile();
 

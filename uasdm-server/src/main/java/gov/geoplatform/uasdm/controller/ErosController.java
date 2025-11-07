@@ -30,7 +30,7 @@ import gov.geoplatform.uasdm.service.ErosService;
 
 @Controller
 @Validated
-@RequestMapping("/eros")
+@RequestMapping("/api/eros")
 public class ErosController extends AbstractController
 {
   private ErosService service;

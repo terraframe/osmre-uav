@@ -23,7 +23,7 @@ import gov.geoplatform.uasdm.service.request.CrudService;
 import gov.geoplatform.uasdm.service.request.WaveLengthService;
 
 @RestController
-@RequestMapping("/wave-length")
+@RequestMapping("/api/wave-length")
 public class WaveLengthController extends AbstractCrudController
 {
   @Autowired

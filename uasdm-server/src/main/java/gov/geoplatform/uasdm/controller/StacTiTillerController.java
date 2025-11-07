@@ -18,9 +18,6 @@ package gov.geoplatform.uasdm.controller;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,68 +31,34 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import gov.geoplatform.uasdm.cog.CogTileException;
-import gov.geoplatform.uasdm.service.CloudOptimizedGeoTiffService;
-import gov.geoplatform.uasdm.view.TileAccessControl;
+import gov.geoplatform.uasdm.service.request.StacTiTilerService;
 
 @Controller
 @Validated
-@RequestMapping("/api/cog")
-public class CloudOptimizedGeoTiffController extends AbstractController
+@RequestMapping("/stac")
+public class StacTiTillerController extends AbstractController
 {
-  @Autowired
-  private CloudOptimizedGeoTiffService service;
+  public static final String TILES_REGEX = "tiles\\/(.+\\/)?(\\d+)\\/(\\d+)\\/(\\d+)(@\\d+x)?(\\.[^?\\n\\r]+)?";
 
-  /**
-   * Path is the S3 path to the object, excluding any bucket information. An
-   * example of this is:
-   * mysite/myproject/mymission/mycollection/ortho/odm_orthophoto.tif
-   * 
-   * For more information, view the public TiTiler docs at:
-   * https://k67ob0ncba.execute-api.us-east-1.amazonaws.com
-   * 
-   * @param request
-   * @param sRequest
-   * @param path
-   * @return
-   */
+  @Autowired
+  private StacTiTilerService service;
+
   @GetMapping("/tilejson.json")
-  public ResponseEntity<String> tilejson(HttpServletRequest request, @RequestParam(required = true) String path)
+  public ResponseEntity<String> tilejson(@RequestParam(name = "url", required = true) String url, @RequestParam(name = "assets", required = true) String assets)
   {
-    JSONObject tilejson = this.service.tilejson(getSessionId(), request.getContextPath(), path, this.getAccessControl(request));
+    JSONObject tilejson = this.service.tilejson(this.getSessionId(), this.getRequest().getContextPath(), url, assets);
 
     return new ResponseEntity<String>(tilejson.toString(), HttpStatus.OK);
   }
 
-  /**
-   * In keeping in alignment with the TiTiler API, we have embedded a few
-   * parameters into the pathing of this URL.
-   * 
-   * cog/tiles/{TileMatrixSetId}/{z}/{x}/{y}@{scale}x.{format}
-   * 
-   * We have one parameter which is non-standard to the TiTiler API, path. Path
-   * is the S3 path to the object, excluding any bucket information. An example
-   * of this is:
-   * mysite/myproject/mymission/mycollection/ortho/odm_orthophoto.tif
-   * 
-   * The rest of the parameters for this method are directly proxied to TiTiler.
-   * You can find documentation for them on our public TiTiler API, at:
-   * https://k67ob0ncba.execute-api.us-east-1.amazonaws.com
-   * 
-   * @param request
-   * @param servletRequest
-   * @param path
-   * @return
-   */
-  public static final String TILES_REGEX = "tiles\\/(.+\\/)?(\\d+)\\/(\\d+)\\/(\\d+)(@\\d+x)?(\\.[^?\\n\\r]+)?";
-
   @GetMapping("/tiles/**")
-  public ResponseEntity<?> tiles(HttpServletRequest request, @RequestParam(required = true) String path)
+  public ResponseEntity<?> tiles(@RequestParam(name = "url", required = true) String url, @RequestParam(name = "assets", required = true) String assets)
   {
-    String url = request.getRequestURI();
+    String uri = this.getRequest().getRequestURI();
 
-    Pattern pattern = Pattern.compile("\\/cog\\/" + TILES_REGEX, Pattern.CASE_INSENSITIVE);
+    Pattern pattern = Pattern.compile("\\/stac\\/" + TILES_REGEX, Pattern.CASE_INSENSITIVE);
 
-    Matcher matcher = pattern.matcher(url);
+    Matcher matcher = pattern.matcher(uri);
 
     if (matcher.find())
     {
@@ -136,8 +99,8 @@ public class CloudOptimizedGeoTiffController extends AbstractController
       }
 
       String fullUri;
-      StringBuilder requestURL = new StringBuilder(request.getRequestURL().toString());
-      String queryString = request.getQueryString();
+      StringBuilder requestURL = new StringBuilder(this.getRequest().getRequestURL().toString());
+      String queryString = this.getRequest().getQueryString();
 
       if (queryString == null)
       {
@@ -149,27 +112,11 @@ public class CloudOptimizedGeoTiffController extends AbstractController
       }
       MultiValueMap<String, String> queryParams = UriComponentsBuilder.fromUriString(fullUri).build().getQueryParams();
 
-      return this.service.tiles(getSessionId(), path, matrixSetId, x, y, z, scale, format, queryParams, getAccessControl(request));
+      return this.service.tiles(this.getSessionId(), matrixSetId, Integer.valueOf(x), Integer.valueOf(y), Integer.valueOf(z), Integer.valueOf(scale), format, url, assets, queryParams);
     }
     else
     {
       throw new CogTileException("The provided url is invalid.");
     }
-  }
-
-  private TileAccessControl getAccessControl(HttpServletRequest request)
-  {
-    HttpSession session = request.getSession();
-
-    TileAccessControl control = (TileAccessControl) session.getAttribute("access-control");
-
-    if (control == null)
-    {
-      control = new TileAccessControl();
-
-      session.setAttribute("access-control", control);
-    }
-
-    return control;
   }
 }

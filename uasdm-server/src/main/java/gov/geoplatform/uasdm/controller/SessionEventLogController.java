@@ -33,7 +33,7 @@ import gov.geoplatform.uasdm.service.request.SessionEventService;
 
 @RestController
 @Validated
-@RequestMapping("/session-event")
+@RequestMapping("/api/session-event")
 public class SessionEventLogController extends AbstractController
 {
   @Autowired

@@ -37,7 +37,7 @@ import gov.geoplatform.uasdm.service.PlatformService;
 
 @RestController
 @Validated
-@RequestMapping("/platform")
+@RequestMapping("/api/platform")
 public class PlatformController extends AbstractController
 {
   @Autowired

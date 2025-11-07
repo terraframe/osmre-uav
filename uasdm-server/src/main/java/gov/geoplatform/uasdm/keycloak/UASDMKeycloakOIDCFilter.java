@@ -274,7 +274,7 @@ public class UASDMKeycloakOIDCFilter extends KeycloakOIDCFilter
             throw new ProgrammingErrorException(t2);
           }
 
-          String url = "/project/management#/login/" + errorMessage;
+          String url = "/#/login/" + errorMessage;
 
           response.sendRedirect(buildRedirectUrl(request, url));
 

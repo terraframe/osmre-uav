@@ -44,7 +44,7 @@ import net.geoprism.registry.service.request.LabeledPropertyGraphTypeVersionServ
 
 @RestController
 @Validated
-@RequestMapping("/labeled-property-graph-synchronization")
+@RequestMapping("/api/labeled-property-graph-synchronization")
 public class LabeledPropertyGraphSynchronizationController extends AbstractController
 {
   @Autowired

@@ -29,7 +29,7 @@ import gov.geoplatform.uasdm.service.request.CrudService;
 import gov.geoplatform.uasdm.service.request.SensorService;
 
 @RestController
-@RequestMapping("/sensor")
+@RequestMapping("/api/sensor")
 public class SensorController extends AbstractCrudController
 {
   @Autowired

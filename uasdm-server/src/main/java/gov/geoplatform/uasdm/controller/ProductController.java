@@ -38,7 +38,7 @@ import gov.geoplatform.uasdm.view.ProductView;
 
 @RestController
 @Validated
-@RequestMapping("/product")
+@RequestMapping("/api/product")
 public class ProductController extends AbstractController
 {
   @Autowired
@@ -108,10 +108,10 @@ public class ProductController extends AbstractController
     return ResponseEntity.ok(view.toJSON().toString());
   }
 
-  @PostMapping("/mappable-items")
-  public ResponseEntity<String> getMappableItems(@RequestBody IdBody body)
+  @GetMapping("/mappable-items")
+  public ResponseEntity<String> getMappableItems(@RequestParam(name = "id") String id)
   {
-    JSONArray response = service.getMappableItems(this.getSessionId(), body.getId());
+    JSONArray response = service.getMappableItems(this.getSessionId(), id);
 
     return ResponseEntity.ok(response.toString());
   }

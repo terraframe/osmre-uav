@@ -28,7 +28,7 @@ import gov.geoplatform.uasdm.service.request.CrudService;
 import gov.geoplatform.uasdm.service.request.UAVService;
 
 @RestController
-@RequestMapping("/uav")
+@RequestMapping("/api/uav")
 public class UAVController extends AbstractCrudController
 {
   @Autowired

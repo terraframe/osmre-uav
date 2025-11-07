@@ -21,7 +21,7 @@ import EnvironmentUtil from '@core/utility/environment-util';
 @Component({
 
     standalone: false,
-  selector: 'system-logos',
+    selector: 'system-logos',
     templateUrl: './system-logos.component.html',
     styleUrls: []
 })
@@ -69,28 +69,15 @@ export class SystemLogosComponent implements OnInit {
     }
 
     edit(icon: SystemLogo): void {
-        // this.router.navigate( ['/admin/logo', icon.oid] );
 
         let bsModalRef = this.modalService.show(SystemLogoComponent, {
             animated: true,
             backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true,
         });
+        bsModalRef.content.oid = icon.oid;
 
         bsModalRef.content.onSuccess.subscribe(data => {
-
-            /*
-            this.icons.forEach(ico => {
-      
-              // Setting a random number at the end of the url is a hack to change 
-              // the image url to force Angular to rerender the image.
-              this.random = Math.random();
-      
-              ico.oid = ico.oid
-            })
-      
-            this.changeDetectorRef.detectChanges();
-            */
             window.location.reload();
         });
     }

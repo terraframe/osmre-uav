@@ -15,7 +15,11 @@
  */
 package gov.geoplatform.uasdm.service.request;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.commongeoregistry.adapter.metadata.OrganizationDTO;
 import org.springframework.context.annotation.Primary;
@@ -70,22 +74,43 @@ public class IDMSessionService extends SessionService
     
     endpoints.add("api/session/ologin");
     endpoints.add("api/session/logout");
-    endpoints.add("api/project/management");
+    endpoints.add("api/logo/view");
     endpoints.add("api/project/configuration");
+    endpoints.add("index.html");
     // endpoints.add("websocket-notifier/notify");
     return endpoints;
+  }
+  
+  @Override
+  public boolean pathAllowed(HttpServletRequest req)
+  {
+    String uri = req.getRequestURI();
+
+    List<String> extensions = new LinkedList<String>();
+    extensions.add(".woff2");
+    extensions.add(".tff");
+
+    for (String extension : extensions)
+    {
+      if (uri.endsWith(extension))
+      {
+        return true;
+      }
+    }
+    
+    return super.pathAllowed(req);
   }
 
   @Override
   public String getHomeUrl()
   {
-    return "/project/management";
+    return "/";
   }
 
   @Override
   public String getLoginUrl()
   {
-    return "/project/management#/login";
+    return "/#/login";
   }
 
   @Override

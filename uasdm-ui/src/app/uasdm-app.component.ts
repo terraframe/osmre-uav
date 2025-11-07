@@ -16,7 +16,7 @@ export class UasdmAppComponent {
   favIcon: HTMLLinkElement = document.querySelector('#appIcon');
 
   constructor() {
-    this.favIcon.href = environment.apiUrl + '/logo/view?oid=logo';
+    this.favIcon.href = environment.apiUrl + '/api/logo/view?oid=logo';
   }
 
 }

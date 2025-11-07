@@ -25,7 +25,7 @@ export class SystemLogoService {
         this.eventService.start();
 
         return this.http
-            .get<{ icons: SystemLogo[] }>( environment.apiUrl + '/logo/getAll' )
+            .get<{ icons: SystemLogo[] }>( environment.apiUrl + '/api/logo/get-all' )
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -44,7 +44,7 @@ export class SystemLogoService {
         this.eventService.start();
 
         return this.http
-            .post<void>( environment.apiUrl + '/logo/remove', JSON.stringify( { oid: oid } ), { headers: headers } )
+            .post<void>( environment.apiUrl + '/api/logo/remove', JSON.stringify( { oid: oid } ), { headers: headers } )
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))

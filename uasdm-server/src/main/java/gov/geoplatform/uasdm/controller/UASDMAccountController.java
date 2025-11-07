@@ -58,7 +58,7 @@ import net.geoprism.registry.service.request.RoleServiceIF;
 
 @RestController
 @Validated
-@RequestMapping("/uasdm-account")
+@RequestMapping("/api/uasdm-account")
 public class UASDMAccountController extends AbstractController
 {
   @Autowired

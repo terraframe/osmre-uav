@@ -23,7 +23,7 @@ import gov.geoplatform.uasdm.service.request.CrudService;
 import gov.geoplatform.uasdm.service.request.PlatformTypeService;
 
 @RestController
-@RequestMapping("/platform-type")
+@RequestMapping("/api/platform-type")
 public class PlatformTypeController extends AbstractCrudController
 {
   @Autowired

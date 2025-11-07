@@ -40,7 +40,7 @@ import software.amazon.awssdk.utils.IoUtils;
 
 @Controller
 @Validated
-@RequestMapping("/processing-report")
+@RequestMapping("/api/processing-report")
 public class ProcessingReportController extends AbstractController
 {
   @Autowired

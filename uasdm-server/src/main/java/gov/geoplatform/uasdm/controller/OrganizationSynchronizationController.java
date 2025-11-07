@@ -39,7 +39,7 @@ import gov.geoplatform.uasdm.service.OrganizationSynchronizationService;
 
 @RestController
 @Validated
-@RequestMapping("/organization-synchronization")
+@RequestMapping("/api/organization-synchronization")
 public class OrganizationSynchronizationController extends AbstractController
 {
   @Autowired

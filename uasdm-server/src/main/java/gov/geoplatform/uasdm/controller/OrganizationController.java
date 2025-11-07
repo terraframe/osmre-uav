@@ -39,7 +39,7 @@ import net.geoprism.registry.view.Page;
 
 @RestController
 @Validated
-@RequestMapping("/organization")
+@RequestMapping("/api/organization")
 public class OrganizationController extends AbstractController
 {
   @Autowired

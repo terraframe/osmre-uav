@@ -23,7 +23,7 @@ import gov.geoplatform.uasdm.service.request.CrudService;
 import gov.geoplatform.uasdm.service.request.PlatformManufacturerService;
 
 @RestController
-@RequestMapping("/platform-manufacturer")
+@RequestMapping("/api/platform-manufacturer")
 public class PlatformManufacturerController extends AbstractCrudController
 {
   @Autowired
