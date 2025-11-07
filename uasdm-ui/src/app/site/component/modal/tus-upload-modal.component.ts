@@ -175,6 +175,7 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 				this.existingTask = null;
 
 				this.onUploadComplete.next();
+				this.selectedFile = null;
 			},
 			(error: Error) => {
 				this.error(error);
