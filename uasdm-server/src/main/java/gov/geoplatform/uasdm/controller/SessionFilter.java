@@ -206,7 +206,7 @@ public class SessionFilter implements Filter
 
       // The user is not logged in
       // If we're asynchronous, we want to return a serialized exception
-      RequestDispatcher dispatcher = request.getRequestDispatcher("/#login");
+      RequestDispatcher dispatcher = request.getRequestDispatcher("/loginRedirect.jsp");
       dispatcher.forward(request, response);
     }
   }
