@@ -12,6 +12,8 @@
     </update>
   </doIt>
   <undoIt>
-    <delete></delete>
+    <delete>
+      <object key="gov.geoplatform.uasdm.graph.ODMRun.instanceType" type="com.runwaysdk.system.metadata.MdAttributeText"/>
+    </delete>
   </undoIt>
 </version>
