@@ -120,6 +120,12 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     throw new UnsupportedOperationException();
   }
+  
+  @Override
+  public boolean isThermal()
+  {
+    throw new UnsupportedOperationException();
+  }
 
   @Override
   public boolean isLidar()

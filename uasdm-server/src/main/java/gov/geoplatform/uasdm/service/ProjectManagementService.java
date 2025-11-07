@@ -100,6 +100,7 @@ import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.Quality;
+import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.RadiometricCalibration;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.processing.ProcessingInProgressException;
@@ -186,7 +187,7 @@ public class ProjectManagementService
         task.setProcessFilenameArray(array.toString());
         task.apply();
 
-        task.initiate(new ArchiveFileResource(new FileResource(zip)), collection.isMultiSpectral());
+        task.initiate(new ArchiveFileResource(new FileResource(zip)), collection.isMultiSpectral(), collection.isThermal());
 
         NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
       }
@@ -1446,6 +1447,11 @@ public class ProjectManagementService
           config.setIncludeGeoLocationFile(true);
           config.setGeoLocationFileName(Product.GEO_LOCATION_FILE);
           config.setGeoLocationFormat(FileFormat.RX1R2);
+        }
+        
+        if (Boolean.TRUE.equals(collection.isThermal()) || Boolean.TRUE.equals(collection.isMultiSpectral())) {
+          config.setRadiometricCalibration(RadiometricCalibration.CAMERA);
+          // TODO : Some sensors support CAMERA+SUN, which might be preferable (even though ODM says its experimental)... Which sensors exactly?
         }
 
         collection.getMetadata().ifPresent(metadata -> {

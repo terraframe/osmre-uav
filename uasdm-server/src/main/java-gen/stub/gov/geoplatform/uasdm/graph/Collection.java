@@ -681,6 +681,21 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       return false;
     }).orElse(false);
   }
+  
+  @Override
+  public boolean isThermal()
+  {
+    return this.getMetadata().map(metadata -> {
+      Sensor sensor = metadata.getSensor();
+
+      if (sensor != null)
+      {
+        return sensor.getSensorHasWaveLengthChildWaveLengths().stream().anyMatch(wl -> wl.getName().equalsIgnoreCase(WaveLength.THERMAL));
+      }
+
+      return false;
+    }).orElse(false);
+  }
 
   @Override
   public boolean isLidar()
