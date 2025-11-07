@@ -119,7 +119,7 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 	}
 
 	handleDownloadFile(item: SiteEntity): void {
-		window.location.href = environment.apiUrl + '/project/download?id=' + this.entity.id + "&key=" + item.key;
+		window.location.href = environment.apiUrl + '/api/project/download?id=' + this.entity.id + "&key=" + item.key;
 	}
 
 
@@ -192,7 +192,7 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 
 	handleDownloadReport(productName: string, section: { label: string, folder: string }): void {
 
-		let url = environment.apiUrl + '/project/download-report?'
+		let url = environment.apiUrl + '/api/project/download-report?'
 		url += 'colId=' + encodeURIComponent(this.entity.id);
 		url += "&productName=" + encodeURIComponent(productName)
 		url += "&folder=" + encodeURIComponent(section.folder);

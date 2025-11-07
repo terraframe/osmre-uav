@@ -15,12 +15,9 @@
  */
 package gov.geoplatform.uasdm.controller;
 
-import org.hibernate.validator.constraints.NotEmpty;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,66 +27,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
+import gov.geoplatform.uasdm.controller.body.CreateProductBody;
+import gov.geoplatform.uasdm.controller.body.IdBody;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.service.request.ProductService;
 import gov.geoplatform.uasdm.view.ODMRunView;
 import gov.geoplatform.uasdm.view.ProductCriteria;
 import gov.geoplatform.uasdm.view.ProductDetailView;
 import gov.geoplatform.uasdm.view.ProductView;
-import net.geoprism.registry.controller.RunwaySpringController;
 
 @RestController
 @Validated
 @RequestMapping("/product")
-public class ProductController extends RunwaySpringController
+public class ProductController extends AbstractController
 {
-  public static class IdBody
-  {
-    @NotEmpty
-    private String id;
-
-    public String getId()
-    {
-      return id;
-    }
-
-    public void setId(String id)
-    {
-      this.id = id;
-    }
-  }
-
-  public static class CreateProductBody
-  {
-    @NotEmpty
-    private String collectionId;
-
-    @NotEmpty
-    private String productName;
-
-    public String getCollectionId()
-    {
-      return collectionId;
-    }
-
-    public void setCollectionId(String collectionId)
-    {
-      this.collectionId = collectionId;
-    }
-
-    public String getProductName()
-    {
-      return productName;
-    }
-
-    public void setProductName(String productName)
-    {
-      this.productName = productName;
-    }
-
-  }
-
   @Autowired
   private ProductService service;
 
@@ -106,27 +57,7 @@ public class ProductController extends RunwaySpringController
   {
     RemoteFileObject file = service.downloadAllZip(this.getSessionId(), id);
 
-    RemoteFileMetadata metadata = file.getObjectMetadata();
-    String contentDisposition = metadata.getContentDisposition();
-
-    if (contentDisposition == null)
-    {
-      contentDisposition = "attachment; filename=\"" + file.getName() + "\"";
-    }
-
-    HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.set("Content-Type", metadata.getContentType());
-    httpHeaders.set("Content-Encoding", metadata.getContentEncoding());
-    httpHeaders.set("Content-Disposition", contentDisposition);
-    httpHeaders.set("Content-Length", Long.toString(metadata.getContentLength()));
-    httpHeaders.set("ETag", metadata.getETag());
-
-    if (metadata.getLastModified() != null)
-    {
-      httpHeaders.setDate("Last-Modified", metadata.getLastModified().getTime());
-    }
-
-    return new ResponseEntity<InputStreamResource>(new InputStreamResource(file.getObjectContent()), httpHeaders, HttpStatus.OK);
+    return getRemoteFile(file);
   }
 
   @GetMapping("/get-all")

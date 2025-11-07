@@ -73,7 +73,7 @@ export class ProfileService {
         params = params.set('statuses', JSON.stringify(statuses));
 
         return this.http
-            .get<{tasksCount:number}>(environment.apiUrl + '/project/tasks-count', { params: params })
+            .get<{tasksCount:number}>(environment.apiUrl + '/api/project/tasks-count', { params: params })
             .toPromise()
     }
 }

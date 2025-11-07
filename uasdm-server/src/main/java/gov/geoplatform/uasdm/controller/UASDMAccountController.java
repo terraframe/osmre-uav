@@ -25,7 +25,6 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
 import org.json.JSONArray;
@@ -36,7 +35,6 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -45,150 +43,24 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.UserInviteDTO;
+import gov.geoplatform.uasdm.controller.body.UserBody;
+import gov.geoplatform.uasdm.controller.body.CompleteUserInviteBody;
+import gov.geoplatform.uasdm.controller.body.UploadUsersBody;
+import gov.geoplatform.uasdm.controller.body.UserInviteBody;
 import gov.geoplatform.uasdm.service.request.AccountService;
 import net.geoprism.account.GeoprismUserView;
 import net.geoprism.rbac.RoleView;
-import net.geoprism.registry.controller.RunwaySpringController;
 import net.geoprism.registry.service.request.OrganizationServiceIF;
 import net.geoprism.registry.service.request.RoleServiceIF;
-import net.geoprism.spring.core.JsonArrayDeserializer;
-import net.geoprism.spring.core.JsonObjectDeserializer;
 
 @RestController
 @Validated
 @RequestMapping("/uasdm-account")
-public class UASDMAccountController extends RunwaySpringController
+public class UASDMAccountController extends AbstractController
 {
-  public static class InviteBody
-  {
-    @NotNull
-    @JsonDeserialize(using = JsonObjectDeserializer.class)
-    JsonObject invite;
-
-    @JsonDeserialize(using = JsonArrayDeserializer.class)
-    JsonArray  roleIds;
-
-    public InviteBody()
-    {
-
-    }
-
-    public JsonObject getInvite()
-    {
-      return invite;
-    }
-
-    public void setInvite(JsonObject invite)
-    {
-      this.invite = invite;
-    }
-
-    public JsonArray getRoleIds()
-    {
-      return roleIds;
-    }
-
-    public void setRoleIds(JsonArray roleIds)
-    {
-      this.roleIds = roleIds;
-    }
-  }
-
-  public static class InviteCompleteBody
-  {
-    @NotNull
-    @JsonDeserialize(using = JsonObjectDeserializer.class)
-    JsonObject user;
-
-    @NotEmpty
-    String     token;
-
-    public InviteCompleteBody()
-    {
-
-    }
-
-    public JsonObject getUser()
-    {
-      return user;
-    }
-
-    public void setUser(JsonObject user)
-    {
-      this.user = user;
-    }
-
-    public String getToken()
-    {
-      return token;
-    }
-
-    public void setToken(String token)
-    {
-      this.token = token;
-    }
-  }
-
-  public static class ApplyBody
-  {
-    @NotEmpty
-    @JsonDeserialize(using = JsonObjectDeserializer.class)
-    private JsonObject account;
-
-    @Nullable
-    @JsonDeserialize(using = JsonArrayDeserializer.class)
-    private JsonArray  roleIds;
-
-    public ApplyBody()
-    {
-
-    }
-
-    public JsonObject getAccount()
-    {
-      return account;
-    }
-
-    public void setAccount(JsonObject account)
-    {
-      this.account = account;
-    }
-
-    public JsonArray getRoleIds()
-    {
-      return roleIds;
-    }
-
-    public void setRoleIds(JsonArray roleIds)
-    {
-      this.roleIds = roleIds;
-    }
-  }
-
-  public static final class UploadUsersBody
-  {
-    @NotNull(message = "file requires a value")
-    private MultipartFile file;
-
-    public MultipartFile getFile()
-    {
-      return file;
-    }
-
-    public void setFile(MultipartFile file)
-    {
-      this.file = file;
-    }
-  }
-
   @Autowired
   protected AccountService        service;
 
@@ -211,7 +83,7 @@ public class UASDMAccountController extends RunwaySpringController
   }
 
   @PostMapping("/inviteUser")
-  public void inviteUser(@RequestBody InviteBody body) throws JSONException
+  public void inviteUser(@RequestBody UserInviteBody body) throws JSONException
   {
     UserInviteDTO.initiate(this.getClientRequest(), body.getInvite().toString(), body.getRoleIds().toString(), getBaseUrl());
   }
@@ -244,7 +116,7 @@ public class UASDMAccountController extends RunwaySpringController
   }
 
   @PostMapping("/inviteComplete")
-  public void inviteComplete(@RequestBody InviteCompleteBody body) throws JSONException
+  public void inviteComplete(@RequestBody CompleteUserInviteBody body) throws JSONException
   {
     this.service.inviteComplete(this.getClientRequest().getSessionId(), body.getToken(), body.getUser().toString());
   }
@@ -335,7 +207,7 @@ public class UASDMAccountController extends RunwaySpringController
   }
 
   @PostMapping("/apply")
-  public ResponseEntity<String> apply(@RequestBody ApplyBody body) throws JSONException
+  public ResponseEntity<String> apply(@RequestBody UserBody body) throws JSONException
   {
     final String roleIds = body.getRoleIds() == null ? null : body.getRoleIds().toString();
 

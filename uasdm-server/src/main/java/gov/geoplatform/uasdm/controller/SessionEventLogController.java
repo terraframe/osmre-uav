@@ -30,12 +30,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.geoplatform.uasdm.service.request.SessionEventService;
-import net.geoprism.registry.controller.RunwaySpringController;
 
 @RestController
 @Validated
 @RequestMapping("/session-event")
-public class SessionEventLogController extends RunwaySpringController
+public class SessionEventLogController extends AbstractController
 {
   @Autowired
   private SessionEventService service;

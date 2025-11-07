@@ -23,7 +23,7 @@ export class ConfigurationService {
     }
 
     load(): Promise<Configuration> {
-        return firstValueFrom(this.http.get<Configuration>(environment.apiUrl + "/project/configuration")).then(configuration => {
+        return firstValueFrom(this.http.get<Configuration>(environment.apiUrl + "/api/project/configuration")).then(configuration => {
             this.configuration = configuration;
 
             return this.configuration;
