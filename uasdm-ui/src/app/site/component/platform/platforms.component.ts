@@ -15,7 +15,8 @@ import { Subject } from 'rxjs';
 import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
 
 @Component({
-    selector: 'platforms',
+    standalone: false,
+  selector: 'platforms',
     templateUrl: './platforms.component.html',
     styleUrls: ['./platforms.css']
 })
@@ -67,7 +68,7 @@ export class PlatformsComponent implements OnInit {
     onRemove(platform: Platform): void {
         this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
             animated: true,
-            backdrop: true,
+            backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true,
         });
         this.bsModalRef.content.message = "Are you sure you want to remove the platform [" + platform.name + "]";

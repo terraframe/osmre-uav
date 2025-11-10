@@ -2,7 +2,7 @@
 ///
 ///
 
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Subject } from 'rxjs';
@@ -10,11 +10,11 @@ import { Subject } from 'rxjs';
 import { ErrorHandler } from '@shared/component';
 import { ManagementService } from '@site/service/management.service';
 
-import { Selection } from '@site/model/management';
-import { Page } from './upload-modal.component';
+import { Page, Selection } from '@site/model/management';
 
 @Component({
-	selector: 'metadata-modal',
+	standalone: false,
+  selector: 'metadata-modal',
 	templateUrl: './metadata-modal.component.html',
 	styleUrls: []
 })

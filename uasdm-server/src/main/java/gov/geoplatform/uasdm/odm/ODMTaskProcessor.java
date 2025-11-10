@@ -15,6 +15,7 @@
  */
 package gov.geoplatform.uasdm.odm;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.json.JSONArray;
@@ -270,8 +271,10 @@ public class ODMTaskProcessor
         task.setMessage("The job encountered an unspecified error.");
         task.setOdmOutput("HTTP communication with ODM has failed [" + resp.getHTTPResponse().getStatusCode() + "]. " + resp.getHTTPResponse().getResponse());
         task.apply();
-
+        
         result.setStatus(TaskStatus.ERROR);
+
+        sendEmail(task);
       }
       else
       {
@@ -287,7 +290,6 @@ public class ODMTaskProcessor
           result.setStatus(TaskStatus.ERROR);
 
           sendEmail(task);
-
           removeFromOdm(task, task.getOdmUUID());
         }
         else if (ODMStatus.FAILED.equals(respStatus))
@@ -301,7 +303,6 @@ public class ODMTaskProcessor
           result.setStatus(TaskStatus.ERROR);
 
           sendEmail(task);
-
           removeFromOdm(task, task.getOdmUUID());
         }
         else if (ODMStatus.RUNNING.equals(respStatus))
@@ -339,6 +340,7 @@ public class ODMTaskProcessor
           task.apply();
 
           result.setStatus(TaskStatus.ERROR);
+          sendEmail(task);
         }
         else if (ODMStatus.COMPLETED.equals(respStatus))
         {
@@ -351,7 +353,7 @@ public class ODMTaskProcessor
           task.setMessage("Processing of " + resp.getImagesCount() + " images completed in " + sProcessingTime);
           addOutputToTask(task);
           task.apply();
-
+          
           ODMUploadTaskIF uploadTask = this.createUploadTask(task);
 
           result.setStatus(TaskStatus.UPLOAD);
@@ -442,7 +444,7 @@ public class ODMTaskProcessor
 
     return uploadTask;
   }
-
+  
   private void addOutputToTask(ODMProcessingTaskIF task)
   {
     TaskOutputResponse resp = ODMFacade.taskOutput(task.getOdmUUID());

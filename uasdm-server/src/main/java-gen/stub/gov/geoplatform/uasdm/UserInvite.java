@@ -207,7 +207,7 @@ public class UserInvite extends UserInviteBase
   private void sendEmail(String serverExternalUrl)
   {
     String address = this.getEmail();
-    String link = serverExternalUrl + "/project/management#/admin/invite-complete/" + this.getToken();
+    String link = serverExternalUrl + "/#/admin/invite-complete/" + this.getToken();
 
     String subject = "UAS Data Management Account Invitation";
     String body = "Congratulations!\n" + "\n" + "You have been invited to create an account with the UAS Data Management system. To do so, click the link below:\n" + "${link}\n" + "\n" + "The above link will stop working in ${expireTime} hours.\n" + "If you did not request this, you can safely ignore this email.";

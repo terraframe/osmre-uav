@@ -14,7 +14,8 @@ import { AuthService } from '@shared/service/auth.service';
 
 
 @Component({
-    selector: 'reports',
+    standalone: false,
+  selector: 'reports',
     templateUrl: './reports.component.html',
     styleUrls: ['./reports.css']
 })
@@ -85,7 +86,7 @@ export class ReportsComponent implements OnInit {
                             animated: true,
                             backdrop: true,
                             ignoreBackdropClick: true,
-                            'class': 'product-info-modal'
+                            'class': 'product-info-modal modal-xl'
                         });
                         bsModalRef.content.init(detail);
                     });

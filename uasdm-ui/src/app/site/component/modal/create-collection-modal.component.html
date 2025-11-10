@@ -25,11 +25,13 @@
     <div class="row" *ngIf="labels.length > 0">
       <div class="col-md-2"></div>
       <div class="col-md-8">
-        <ul class="breadcrumb">
-          <li [@fadeInOnEnter] *ngFor="let label of labels">
-            <span> {{label}}</span>
-          </li>
-        </ul>
+        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item" [@fadeInOnEnter] *ngFor="let label of labels">
+              <span> {{label}}</span>
+            </li>
+          </ol>
+        </nav>
       </div>
     </div>
 

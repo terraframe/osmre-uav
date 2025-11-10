@@ -7,10 +7,8 @@ import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
 
 import { ProjectsComponent } from './component/projects.component';
-import { UploadComponent } from './component/upload.component';
 import { TasksComponent } from './component/tasks.component';
 
-import { CanDeactivateGuardService } from "./service/can.deactivate.guard.service";
 import { AuthGuard, AdminGuardService } from '../shared/service/guard.service';
 import { PlatformComponent } from './component/platform/platform.component';
 import { SensorComponent } from './component/sensor/sensor.component';
@@ -36,11 +34,6 @@ const routes: Routes = [
         path: 'viewer/:action/:oid',
         canActivate: [AuthGuard],
         component: ProjectsComponent
-    },
-    {
-        path: 'upload',
-        component: UploadComponent,
-        canDeactivate: [CanDeactivateGuardService]
     },
     {
         path: 'tasks',
@@ -69,7 +62,8 @@ const routes: Routes = [
         data: {
             title: 'Platform Manufacturer',
             label: 'manufacturer',
-            baseUrl: Endpoint.PLATFORM_MANUFACTURER
+            baseUrl: Endpoint.PLATFORM_MANUFACTURER,
+            route: '/platform-manufacturer'
         }
     },
     {
@@ -79,7 +73,8 @@ const routes: Routes = [
         data: {
             title: 'Platform Type',
             label: 'type',
-            baseUrl: Endpoint.PLATFORM_TYPE
+            baseUrl: Endpoint.PLATFORM_TYPE,
+            route: '/platform-type'
         }
     },
     {
@@ -102,9 +97,9 @@ const routes: Routes = [
                     type: 'boolean'
                 }
 
-            ]
+            ],
+            route: '/sensor-type'
         }
-
     },
     {
         path: 'wave-length/:oid',
@@ -113,7 +108,8 @@ const routes: Routes = [
         data: {
             title: 'Wave Length',
             label: 'wave length',
-            baseUrl: Endpoint.WAVE_LENGTH
+            baseUrl: Endpoint.WAVE_LENGTH,
+            route: '/wave-length'
         }
     },
     {

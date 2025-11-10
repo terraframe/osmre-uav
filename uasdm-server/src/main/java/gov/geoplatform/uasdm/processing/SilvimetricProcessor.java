@@ -30,7 +30,6 @@ import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.lidar.LidarProcessConfiguration;
 import gov.geoplatform.uasdm.model.ImageryComponent;
-import gov.geoplatform.uasdm.model.LayerClassification;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
 /**
@@ -110,7 +109,7 @@ public class SilvimetricProcessor extends ManagedDocument
   }
 
   @Override
-  public boolean process(ApplicationFileResource res)
+  public ProcessResult process(ApplicationFileResource res)
   {
     File input = res.getUnderlyingFile();
 
@@ -164,6 +163,6 @@ public class SilvimetricProcessor extends ManagedDocument
       FileUtils.deleteQuietly(input);
     }
 
-    return false;
+    return ProcessResult.fail();
   }
 }

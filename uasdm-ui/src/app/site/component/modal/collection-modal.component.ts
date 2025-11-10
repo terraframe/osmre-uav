@@ -21,7 +21,6 @@ import {
 	slideInLeftOnEnterAnimation,
 	slideInRightOnEnterAnimation,
 } from 'angular-animations';
-import { UploadModalComponent } from './upload-modal.component';
 import { ArtifactPageComponent } from './artifact-page.component';
 import { RunProcessModalComponent } from './run-process-modal.component';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
@@ -33,11 +32,14 @@ import { APP_BASE_HREF } from '@angular/common';
 import { CreateProductGroupModalComponent } from './create-product-group-modal.component';
 import { UserAccessModalComponent } from './user-access-modal.component';
 import { AuthService } from '@shared/service/auth.service';
+import { ImagePreviewModalComponent } from './image-preview-modal.component';
+import { TusUploadModalComponent } from './tus-upload-modal.component';
 
 @Component({
-	selector: 'collection-modal',
+	standalone: false,
+  selector: 'collection-modal',
 	templateUrl: './collection-modal.component.html',
-	styleUrls: [],
+	styleUrls: ['./collection-modal.component.scss'],
 	providers: [BasicConfirmModalComponent, ArtifactPageComponent],
 	animations: [
 		fadeInOnEnterAnimation(),
@@ -68,6 +70,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	tabName: string;
 	showOrthoRerunMessage: boolean = false;
 	canReprocessImagery: boolean = false;
+	rawImagePreviewModal: BsModalRef;
 
 	constPageSize: number = 25;
 
@@ -245,21 +248,20 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		return false;
 	}
 
-	previewImage(event: any, image: any): void {
-		//        this.bsModalRef = this.modalService.show( ImagePreviewModalComponent, {
-		//            animated: true,
-		//            backdrop: true,
-		//            ignoreBackdropClick: true,
-		//            'class': 'image-preview-modal'
-		//        } );
-		//        this.bsModalRef.content.image = image;
-		//        this.bsModalRef.content.src = event.target.src;
-	}
-
 	toggleExcludeImage(event: any, image: any): void {
 		this.service.setExclude(image.id, !image.exclude).then(result => {
 			image.exclude = result.exclude;
 		});
+	}
+
+	previewImage(document: any): void {
+		this.rawImagePreviewModal = this.modalService.show(ImagePreviewModalComponent, {
+			animated: true,
+			backdrop: true,
+			ignoreBackdropClick: false,
+			'class': 'image-preview-modal'
+		});
+		this.rawImagePreviewModal.content.initRaw(this.entity.id, document.key, document.name);
 	}
 
 	isProcessable(item: any): boolean {
@@ -287,7 +289,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: true,
-			'class': 'confirmation-modal'
+			'class': 'confirmation-modal modal-xl'
 		});
 		confirmModalRef.content.init(this.entity);
 		confirmModalRef.content.onConfirm.subscribe(configuration => {
@@ -332,7 +334,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: true,
-			'class': 'confirmation-modal'
+			'class': 'confirmation-modal modal-xl'
 		});
 		confirmModalRef.content.init(this.entity);
 	}
@@ -340,7 +342,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 
 	handleDownload(): void {
 
-		window.location.href = environment.apiUrl + '/project/download-all?id=' + this.entity.id + "&key=" + this.tabName;
+		window.location.href = environment.apiUrl + '/api/project/download-all?id=' + this.entity.id + "&key=" + this.tabName;
 
 		//      this.service.downloadAll( data.id ).then( data => {
 		//        
@@ -351,7 +353,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 
 	handleDownloadOdmAll(): void {
 
-		window.location.href = environment.apiUrl + '/project/download-odm-all?colId=' + this.entity.id;
+		window.location.href = environment.apiUrl + '/api/project/download-odm-all?colId=' + this.entity.id;
 
 		//      this.service.downloadAll( data.id ).then( data => {
 		//        
@@ -366,7 +368,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	}
 
 	handleDownloadFile(item: SiteEntity): void {
-		window.location.href = environment.apiUrl + '/project/download?id=' + this.entity.id + "&key=" + item.key;
+		window.location.href = environment.apiUrl + '/api/project/download?id=' + this.entity.id + "&key=" + item.key;
 	}
 
 	editMetadata(): void {
@@ -374,7 +376,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: true,
-			'class': 'upload-modal'
+			'class': 'upload-modal modal-xl'
 		});
 		modalRef.content.initCollection(this.entity.id, this.entity.name);
 
@@ -388,7 +390,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: true,
-			'class': 'upload-modal'
+			'class': 'upload-modal modal-xl'
 		});
 		modalRef.content.init(this.entity);
 	}
@@ -396,11 +398,11 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 
 	handleUpload(): void {
 
-		const modal = this.modalService.show(UploadModalComponent, {
+		const modal = this.modalService.show(TusUploadModalComponent, {
 			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: true,
-			'class': 'upload-modal'
+			'class': 'upload-modal modal-xl'
 		});
 		modal.content.init(this.entity, "raw");
 
@@ -424,7 +426,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		// Otherwise the video tag does not register that the src has changed.
 		setTimeout(() => {
 			this.video.name = item.name;
-			this.video.src = environment.apiUrl + '/project/download?id=' + item.component + "&key=" + item.key; // + "#" + Math.random();
+			this.video.src = environment.apiUrl + '/api/project/download?id=' + item.component + "&key=" + item.key; // + "#" + Math.random();
 		}, 200);
 	}
 

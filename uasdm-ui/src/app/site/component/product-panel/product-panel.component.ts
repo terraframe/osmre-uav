@@ -29,8 +29,10 @@ import { LocalizedValue } from '@shared/model/organization';
 import { ShareProductModalComponent } from '../modal/share-product-modal.component';
 
 @Component({
+    standalone: false,
     selector: 'product-panel',
     templateUrl: './product-panel.component.html',
+    styleUrl: './product-panel.component.scss',
     animations: [
         fadeInOnEnterAnimation(),
         fadeOutOnLeaveAnimation(),
@@ -122,6 +124,7 @@ export class ProductPanelComponent implements OnDestroy {
             animated: true,
             backdrop: true,
             ignoreBackdropClick: true,
+            class: 'modal-xl'
         });
         bsModalRef.content.init(product);
 
@@ -293,7 +296,7 @@ export class ProductPanelComponent implements OnDestroy {
         if (product.hasPointcloud) {
             let componentId: string = product.entities[product.entities.length - 1].id;
 
-            window.open(this.configuration.getContextPath() + "/pointcloud/" + componentId + "/" + product.productName + "/potree");
+            window.open(this.configuration.getContextPath() + "/api/pointcloud/potree/" + componentId + "/" + product.productName);
         }
     }
 
@@ -305,6 +308,7 @@ export class ProductPanelComponent implements OnDestroy {
             animated: true,
             backdrop: true,
             ignoreBackdropClick: true,
+            class: 'modal-xl'
         });
         this.bsModalRef.content.message = 'Are you sure you want to delete [' + view.product.productName + ']?';
         this.bsModalRef.content.data = view.product;
@@ -343,9 +347,9 @@ export class ProductPanelComponent implements OnDestroy {
                 animated: true,
                 backdrop: true,
                 ignoreBackdropClick: false,
-                'class': 'image-preview-modal'
+                'class': 'image-preview-modal modal-xl'
             });
-            this.bsModalRef.content.init(product.id);
+            this.bsModalRef.content.initProduct(product.id, product.productName);
         }
     }
 
@@ -355,7 +359,7 @@ export class ProductPanelComponent implements OnDestroy {
                 animated: true,
                 backdrop: true,
                 ignoreBackdropClick: true,
-                'class': 'product-info-modal'
+                'class': 'product-info-modal modal-xl'
             });
             this.bsModalRef.content.init(detail);
         });

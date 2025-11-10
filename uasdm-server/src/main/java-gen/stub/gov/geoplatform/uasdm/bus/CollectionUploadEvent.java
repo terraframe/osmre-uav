@@ -32,7 +32,6 @@ import com.runwaysdk.constants.CommonProperties;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.ApplicationFileResource;
-import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Session;
@@ -49,7 +48,6 @@ import gov.geoplatform.uasdm.lidar.LidarProcessConfiguration;
 import gov.geoplatform.uasdm.lidar.LidarProcessingTask;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
-import gov.geoplatform.uasdm.model.ImageryIF;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -58,8 +56,8 @@ import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.processing.CogTifProcessor;
 import gov.geoplatform.uasdm.processing.CogTifValidator;
-import gov.geoplatform.uasdm.processing.raw.FileUploadProcessor;
 import gov.geoplatform.uasdm.processing.raw.CollectionImageSizeCalculationProcessor;
+import gov.geoplatform.uasdm.processing.raw.FileUploadProcessor;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
 import gov.geoplatform.uasdm.ws.UserNotificationMessage;
@@ -244,7 +242,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.setConfiguration(configuration);
     task.apply();
 
-    task.initiate(archive, isMultispectral);
+    task.initiate(archive, isMultispectral, ((CollectionIF)component).isThermal());
   }
 
   private void startLidarProcessing(ApplicationFileResource infile, WorkflowTask uploadTask, LidarProcessConfiguration configuration)

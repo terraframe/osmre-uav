@@ -16,7 +16,7 @@ import { BasicConfirmModalComponent } from "@shared/component/modal/basic-confir
 import { NotificationModalComponent } from "@shared/component/modal/notification-modal.component";
 import { AuthService } from "@shared/service/auth.service";
 
-import { SiteEntity, Product, Task, MapLayer, ViewerSelection, SELECTION_TYPE, Filter, CollectionProductView } from "../model/management";
+import { SiteEntity, Product, Task, MapLayer, ViewerSelection, SELECTION_TYPE, Filter, CollectionProductView, UploadTask } from "../model/management";
 
 import { EntityModalComponent } from "./modal/entity-modal.component";
 import { CollectionModalComponent } from "./modal/collection-modal.component";
@@ -34,10 +34,8 @@ import {
 import { ActivatedRoute } from "@angular/router";
 import { CreateCollectionModalComponent } from "./modal/create-collection-modal.component";
 import { CreateStandaloneProductModalComponent } from "./modal/create-standalone-product-group-modal.component";
-import { UIOptions } from "fine-uploader";
-import { FineUploaderBasic } from "fine-uploader/lib/core";
-import { UploadModalComponent } from "./modal/upload-modal.component";
 import { LayerColor, StacCollection, StacItem, StacLink, StacProperty, ToggleableLayer, ToggleableLayerType } from "@site/model/layer";
+import { StacLayer } from "@site/model/layer";
 
 import { BBox, bbox, bboxPolygon, centroid, envelope, featureCollection } from "@turf/turf";
 import EnvironmentUtil from "@core/utility/environment-util";
@@ -53,7 +51,8 @@ import { ProductModalComponent } from "./modal/product-modal.component";
 import { KnowStacModalComponent } from "./know-stac-modal/know-stac-modal.component";
 import { KnowStacService } from "@site/service/know-stac.service";
 import { isMapboxURL, transformMapboxUrl } from "maplibregl-mapbox-request-transformer";
-
+import { UploadService } from "@site/service/upload.service";
+import { TusUploadModalComponent } from "./modal/tus-upload-modal.component";
 
 const enum PANEL_TYPE {
   SITE = 0,
@@ -64,6 +63,7 @@ const enum PANEL_TYPE {
 }
 
 @Component({
+  standalone: false,
   selector: "projects",
   templateUrl: "./projects.component.html",
   styleUrls: ["./projects.css"],
@@ -180,10 +180,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   notifications: { text: string }[] = [];
 
-  existingTask: {
-    task: Task,
-    filename: string
-  } = null;
+  existingTask: UploadTask | null = null;
 
   /* 
    * Filter by bureau
@@ -257,7 +254,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     private metadataService: MetadataService,
     private route: ActivatedRoute,
     private cookieService: CookieService,
-    private syncService: LPGSyncService
+    private syncService: LPGSyncService,
+    private uploadService: UploadService
   ) {
 
     this.subject = new Subject();
@@ -313,71 +311,20 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.handleViewSite(oid);
     }
 
-    let uiOptions: UIOptions = {
-      debug: false,
-      autoUpload: false,
-      multiple: false,
-      request: {
-        endpoint: EnvironmentUtil.getApiUrl() + "/file/upload",
-        forceMultipart: true
-      },
-      resume: {
-        enabled: true,
-        recordsExpireIn: 1
-      },
-      chunking: {
-        enabled: true
-      },
-      retry: {
-        enableAuto: true
-      },
-      text: {
-        defaultResponseError: "Upload failed"
-      },
-      failedUploadTextDisplay: {
-        mode: "none"
-      },
-      validation: {
-        allowedExtensions: ["zip", "tar.gz"]
-      },
-      showMessage: function (message: string) {
-        // 
-      },
-      callbacks: {
-        onUpload: function (id: any, name: any): void {
-        },
-        onProgress: function (id: any, name: any, uploadedBytes: any, totalBytes: any): void {
-        },
-        onUploadChunk: function (id: any, name: any, chunkData: any): void {
-        },
-        onUploadChunkSuccess: function (id: any, chunkData: any, responseJSON: any, xhr: any): void {
-        },
-        onComplete: function (id: any, name: any, responseJSON: any, xhrOrXdr: any): void {
-        },
-        onCancel: function (id: number, name: string) {
-        },
-        onError: function (id: number, errorReason: string, xhrOrXdr: string) {
-        }
 
+    this.uploadService.findAllUploads().then(resumables => {
+      if (resumables.length > 0) {
+        const resumable = resumables[0];
+
+        this.service.getUploadTask(resumable.uploadUrl).then(task => {
+          this.existingTask = {
+            task: task,
+            filename: resumable.metadata.filename,
+            resumable: resumable
+          };
+        })
       }
-    };
-
-    const uploader = new FineUploaderBasic(uiOptions);
-
-    let resumables = uploader.getResumableFilesData() as any[];
-    if (resumables.length > 0) {
-      const resumable = resumables[0];
-
-      this.service.getUploadTask(resumable.uuid).then(task => {
-        this.existingTask = {
-          task: task,
-          filename: resumable.name
-        };
-      })
-    }
-
-
-
+    });
   }
 
 
@@ -539,6 +486,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
+        class: "modal-xl"
       });
       this.bsModalRef.content.messageTitle = "Disclaimer";
       this.bsModalRef.content.message = this.configuration.getAppDisclaimer();
@@ -782,7 +730,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       animated: true,
       backdrop: true,
       ignoreBackdropClick: true,
-      "class": "upload-modal"
+      "class": "upload-modal modal-xl"
     });
     this.bsModalRef.content.init(this.breadcrumbs.filter(b => b.type === SELECTION_TYPE.SITE).map(b => b.data as SiteEntity));
 
@@ -798,7 +746,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       animated: true,
       backdrop: true,
       ignoreBackdropClick: true,
-      "class": "upload-modal"
+      "class": "upload-modal modal-xl"
     });
     this.bsModalRef.content.init(this.breadcrumbs.filter(b => b.type === SELECTION_TYPE.SITE).map(b => b.data as SiteEntity));
 
@@ -817,7 +765,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
-        "class": "upload-modal"
+        "class": "upload-modal modal-xl"
       });
       this.bsModalRef.content.init(true, this.userName, this.admin, data.item, data.attributes, this.map.getCenter(), this.map.getZoom());
 
@@ -853,13 +801,13 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   handleExistingTask(): void {
 
     this.service.view(this.existingTask.task.collection).then(resp => {
-      const modal = this.modalService.show(UploadModalComponent, {
+      const modal = this.modalService.show(TusUploadModalComponent, {
         animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
-        "class": "upload-modal"
+        "class": "upload-modal modal-xl"
       });
-      modal.content.init(resp.item, this.existingTask.task.uploadTarget);
+      modal.content.init(resp.item, this.existingTask.task.uploadTarget, this.existingTask);
       modal.content.onUploadCancel.subscribe(() => {
         this.existingTask = null;
       });
@@ -879,7 +827,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
-        "class": "edit-modal"
+        "class": "edit-modal modal-xl"
       });
       this.bsModalRef.content.init(false, this.userName, this.admin, data.item, data.attributes, this.map.getCenter(), this.map.getZoom());
 
@@ -915,7 +863,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   handleDownloadAll(node: SiteEntity): void {
 
-    window.location.href = environment.apiUrl + "/project/download-all?id=" + node.component + "&key=" + node.name;
+    window.location.href = environment.apiUrl + "/api/project/download-all?id=" + node.component + "&key=" + node.name;
 
     //      this.service.downloadAll( data.id ).then( data => {
     //        
@@ -940,6 +888,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       animated: true,
       backdrop: true,
       ignoreBackdropClick: true,
+      class: "modal-xl"
     });
     this.bsModalRef.content.message = "Are you sure you want to delete [" + node.name + "]?";
     this.bsModalRef.content.subText = sText;
@@ -972,7 +921,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   handleDownload(node: SiteEntity): void {
-    window.location.href = environment.apiUrl + "/project/download?id=" + node.component + "&key=" + node.key;
+    window.location.href = environment.apiUrl + "/api/project/download?id=" + node.component + "&key=" + node.key;
 
     //this.service.download( node.data.component, node.data.key, true ).subscribe( blob => {
     //    importedSaveAs( blob, node.data.name );
@@ -980,7 +929,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleImageDownload(image: any): void {
-    window.location.href = environment.apiUrl + "/project/download?id=" + image.component + "&key=" + image.key;
+    window.location.href = environment.apiUrl + "/api/project/download?id=" + image.component + "&key=" + image.key;
 
     //this.service.download( node.data.component, node.data.key, true ).subscribe( blob => {
     //    importedSaveAs( blob, node.data.name );
@@ -1097,6 +1046,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     else if (result.type === 'LOCATION') {
       this.handleViewLocation(result.synchronizationId, result.oid);
     }
+    else if (result.center != null) {
+      // Geocoded address
+      this.map.flyTo({
+        center: result.center,
+        zoom: 18
+      })
+
+    }
   }
 
   handleViewStandaloneProduct(id: string): void {
@@ -1105,7 +1062,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
-        'class': 'product-info-modal'
+        'class': 'product-info-modal modal-xl'
       });
       this.bsModalRef.content.init(detail);
     });
@@ -1406,7 +1363,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
-        class: "leaf-modal modal-lg"
+        class: "leaf-modal modal-xl"
       });
       this.bsModalRef.content.init(collection, folders, breadcrumbs);
     }
@@ -1415,7 +1372,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
-        class: "leaf-modal modal-lg"
+        class: "leaf-modal modal-xl"
       });
       this.bsModalRef.content.init(collection, folders, breadcrumbs);
     }
@@ -1770,6 +1727,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       animated: true,
       backdrop: true,
       ignoreBackdropClick: true,
+      class: "modal-xl"
     });
     this.bsModalRef.content.init(this.filter);
 

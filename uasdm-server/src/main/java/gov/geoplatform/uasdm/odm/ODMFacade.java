@@ -69,6 +69,8 @@ public class ODMFacade
     private String        geoLocationFile;
 
     private String        groundControlPointFile;
+    
+    protected double colSizeMb;
 
     public ODMProcessingPayload(ArchiveFileResource archive)
     {
@@ -100,9 +102,10 @@ public class ODMFacade
       return archive;
     }
 
-    public void addImage(String filename)
+    public void addImage(String filename, double sizeMb)
     {
       imageNames.add(filename);
+      colSizeMb += sizeMb;
     }
 
     public int getImageCount()
@@ -113,6 +116,16 @@ public class ODMFacade
     public Set<String> getImageNames()
     {
       return imageNames;
+    }
+    
+    public void setColSizeMb(int colSizeMb)
+    {
+      this.colSizeMb = colSizeMb;
+    }
+    
+    public double getColSizeMb()
+    {
+      return colSizeMb;
     }
 
     public void close()
@@ -235,7 +248,7 @@ public class ODMFacade
       }
       else if ( ( UasComponentIF.isValidName(res.getName()) && extensions.contains(res.getNameExtension().toLowerCase()) ))
       {
-        payload.addImage(res.getName());
+        payload.addImage(res.getName(), (double)res.getUnderlyingFile().length() / (1024.0d * 1024.0d));
       }
     }
     

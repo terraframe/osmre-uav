@@ -8,6 +8,7 @@ import { LocalizationService } from '../../service/localization.service';
 
 @Component({
   
+  standalone: false,
   selector: 'localize',
   templateUrl: './localize.component.html',
   styleUrls: []

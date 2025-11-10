@@ -48,7 +48,7 @@ export class HttpErrorInterceptor implements HttpInterceptor {
                     window.location.href = environment.apiUrl + environment.loginUrl;
                 }
                 else {
-                    this.bsModalRef = this.modalService.show(ErrorModalComponent, { backdrop: true });
+                    this.bsModalRef = this.modalService.show(ErrorModalComponent, { backdrop: true, class: 'modal-xl' });
                     this.bsModalRef.content.message = ErrorHandler.getMessageFromError(err);
                 }
             }

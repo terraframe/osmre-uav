@@ -1,22 +1,25 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.processing;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -28,7 +31,6 @@ import com.runwaysdk.resource.FileResource;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.graph.Product;
-import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class PotreeConverterProcessor implements Processor
@@ -39,7 +41,7 @@ public class PotreeConverterProcessor implements Processor
 
   protected StatusMonitorIF monitor;
 
-  protected UasComponentIF component;
+  protected UasComponentIF  component;
 
   protected Product         product;
 
@@ -52,7 +54,7 @@ public class PotreeConverterProcessor implements Processor
   }
 
   @Override
-  public boolean process(ApplicationFileResource res)
+  public ProcessResult process(ApplicationFileResource res)
   {
     File file = res.getUnderlyingFile();
 
@@ -77,11 +79,11 @@ public class PotreeConverterProcessor implements Processor
 
           if (files != null)
           {
-            // Upload all of the generated files
-            for (File outfile : files)
-            {
-              new ManagedDocument(this.s3Path + "/" + outfile.getName(), product, component, this.monitor).process(new FileResource(outfile));
-            }
+            List<ProcessResult> results = Arrays.stream(files)//
+                .map(outfile -> new ManagedDocument(this.s3Path + "/" + outfile.getName(), product, component, this.monitor).process(new FileResource(outfile))) //
+                .collect(Collectors.toList());
+
+            return ProcessResult.success(results);
           }
         }
         else
@@ -102,6 +104,6 @@ public class PotreeConverterProcessor implements Processor
       monitor.addError("Problem occurred running Potree Converter.");
     }
 
-    return false;
+    return ProcessResult.fail();
   }
 }

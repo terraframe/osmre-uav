@@ -6,14 +6,15 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { ManagementService } from '@site/service/management.service';
-import { Page } from '../modal/upload-modal.component';
 import { MetadataOptions } from '@site/model/uav';
 import { Observable, Observer } from 'rxjs';
 import { UAVService } from '@site/service/uav.service';
 import { fadeInOnEnterAnimation, fadeOutOnLeaveAnimation } from 'angular-animations';
+import { Page } from '@site/model/management';
 
 @Component({
-	selector: 'metadata-page',
+	standalone: false,
+  selector: 'metadata-page',
 	templateUrl: './metadata-page.component.html',
 	styleUrls: [],
 	animations: [

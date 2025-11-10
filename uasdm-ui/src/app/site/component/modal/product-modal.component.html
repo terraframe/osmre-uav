@@ -25,19 +25,22 @@
 
       <div class="row">
         <div class="col-md-12">
-          <ul class="breadcrumb" style="margin-bottom: 10px;">
-            <li *ngFor="let entity of product.entities">
-              <span> {{entity.name}}</span>
-            </li>
-          </ul>
+          <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item" *ngFor="let entity of product.entities">
+                <span> {{entity.name}}</span>
+              </li>
+            </ol>
+          </nav>
         </div>
       </div>
 
       <div class="row">
         <div class="col-md-12">
           <div class="" *ngIf="thumbnails[product.id] != null">
-            <a class="thumbnail non-clickable">
-              <img class="" [src]="thumbnails[product.id] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
+            <a class="thumbnail" (click)="viewOrtho()" title="View ortho">
+              <img class="mx-auto d-block img-thumbnail" [src]="thumbnails[product.id] | safeHtml"
+                (error)="getDefaultImgURL($event)" alt="Image">
             </a>
           </div>
         </div>
@@ -45,39 +48,42 @@
 
       <div class="row">
         <div class="col-md-12">
-          <label>Pilot Name: </label> &nbsp; {{product.pilotName}}
+          <label class="form-label">Pilot Name: </label> &nbsp; {{product.pilotName}}
         </div>
       </div>
 
       <div class="row">
         <div class="col-md-12">
-          <label>Creation Date: </label> &nbsp; {{product.dateTime | idmdate : "MMM dd, yyyy"}}
-        </div>
-      </div>
-      
-      <div class="row">
-        <div class="col-md-12">
-          <label>Collection Date: </label> &nbsp; {{product.collectionDate | idmdate : "MMM dd, yyyy" : false}}
+          <label class="form-label">Creation Date: </label> &nbsp; {{product.dateTime | idmdate : "MMM dd, yyyy"}}
         </div>
       </div>
 
       <div class="row">
         <div class="col-md-12">
-          <label>Collection End Date: </label> &nbsp; {{product.collectionEndDate | idmdate : "MMM dd, yyyy" : false}}
+          <label class="form-label">Collection Date: </label> &nbsp; {{product.collectionDate | idmdate : "MMM dd, yyyy"
+          : false}}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <label class="form-label">Collection End Date: </label> &nbsp; {{product.collectionEndDate | idmdate : "MMM
+          dd, yyyy" : false}}
         </div>
       </div>
 
 
-      
+
       <div class="row">
         <div class="col-md-6">
-          <label>Sensor:</label>
-          
+          <label class="form-label">Sensor:</label>
+
           <table *ngIf="product.sensor" class="table table-bordered">
             <tbody>
               <tr>
                 <td>Name</td>
-                <td><a [routerLink]="['/site/sensor', product.sensor.oid]" target="_blank">{{product.sensor.name}}</a></td>
+                <td><a [routerLink]="['/site/sensor', product.sensor.oid]" target="_blank">{{product.sensor.name}}</a>
+                </td>
               </tr>
               <tr>
                 <td>Type</td>
@@ -87,71 +93,75 @@
                 <td>Model</td>
                 <td>{{product.sensor.model}}</td>
               </tr>
-<!--               <tr> -->
-<!--                 <td>Description</td> -->
-<!--                 <td>{{product.sensor.description}}</td> -->
-<!--               </tr> -->
+              <!--               <tr> -->
+              <!--                 <td>Description</td> -->
+              <!--                 <td>{{product.sensor.description}}</td> -->
+              <!--               </tr> -->
             </tbody>
           </table>
-          
-          <p *ngIf="!product.sensor" style="font-style:italic;">Sensor metadata is not available for this collection.</p>
+
+          <p *ngIf="!product.sensor" style="font-style:italic;">Sensor metadata is not available for this collection.
+          </p>
         </div>
-        
+
         <div class="col-md-6">
-          <label>Platform:</label>
-          
+          <label class="form-label">Platform:</label>
+
           <table *ngIf="product.platform" class="table table-bordered">
             <tbody>
               <tr>
                 <td>Name</td>
-                <td><a [routerLink]="['/site/platform', product.platform.oid]" target="_blank">{{product.platform.name}}</a></td>
+                <td><a [routerLink]="['/site/platform', product.platform.oid]"
+                    target="_blank">{{product.platform.name}}</a></td>
               </tr>
               <tr>
                 <td>Type</td>
                 <td> {{product.platform.platformType.name}}</td>
               </tr>
-<!--               <tr> -->
-<!--                 <td>Description</td> -->
-<!--                 <td>{{product.platform.description}}</td> -->
-<!--               </tr> -->
+              <!--               <tr> -->
+              <!--                 <td>Description</td> -->
+              <!--                 <td>{{product.platform.description}}</td> -->
+              <!--               </tr> -->
             </tbody>
           </table>
-          
-          <p *ngIf="!product.platform" style="font-style:italic;">Platform metadata is not available for this collection.</p>
+
+          <p *ngIf="!product.platform" style="font-style:italic;">Platform metadata is not available for this
+            collection.</p>
         </div>
       </div>
-      
-      
+
+
       <div class="row">
         <div class="col-md-12">
-          <label>UAV:</label>
-          
+          <label class="form-label">UAV:</label>
+
           <table *ngIf="product.uav" class="table table-bordered">
             <tbody>
               <tr>
                 <td>Serial Number</td>
-                <td><a [routerLink]="['/site/uav', product.uav.oid]" target="_blank">{{product.uav.serialNumber}}</a></td>
+                <td><a [routerLink]="['/site/uav', product.uav.oid]" target="_blank">{{product.uav.serialNumber}}</a>
+                </td>
               </tr>
               <tr>
                 <td>FAA Number</td>
                 <td> {{product.uav.faaNumber}}</td>
               </tr>
-<!--               <tr> -->
-<!--                 <td>Description</td> -->
-<!--                 <td>{{product.uav.description}}</td> -->
-<!--               </tr> -->
+              <!--               <tr> -->
+              <!--                 <td>Description</td> -->
+              <!--                 <td>{{product.uav.description}}</td> -->
+              <!--               </tr> -->
             </tbody>
           </table>
-          
+
           <p *ngIf="!product.platform" style="font-style:italic;">UAV metadata is not available for this collection.</p>
-          
+
         </div>
       </div>
-      
+
 
       <!-- <div class="row">
       <div class="col-md-12">
-        <label>Raw Images</label> 
+        <label class="form-label">Raw Images</label> 
       </div>
     </div> -->
       <div *ngIf="!isStandalone()">
@@ -161,16 +171,19 @@
               <div class="row">
                 <div class="col-md-12">
                   <div id="image-list-container">
-                    <ul class="list-group row">
-                      <li *ngFor="let item of product.page.resultSet | paginate: { itemsPerPage: product.page.pageSize, currentPage: product.page.pageNumber, totalItems: product.page.count }" class="list-group-item col-xs-3" style="background:none;">
-                        <div class="" *ngIf="thumbnails[item.id] != null">
-                          <a class="thumbnail" (click)="previewImage(item)">
-                            <img [src]="thumbnails[item.id] | safeHtml" (error)="getDefaultImgURL($event)" alt="Image">
+                    <ul class="list-group list-group-horizontal flex-wrap">
+                      <li
+                        *ngFor="let item of product.page.resultSet | paginate: { itemsPerPage: product.page.pageSize, currentPage: product.page.pageNumber, totalItems: product.page.count }"
+                        class="list-group-item col-3">
+                        <ng-container *ngIf="thumbnails[item.id] != null">                          
+                          <a class="thumbnail text-decoration-none text-reset" (click)="previewImage(item)">
+                            <img class="mx-auto d-block img-thumbnail" [src]="thumbnails[item.id] | safeHtml"
+                              (error)="getDefaultImgURL($event)" alt="Image">
                             <div class="caption">
                               <h4 class="media-heading">{{item.name}}</h4>
                             </div>
                           </a>
-                        </div>
+                        </ng-container>
                       </li>
                     </ul>
                   </div>
@@ -182,16 +195,16 @@
             </div>
           </tab>
           <tab heading="products" (selectTab)="setTab('products')">
-            <artifact-page *ngIf="activeTab === 'products'" [entity]="getArtifactPageEntity()"
-            [processRunning]="false" [standaloneProduct]="product" (onError)="error($event)"></artifact-page>
+            <artifact-page *ngIf="activeTab === 'products'" [entity]="getArtifactPageEntity()" [processRunning]="false"
+              [standaloneProduct]="product" (onError)="error($event)"></artifact-page>
           </tab>
         </tabset>
       </div>
 
       <div *ngIf="isStandalone()">
         <h3> Products </h3>
-        <artifact-page [entity]="getArtifactPageEntity()"
-              [processRunning]="false" [standaloneProduct]="product" (onError)="error($event)"></artifact-page>
+        <artifact-page [entity]="getArtifactPageEntity()" [processRunning]="false" [standaloneProduct]="product"
+          (onError)="error($event)"></artifact-page>
       </div>
 
       <div class="row footer-buttons" style="background-color: #ececec;" style="padding:20px 20px 20px 20px;">
@@ -203,7 +216,8 @@
         </div>
         <div class="col-md-8 btn-holder" style="text-align: right;">
           <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
-          <button *ngIf="product.hasAllZip" type="button" class="btn btn-secondary" style="margin-left: 5px;" (click)="handleDownload()">Download ODM Files</button>
+          <button *ngIf="product.hasAllZip" type="button" class="btn btn-secondary" style="margin-left: 5px;"
+            (click)="handleDownload()">Download ODM Files</button>
           <button *ngIf="!isStandalone()" (click)="handleGoto()" class="btn btn-primary" style="margin-left: 5px;">
             Collection Details
           </button>

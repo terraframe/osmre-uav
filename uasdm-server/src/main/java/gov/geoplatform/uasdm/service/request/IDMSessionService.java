@@ -15,9 +15,12 @@
  */
 package gov.geoplatform.uasdm.service.request;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
-import gov.geoplatform.uasdm.service.SessionEventService;
+import javax.servlet.http.HttpServletRequest;
+
 import org.commongeoregistry.adapter.metadata.OrganizationDTO;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -59,7 +62,7 @@ public class IDMSessionService extends SessionService
       endpoints.add("api/forgotpassword/initiate");
       endpoints.add("api/forgotpassword/complete");
       endpoints.add("api/uasdm-account/inviteComplete");
-      endpoints.add("api/uasdm-account/newInstance");
+      endpoints.add("api/uasdm-account/new-instance");
     }
     
     // Public tile service endpoints
@@ -71,22 +74,43 @@ public class IDMSessionService extends SessionService
     
     endpoints.add("api/session/ologin");
     endpoints.add("api/session/logout");
-    endpoints.add("project/management");
-    endpoints.add("project/configuration");
+    endpoints.add("api/logo/view");
+    endpoints.add("api/project/configuration");
+    endpoints.add("index.html");
     // endpoints.add("websocket-notifier/notify");
     return endpoints;
+  }
+  
+  @Override
+  public boolean pathAllowed(HttpServletRequest req)
+  {
+    String uri = req.getRequestURI();
+
+    List<String> extensions = new LinkedList<String>();
+    extensions.add(".woff2");
+    extensions.add(".tff");
+
+    for (String extension : extensions)
+    {
+      if (uri.endsWith(extension))
+      {
+        return true;
+      }
+    }
+    
+    return super.pathAllowed(req);
   }
 
   @Override
   public String getHomeUrl()
   {
-    return "/project/management";
+    return "/";
   }
 
   @Override
   public String getLoginUrl()
   {
-    return "/project/management#/login";
+    return "/#/login";
   }
 
   @Override

@@ -7,7 +7,8 @@ import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { DOCUMENT } from '@angular/common';
 
 @Component( {
-    selector: 'error-modal',
+    standalone: false,
+  selector: 'error-modal',
     templateUrl: './error-modal.component.html',
     styleUrls: ['./error-modal.css']
 } )

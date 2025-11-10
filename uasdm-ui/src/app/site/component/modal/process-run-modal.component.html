@@ -6,11 +6,11 @@
 <div>
 	<div class="modal-body" tabindex="-1" role="dialog">
 
-		<div *ngIf="configuration" class="panel panel-default">
-			<div class="panel-heading">
+		<div *ngIf="configuration" class="card border border-secondary">
+			<div class="card-header bg-secondary">
 				Configuration
 			</div>
-			<div class="panel-body" style="padding:10px;" *ngIf="configuration.type === ProcessConfigType.ODM">
+			<div class="card-body" style="padding:10px;" *ngIf="configuration.type === ProcessConfigType.ODM">
 				<div class="form-group">
 					<label for="outFileNamePrefix">Output Product Name Prefix</label>
 					<input [(ngModel)]="configuration.outFileNamePrefix" name="outFileNamePrefix" type="input"
@@ -104,7 +104,7 @@
 
 			</div>
 
-			<div class="panel-body" style="padding:10px;" *ngIf="configuration.type === ProcessConfigType.LIDAR">
+			<div class="card-body" style="padding:10px;" *ngIf="configuration.type === ProcessConfigType.LIDAR">
 				<table style="width: 100%;">
 					<thead>
 						<th colspan="6">Type</th>

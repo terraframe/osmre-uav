@@ -15,7 +15,8 @@ import { LPGSyncService } from '@shared/service/lpg-sync.service';
 import { LPGSync } from '@shared/model/lpg';
 
 @Component({
-    selector: 'labeled-property-graph-sync-table',
+    standalone: false,
+  selector: 'labeled-property-graph-sync-table',
     templateUrl: './labeled-property-graph-sync-table.component.html',
     styleUrls: ['./labeled-property-graph-sync-table.css']
 })
@@ -67,7 +68,7 @@ export class LPGSyncTableComponent implements OnInit {
     onRemove(sync: LPGSync): void {
         this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
             animated: true,
-            backdrop: true,
+            backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true,
         });
         this.bsModalRef.content.message = "Are you sure you want to remove the synchronization profile for [" + sync.url + "]";

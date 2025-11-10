@@ -20,7 +20,8 @@ import {
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
-	selector: 'odmrun-modal',
+	standalone: false,
+  selector: 'odmrun-modal',
 	templateUrl: './odmrun-modal.component.html',
 	styleUrls: ['./odmrun-modal.component.css'],
 	animations: [
@@ -101,8 +102,8 @@ export class ODMRunModalComponent implements OnInit, OnDestroy {
 	}
 	
 	downloadReport(): void {
-		// window.location.href = environment.apiUrl + '/project/download-report?colId=' + this.artifact.id + "&folder=" + this.artifact.folder;
-		window.location.href = environment.apiUrl + '/project/download?id=' + this.odmRun.report.component + "&key=" + this.odmRun.report.key;
+		// window.location.href = environment.apiUrl + '/api/project/download-report?colId=' + this.artifact.id + "&folder=" + this.artifact.folder;
+		window.location.href = environment.apiUrl + '/api/project/download?id=' + this.odmRun.report.component + "&key=" + this.odmRun.report.key;
 	}
 
 	close(): void {

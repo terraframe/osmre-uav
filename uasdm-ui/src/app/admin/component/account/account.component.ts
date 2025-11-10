@@ -11,7 +11,8 @@ import { Account, User } from '../../model/account';
 import { AccountService } from '../../service/account.service';
 
 @Component({
-	selector: 'account',
+	standalone: false,
+  selector: 'account',
 	templateUrl: './account.component.html',
 	styles: ['.modal-form .check-block .chk-area { margin: 10px 0px 0 0;}']
 })

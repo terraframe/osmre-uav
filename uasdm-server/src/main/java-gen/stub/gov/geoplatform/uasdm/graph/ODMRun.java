@@ -122,7 +122,7 @@ public class ODMRun extends ODMRunBase
    * @param task
    * @return
    */
-  public static ODMRun createAndApplyFor(ODMProcessingTask task)
+  public static ODMRun createAndApplyFor(ODMProcessingTask task, String instanceType)
   {
     UasComponent component = (UasComponent) task.getComponentInstance();
     
@@ -130,6 +130,7 @@ public class ODMRun extends ODMRunBase
     odmRun.setWorkflowTask(task);
     odmRun.setConfig(task.getConfigurationJson());
     odmRun.setRunStart(new Date());
+    odmRun.setInstanceType(instanceType);
     odmRun.setComponent(component);
     odmRun.apply();
     

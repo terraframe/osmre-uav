@@ -90,7 +90,7 @@ export class LPGSyncService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .post<LPGSync>(environment.apiUrl + '/api/labeled-property-graph-synchronization/newInstance', JSON.stringify({}), { headers: headers })
+            .post<LPGSync>(environment.apiUrl + '/api/labeled-property-graph-synchronization/new-instance', JSON.stringify({}), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))

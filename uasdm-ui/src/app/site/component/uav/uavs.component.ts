@@ -15,7 +15,8 @@ import { Subject } from 'rxjs';
 import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
 
 @Component({
-    selector: 'uavs',
+    standalone: false,
+  selector: 'uavs',
     templateUrl: './uavs.component.html',
     styleUrls: ['./uav.css']
 })
@@ -69,7 +70,7 @@ export class UAVsComponent implements OnInit {
     onRemove(uav: UAV): void {
         this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
             animated: true,
-            backdrop: true,
+            backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true,
         });
         this.bsModalRef.content.message = "Are you sure you want to remove the UAV [" + uav.serialNumber + "]";

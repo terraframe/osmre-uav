@@ -22,25 +22,25 @@
       <h3>{{metadata.title}}</h3>
     </div>
 
-    <form #ngForm="ngForm">
+    <form #ngForm="ngForm" *ngIf="classification != null">
       <div class="form-group">
-        <label>Name</label>
+        <label class="form-label">Name</label>
         <input [(ngModel)]="classification.name" name="label" type="input" class="form-control" placeholder="Name"
           [disabled]="mode === 'READ'" required />
       </div>
       <div *ngFor="let column of metadata.columns" class="form-group">
-        <label></label>
+        <label class="form-label"></label>
         <boolean-field *ngIf="column.type === 'boolean'" [value]="classification[column.name]" [label]="column.label"
           (valueChange)="classification[column.name] = $event" [disabled]="mode === 'READ'">
         </boolean-field>
       </div>
-      <div *ngIf="mode === 'WRITE'" class="btn-holder" style="text-align: right;">
-        <button *ngIf="!newInstance" type="button" class="btn btn-default" (click)="handleOnCancel()">Cancel</button>
-        <button type="submit" class="btn btn-primary" (click)="handleOnSubmit()"
+      <div *ngIf="mode === 'WRITE'" class="btn-holder mt-2" style="text-align: right;">
+        <button *ngIf="!newInstance" type="button" class="btn btn-default p-2" (click)="handleOnCancel()">Cancel</button>
+        <button type="submit" class="btn btn-primary p-2" (click)="handleOnSubmit()"
           [disabled]="!ngForm.valid">Apply</button>
       </div>
-      <div *ngIf="mode === 'READ'" class="btn-holder" style="text-align: right;">
-        <button type="submit" class="btn btn-primary" (click)="handleOnEdit()">Edit</button>
+      <div *ngIf="mode === 'READ'" class="btn-holder mt-2" style="text-align: right;">
+        <button type="submit" class="btn btn-primary p-2" (click)="handleOnEdit()">Edit</button>
       </div>
     </form>
   </div>

@@ -21,7 +21,8 @@ import { AuthService } from '@shared/service/auth.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
-	selector: 'accounts',
+	standalone: false,
+  selector: 'accounts',
 	templateUrl: './accounts.component.html',
 	styleUrls: ['./accounts.css']
 })
@@ -38,18 +39,18 @@ export class AccountsComponent implements OnInit {
 		{ header: '', type: 'ACTIONS', sortable: false },
 	];
 	refresh: Subject<void>;
-	
+
 	isAdmin: boolean = false;
 
 	/*
 	 * Reference to the modal current showing
 	*/
 	private bsModalRef: BsModalRef;
-	
+
 	requireKeycloakLogin: boolean;
 
 
-	constructor(private configuration: ConfigurationService, private router: Router, private service: AccountService, private modalService: BsModalService, private authService: AuthService) { 
+	constructor(private configuration: ConfigurationService, private router: Router, private service: AccountService, private modalService: BsModalService, private authService: AuthService) {
 		this.requireKeycloakLogin = configuration.isRequireKeycloakLogin();
 		this.isAdmin = authService.isAdmin();
 	}
@@ -80,15 +81,14 @@ export class AccountsComponent implements OnInit {
 
 
 	onRemove(user: User): void {
-		if (user.username == "admin")
-		{
+		if (user.username == "admin") {
 			alert("You cannot delete the admin user.");
 			return;
 		}
-		
+
 		this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
 			animated: true,
-			backdrop: true,
+			backdrop: true, class: 'modal-xl',
 			ignoreBackdropClick: true,
 		});
 		this.bsModalRef.content.message = 'Are you sure you want to delete the user [' + user.username + ']?';
@@ -113,7 +113,7 @@ export class AccountsComponent implements OnInit {
 				animated: true,
 				backdrop: true,
 				ignoreBackdropClick: true,
-				'class': 'upload-modal'
+				class: 'modal-xl upload-modal'
 			});
 			this.bsModalRef.content.init(account);
 
@@ -129,7 +129,7 @@ export class AccountsComponent implements OnInit {
 				animated: true,
 				backdrop: true,
 				ignoreBackdropClick: true,
-				'class': 'upload-modal'
+				class: 'modal-xl upload-modal'
 			});
 			this.bsModalRef.content.init(account);
 
@@ -146,24 +146,24 @@ export class AccountsComponent implements OnInit {
 				animated: true,
 				backdrop: true,
 				ignoreBackdropClick: true,
-				'class': 'upload-modal'
+				'class': 'modal-xl upload-modal'
 			});
 			this.bsModalRef.content.init(account.groups);
 		});
 	}
-	
+
 	uploadUsers(): void {
 		let bsModalRef = this.modalService.show(UserImportComponent, {
-	      animated: true,
-	      backdrop: true,
-	      ignoreBackdropClick: true,
-	    });
-	
-	    bsModalRef.content.onSuccess.subscribe(data => {
-	      window.location.reload();
-	    });
+			animated: true,
+			backdrop: true, class: 'modal-xl',
+			ignoreBackdropClick: true,
+		});
+
+		bsModalRef.content.onSuccess.subscribe(data => {
+			window.location.reload();
+		});
 	}
-	
+
 	exportUsers(): void {
 		window.location.href = environment.apiUrl + "/api/uasdm-account/export";
 	}

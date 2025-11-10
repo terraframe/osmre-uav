@@ -395,13 +395,13 @@ export class MapLayer {
 //}
 
 export class ProductDetail extends Product {
-	pilotName: string;
-	dateTime: string;
-	collectionDate: string;
+	pilotName?: string;
+	dateTime?: string;
+	collectionDate?: string;
 	collectionEndDate?: string;
-	sensor: Sensor;
-	platform: Platform;
-	uav: UAV;
+	sensor?: Sensor;
+	platform?: Platform;
+	uav?: UAV;
 	page?: PageResult<ProductDocument>;
 }
 
@@ -453,3 +453,16 @@ export class Filter {
 	projectType?: string;
 	organization?: { code: string, label: LocalizedValue };
 }
+
+export class UploadTask {
+	task: Task;
+	filename: string;
+	resumable: any;
+};
+
+export class Page {
+	index?: number;
+	selection?: Selection;
+	options?: SiteEntity[];
+	type?: string
+};

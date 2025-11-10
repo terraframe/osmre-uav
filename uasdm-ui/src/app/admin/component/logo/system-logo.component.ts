@@ -17,7 +17,8 @@ import EnvironmentUtil from '@core/utility/environment-util';
 
 @Component( {
 
-    selector: 'system-logo',
+    standalone: false,
+  selector: 'system-logo',
     templateUrl: './system-logo.component.html',
     styles: []
 } )
@@ -37,8 +38,6 @@ export class SystemLogoComponent implements OnInit {
     context: string;
 
     constructor(
-        private route: ActivatedRoute,
-        private location: Location,
         public bsModalRef: BsModalRef,
         private eventService: EventService ) {
         this.context = EnvironmentUtil.getApiUrl();
@@ -52,7 +51,7 @@ export class SystemLogoComponent implements OnInit {
             autoUpload: false,
             queueLimit: 1,
             removeAfterUpload: true,
-            url: EnvironmentUtil.getApiUrl() + '/logo/apply'
+            url: EnvironmentUtil.getApiUrl() + '/api/logo/apply'
         };
 
         this.uploader = new FileUploader( options );

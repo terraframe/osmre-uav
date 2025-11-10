@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.model;
 
@@ -38,8 +38,6 @@ import gov.geoplatform.uasdm.graph.Mission;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.Project;
 import gov.geoplatform.uasdm.graph.UasComponent;
-import gov.geoplatform.uasdm.view.RequestParser;
-import gov.geoplatform.uasdm.view.RequestParserIF;
 import net.geoprism.GeoprismUser;
 
 public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
@@ -67,32 +65,6 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
    * {@link Entity#apply()}
    */
   public void apply();
-
-  /**
-   * If the {@link RequestParser} contains an ID of a {@link UasComponent}, then
-   * return the component or return null.
-   * 
-   * @param parser
-   * @return the {@link RequestParser} contains an ID of a {@link UasComponent},
-   *         then return the component or return null.
-   */
-  public static UasComponentIF getOrCreateUasComponentFromRequestParser(RequestParserIF parser)
-  {
-    if (parser.getUasComponentOid() != null && !parser.getUasComponentOid().trim().equals(""))
-    {
-      return ComponentFacade.getComponent(parser.getUasComponentOid());
-    }
-    else if (parser.getSelections() != null)
-    {
-      JSONArray selections = parser.getSelections();
-
-      return createUasComponent(selections);
-    }
-    else
-    {
-      return null;
-    }
-  }
 
   public static UasComponentIF createUasComponent(JSONArray selections)
   {
@@ -228,10 +200,10 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
     }
 
     metadata.apply();
-    ((VertexObject) vertexHasMetadata).addChild(metadata, vertexHasMetadataEdge).apply();
-    
+    ( (VertexObject) vertexHasMetadata ).addChild(metadata, vertexHasMetadataEdge).apply();
+
     new MetadataXMLGenerator().generateAndUpload(component, product, metadata);
-    
+
     return metadata;
   }
 
@@ -350,8 +322,9 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
    * 
    * @return
    */
-  public static AbstractWorkflowTask getWorkflowTaskForUpload(RequestParserIF parser)
+  public static AbstractWorkflowTask getWorkflowTaskForUpload(String uploadId)
   {
-    return AbstractUploadTask.getTaskByUploadId(parser.getUuid());
+    return AbstractUploadTask.getTaskByUploadId(uploadId);
   }
+
 }

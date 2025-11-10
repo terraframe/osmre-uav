@@ -6,6 +6,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+
 //import { TreeModule } from 'angular-tree-component';
 //import { ContextMenuModule } from 'ngx-contextmenu';
 import { NgxFileDropModule } from 'ngx-file-drop';
@@ -23,13 +24,11 @@ import { ProductPanelComponent } from './component/product-panel/product-panel.c
 import { EntityModalComponent } from './component/modal/entity-modal.component';
 import { MetadataModalComponent } from './component/modal/metadata-modal.component';
 import { ImagePreviewModalComponent } from './component/modal/image-preview-modal.component';
-import { UploadModalComponent } from './component/modal/upload-modal.component';
 import { ODMRunModalComponent } from './component/modal/odmrun-modal.component';
 import { CollectionModalComponent } from './component/modal/collection-modal.component';
 import { AccessibleSupportModalComponent } from './component/modal/accessible-support-modal.component';
 import { ProductModalComponent } from './component/modal/product-modal.component';
 import { ProjectsComponent } from './component/projects.component';
-import { UploadComponent } from './component/upload.component';
 import { TasksComponent } from './component/tasks.component';
 import { TasksPanelComponent } from './component/tasks/tasks-panel.component';
 import { SensorsComponent } from './component/sensor/sensors.component';
@@ -47,7 +46,6 @@ import { OnlyNumber } from './directive/number-only.directive';
 import { ProductService } from './service/product.service';
 import { ManagementService } from './service/management.service';
 import { MapService } from './service/map.service';
-import { CanDeactivateGuardService } from './service/can.deactivate.guard.service';
 import { SensorService } from './service/sensor.service';
 import { PlatformService } from './service/platform.service';
 import { MetadataService } from './service/metadata.service';
@@ -79,6 +77,10 @@ import { KnowStacModalComponent } from './component/know-stac-modal/know-stac-mo
 import { LegendPanelComponent } from './component/legend-panel/legend-panel.component';
 import { RunProcessModalComponent } from './component/modal/run-process-modal.component';
 import { ProcessRunModalComponent } from './component/modal/process-run-modal.component';
+import { UploadService } from './service/upload.service';
+import { TusUploadModalComponent } from './component/modal/tus-upload-modal.component';
+import { ArtifactUploadItemComponent } from './component/artifact-upload-item/artifact-upload-item.component';
+import { LayerPanelComponent } from './component/layer-panel/layer-panel.component';
 
 @NgModule({
 	imports: [
@@ -108,16 +110,16 @@ import { ProcessRunModalComponent } from './component/modal/process-run-modal.co
 		ImagePreviewModalComponent,
 		CreateCollectionModalComponent,
 		CreateStandaloneProductModalComponent,
-		UploadModalComponent,
+		TusUploadModalComponent,
 		ODMRunModalComponent,
 		ArtifactPageComponent,
+		ArtifactUploadItemComponent,
 		RunProcessModalComponent,
 		CollectionModalComponent,
 		AccessibleSupportModalComponent,
 		ProductModalComponent,
 		FilterModalComponent,
 		ProjectsComponent,
-		UploadComponent,
 		ProcessingReportComponent,
 		TasksComponent,
 		ForbiddenNameDirective,
@@ -130,12 +132,14 @@ import { ProcessRunModalComponent } from './component/modal/process-run-modal.co
 		ClassificationsComponent,
 		ClassificationComponent,
 		UAVsComponent,
-        UAVsPageComponent,
+		UAVsPageComponent,
 		UAVComponent,
 		MetadataPageComponent,
 		ReportsComponent,
         EquipmentComponent,
 		StacItemPanelComponent,
+		EquipmentComponent,
+		LayerPanelComponent,
 		ArtifactUploadComponent,
 		CreateProductGroupModalComponent,
 		ShareProductModalComponent,
@@ -147,7 +151,6 @@ import { ProcessRunModalComponent } from './component/modal/process-run-modal.co
 		ProcessRunModalComponent
 	],
 	providers: [
-		CanDeactivateGuardService,
 		ManagementService,
 		ProductService,
 		MapService,
@@ -158,25 +161,8 @@ import { ProcessRunModalComponent } from './component/modal/process-run-modal.co
 		UAVService,
 		ReportService,
 		UserAccessService,
-		KnowStacService
-	],
-	entryComponents: [
-		FilterModalComponent,
-		RunProcessModalComponent,
-		CreateCollectionModalComponent,
-		CreateStandaloneProductModalComponent,
-		UploadModalComponent,
-		ODMRunModalComponent,
-		EntityModalComponent,
-		ImagePreviewModalComponent,
-		MetadataModalComponent,
-		CollectionModalComponent,
-		ProductModalComponent,
-		CreateProductGroupModalComponent,
-		ShareProductModalComponent,
-		UserAccessModalComponent,
-		KnowStacModalComponent,
-		ProcessRunModalComponent
+		KnowStacService,
+		UploadService
 	]
 })
 export class SiteModule { }

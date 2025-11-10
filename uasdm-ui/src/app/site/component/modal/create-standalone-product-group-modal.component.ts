@@ -23,7 +23,6 @@ import {
 	fadeInOnEnterAnimation,
 	fadeOutOnLeaveAnimation
 } from 'angular-animations';
-import { UploadModalComponent } from './upload-modal.component';
 
 export class Page {
 	index?: number;
@@ -33,7 +32,8 @@ export class Page {
 };
 
 @Component({
-	selector: 'create-standalone-pg-modal',
+	standalone: false,
+  selector: 'create-standalone-pg-modal',
 	templateUrl: './create-standalone-product-group-modal.component.html',
 	styleUrls: ['./upload-modal.component.css'],
 	animations: [

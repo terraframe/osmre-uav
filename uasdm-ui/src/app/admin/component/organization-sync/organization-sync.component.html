@@ -15,7 +15,7 @@
 
       <form #ngForm="ngForm">
         <div class="form-group">
-          <label>URL</label>
+          <label class="form-label">URL</label>
           <input [(ngModel)]="sync.url" name="url" type="url" class="form-control" [disabled]="!newInstance" required />
         </div>
         <div *ngIf="isAdmin && mode === 'WRITE'" class="btn-holder" style="text-align: right;">

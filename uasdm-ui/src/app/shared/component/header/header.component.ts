@@ -20,7 +20,8 @@ import { Router } from '@angular/router';
 
 @Component({
 
-    selector: 'uasdm-header',
+    standalone: false,
+  selector: 'uasdm-header',
     templateUrl: './header.component.html',
     styleUrls: ['./header.css']
 })
@@ -61,7 +62,7 @@ export class UasdmHeaderComponent {
 
     account(): void {
         this.profileService.get().then(profile => {
-            this.bsModalRef = this.modalService.show(ProfileComponent, { backdrop: 'static', class: 'gray modal-lg' });
+            this.bsModalRef = this.modalService.show(ProfileComponent, { backdrop: 'static', class: 'gray modal-xl' });
             this.bsModalRef.content.profile = profile;
         });
     }

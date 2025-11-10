@@ -15,7 +15,8 @@ import { OrganizationSync } from '@shared/model/organization';
 import { OrganizationSyncService } from '@shared/service/organization-sync.service';
 
 @Component({
-    selector: 'organization-sync-table',
+    standalone: false,
+  selector: 'organization-sync-table',
     templateUrl: './organization-sync-table.component.html',
     styleUrls: ['./organization-sync-table.css']
 })
@@ -64,7 +65,7 @@ export class OrganizationSyncTableComponent implements OnInit {
     onRemove(sync: OrganizationSync): void {
         this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
             animated: true,
-            backdrop: true,
+            backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true,
         });
         this.bsModalRef.content.message = "Are you sure you want to remove the synchronization profile for [" + sync.url + "]";

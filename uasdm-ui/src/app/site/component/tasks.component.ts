@@ -25,6 +25,7 @@ import { ProductModalComponent } from './modal/product-modal.component';
 
 
 @Component({
+  standalone: false,
   selector: 'tasks',
   templateUrl: './tasks.component.html',
   styleUrls: ['./tasks.css']
@@ -304,7 +305,7 @@ export class TasksComponent implements OnInit {
         animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
-        'class': 'upload-modal'
+        'class': 'upload-modal modal-xl'
       });
       this.bsModalRef.content.init(message.data.collectionId);
 
@@ -327,7 +328,7 @@ export class TasksComponent implements OnInit {
           animated: true,
           backdrop: true,
           ignoreBackdropClick: true,
-          class: 'leaf-modal'
+          class: 'leaf-modal modal-xl'
         });
         this.bsModalRef.content.init(entity, nodes, breadcrumbs);
       })
@@ -345,7 +346,7 @@ export class TasksComponent implements OnInit {
             animated: true,
             backdrop: true,
             ignoreBackdropClick: true,
-            'class': 'product-info-modal'
+            'class': 'product-info-modal modal-xl'
         });
         this.bsModalRef.content.init(detail);
       });

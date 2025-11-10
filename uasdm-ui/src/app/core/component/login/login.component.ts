@@ -16,6 +16,7 @@ import { ConfigurationService } from '@core/service/configuration.service';
 import EnvironmentUtil from '@core/utility/environment-util';
 
 @Component({
+  standalone: false,
   selector: 'login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
@@ -43,7 +44,7 @@ export class LoginComponent {
     this.sub = this.route.params.subscribe(params => {
 
       if (params['errorMsg'] != null) {
-        this.bsModalRef = this.modalService.show(ErrorModalComponent, { backdrop: true });
+        this.bsModalRef = this.modalService.show(ErrorModalComponent, { backdrop: true, class: 'modal-xl' });
 
         let encodedError = params['errorMsg'];
         let decodedError = encodedError.replaceAll("+", " ");

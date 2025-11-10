@@ -19,7 +19,7 @@
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" metadata-complete="true" version="3.0">
   <display-name>IDM</display-name>
   <description>
-	IDM
+  IDM
   </description>
   <mime-mapping>
     <extension>wsdl</extension>
@@ -55,16 +55,22 @@
       <param-value>gov.geoplatform.uasdm.SpringAppConfig</param-value>
     </init-param>
   </servlet>
-  <servlet-mapping>
+   <servlet-mapping>
+    <servlet-name>SpringDispatcher</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+  
+<!--
+   <servlet-mapping>
     <servlet-name>SpringDispatcher</servlet-name>
     <url-pattern>/api/*</url-pattern>
   </servlet-mapping>
-  <filter>
+ -->  <filter>
     <filter-name>EncodingFilter</filter-name>
     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
     <init-param>
-	    <param-name>targetBeanName</param-name>
-	    <param-value>encodingFilter</param-value>
+      <param-name>targetBeanName</param-name>
+      <param-value>encodingFilter</param-value>
     </init-param>
   </filter>
   <filter-mapping>
@@ -93,7 +99,7 @@
     <filter-name>SessionFilter</filter-name>
     <url-pattern>*</url-pattern>
   </filter-mapping>
-  
+<!--   
   <filter>
     <filter-name>UrlMapperFilter</filter-name>
     <filter-class>com.runwaysdk.web.filter.UrlMapperFilter</filter-class>
@@ -102,20 +108,24 @@
     <filter-name>UrlMapperFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-  
+ -->  
   <filter>
-	  <filter-name>CorsFilter</filter-name>
-	  <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+    <filter-name>CorsFilter</filter-name>
+    <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
     <init-param>
       <param-name>cors.allowed.origins</param-name>
       <param-value>https://localhost:4200</param-value>
     </init-param>    
-	</filter>
-	<filter-mapping>
-	  <filter-name>CorsFilter</filter-name>
-	  <url-pattern>/*</url-pattern>
-	</filter-mapping>
-	
+    <init-param>
+      <param-name>cors.allowed.methods</param-name>
+      <param-value>GET,POST,HEAD,OPTIONS,PATCH,DELETE</param-value>
+    </init-param>    
+  </filter>
+  <filter-mapping>
+    <filter-name>CorsFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  
   <listener>
     <listener-class>net.geoprism.PatchingContextListener</listener-class>
   </listener>
@@ -123,15 +133,12 @@
     <listener-class>net.geoprism.SchedulerContextListener</listener-class>
   </listener>
   <listener>
-    <listener-class>gov.geoplatform.uasdm.chunk.ChunkManagerContextListener</listener-class>
-  </listener>
-  <listener>
     <listener-class>gov.geoplatform.uasdm.index.IndexContextListener</listener-class>
   </listener>
   <listener>
     <listener-class>gov.geoplatform.uasdm.odm.ODMContextListener</listener-class>
   </listener>
-	
+  
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>https-only</web-resource-name>

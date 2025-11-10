@@ -14,7 +14,8 @@ import { AuthService } from '@shared/service/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-    selector: 'uav',
+    standalone: false,
+  selector: 'uav',
     templateUrl: './uav.component.html',
     styleUrls: []
 })

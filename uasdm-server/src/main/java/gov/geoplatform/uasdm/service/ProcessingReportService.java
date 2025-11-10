@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -66,13 +67,21 @@ public class ProcessingReportService
     public String featureQuality;
     public String radiometricCalibration;
     public String odmConfig;
+    public String instanceType;
+    public String runtime;
   }
   
-  public String[] header = new String[] {
+  public String[] headerAttrs = new String[] {
     "collectionName", "processedImageCount", "processedImageSizeMb", "taskMessage", "processingStatus", "runDate",
     "pocName", "organizationName", "s3Path", "uavSerial", "uavFAA", "sensorName", "sensorType", "featureQuality",
-    "radiometricCalibration", "odmConfig"
+    "radiometricCalibration", "odmConfig", "instanceType", "runtime"
   };
+  
+  public String[] headerLabels = new String[] {
+      "collectionName", "processedImageCount", "processedImageSizeMb", "taskMessage", "processingStatus", "runDate",
+      "pocName", "organizationName", "s3Path", "uavSerial", "uavFAA", "sensorName", "sensorType", "featureQuality",
+      "radiometricCalibration", "odmConfig", "instanceType", "runtime (seconds)"
+    };
   
   @Request(RequestType.SESSION)
   public InputStream generate(String sessionId, Date since)
@@ -80,17 +89,17 @@ public class ProcessingReportService
     StringWriter sw = new StringWriter();
     try (CSVWriter csv = new CSVWriter(sw))
     {
-      csv.writeNext(header);
+      csv.writeNext(headerLabels);
       
       for (ErrorReportRecord record : getRecords(since))
       {
-        String[] line = new String[header.length];
+        String[] line = new String[headerAttrs.length];
         
-        for (int i = 0; i < header.length; ++i)
+        for (int i = 0; i < headerAttrs.length; ++i)
         {
           try
           {
-            line[i] = (String) record.getClass().getDeclaredField(header[i]).get(record);
+            line[i] = (String) record.getClass().getDeclaredField(headerAttrs[i]).get(record);
           }
           catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e)
           {
@@ -186,9 +195,18 @@ public class ProcessingReportService
     // the odm output is gigantic so we have to make sure we don't select it
     StringBuilder builder = new StringBuilder();
     builder.append("SELECT"
-        + " oid,config,runStart,workflowTask,"
+        + " oid,config,runStart,runEnd,workflowTask,instanceType,"
         + " in().fileSize,"
-        + " component.oid,component.name,component.s3location,component.pocName,component.collectionSensor.oid,component.uav.oid FROM " + clazz);
+        + " component.oid,"
+        + " component.name,"
+        + " component.s3location,"
+        + " component.pocName,"
+        + " component.uav.oid,"
+        + " $meta.sensor.name AS sensorName,"
+        + " $meta.sensor.sensorType.name AS sensorType"
+        + " FROM " + clazz
+        + " LET $meta = first(component.out('collection_has_metadata'))");
+
     
     if (since != null)
     {
@@ -212,12 +230,20 @@ public class ProcessingReportService
       result.s3Path = (String) map.get("component.s3location");
       result.pocName = (String) map.get("component.pocName");
       result.odmConfig = (String) map.get("config");
-      result.runDate = dateFormat.format((Date) map.get("runStart"));
+      result.instanceType = (String) map.get("instanceType");
       
       @SuppressWarnings("unchecked")
       List<Long> fileSizes = (List<Long>) map.get("in().fileSize");
       result.processedImageCount = String.valueOf(fileSizes.size());
       result.processedImageSizeMb = String.valueOf(fileSizes.stream().map(s -> s == null ? 0L : s/1024L/1024L).reduce(0L, (a,b) -> a + b));
+      
+      Date runEnd = (Date) map.get("runEnd");
+      Date runStart = (Date) map.get("runStart");
+      if (runEnd != null && runStart != null)
+        result.runtime = String.valueOf(Duration.between(runStart.toInstant(), runEnd.toInstant()).getSeconds());
+      
+      if (runStart != null)
+        result.runDate = dateFormat.format(runStart);
       
       String collectionOid = (String) map.get("component.oid");
       if (collectionOid != null && collectionOid.length() > 0)
@@ -255,17 +281,8 @@ public class ProcessingReportService
         catch (Exception ex) {}
       }
       
-      String sensorOid = (String) map.get("component.collectionSensor.oid");
-      if (sensorOid != null && sensorOid.length() > 0)
-      {
-        try
-        {
-          Sensor sensor = Sensor.get(sensorOid);
-          result.sensorName = sensor.getName();
-          result.sensorType = sensor.getType();
-        }
-        catch (Exception ex) {}
-      }
+      result.sensorName = (String) map.get("sensorName");
+      result.sensorType = (String) map.get("sensorType");
       
       result.odmConfig = (String) map.get("config");
       ODMProcessConfiguration config = ODMProcessConfiguration.parse(result.odmConfig);

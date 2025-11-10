@@ -23,17 +23,17 @@
     <div *ngFor="let attribute of attributes">
       <div *ngIf="evaluate(attribute)" class="form-group">
         <div *ngIf="attribute.type === 'text'">
-          <label>{{attribute.label}}</label>
+          <label class="form-label">{{attribute.label}}</label>
           <input [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="input" class="form-control"
             [disabled]="attribute.readonly" [placeholder]="attribute.label" [required]="attribute.required" />
         </div>
         <div *ngIf="attribute.type === 'number'">
-          <label>{{attribute.label}}</label>
+          <label class="form-label">{{attribute.label}}</label>
           <input [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="number" class="form-control"
             [disabled]="attribute.readonly" [required]="attribute.required" />
         </div>
         <div *ngIf="attribute.type === 'list'">
-          <label>{{attribute.label}}</label>
+          <label class="form-label">{{attribute.label}}</label>
           <select [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="input"
             [disabled]="attribute.readonly" [required]="attribute.required">
             <option></option>
@@ -41,12 +41,12 @@
           </select>
         </div>
         <div *ngIf="attribute.type === 'organization'">
-          <label>{{attribute.label}}</label>
+          <label class="form-label">{{attribute.label}}</label>
           <organization-field [name]="attribute.name" [(value)]="entity[attribute.name]" [disabled]="attribute.readonly" [required]="true">
           </organization-field>
         </div>
         <div *ngIf="attribute.type === 'text-area'">
-          <label>{{attribute.label}}</label>
+          <label class="form-label">{{attribute.label}}</label>
           <ng-container *ngIf="attribute.name == 'projectType'">
             <select [(ngModel)]="entity[attribute.name]" [name]="attribute.name" [disabled]="attribute.readonly"
               [required]="attribute.required">
@@ -63,13 +63,13 @@
           <map-attribute [site]="entity" [center]="center" [zoom]="zoom"></map-attribute>
         </div>
         <div *ngIf="attribute.type === 'boolean'">
-          <label>{{attribute.label}}</label>
+          <label class="form-label">{{attribute.label}}</label>
           <boolean-field [(value)]="entity[attribute.name]" label="" [disabled]="attribute.readonly"
-            style="padding: 0px 10px;" class="form-control">
+            class="form-control">
           </boolean-field>
         </div>
         <div *ngIf="attribute.type === 'date'">
-          <label>{{attribute.label}}</label>
+          <label class="form-label">{{attribute.label}}</label>
           <input [(ngModel)]="entity[attribute.name]" [name]="attribute.name" type="date" class="form-control"
             [disabled]="attribute.readonly" [placeholder]="attribute.label" [required]="attribute.required" />
         </div>
@@ -78,7 +78,7 @@
     </div>
 
     <div class="form-group" *ngIf="entity.type === 'Collection' && !newInstance">
-      <label>Privilege </label>
+      <label class="form-label">Privilege </label>
 
       <select style="padding:6px 10px;font-size:14px;" [(ngModel)]="entity.privilegeType" name="collection-privilege"
         type="input" [required]="true" [disabled]="admin === false || entity.ownerName !== userName">

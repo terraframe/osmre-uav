@@ -14,14 +14,14 @@ import {
 	slideInLeftOnEnterAnimation,
 	slideInRightOnEnterAnimation,
 } from 'angular-animations';
-import { InitEditableRow } from 'primeng/table';
 import { Observable, Subject } from 'rxjs';
 import { SensorService } from '@site/service/sensor.service';
 import { PlatformService } from '@site/service/platform.service';
 import { UAVService } from '@site/service/uav.service';
 
 @Component({
-	selector: 'filter-modal',
+	standalone: false,
+  selector: 'filter-modal',
 	templateUrl: './filter-modal.component.html',
 	styleUrls: [],
 	animations: [

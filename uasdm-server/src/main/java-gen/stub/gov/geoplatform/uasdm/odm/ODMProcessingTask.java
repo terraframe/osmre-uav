@@ -15,9 +15,11 @@
  */
 package gov.geoplatform.uasdm.odm;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -31,8 +33,11 @@ import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.DevProperties;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.ODMRun;
+import gov.geoplatform.uasdm.odm.AutoscalerAwsConfigService.ImageSizeMapping;
+import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.RadiometricCalibration;
 
 public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProcessingTaskIF
 {
@@ -43,6 +48,37 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
   public ODMProcessingTask()
   {
     super();
+  }
+  
+  @Override
+  public void apply()
+  {
+    super.apply();
+    
+    setOdmRunEndTime();
+  }
+  
+  /**
+   * If ODM processing ends, for whatever reason, then we need to make sure we always set the 'runEnd' on the ODMRun, so that we know how long it was processing.
+   */
+  protected void setOdmRunEndTime()
+  {
+    String[] finalStatuses = new String[] {
+        ODMStatus.FAILED.getLabel(),
+        ODMStatus.CANCELED.getLabel(),
+        ODMStatus.COMPLETED.getLabel()
+    };
+    
+    boolean isStatusFinalized = ArrayUtils.contains(finalStatuses, this.getStatus());
+    
+    if (isStatusFinalized) {
+      final ODMRun odmRun = ODMRun.getForTask(this.getOid());
+      
+      if (odmRun != null) {
+        odmRun.setRunEnd(new Date());
+        odmRun.apply();
+      }
+    }
   }
 
   public ODMProcessConfiguration getConfiguration()
@@ -103,9 +139,43 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
 
     return list;
   }
-
-  public void initiate(ArchiveFileResource images, boolean isMultispectral)
+  
+  protected void validate(ArchiveFileResource images, boolean isMultispectral, boolean isThermal)
   {
+    boolean hasRadiometric = !this.getConfiguration().getRadiometricCalibration().equals(RadiometricCalibration.NONE);
+    
+    if ((isMultispectral || isThermal) && !hasRadiometric) {
+      StringBuilder msg = new StringBuilder();
+
+      if (isMultispectral) {
+          msg.append("Your collection was captured with a multispectral sensor, ")
+             .append("but you did not enable radiometric calibration in your processing configuration. ")
+             .append("Processing will continue, but the resulting orthomosaic will contain ")
+             .append("raw digital number (DN) values instead of calibrated reflectance data. ")
+             .append("Any vegetation indices (e.g., NDVI, NDRE) derived from this dataset ")
+             .append("will not be physically meaningful. ")
+             .append("To ensure accurate reflectance values, enable radiometric calibration ")
+             .append("in your processing settings (recommended: 'camera' or 'camera+sun' if a DLS is available).");
+      }
+
+      if (isThermal) {
+          if (msg.length() > 0) msg.append(" ");
+          msg.append("Your collection was captured with a thermal sensor, ")
+             .append("but you did not enable radiometric calibration in your processing configuration. ")
+             .append("The thermal orthomosaic will use raw sensor counts rather than real temperatures, ")
+             .append("so any absolute temperature readings will be invalid. ")
+             .append("To convert raw counts to degrees Kelvin or Celsius, enable radiometric calibration ")
+             .append("(recommended: 'camera').");
+      }
+
+      createAction(msg.toString(), TaskActionType.WARNING);
+    }
+  }
+
+  public void initiate(ArchiveFileResource images, boolean isMultispectral, boolean isThermal)
+  {
+    validate(images, isMultispectral, isThermal);
+    
     try
     {
       NewResponse resp;
@@ -140,7 +210,8 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
       }
       else
       {
-        ODMRun.createAndApplyFor(this);
+        ImageSizeMapping autoscalerConfig = AutoscalerAwsConfigService.autoscalerMappingForConfig(resp.getPayload().getImageCount(), (int)resp.getPayload().getColSizeMb());
+        ODMRun.createAndApplyFor(this, autoscalerConfig.getSlug());
 
         this.appLock();
         this.setStatus(ODMStatus.RUNNING.getLabel());

@@ -15,7 +15,8 @@ import { ManagementService } from '@site/service/management.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
-    selector: 'accessible-support-modal',
+    standalone: false,
+  selector: 'accessible-support-modal',
     templateUrl: './accessible-support-modal.component.html',
     styleUrls: [],
 })
@@ -85,11 +86,11 @@ export class AccessibleSupportModalComponent implements OnInit {
     }
 
     handleDownload(): void {
-        window.location.href = environment.apiUrl + '/project/download-all?id=' + this.folder.component + "&key=" + this.folder.name;
+        window.location.href = environment.apiUrl + '/api/project/download-all?id=' + this.folder.component + "&key=" + this.folder.name;
     }
 
     handleDownloadFile(item: SiteEntity): void {
-        window.location.href = environment.apiUrl + '/project/download?id=' + this.folder.component + "&key=" + item.key;
+        window.location.href = environment.apiUrl + '/api/project/download?id=' + this.folder.component + "&key=" + item.key;
     }
 
     dropped(files: NgxFileDropEntry[]): void {
@@ -119,7 +120,7 @@ export class AccessibleSupportModalComponent implements OnInit {
     handleDelete(item: SiteEntity): void {
         let modalRef: BsModalRef = this.modalService.show(BasicConfirmModalComponent, {
             animated: true,
-            backdrop: true,
+            backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true,
         });
         modalRef.content.message = 'Are you sure you want to delete the file [' + item.name + ']?';

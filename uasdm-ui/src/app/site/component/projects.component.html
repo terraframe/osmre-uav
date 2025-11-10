@@ -41,7 +41,7 @@
             <i *ngIf="content !== type.code" class="fa fa-caret-right"></i>
           </h3>
 
-          <span *ngIf="!tilesLoaded">
+          <span *ngIf="!tilesLoaded float-end">
             <i class="fa fa-spinner fa-spin"></i>
             Loading tiles
           </span>
@@ -74,10 +74,12 @@
     <div class="col-md-12">
       <div class="row" style="margin-right: 10px;">
         <div class="col-sm-12" style="text-align: right; padding-top: 10px; padding-right: 0;">
-          <a (click)="onFilterOpen()">
-            Advanced filter
-            <i class="fa" [ngClass]="{'fa-filter' : !hasFilter, 'fa-funnel-dollar': hasFilter}"></i>
-          </a>
+          <button type="button"
+            class="advanced-filter btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-1 advanced-filter fs-6"
+            (click)="onFilterOpen()" title="Show advanced filters">
+            <i class="fa" [ngClass]="{'fa-filter' : !hasFilter, 'fa-funnel-dollar': hasFilter}" aria-hidden="true"></i>
+            <span>Advanced filter</span>
+          </button>
         </div>
       </div>
 
@@ -130,7 +132,7 @@
                 </h4>
                 <span>
                   <span><b>{{node.numberOfChildren}}</b> {{getMetadata(node).childLabel}}</span>
-                  <span *ngIf="node.type !== 'folder' && (node.isOwner || admin)" class="pull-right">
+                  <span *ngIf="node.type !== 'folder' && (node.isOwner || admin)" class="float-end">
                     <a class="fa fa-pencil-alt ico-edit" (click)="handleEdit(node, $event)" title="Edit"></a>
                     <a class="fa fa-trash-alt ico-remove" (click)="handleDelete(node, $event)" title="Delete"></a>
                   </span>
@@ -145,13 +147,13 @@
           <div [@fadeInOnEnter] class="card card-default clickable" *ngIf="!getMetadata(node).root"
             (click)="select(node, null, $event)">
             <div class="card-body">
-              <i (click)="handleExpand(node, $event)" class="fa fa-caret-left expand-arrow-ico pull-right"
+              <i (click)="handleExpand(node, $event)" class="fa fa-caret-left expand-arrow-ico float-end"
                 [ngClass]="{'fa-rotate-270':node.active}" style="font-size: 25px; padding: 0 5px"
                 aria-hidden="true"></i>
               <ng-container *ngIf="node.isOwner || admin">
-                <a class="fa fa-trash-alt ico-remove pull-right" style="font-size: 15px; padding: 5px 0px"
+                <a class="fa fa-trash-alt ico-remove float-end" style="font-size: 15px; padding: 5px 0px"
                   (click)="handleDelete(node, $event)" title="Delete"></a>
-                <a class="fa fa-pencil-alt ico-edit pull-right" style="font-size: 15px; padding: 5px 0px"
+                <a class="fa fa-pencil-alt ico-edit float-end" style="font-size: 15px; padding: 5px 0px"
                   (click)="handleEdit(node, $event)" title="Edit"></a>
               </ng-container>
 
@@ -164,7 +166,7 @@
                   <!-- <a (click)="select(child, $event)"> -->
                   {{child.name}}
                   <!-- </a> -->
-                  <span *ngIf="child.type !== 'folder' && (child.isOwner || admin)" class="pull-right button-column">
+                  <span *ngIf="child.type !== 'folder' && (child.isOwner || admin)" class="float-end button-column">
                     <a class="fa fa-pencil-alt ico-edit" (click)="handleEdit(child, $event)" title="Edit"></a>
                     <a class="fa fa-trash-alt ico-remove" (click)="handleDelete(child, $event)" title="Delete"></a>
                   </span>
@@ -198,103 +200,37 @@
 </ng-template>
 
 
-<div id="navigator-header-container">
-  <uasdm-header [title]="'Site Viewer'"></uasdm-header>
-</div>
+<div id="app-container" class="vh-100 d-flex flex-column overflow-hidden bg-white">
 
-<div id="app-container" class="container-fluid" style="background: #f7f7f7;">
 
-  <div class="row">
-    <div id="navigator-left-sidebar" class="col-md-3 lw-inner-col">
+  <div class="flex-shrink-1">
+    <div id="navigator-header-container">
+      <uasdm-header [title]="'Site Viewer'"></uasdm-header>
+    </div>
+  </div>
+  <div class="flex-fill d-flex flex-row overflow-auto">
+    <aside id="navigator-left-sidebar" class="sidebar d-flex flex-column p-2">
+
       <ng-container *ngIf="panelType === 0">
-        <!-- Search bar -->
-        <div class="row">
-          <div class="col-md-12">
-            <div class="location-management-widget-section">
-              <input class="form-control search-input" type="text" placeholder="Search..." [(ngModel)]="search"
-                [typeaheadAsync]="true" [typeahead]="dataSource" (typeaheadOnSelect)="handleClick($event)"
-                [typeaheadOptionsLimit]="10" [typeaheadItemTemplate]="bsItemTemplate" typeaheadOptionField="label"
-                [ngModelOptions]="{standalone: true}" (keydown.enter)="$event.preventDefault()" />
-            </div>
-          </div>
-        </div>
+        <div class="flex-shrink-1">
+          <div class="container-fluid">
 
-        <div class="row">
-          <div class="col-md-12">
-
-            <!-- IF at Site level -->
-            <ng-container *ngIf="current == null || current.type !== 0">
-              <div class="row">
-                <div class="col-md-12">
-                  <label>Organization</label>
-                  <form #oForm="ngForm">
-                    <organization-field name="organization" [(value)]="organization"
-                      (valueChange)="onOrganizationChange()">
-                    </organization-field>
-                  </form>
-
-                </div>
-              </div>
-              <div class="row" *ngIf="syncs != null && syncs.length > 0">
-                <div class="col-md-12">
-                  <label>Hierarchy</label>
-                  <select [(ngModel)]="hierarchy.oid" name="sync" (change)="onHierarchyChange()">
-                    <option [ngValue]="null"></option>
-                    <option *ngFor="let sync of syncs" [value]="sync.oid">
-                      {{sync.displayLabel.localizedValue}}
-                    </option>
-                  </select>
-                </div>
-              </div>
-            </ng-container>
-
-
-            <!-- IF lower than Site -->
+            <!-- Search bar -->
             <div class="row">
-              <div class="col-md-12" style="height: 65px; overflow: auto;">
-                <ul class="breadcrumb" style="background-color: white; vertical-align: middle; line-height:2">
-                  <li>
-                    <i class="fa fa-angle-left breadcrumb-back-ico" aria-hidden="true"></i>
-                    <a (click)="back(null)" style="color: #007276;">IDM Sites</a>
-                  </li>
-                  <li *ngFor="let breadcrumb of breadcrumbs; last as isLast" [ngClass]="{'active':isLast}">
-                    <ng-container *ngIf="breadcrumb.type === 0">
-                      <a *ngIf="!isLast" (click)="back(breadcrumb)" style="color: #007276;">
-                        {{breadcrumb.data.name}}</a>
-                      <span *ngIf="isLast"> <b>{{breadcrumb.data.name}}</b> </span>
-                    </ng-container>
-                    <ng-container *ngIf="breadcrumb.type === 1">
-                      <a *ngIf="!isLast" (click)="back(breadcrumb)" style="color: #007276;">
-                        {{breadcrumb.data.properties.displayLabel.localizedValue}}
-                      </a>
-                      <span *ngIf="isLast">
-                        <b> {{breadcrumb.data.properties.displayLabel.localizedValue}}</b>
-                      </span>
-                    </ng-container>
-                  </li>
-                </ul>
+              <div class="col-md-12">
+                <div class="location-management-widget-section">
+                  <input class="form-control search-input" type="text" placeholder="Search..." [(ngModel)]="search"
+                    [typeaheadAsync]="true" [typeahead]="dataSource" (typeaheadOnSelect)="handleClick($event)"
+                    [typeaheadOptionsLimit]="10" [typeaheadItemTemplate]="bsItemTemplate" typeaheadOptionField="label"
+                    [ngModelOptions]="{standalone: true}" (keydown.enter)="$event.preventDefault()" />
+                </div>
               </div>
             </div>
-
-          </div>
-        </div>
-
-        <!-- <hr> -->
-
-        <div class="row">
-          <div class="col-md-12" style="background:#f7f7f7; padding:0; height:100%;">
-
-
-            <div id="hierarchy-tree-container"
-              class="location-management-widget-section location-management-list-container" [style]="(current != null && current.type === 0) ?  
-                'height: calc(100vh - 257px);overflow-y: auto;overflow-x:hidden;padding: 10px;' :
-                (syncs.length === 0 ? 'height: calc(100vh - 325px);overflow-y: auto;overflow-x:hidden;padding: 10px;' :
-                'height: calc(100vh - 390px);overflow-y: auto;overflow-x:hidden;padding: 10px;')">
-
-
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="row" *ngIf="current != null && current.type !== 2">
+            <div class="row">
+              <div class="col-md-12">
+                <!-- IF at Site level -->
+                <ng-container *ngIf="current == null || current.type !== 0">
+                  <div class="row">
                     <div class="col-md-12">
 
                       <h3 *ngIf="current.type === 1" class="object-label">
@@ -328,8 +264,7 @@
                         <tab heading="Products" (selectTab)="activeTab = 'Products'">
                           <product-panel *ngIf="activeTab === 'Products'" [selection]="current"
                             [organization]="organization" [filter]="filter" [views]="views"
-                            (onViewsChange)="handleProductsChange($event)"
-                            (toggleMapOrtho)="handleMapOrtho($event)"
+                            (onViewsChange)="handleProductsChange($event)" (toggleMapOrtho)="handleMapOrtho($event)"
                             (toggleMapDem)="handleMapDem($event)"></product-panel>
                         </tab>
                       </tabset>
@@ -347,24 +282,61 @@
                             (toggleMapOrtho)="handleMapOrtho($event)"></product-panel>
                         </tab>
                       </tabset>
+                      <label class="form-label">Organization</label>
+                      <form #oForm="ngForm">
+                        <organization-field name="organization" [(value)]="organization"
+                          (valueChange)="onOrganizationChange()">
+                        </organization-field>
+                      </form>
 
                     </div>
                   </div>
+                  <div class="row" *ngIf="syncs != null && syncs.length > 0">
+                    <div class="col-md-12">
+                      <label class="form-label">Hierarchy</label>
+                      <select [(ngModel)]="hierarchy.oid" name="sync" (change)="onHierarchyChange()">
+                        <option [ngValue]="null"></option>
+                        <option *ngFor="let sync of syncs" [value]="sync.oid">
+                          {{sync.displayLabel.localizedValue}}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </ng-container>
 
-                  <ng-container *ngIf="current == null || current.type === 2">
-                    <ng-container [ngTemplateOutlet]="locations"
-                      *ngIf="hierarchy.oid != null && hierarchy.oid.length > 0">
-                    </ng-container>
 
-                    <ng-container *ngIf="hierarchy.oid == null || hierarchy.oid.length === 0">
-                      <tabset class="nav-full-width">
-                        <tab heading="Sites">
-                          <ng-container [ngTemplateOutlet]="sites">
-                          </ng-container>
-                        </tab>
-                      </tabset>
-                    </ng-container>
-                  </ng-container>
+                <!-- IF lower than Site -->
+                <div class="row">
+                  <div class="col-md-12">
+                    <div style="height: 65px; overflow: auto;">
+                      <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+
+                        <ol class="breadcrumb" style="background-color: white; vertical-align: middle; line-height:2">
+                          <li class="breadcrumb-item">
+                            <!-- <i class="fa fa-angle-left" aria-hidden="true"></i> -->
+                            <a (click)="back(null)" style="color: #007276;">IDM Sites</a>
+                          </li>
+                          <li *ngFor="let breadcrumb of breadcrumbs; last as isLast" class="breadcrumb-item"
+                            [ngClass]="{'active':isLast}">
+                            <ng-container *ngIf="breadcrumb.type === 0">
+                              <a *ngIf="!isLast" (click)="back(breadcrumb)" style="color: #007276;">
+                                {{breadcrumb.data.name}}</a>
+                              <span *ngIf="isLast"> <b>{{breadcrumb.data.name}}</b> </span>
+                            </ng-container>
+                            <ng-container *ngIf="breadcrumb.type === 1">
+                              <a *ngIf="!isLast" (click)="back(breadcrumb)" style="color: #007276;">
+                                {{breadcrumb.data.properties.displayLabel.localizedValue}}
+                              </a>
+                              <span *ngIf="isLast">
+                                <b> {{breadcrumb.data.properties.displayLabel.localizedValue}}</b>
+                              </span>
+                            </ng-container>
+                          </li>
+                        </ol>
+                      </nav>
+
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -372,17 +344,98 @@
         </div>
 
 
-        <footer class="sidebar-footer">
-          <div class="row" *ngIf="current != null && current.type === 0" style="background:white;">
-            <div class="col-md-12" style="text-align: center;padding: 10px;border-top: 1px solid lightgrey;">
-              <button (click)="handleCreateCollection()" class="btn btn-primary" style="margin-bottom: 5px;">Create Collection</button>
-              <button *ngIf="current.data.type !== 'Site'" (click)="handleUploadProducts()"
-                class="btn btn-primary">Upload Products</button>
+        <!-- <hr> -->
+
+        <div class="sidebar-content flex-fill overflow-auto bg-white">
+          <div id="hierarchy-tree-container"
+            class="location-management-widget-section location-management-list-container container-fluid">
+
+
+            <div class="row" *ngIf="current != null && current.type !== 2">
+              <div class="col-md-12">
+
+                <h3 *ngIf="current.type === 1" class="object-label">
+                  {{current.data.properties.displayLabel.localizedValue}}
+                </h3>
+                <h3 *ngIf="current.type === 0" class="object-label">
+                  {{current.metadata.label}} {{current.data.name}}
+                </h3>
+
+                <tabset *ngIf="current.type === 1" class="nav-full-width">
+                  <tab heading="Overview" (selectTab)="activeTab = 'Overview'">
+                    <div class="form-group" *ngFor="let attribute of current.metadata.attributes ">
+                      <label class="form-label">
+                        {{attribute.label.localizedValue}}
+                      </label>
+                      <container-element [ngSwitch]="attribute.type">
+                        <input *ngSwitchCase="'local'" type="text" [name]="attribute.code"
+                          [(ngModel)]="current.data.properties[attribute.code].localizedValue" disabled>
+                        <input *ngSwitchDefault type="text" [name]="attribute.code"
+                          [(ngModel)]="current.data.properties[attribute.code]" disabled>
+                      </container-element>
+                    </div>
+
+                    <ng-container [ngTemplateOutlet]="locations">
+                    </ng-container>
+                  </tab>
+                  <tab heading="Sites" (selectTab)="activeTab = 'Sites'">
+                    <ng-container [ngTemplateOutlet]="sites">
+                    </ng-container>
+                  </tab>
+                  <tab heading="Products" (selectTab)="activeTab = 'Products'">
+                    <product-panel *ngIf="activeTab === 'Products'" [selection]="current" [organization]="organization"
+                      [filter]="filter" (toggleMapOrtho)="handleMapOrtho($event)"
+                      (toggleMapDem)="handleMapDem($event)"></product-panel>
+                  </tab>
+                </tabset>
+
+                <tabset *ngIf="current.type === 0" class="nav-full-width">
+                  <tab [heading]="current.metadata.childLabel" (selectTab)="activeTab = current.metadata.childLabel">
+                    <ng-container [ngTemplateOutlet]="sites">
+                    </ng-container>
+                  </tab>
+                  <tab heading="Products" (selectTab)="activeTab = 'Products'">
+                    <product-panel *ngIf="activeTab === 'Products'" [selection]="current" [organization]="organization"
+                      [filter]="filter" (toggleMapOrtho)="handleMapOrtho($event)"
+                      (toggleMapDem)="handleMapDem($event)"></product-panel>
+                  </tab>
+                </tabset>
+
+              </div>
             </div>
+
+            <ng-container *ngIf="current == null || current.type === 2">
+              <ng-container [ngTemplateOutlet]="locations" *ngIf="hierarchy.oid != null && hierarchy.oid.length > 0">
+              </ng-container>
+
+              <ng-container *ngIf="hierarchy.oid == null || hierarchy.oid.length === 0">
+                <tabset class="nav-full-width">
+                  <tab heading="Sites">
+                    <ng-container [ngTemplateOutlet]="sites">
+                    </ng-container>
+                  </tab>
+                </tabset>
+              </ng-container>
+            </ng-container>
           </div>
-          <div class="row" *ngIf="current == null || current.type !== 0" style="background:white;">
-            <div class="col-md-12" style="text-align: center;padding: 10px;border-top: 1px solid lightgrey;">
-              <button (click)="handleCreate(null,null)" class="btn btn-primary">Add new site</button>
+        </div>
+
+
+        <footer class="flex-shrink-1 sidebar-footer">
+          <div class="container-fluid">
+
+            <div class="row" *ngIf="current != null && current.type === 0" style="background:white;">
+              <div class="col-md-12" style="text-align: center;padding: 10px;border-top: 1px solid lightgrey;">
+                <button (click)="handleCreateCollection()" class="btn btn-primary">Create
+                  Collection</button>
+                <button *ngIf="current.data.type !== 'Site'" (click)="handleUploadProducts()"
+                  class="btn btn-primary">Upload Products</button>
+              </div>
+            </div>
+            <div class="row" *ngIf="current == null || current.type !== 0" style="background:white;">
+              <div class="col-md-12" style="text-align: center;padding: 10px;border-top: 1px solid lightgrey;">
+                <button (click)="handleCreate(null,null)" class="btn btn-primary">Add new site</button>
+              </div>
             </div>
           </div>
         </footer>
@@ -423,10 +476,11 @@
         </div>
       </ng-container>
 
+    </aside>
 
-    </div>
-    <div class="col-md-9" id="site-explorer-map">
-      <div class="row">
+
+    <main class="main flex-fill overflow-hidden">
+      <div id="site-explorer-map">
         <article style="position: absolute;z-index: 5;margin-left: 100px;margin-top: 10px;">
           <alert *ngIf="existingTask != null" type="danger" [dismissible]="false">
             <strong>Unfinished upload</strong> detected on file <strong>{{existingTask.filename}}</strong> for
@@ -442,12 +496,13 @@
             </alert>
             <alert *ngIf="task.status === 'Complete' && task.actions.length !== 0" type="warning" [dismissible]="true"
               (onClosed)="handleCloseToast(idx)">
-              <strong>Upload {{task.status}}</strong> for {{task.collectionLabel}}. Task completed with warnings. See
-              the <a routerLink="/site/tasks">task page</a> for more details.
+              <strong>Upload {{task.status}}</strong> for {{task.collectionLabel}}. Task completed with warnings.
+              See the <a routerLink="/site/tasks">task page</a> for more details.
             </alert>
             <alert *ngIf="task.status === 'Failed'" type="danger" [dismissible]="true"
               (onClosed)="handleCloseToast(idx)">
-              <strong>Upload {{task.status}}</strong> for {{task.collectionLabel}}. Task completed with errors. See the
+              <strong>Upload {{task.status}}</strong> for {{task.collectionLabel}}. Task completed with errors. See
+              the
               <a routerLink="/site/tasks">task page</a> for more details.
             </alert>
             <alert *ngIf="task.status !== 'Failed' && task.status !== 'Complete'" type="info" [dismissible]="true"
@@ -464,100 +519,105 @@
 
         </article>
 
+        <div class="position-relative">
+          <div class="position-absolute top-0 start-0">
+            <article class="base-layer-panel">
 
-        <article class="base-layer-panel">
+              <div class="layer-toggle" style="cursor: pointer;background:#fff;padding:8px;border-radius:4px;"
+                (mouseenter)="baselayerIconHover = true" (mouseleave)="baselayerIconHover = false">
 
-          <div class="layer-toggle" style="cursor: pointer;background:#fff;padding:8px;border-radius:4px;"
-            (mouseenter)="baselayerIconHover = true" (mouseleave)="baselayerIconHover = false">
-            <i class="fas fa-layer-group" *ngIf="!baselayerIconHover"
-              style="vertical-align:middle; font-size: 18px;"></i>
-            <div *ngIf="baselayerIconHover" style="width: 200px;">
+                <i class="fas fa-layer-group" *ngIf="!baselayerIconHover"
+                  style="vertical-align:middle; font-size: 18px;">
+                </i>
 
-              <!--
-                <div class="row-form">
-                  <div class="list-group">
-                    
-                    <h4>Layers</h4>
+                <!--
+                  <div class="row-form">
+                    <div class="list-group">
 
-                    <div *ngFor="let layer of mapLayers" class="list-group-item" style="padding:0;height:30px;">
-                      <boolean-field [value]="layer.active" (valueChange)="handleToggleableLayer(layer)" label=""
-                      [inline]="true">
-                    </boolean-field>
-                    <span style="padding-top: 2px;">
-                      <label style="padding-left: 5px;">{{layer.layerName}}</label>
-                      <span class="pull-right">
-                        <a class="fa fa-pencil-alt ico-edit" (click)="handleToggleableLayer(layer)"
-                        [title]="'Edit ' + layer.layerName"></a>
-                        <a class="fa fa-trash-alt ico-remove" (click)="handleRemoveToggleableLayer(layer)"
-                        [title]="'Remove ' + layer.layerName"></a>
-                        <a class="fa fa-eye" (click)="handleStacZoom(layer)" [title]="'Zoom to ' + layer.layerName"></a>
-                      </span>
-                    </span>
-                    
+                      <h4>Layers</h4>
+
+                      <div *ngFor="let layer of stacLayers" class="list-group-item" style="padding:0;height:30px;">
+                        <boolean-field [value]="layer.active" (valueChange)="handleToggleStacLayer(layer)" label=""
+                          [inline]="true">
+                        </boolean-field>
+                        <span style="padding-top: 2px;">
+                          <label style="padding-left: 5px;">{{layer.layerName}}</label>
+                          <span class="float-end">
+                            <a class="fa fa-pencil-alt ico-edit" (click)="handleStacLayer(layer)"
+                              [title]="'Edit ' + layer.layerName"></a>
+                            <a class="fa fa-trash-alt ico-remove" (click)="handleRemoveStacLayer(layer)"
+                              [title]="'Remove ' + layer.layerName"></a>
+                            <a class="fa fa-eye" (click)="handleStacZoom(layer)"
+                              [title]="'Zoom to ' + layer.layerName"></a>
+                          </span>
+                        </span>
+
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div class="row-form">
-                <a class="fa fa-plus" (click)="handleStacEdit()" title="Create a layer">&nbsp;Create layer</a>
-              </div>
-              
-              <ng-container *ngIf="hierarchy.oid != null && hierarchy.oid.length > 0">
-                <hr style="margin-top:10px;margin-bottom:10px;">
+                  <div class="row-form">
+                    <button class="btn btn-outline-secondary btn-sm" (click)="handleStacLayer()"
+                      title="Create a layer"><i class="fa fa-plus"></i>&nbsp;Create layer</button>
+                  </div>
 
-                <div class="list-group-item" style="padding:0;height:30px;">
-                  <boolean-field [value]="hierarchy.visible" (valueChange)="handleVisibilityChange()" label=""
-                  [inline]="true">
-                </boolean-field>
-                <span style="padding-top: 2px;">
-                  <label style="padding-left: 5px;">{{hierarchy.label}}</label>
-                </span>
-              </div>
-              
-            </ng-container>
-            
-            <hr style="margin-top:10px;margin-bottom:10px;">
+                  <ng-container *ngIf="hierarchy.oid != null && hierarchy.oid.length > 0">
+                    <hr style="margin-top:10px;margin-bottom:10px;">
+
+                    <div class="list-group-item" style="padding:0;height:30px;">
+                      <boolean-field [value]="hierarchy.visible" (valueChange)="handleVisibilityChange()" label=""
+                        [inline]="true">
+                      </boolean-field>
+                      <span style="padding-top: 2px;">
+                        <label style="padding-left: 5px;">{{hierarchy.label}}</label>
+                      </span>
+                    </div>
+
+                  </ng-container>
+
+                  <hr style="margin-top:10px;margin-bottom:10px;">
             -->
 
-              <h4>Basemaps</h4>
-              <div class="row-form" *ngFor="let baseLayer of baseLayers">
-                <input class="layer-toggle-input" type='radio' name='rtoggle' [value]='baseLayer.id'
-                  [checked]="baseLayer.selected" (change)="handleStyle(baseLayer)">
-                <label class="layer-toggle-label" style="padding-left: 5px;">{{baseLayer.label}}</label>
+                <h4>Basemaps</h4>
+                <div class="row-form" *ngFor="let baseLayer of baseLayers">
+                  <input class="layer-toggle-input" type='radio' name='rtoggle' [value]='baseLayer.id'
+                    [checked]="baseLayer.selected" (change)="handleStyle(baseLayer)">
+                  <label class="layer-toggle-label" style="padding-left: 5px;">{{baseLayer.label}}</label>
+                </div>
               </div>
-            </div>
+            </article>
+
+            <article class="geoplatform-map-button">
+              <div [style]="panelType === 3 ? 'background:#767676;': 'background:#fff;'"
+                style="padding:8px;border-radius:4px;">
+                <a class="fa fa-search" [ngClass]="{'fa-inverse': panelType === 3}" (click)="panelType = 3"
+                  title="Search GeoPlatform"></a>
+              </div>
+            </article>
+
+            <article class="imagery-map-button">
+              <div [style]="panelType === 4 ? 'background:#767676;': 'background:#fff;'"
+                style="padding:8px;border-radius:4px;">
+                <a (click)="panelType = 4">
+                  <span class="fa-stack">
+                    <i class="fa fa-globe fa-stack-1x" [ngClass]="{'fa-inverse': panelType === 4}"
+                      style="margin: 0px;"></i>
+                    <span class="badge">{{mapLayers.length}}</span>
+                  </span>
+                </a>
+              </div>
+            </article>
           </div>
-        </article>
 
-        <article class="geoplatform-map-button">
-          <div [style]="panelType === 3 ? 'background:#767676;': 'background:#fff;'"
-            style="padding:8px;border-radius:4px;">
-            <a class="fa fa-search" [ngClass]="{'fa-inverse': panelType === 3}" (click)="panelType = 3"
-              title="Search GeoPlatform"></a>
-          </div>
-        </article>
+          <article class="legend-map-button">
+            <legend-panel [collection]="collection" [views]="views"></legend-panel>
+          </article>
 
-        <article class="imagery-map-button">
-          <div [style]="panelType === 4 ? 'background:#767676;': 'background:#fff;'"
-            style="padding:8px;border-radius:4px;">
-            <a (click)="panelType = 4">
-              <span class="fa-stack">
-                <i class="fa fa-globe fa-stack-1x" [ngClass]="{'fa-inverse': panelType === 4}" style="margin: 0px;"></i>
-                <span class="badge">{{mapLayers.length}}</span>
-              </span>
-            </a>
-          </div>
-        </article>
+          <div id="mousemove-panel" class="mapboxgl-ctrl-bottom-right"
+            style="background: rgba(255, 255, 255, .5); right: 0; padding: 0 5px 0 5px;bottom: 0px;"></div>
 
-        <article class="legend-map-button">
-          <legend-panel [collection]="collection" [views]="views"></legend-panel>
-        </article>
-
-
-        <div id="mousemove-panel" class="mapboxgl-ctrl-bottom-right"
-          style="background: rgba(255, 255, 255, .5); right: 0; padding: 0 5px 0 5px;bottom: 0px;"></div>
-
-        <div id="map" class="map-view-port"></div>
+          <div id="map" class="map-view-port"></div>
+        </div>
       </div>
-    </div>
+    </main>
   </div>
 </div>

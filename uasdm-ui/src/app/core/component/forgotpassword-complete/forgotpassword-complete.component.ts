@@ -8,6 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ForgotPasswordService } from '../../service/forgotpassword.service';
 
 @Component({
+	standalone: false,
 	templateUrl: './forgotpassword-complete.component.html',
 	styleUrls: ['./forgotpassword-complete.component.css']
 })

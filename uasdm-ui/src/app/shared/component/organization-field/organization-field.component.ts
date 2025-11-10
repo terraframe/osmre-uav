@@ -12,7 +12,8 @@ import { OrganizationHierarchyModalComponent } from "./organization-hierarchy-mo
 import { ControlContainer, NgForm } from "@angular/forms";
 
 @Component({
-    selector: "organization-field",
+    standalone: false,
+  selector: "organization-field",
     templateUrl: "./organization-field.component.html",
     styleUrls: [],
     viewProviders: [{ provide: ControlContainer, useExisting: NgForm }],    
@@ -82,7 +83,7 @@ export class OrganizationFieldComponent implements OnInit, OnDestroy {
     onViewTree(): void {
         const bsModalRef = this.modalService.show(OrganizationHierarchyModalComponent, {
             animated: true,
-            backdrop: true,
+            backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true
         });
         this.subscription = bsModalRef.content.init(this.disabled, this.value, (organization:Organization) => {

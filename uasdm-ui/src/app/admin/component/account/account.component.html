@@ -14,19 +14,19 @@
     </div>
     <hr>
     <div *ngIf="!(account.user.externalProfile && account.user.newInstance)" class="form-group">
-      <label>
+      <label class="form-label">
         <localize key="account.firstname"></localize>
       </label>
       <input type="text" [(ngModel)]="account.user.firstName" name="firstname" required [disabled]="account.user.externalProfile">
     </div>
     <div *ngIf="!(account.user.externalProfile && account.user.newInstance)" class="form-group">
-      <label>
+      <label class="form-label">
         <localize key="account.lastname"></localize>
       </label>
       <input type="text" [(ngModel)]="account.user.lastName" name="lastname" required [disabled]="account.user.externalProfile">
     </div>
     <div *ngIf="!(account.user.externalProfile && account.user.newInstance)" class="form-group">
-      <label>
+      <label class="form-label">
         <localize key="account.phonenumber"></localize>
       </label>
       <input type="text" [(ngModel)]="account.user.phoneNumber" name="phoneNumber" phoneNumber #phoneNumber="ngModel" [disabled]="account.user.externalProfile">
@@ -35,7 +35,7 @@
       </div>
     </div>
     <div class="form-group">
-      <label>
+      <label class="form-label">
         <localize key="account.email"></localize>
       </label>
       <input type="email" [(ngModel)]="account.user.email" name="email" #aemail="ngModel" required email>
@@ -45,13 +45,13 @@
       </div>
     </div>
     <div class="form-group">
-      <label>Organization</label>
+      <label class="form-label">Organization</label>
       <organization-field 
         name="organization" [(value)]="account.user.organization" [disabled]="false">
       </organization-field>
     </div>
     <div class="form-group">
-      <label>Extra Information</label>
+      <label class="form-label">Extra Information</label>
       <textarea class="form-control" rows="5" [(ngModel)]="account.user.information" name="information"></textarea>
     </div>
     <div>
@@ -61,7 +61,7 @@
     </div>
     <hr>
     <div *ngIf="!(account.user.externalProfile)" class="form-group">
-      <label>
+      <label class="form-label">
         <localize key="account.username"></localize>
       </label>
       <input type="text" [disabled]="account.user.externalProfile || (!account.user.newInstance && account.user.username === 'admin')"
@@ -72,7 +72,7 @@
     </div>
     <div *ngIf="!account.user.externalProfile && (account.changePassword || account.user.newInstance)">
       <div class="form-group">
-        <label>
+        <label class="form-label">
           <localize key="account.password"></localize>
         </label>
         <input type="password" [(ngModel)]="account.user.password" name="password" #password="ngModel" required
@@ -80,11 +80,11 @@
         <password-strength-bar [passwordToCheck]="account.user.password"></password-strength-bar>
         <div *ngIf="password.errors?.passwordStrength" class="inline-error-message">
           The password must be at least 14 characters in length and must contain at least: Two uppercase letters [A-Z],
-          two lowercase letters [a-z], two digits [0-9], and two special characters [e.g.: !@#$*&]
+          two lowercase letters [a-z], two digits [0-9], and two special characters [e.g.: !&#64;#$*&amp;]
         </div>
       </div>
       <div class="form-group">
-        <label>
+        <label class="form-label">
           <localize key="account.certainPassword"></localize>
         </label>
         <input type="password" name="certainPassword" [ngModel]="certainPassword" #certainPassword="ngModel" required />

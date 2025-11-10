@@ -5,7 +5,8 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
-	selector: 'boolean-field',
+	standalone: false,
+  selector: 'boolean-field',
 	templateUrl: './boolean-field.component.html',
 	styles: ['.modal-form .holder .check-block .chk-area {margin: 10px 0px 0 0;}']
 })

@@ -6,7 +6,8 @@
 import { Component, OnChanges, Input, SimpleChange } from '@angular/core';
 
 @Component({
-	selector: 'password-strength-bar',
+	standalone: false,
+  selector: 'password-strength-bar',
 	templateUrl: './password-strength-bar.component.html',
 	styleUrls: ['./password-strength-bar.component.css']
 })

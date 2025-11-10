@@ -8,13 +8,13 @@
 
 <!--     <div id="app-container" class="container"> -->
 
-        <h3>
+        <h3 class="settings-header">
             Manage Accounts
 <!--             <localize key="accounts.title"></localize> -->
         </h3>
         <div *ngIf="!requireKeycloakLogin" class="row">
             <div class="col-md-12">
-                <button (click)="inviteUsers()" class="btn btn-primary pull-right" style="margin:10px 0;">Invite User</button>
+                <button (click)="inviteUsers()" class="btn btn-primary float-end" style="margin:10px 0;">Invite User</button>
             </div>
         </div>
 

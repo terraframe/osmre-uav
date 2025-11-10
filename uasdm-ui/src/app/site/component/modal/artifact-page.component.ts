@@ -2,27 +2,25 @@
 ///
 ///
 
-import { CommonModule } from '@angular/common';
-import { BrowserModule } from '@angular/platform-browser';
-import { Component, OnInit, Input, Output, EventEmitter, OnDestroy, Inject } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalService } from 'ngx-bootstrap/modal';
 
 import { CollectionArtifacts, ProductDetail, SiteEntity } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 
-import { UploadModalComponent } from './upload-modal.component';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { BasicConfirmModalComponent } from '@shared/component';
 import EnvironmentUtil from '@core/utility/environment-util';
 import { environment } from 'src/environments/environment';
 import { WebSockets } from '@core/utility/web-sockets';
-import { ConfigurationService } from '@core/service/configuration.service';
-import { APP_BASE_HREF } from '@angular/common';
 import { ODMRunModalComponent } from './odmrun-modal.component';
+import { ModalTypes } from '@shared/model/modal';
+import { TusUploadModalComponent } from './tus-upload-modal.component';
 
 @Component({
-	selector: 'artifact-page',
+	standalone: false,
+  selector: 'artifact-page',
 	templateUrl: './artifact-page.component.html',
 	styleUrls: ['./artifact-page.component.css'],
 	providers: []
@@ -97,17 +95,13 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 		this.loading = true;
 		this.service.getArtifacts(this.entity.id).then(groups => {
 
-			if (this.standaloneProduct != null) { groups = groups.filter(g => g.productName === this.standaloneProduct.productName) }
+			if (this.standaloneProduct != null) {
+				groups = groups.filter(g => g.productName === this.standaloneProduct.productName)
+			}
 
 			this.loading = false;
 
 			this.groups = groups;
-
-			// TODO: IS THIS NEEDED ANYMORE
-			// this.config.processDem = (this.artifacts.dem == null || this.artifacts.dem.items.length === 0);
-			// this.config.processOrtho = (this.artifacts.ortho == null || this.artifacts.ortho.items.length === 0);
-			// this.config.processPtcloud = (this.artifacts.ptcloud == null || this.artifacts.ptcloud.items.length === 0);
-
 		}).catch((err: HttpErrorResponse) => {
 			this.error(err);
 		});
@@ -118,26 +112,26 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: false,
-			'class': ''
+			'class': 'modal-xl'
 		});
 
 		modal.content.initOnArtifact(artifact);
 	}
 
 	handleDownloadFile(item: SiteEntity): void {
-		window.location.href = environment.apiUrl + '/project/download?id=' + this.entity.id + "&key=" + item.key;
+		window.location.href = environment.apiUrl + '/api/project/download?id=' + this.entity.id + "&key=" + item.key;
 	}
 
 
 	handleUpload(productName: string, folderName: string): void {
 
-		const modal = this.modalService.show(UploadModalComponent, {
+		const modal = this.modalService.show(TusUploadModalComponent, {
 			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: true,
-			'class': 'upload-modal'
+			'class': 'upload-modal modal-xl'
 		});
-		modal.content.init(this.entity, folderName, productName);
+		modal.content.init(this.entity, folderName, null, productName);
 
 		// modal.content.onUploadComplete.subscribe(oid => {
 
@@ -149,11 +143,11 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 
 		const modal = this.modalService.show(BasicConfirmModalComponent, {
 			animated: true,
-			backdrop: true,
+			backdrop: true, class: 'modal-xl',
 			ignoreBackdropClick: true,
 		});
 		modal.content.message = 'Do you want to delete the [' + section.label + '] products? This action cannot be undone.';
-		modal.content.type = 'DANGER';
+		modal.content.type = ModalTypes.danger;
 		modal.content.submitText = 'Delete';
 
 		modal.content.onConfirm.subscribe(() => {
@@ -172,10 +166,11 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 		const modal = this.modalService.show(BasicConfirmModalComponent, {
 			animated: true,
 			backdrop: true,
+			class: 'modal-xl',
 			ignoreBackdropClick: true,
 		});
 		modal.content.message = 'Do you want to delete the product group [' + productName + ']? This action cannot be undone.';
-		modal.content.type = 'DANGER';
+		modal.content.type = ModalTypes.danger;
 		modal.content.submitText = 'Delete';
 
 		modal.content.onConfirm.subscribe(() => {
@@ -197,7 +192,7 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 
 	handleDownloadReport(productName: string, section: { label: string, folder: string }): void {
 
-		let url = environment.apiUrl + '/project/download-report?'
+		let url = environment.apiUrl + '/api/project/download-report?'
 		url += 'colId=' + encodeURIComponent(this.entity.id);
 		url += "&productName=" + encodeURIComponent(productName)
 		url += "&folder=" + encodeURIComponent(section.folder);

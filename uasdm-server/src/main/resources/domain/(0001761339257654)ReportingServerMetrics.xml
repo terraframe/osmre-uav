@@ -1,0 +1,19 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create></create>
+    <update>
+      <mdVertex name="gov.geoplatform.uasdm.graph.ODMRun">
+        <create>
+          <attributes>
+            <text name="instanceType"/>
+          </attributes>
+        </create>
+      </mdVertex>
+    </update>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.graph.ODMRun.instanceType" type="com.runwaysdk.system.metadata.MdAttributeText"/>
+    </delete>
+  </undoIt>
+</version>

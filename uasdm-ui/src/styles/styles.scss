@@ -6,11 +6,10 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 
 @import "~bootstrap/dist/css/bootstrap.css";
 
-@import '~fine-uploader/fine-uploader/fine-uploader-new.min.css';
 @import '~maplibre-gl/dist/maplibre-gl.css';
 @import '~@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
-@import '~@circlon/angular-tree-component/css/angular-tree-component.css';
+@import '~@ali-hm/angular-tree-component/css/angular-tree-component.css';
 @import '@angular/cdk/overlay-prebuilt.css';
 @import './node_modules/@perfectmemory/ngx-contextmenu/src/assets/stylesheets/base.scss';
 
@@ -103,9 +102,6 @@ body {
   z-index: 2;
 }
 
-.dropdown-menu {
-  font-size: 18px;
-}
 
 
 .breadcrumb {
@@ -438,7 +434,7 @@ a.active {
 
 .card .card-header {
   border-radius: 6px 6px 0 0;
-  padding: 8px;
+  padding: 15px;
 }
 
 .card .card-footer {

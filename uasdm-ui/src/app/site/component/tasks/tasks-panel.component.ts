@@ -15,7 +15,8 @@ import { ProcessRunModalComponent } from '../modal/process-run-modal.component';
 
 
 @Component({
-	selector: 'tasks-panel',
+	standalone: false,
+  selector: 'tasks-panel',
 	templateUrl: './tasks-panel.component.html',
 	styleUrls: ['./tasks-panel.css']
 })
@@ -67,9 +68,8 @@ export class TasksPanelComponent implements OnInit {
 	viewOdmRun(task: Task): void {
 		const modal = this.modalService.show(ODMRunModalComponent, {
 			animated: true,
-			backdrop: true,
+			backdrop: true, class: 'modal-xl',
 			ignoreBackdropClick: false,
-			'class': ''
 		});
 		
 		modal.content.initOnWorkflowTask(task);
@@ -78,9 +78,8 @@ export class TasksPanelComponent implements OnInit {
 	viewConfiguration(task: Task): void {
 		const modal = this.modalService.show(ProcessRunModalComponent, {
 			animated: true,
-			backdrop: true,
+			backdrop: true, class: 'modal-xl',
 			ignoreBackdropClick: false,
-			'class': ''
 		});
 		
 		modal.content.init(task);
@@ -91,7 +90,7 @@ export class TasksPanelComponent implements OnInit {
 
 		this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
 			animated: true,
-			backdrop: true,
+			backdrop: true, class: 'modal-xl',
 			ignoreBackdropClick: true,
 		});
 		this.bsModalRef.content.message = 'Are you sure you want to delete [' + task.label + '?';

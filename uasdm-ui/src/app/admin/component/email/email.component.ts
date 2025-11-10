@@ -13,7 +13,8 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 
 @Component({
 
-	selector: 'email',
+	standalone: false,
+  selector: 'email',
 	templateUrl: './email.component.html',
 	styleUrls: []
 })

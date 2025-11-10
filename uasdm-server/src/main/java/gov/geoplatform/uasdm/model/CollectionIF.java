@@ -48,6 +48,8 @@ public interface CollectionIF extends UasComponentIF
 
   public boolean isMultiSpectral();
   
+  public boolean isThermal();
+  
   boolean isLidar();
 
 //  public Sensor getSensor();

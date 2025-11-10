@@ -33,3 +33,7 @@ button.btn[aria-expanded="true"] {
   transform: translateY(1px);
   background: #e5e5e5;
 }
+
+.btn {
+	margin: .25rem .125rem;
+}
