@@ -13,7 +13,7 @@ import { Subject } from 'rxjs';
 
 import { BasicConfirmModalComponent, ErrorHandler } from '@shared/component';
 
-import { ProcessConfigType, SiteEntity, UploadForm, UploadTask } from '@site/model/management';
+import { ProcessConfigType, SiteEntity, Task, UploadForm, UploadTask } from '@site/model/management';
 
 import EnvironmentUtil from '@core/utility/environment-util';
 import { UploadService } from '@site/service/upload.service';
@@ -37,9 +37,6 @@ import { NgxFileDropEntry } from 'ngx-file-drop';
 })
 export class TusUploadModalComponent implements OnInit, OnDestroy {
 
-	/*
-	 * List of hierarchies
-	 */
 	existingTask: UploadTask | null;
 
 	component: SiteEntity = null;
@@ -168,7 +165,7 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 			(progress) => {
 				this.progress = progress
 			},
-			() => {
+			(url) => {
 				this.isUploading = false;
 				this.isSuccessful = true;
 				this.progress = null;

@@ -23,7 +23,7 @@ export class UploadService {
         endpoint: string,
         metadata: UploadMetadata,
         onProgress: (progress: UploadProgress) => void,
-        onSuccess: () => void,
+        onSuccess: (url: string) => void,
         onError: (error: Error) => void,
     ): void {
         metadata.filename = file.name;
@@ -58,7 +58,7 @@ export class UploadService {
                 return retryAttempt < 1000;
             },
             onSuccess: () => {
-                onSuccess()
+                onSuccess(this.upload.url)
             },
             storeFingerprintForResuming: true,
             removeFingerprintOnSuccess: true,
@@ -69,8 +69,6 @@ export class UploadService {
 
             // Found previous uploads so we select the first one.
             if (previousUploads.length) {
-                console.log('Found previous upload', previousUploads);
-
                 this.upload.resumeFromPreviousUpload(previousUploads[0])
             }
 
