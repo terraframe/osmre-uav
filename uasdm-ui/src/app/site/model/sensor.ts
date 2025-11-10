@@ -31,6 +31,7 @@ export class SensorType {
     name: string;
     isMultispectral: boolean;
     isLidar: boolean;
+    isRadiometric: boolean;
     oid: string;
 }
 

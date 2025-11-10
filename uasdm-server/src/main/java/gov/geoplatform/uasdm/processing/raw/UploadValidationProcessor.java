@@ -49,6 +49,7 @@ import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.graph.UasComponent;
+import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -63,6 +64,8 @@ public class UploadValidationProcessor
   protected HashSet<String> filenameSet = new HashSet<String>();
   
   protected boolean isMultispectral;
+  
+  protected boolean isRadiometric;
   
   protected boolean isValid = true;
   
@@ -82,12 +85,34 @@ public class UploadValidationProcessor
     }
   }
   
+  public static boolean isRadiometric(AbstractWorkflowTask task)
+  {
+    if (task instanceof ImageryWorkflowTask)
+    {
+      return false;
+    }
+    else
+    {
+      WorkflowTask collectionWorkflowTask = (WorkflowTask) task;
+
+      var uasc = collectionWorkflowTask.getComponentInstance();
+      
+      if (uasc instanceof CollectionIF)
+      {
+        return ( (CollectionIF) uasc ).isRadiometric();
+      }
+
+      return false;
+    }
+  }
+  
   public ApplicationFileResource getDownstreamFile() { return downstreamFile; }
 
   @SuppressWarnings("resource")
   public boolean process(ApplicationFileResource uploaded, AbstractUploadTask task, ProcessConfiguration configuration)
   {
     this.isMultispectral = isMultispectral(task);
+    this.isRadiometric= isRadiometric(task);
     
     if (!UasComponentIF.isValidName(configuration.getProductName())) {
       task.lock();
@@ -199,12 +224,14 @@ public class UploadValidationProcessor
       }
       else if (count == 0)
       {
-        List<String> extensions = ImageryProcessingJob.getSupportedExtensions(task.getUploadTarget(), isMultispectral, configuration);
+        List<String> extensions = ImageryProcessingJob.getSupportedExtensions(task.getUploadTarget(), isMultispectral, isRadiometric, configuration);
         
         String msg = "The zip did not contain any files to process. Files must follow proper naming conventions and end in one of the following file extensions: " + StringUtils.join(extensions, ", ");
         
         if (isMultispectral)
           msg = "You selected a multispectral sensor. " + msg;
+        else if (isRadiometric)
+          msg = "You selected a radiometric sensor. " + msg;
         
         task.lock();
         task.setStatus(WorkflowTaskStatus.ERROR.toString());
@@ -266,7 +293,7 @@ public class UploadValidationProcessor
       if (configuration.isODM() || configuration.isLidar())
       {
         final String ext = res.getNameExtension().toLowerCase();
-        final List<String> extensions = ImageryProcessingJob.getSupportedExtensions(task.getUploadTarget(), isMultispectral, configuration);
+        final List<String> extensions = ImageryProcessingJob.getSupportedExtensions(task.getUploadTarget(), isMultispectral, isRadiometric, configuration);
         final boolean isGeo = configuration.isODM() && ( res.getName().equalsIgnoreCase(configuration.toODM().getGeoLocationFileName()) && configuration.toODM().isIncludeGeoLocationFile() );
         final boolean isGcp = configuration.isODM() && ( res.getName().equalsIgnoreCase(configuration.toODM().getGroundControlPointFileName()) && configuration.toODM().isIncludeGroundControlPointFile() );
   
@@ -284,6 +311,8 @@ public class UploadValidationProcessor
           
           if (isMultispectral)
             msg = "You selected a multispectral sensor. " + msg;
+          else if (isRadiometric)
+            msg = "You selected a radiometric sensor. " + msg;
           
           task.createAction(msg, TaskActionType.ERROR);
           return false;

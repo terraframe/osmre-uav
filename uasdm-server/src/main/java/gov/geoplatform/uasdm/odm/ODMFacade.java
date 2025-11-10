@@ -55,7 +55,7 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.RadiometricCalibration;
-import gov.geoplatform.uasdm.processing.WorkswellWirisThermalPhotometricProcessor;
+import gov.geoplatform.uasdm.processing.RadiometricImageryPreProcessor;
 import gov.geoplatform.uasdm.processing.geolocation.RX1R2GeoFileConverter;
 
 public class ODMFacade
@@ -192,17 +192,9 @@ public class ODMFacade
   {
     ODMProcessingPayload payload = filterArchive(archive, configuration);
 
-    if (col != null)
+    if (col != null && col.isRadiometric())
     {
-      col.getMetadata().ifPresent(metadata -> {
-        Sensor sensor = metadata.getSensor();
-
-        if ( ( sensor.getName().toLowerCase().contains("workswell wiris pro") || sensor.getModel().toLowerCase().contains("wiris pro") ) 
-            && configuration.getRadiometricCalibration() != RadiometricCalibration.NONE)
-        {
-          new WorkswellWirisThermalPhotometricProcessor().process(new FileResource(archive.extract()));
-        }
-      });
+      new RadiometricImageryPreProcessor().process(new FileResource(archive.extract()));
     }
 
     return payload;
@@ -211,7 +203,7 @@ public class ODMFacade
   @SuppressWarnings("resource")
   private static ODMProcessingPayload filterArchive(ArchiveFileResource archive, ODMProcessConfiguration configuration) throws IOException, CsvValidationException
   {
-    List<String> extensions = ImageryProcessingJob.getSupportedExtensions(ImageryComponent.RAW, false, configuration);
+    List<String> extensions = ImageryProcessingJob.getSupportedExtensions(ImageryComponent.RAW, false, false, configuration);
     final ODMProcessingPayload payload = new ODMProcessingPayload(archive);
     
     Queue<ApplicationFileResource> queue = new LinkedList<>();

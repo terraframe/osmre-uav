@@ -187,7 +187,7 @@ public class ProjectManagementService
         task.setProcessFilenameArray(array.toString());
         task.apply();
 
-        task.initiate(new ArchiveFileResource(new FileResource(zip)), collection.isMultiSpectral(), collection.isThermal());
+        task.initiate(new ArchiveFileResource(new FileResource(zip)), collection.isMultiSpectral(), collection.isRadiometric());
 
         NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
       }
@@ -1384,7 +1384,7 @@ public class ProjectManagementService
           config.setGeoLocationFormat(FileFormat.RX1R2);
         }
         
-        if (Boolean.TRUE.equals(collection.isThermal()) || Boolean.TRUE.equals(collection.isMultiSpectral())) {
+        if (Boolean.TRUE.equals(collection.isRadiometric()) || Boolean.TRUE.equals(collection.isMultiSpectral())) {
           config.setRadiometricCalibration(RadiometricCalibration.CAMERA);
           // TODO : Some sensors support CAMERA+SUN, which might be preferable (even though ODM says its experimental)... Which sensors exactly?
         }

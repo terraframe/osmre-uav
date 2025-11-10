@@ -89,6 +89,7 @@ public class CollectionConverter extends Converter<CollectionIF>
       siteItem.setOwnerEmail(emailAddress);
       siteItem.setMetadataUploaded(collection.getMetadataUploaded());
       siteItem.setIsLidar(collection.isLidar());
+      siteItem.setIsRadiometric(collection.isRadiometric());
 
       collection.getPrimaryProduct().ifPresent(product -> {
         siteItem.setHasAllZip(product.hasAllZip());

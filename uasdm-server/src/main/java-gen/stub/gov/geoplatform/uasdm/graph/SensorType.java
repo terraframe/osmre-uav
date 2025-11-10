@@ -43,6 +43,8 @@ public class SensorType extends SensorTypeBase implements Classification
   public static final String LASER            = "Laser";
 
   public static final String MULTISPECTRAL    = "Multispectral";
+  
+  public static final String RADIOMETRIC = "Radiometric";
 
   public SensorType()
   {
@@ -52,6 +54,11 @@ public class SensorType extends SensorTypeBase implements Classification
   public boolean isLidar()
   {
     return super.getIsLidar() != null && super.getIsLidar().booleanValue();
+  }
+  
+  public boolean isRadiometric()
+  {
+    return super.getIsRadiometric() != null && super.getIsRadiometric().booleanValue();
   }
 
   @Override
@@ -137,6 +144,7 @@ public class SensorType extends SensorTypeBase implements Classification
     object.put(SensorType.NAME, this.getName());
     object.put(SensorType.ISMULTISPECTRAL, this.getIsMultispectral());
     object.put(SensorType.ISLIDAR, this.isLidar());
+    object.put(SensorType.ISRADIOMETRIC, this.isRadiometric());
 
     if (this.getSeq() != null)
     {
@@ -163,7 +171,7 @@ public class SensorType extends SensorTypeBase implements Classification
 
   public static SensorType fromJSON(JSONObject json)
   {
-    SensorType classification = null;
+    SensorType st = null;
 
     if (json.has(SensorType.OID))
     {
@@ -171,40 +179,49 @@ public class SensorType extends SensorTypeBase implements Classification
 
       if (oid != null)
       {
-        classification = SensorType.get(oid);
+        st = SensorType.get(oid);
       }
     }
 
-    if (classification == null)
+    if (st == null)
     {
-      classification = new SensorType();
+      st = new SensorType();
     }
 
-    classification.setName(json.getString(SensorType.NAME));
+    st.setName(json.getString(SensorType.NAME));
 
     if (json.has(SensorType.ISMULTISPECTRAL))
     {
-      classification.setIsMultispectral(json.getBoolean(SensorType.ISMULTISPECTRAL));
+      st.setIsMultispectral(json.getBoolean(SensorType.ISMULTISPECTRAL));
     }
     else
     {
-      classification.setIsMultispectral(Boolean.FALSE);
+      st.setIsMultispectral(Boolean.FALSE);
     }
 
     if (json.has(SensorType.ISLIDAR))
     {
-      classification.setIsLidar(json.getBoolean(SensorType.ISLIDAR));
+      st.setIsLidar(json.getBoolean(SensorType.ISLIDAR));
     }
     else
     {
-      classification.setIsLidar(Boolean.FALSE);
+      st.setIsLidar(Boolean.FALSE);
+    }
+    
+    if (json.has(SensorType.ISRADIOMETRIC))
+    {
+      st.setIsRadiometric(json.getBoolean(SensorType.ISRADIOMETRIC));
+    }
+    else
+    {
+      st.setIsRadiometric(Boolean.FALSE);
     }
 
     if (json.has(SensorType.SEQ))
     {
-      classification.setSeq(json.getLong(SensorType.SEQ));
+      st.setSeq(json.getLong(SensorType.SEQ));
     }
 
-    return classification;
+    return st;
   }
 }
