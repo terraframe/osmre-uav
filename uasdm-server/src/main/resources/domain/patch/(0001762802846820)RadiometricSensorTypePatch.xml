@@ -11,6 +11,8 @@
     </update>
   </doIt>
   <undoIt>
-    <delete></delete>
+    <delete>
+      <object key="gov.geoplatform.uasdm.graph.SensorType.isRadiometric" type="com.runwaysdk.system.metadata.MdAttributeBoolean"/>
+    </delete>
   </undoIt>
 </version>
