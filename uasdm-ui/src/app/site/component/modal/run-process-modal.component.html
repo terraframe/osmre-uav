@@ -75,7 +75,7 @@
 		</pre>
 	</div>
 
-	<button type="button" class="btn btn-default" (click)="isAdvancedSettingsCollapsed = !isAdvancedSettingsCollapsed"
+	<button type="button" class="btn btn-default" style="margin-top:10px;" (click)="isAdvancedSettingsCollapsed = !isAdvancedSettingsCollapsed"
 		[attr.aria-expanded]="!isAdvancedSettingsCollapsed" aria-controls="collapseBasic">Advanced Settings
 	</button>
 	<div [collapse]="isAdvancedSettingsCollapsed" [isAnimated]="true" style="padding:10px;">
@@ -138,7 +138,7 @@
 				<select [(ngModel)]="config.radiometricCalibration" name="radiometricCalibration" class="form-control">
 					<option value="NONE">NONE</option>
 					<option value="CAMERA">CAMERA</option>
-					<option value="CAMERA_SUN">CAMERA+SUN</option>
+					<option value="CAMERA_SUN">CAMERA+SUN (experimental)</option>
 				</select>
 			</div>
 
