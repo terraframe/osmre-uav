@@ -31,7 +31,7 @@ export class ImageryPanelComponent implements OnInit, OnDestroy, OnChanges {
 	@Output() close: EventEmitter<void> = new EventEmitter<void>();
 
 	@Input() properties: StacProperty[] = null;
-	
+
 	@Input() layers: ToggleableLayer[] = [];
 
 	context: string;
@@ -137,7 +137,7 @@ export class ImageryPanelComponent implements OnInit, OnDestroy, OnChanges {
 					animated: true,
 					backdrop: true,
 					ignoreBackdropClick: true,
-					'class': 'product-info-modal'
+					class: 'product-info-modal modal-xl'
 				});
 				bsModalRef.content.init(detail);
 			});
@@ -149,7 +149,7 @@ export class ImageryPanelComponent implements OnInit, OnDestroy, OnChanges {
 				animated: true,
 				backdrop: true,
 				ignoreBackdropClick: true,
-				'class': 'product-info-modal'
+				class: 'product-info-modal modal-xl'
 			});
 			bsModalRef.content.init(item, this.properties);
 		}

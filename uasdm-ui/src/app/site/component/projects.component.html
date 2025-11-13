@@ -133,8 +133,12 @@
                 <span>
                   <span><b>{{node.numberOfChildren}}</b> {{getMetadata(node).childLabel}}</span>
                   <span *ngIf="node.type !== 'folder' && (node.isOwner || admin)" class="float-end">
-                    <a class="fa fa-pencil-alt ico-edit" (click)="handleEdit(node, $event)" title="Edit"></a>
-                    <a class="fa fa-trash-alt ico-remove" (click)="handleDelete(node, $event)" title="Delete"></a>
+                    <a (click)="handleEdit(node, $event)" title="Edit">
+                      <i class="fa fa-pencil-alt ico-edit"></i>
+                    </a>
+                    <a (click)="handleDelete(node, $event)" title="Delete">
+                      <i class="fa fa-trash-alt ico-remove"></i>
+                    </a>
                   </span>
                 </span>
               </div>
@@ -232,63 +236,12 @@
                 <ng-container *ngIf="current == null || current.type !== 0">
                   <div class="row">
                     <div class="col-md-12">
-
-                      <h3 *ngIf="current.type === 1" class="object-label">
-                        {{current.data.properties.displayLabel.localizedValue}}
-                      </h3>
-                      <h3 *ngIf="current.type === 0" class="object-label">
-                        {{current.metadata.label}} {{current.data.name}}
-                      </h3>
-
-                      <tabset *ngIf="current.type === 1" class="nav-full-width">
-                        <tab heading="Overview" (selectTab)="activeTab = 'Overview'">
-                          <div class="form-group" *ngFor="let attribute of current.metadata.attributes ">
-                            <label>
-                              {{attribute.label.localizedValue}}
-                            </label>
-                            <container-element [ngSwitch]="attribute.type">
-                              <input *ngSwitchCase="'local'" type="text" [name]="attribute.code"
-                                [(ngModel)]="current.data.properties[attribute.code].localizedValue" disabled>
-                              <input *ngSwitchDefault type="text" [name]="attribute.code"
-                                [(ngModel)]="current.data.properties[attribute.code]" disabled>
-                            </container-element>
-                          </div>
-
-                          <ng-container [ngTemplateOutlet]="locations">
-                          </ng-container>
-                        </tab>
-                        <tab heading="Sites" (selectTab)="activeTab = 'Sites'">
-                          <ng-container [ngTemplateOutlet]="sites">
-                          </ng-container>
-                        </tab>
-                        <tab heading="Products" (selectTab)="activeTab = 'Products'">
-                          <product-panel *ngIf="activeTab === 'Products'" [selection]="current"
-                            [organization]="organization" [filter]="filter" [views]="views"
-                            (onViewsChange)="handleProductsChange($event)" (toggleMapOrtho)="handleMapOrtho($event)"
-                            (toggleMapDem)="handleMapDem($event)"></product-panel>
-                        </tab>
-                      </tabset>
-
-                      <tabset *ngIf="current.type === 0" class="nav-full-width">
-                        <tab [heading]="current.metadata.childLabel"
-                          (selectTab)="activeTab = current.metadata.childLabel">
-                          <ng-container [ngTemplateOutlet]="sites">
-                          </ng-container>
-                        </tab>
-                        <tab heading="Products" (selectTab)="activeTab = 'Products'">
-                          <product-panel *ngIf="activeTab === 'Products'" [selection]="current"
-                            [organization]="organization" [filter]="filter" [views]="views"
-                            (onViewsChange)="handleProductsChange($event)"
-                            (toggleMapOrtho)="handleMapOrtho($event)"></product-panel>
-                        </tab>
-                      </tabset>
                       <label class="form-label">Organization</label>
                       <form #oForm="ngForm">
                         <organization-field name="organization" [(value)]="organization"
                           (valueChange)="onOrganizationChange()">
                         </organization-field>
                       </form>
-
                     </div>
                   </div>
                   <div class="row" *ngIf="syncs != null && syncs.length > 0">
@@ -384,8 +337,8 @@
                   </tab>
                   <tab heading="Products" (selectTab)="activeTab = 'Products'">
                     <product-panel *ngIf="activeTab === 'Products'" [selection]="current" [organization]="organization"
-                      [filter]="filter" (toggleMapOrtho)="handleMapOrtho($event)"
-                      (toggleMapDem)="handleMapDem($event)"></product-panel>
+                      [filter]="filter" [views]="views" (onViewsChange)="handleProductsChange($event)"
+                      (toggleMapOrtho)="handleMapOrtho($event)" (toggleMapDem)="handleMapDem($event)"></product-panel>
                   </tab>
                 </tabset>
 
@@ -396,8 +349,8 @@
                   </tab>
                   <tab heading="Products" (selectTab)="activeTab = 'Products'">
                     <product-panel *ngIf="activeTab === 'Products'" [selection]="current" [organization]="organization"
-                      [filter]="filter" (toggleMapOrtho)="handleMapOrtho($event)"
-                      (toggleMapDem)="handleMapDem($event)"></product-panel>
+                      [filter]="filter" [views]="views" (onViewsChange)="handleProductsChange($event)"
+                      (toggleMapOrtho)="handleMapOrtho($event)"></product-panel>
                   </tab>
                 </tabset>
 
@@ -453,7 +406,7 @@
 
       <!-- KNOWSTAC PANEL -->
       <ng-container *ngIf="panelType === 3">
-        <div id="hierarchy-tree-container" class="location-management-widget-section location-management-list-container"
+        <div id="hierarchy-tree-container" class="location-management-widget-section"
           style="height: calc(100vh - 50px);overflow-y: auto;overflow-x:hidden;">
 
           <know-stac-panel [collection]="collection" [bounds]="bounds"
@@ -465,7 +418,7 @@
 
       <!-- IMAGERY PANEL -->
       <ng-container *ngIf="panelType === 4">
-        <div id="hierarchy-tree-container" class="location-management-widget-section location-management-list-container"
+        <div id="hierarchy-tree-container" class="location-management-widget-section"
           style="height: calc(100vh - 50px);overflow-y: auto;overflow-x:hidden;">
 
           <imagery-panel [layers]="mapLayers" [properties]="properties" (close)="handleStacCancel()"
@@ -520,62 +473,60 @@
         </article>
 
         <div class="position-relative">
-          <div class="position-absolute top-0 start-0">
-            <article class="base-layer-panel">
+          <article class="base-layer-panel position-absolute top-0 end-0">
+            <div class="layer-toggle" style="cursor: pointer;background:#fff;padding:8px;border-radius:4px;"
+              (mouseenter)="baselayerIconHover = true" (mouseleave)="baselayerIconHover = false">
 
-              <div class="layer-toggle" style="cursor: pointer;background:#fff;padding:8px;border-radius:4px;"
-                (mouseenter)="baselayerIconHover = true" (mouseleave)="baselayerIconHover = false">
-
-                <i class="fas fa-layer-group" *ngIf="!baselayerIconHover"
-                  style="vertical-align:middle; font-size: 18px;">
-                </i>
+              <i class="fas fa-layer-group" *ngIf="!baselayerIconHover" style="vertical-align:middle; font-size: 18px;">
+              </i>
+              <div *ngIf="baselayerIconHover" style="width: 200px;">
 
                 <!--
-                  <div class="row-form">
-                    <div class="list-group">
+                <div class="row-form">
+                  <div class="list-group">
 
-                      <h4>Layers</h4>
+                    <h4>Layers</h4>
 
-                      <div *ngFor="let layer of stacLayers" class="list-group-item" style="padding:0;height:30px;">
-                        <boolean-field [value]="layer.active" (valueChange)="handleToggleStacLayer(layer)" label=""
-                          [inline]="true">
-                        </boolean-field>
-                        <span style="padding-top: 2px;">
-                          <label style="padding-left: 5px;">{{layer.layerName}}</label>
-                          <span class="float-end">
-                            <a class="fa fa-pencil-alt ico-edit" (click)="handleStacLayer(layer)"
-                              [title]="'Edit ' + layer.layerName"></a>
-                            <a class="fa fa-trash-alt ico-remove" (click)="handleRemoveStacLayer(layer)"
-                              [title]="'Remove ' + layer.layerName"></a>
-                            <a class="fa fa-eye" (click)="handleStacZoom(layer)"
-                              [title]="'Zoom to ' + layer.layerName"></a>
-                          </span>
-                        </span>
-
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row-form">
-                    <button class="btn btn-outline-secondary btn-sm" (click)="handleStacLayer()"
-                      title="Create a layer"><i class="fa fa-plus"></i>&nbsp;Create layer</button>
-                  </div>
-
-                  <ng-container *ngIf="hierarchy.oid != null && hierarchy.oid.length > 0">
-                    <hr style="margin-top:10px;margin-bottom:10px;">
-
-                    <div class="list-group-item" style="padding:0;height:30px;">
-                      <boolean-field [value]="hierarchy.visible" (valueChange)="handleVisibilityChange()" label=""
+                    <div *ngFor="let layer of stacLayers" class="list-group-item" style="padding:0;height:30px;">
+                      <boolean-field [value]="layer.active" (valueChange)="handleToggleStacLayer(layer)" label=""
                         [inline]="true">
                       </boolean-field>
                       <span style="padding-top: 2px;">
-                        <label style="padding-left: 5px;">{{hierarchy.label}}</label>
+                        <label style="padding-left: 5px;">{{layer.layerName}}</label>
+                        <span class="float-end">
+                          <a class="fa fa-pencil-alt ico-edit" (click)="handleStacLayer(layer)"
+                            [title]="'Edit ' + layer.layerName"></a>
+                          <a class="fa fa-trash-alt ico-remove" (click)="handleRemoveStacLayer(layer)"
+                            [title]="'Remove ' + layer.layerName"></a>
+                          <a class="fa fa-eye" (click)="handleStacZoom(layer)"
+                            [title]="'Zoom to ' + layer.layerName"></a>
+                        </span>
                       </span>
+
                     </div>
+                  </div>
+                </div>
+                <div class="row-form">
+                  <button class="btn btn-outline-secondary btn-sm" (click)="handleStacLayer()"
+                    title="Create a layer"><i class="fa fa-plus"></i>&nbsp;Create layer</button>
+                </div>
 
-                  </ng-container>
-
+                <ng-container *ngIf="hierarchy.oid != null && hierarchy.oid.length > 0">
                   <hr style="margin-top:10px;margin-bottom:10px;">
-            -->
+
+                  <div class="list-group-item" style="padding:0;height:30px;">
+                    <boolean-field [value]="hierarchy.visible" (valueChange)="handleVisibilityChange()" label=""
+                      [inline]="true">
+                    </boolean-field>
+                    <span style="padding-top: 2px;">
+                      <label style="padding-left: 5px;">{{hierarchy.label}}</label>
+                    </span>
+                  </div>
+
+                </ng-container>
+
+                <hr style="margin-top:10px;margin-bottom:10px;">
+          -->
 
                 <h4>Basemaps</h4>
                 <div class="row-form" *ngFor="let baseLayer of baseLayers">
@@ -584,24 +535,28 @@
                   <label class="layer-toggle-label" style="padding-left: 5px;">{{baseLayer.label}}</label>
                 </div>
               </div>
-            </article>
+            </div>
+          </article>
 
+          <div class="position-absolute top-0 start-0">
             <article class="geoplatform-map-button">
               <div [style]="panelType === 3 ? 'background:#767676;': 'background:#fff;'"
-                style="padding:8px;border-radius:4px;">
-                <a class="fa fa-search" [ngClass]="{'fa-inverse': panelType === 3}" (click)="panelType = 3"
-                  title="Search GeoPlatform"></a>
+                style="padding:6px;border-radius:4px;">
+                <a (click)="panelType = 3" title="Search GeoPlatform">
+                  <i class="fa fa-search" [ngClass]="{'fa-inverse': panelType === 3}"></i>
+                </a>
               </div>
             </article>
 
             <article class="imagery-map-button">
               <div [style]="panelType === 4 ? 'background:#767676;': 'background:#fff;'"
-                style="padding:8px;border-radius:4px;">
+                style="padding:3px;border-radius:4px;">
                 <a (click)="panelType = 4">
                   <span class="fa-stack">
-                    <i class="fa fa-globe fa-stack-1x" [ngClass]="{'fa-inverse': panelType === 4}"
-                      style="margin: 0px;"></i>
-                    <span class="badge">{{mapLayers.length}}</span>
+                    <i class="fa fa-globe fa-stack-1x" [ngClass]="{'fa-inverse': panelType === 4}" style="margin: 0px;">
+                    </i>
+                    <span class="badge"
+                      [style]="panelType === 4 ? 'color:#fff;': 'color:#767676;'">{{mapLayers.length}}</span>
                   </span>
                 </a>
               </div>

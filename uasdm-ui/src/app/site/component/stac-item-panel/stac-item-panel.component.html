@@ -27,8 +27,8 @@
         <div class="row">
             <div class="col-md-12" style="padding-top: 10px;">
                 <label>End Date</label>
-                <input type="date" class="form-element" [(ngModel)]="layer.item.endDate" name="endDate" style="width: 100%;"
-                    [disabled]="readonly" />
+                <input type="date" class="form-element" [(ngModel)]="layer.item.endDate" name="endDate"
+                    style="width: 100%;" [disabled]="readonly" />
             </div>
         </div>
 
@@ -53,7 +53,9 @@
                 <div class="col-md-12">
                     {{filter.label}} contains {{filter.value}}
                     <span class="float-right" *ngIf="!readonly">
-                        <a class="fa fa-trash-alt ico-remove" (click)="handleRemove(filter)" title="Remove filter"></a>
+                        <a (click)="handleRemove(filter)" title="Remove filter">
+                            <i class="fa fa-trash-alt ico-remove"></i>
+                        </a>
                     </span>
                 </div>
             </div>
@@ -77,9 +79,9 @@
 
                                 <div class="card-left" style="width:calc(100% - 13em); padding:0px;">
                                     <span class="thumbnail">
-	                                    <img style="max-height: 110px"
-	                                        [src]="thumbnails[result.id] != null ? (thumbnails[result.id] | safeHtml) : (context + '/assets/thumbnail-default.png')"
-	                                        alt="Image">
+                                        <img style="max-height: 110px"
+                                            [src]="thumbnails[result.id] != null ? (thumbnails[result.id] | safeHtml) : (context + '/assets/thumbnail-default.png')"
+                                            alt="Image">
                                     </span>
                                 </div>
                                 <div class="card-right" style="width: 13em;">

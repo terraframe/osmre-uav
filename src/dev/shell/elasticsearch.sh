@@ -31,4 +31,4 @@ docker rm -f $(docker ps -a -q --filter="name=uasdm-es") > /dev/null || true
 sysctl -w vm.max_map_count=262144
 
 # Run ElasticSearch
-docker run -d -p 9200:9200 -p 9300:9300 -e ES_JAVA_OPTS="-Xms512m -Xmx512m" -e ELASTIC_PASSWORD=elastic -e xpack.security.enabled=false -e discovery.type=single-node --name uasdm-es docker.elastic.co/elasticsearch/elasticsearch:8.3.2
+docker run -d -p 9200:9200 -p 9300:9300 -e ES_JAVA_OPTS="-Xms512m -Xmx512m" -e ELASTIC_PASSWORD=elastic -e xpack.security.enabled=false -e discovery.type=single-node --name uasdm-es docker.elastic.co/elasticsearch/elasticsearch:8.19.6

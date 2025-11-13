@@ -398,7 +398,7 @@ public class ElasticSearchIndex implements Index
           b.must(mu -> mu.match(m -> m.field(component.getSolrIdField()).query(component.getOid())));
 
           return b;
-        })).script(s -> s.inline(i -> i.source("ctx._source." + component.getSolrNameField() + "='" + component.getName() + "'"))));
+        })).script(s -> s.source("ctx._source." + component.getSolrNameField() + "='" + component.getName() + "'")));
 
       // client.updateByQuery(request ->
       // request.index(COMPONENT_INDEX_NAME).conflicts(Conflicts.Proceed).query(q
@@ -634,21 +634,21 @@ public class ElasticSearchIndex implements Index
             {
               if (filter.has("startDate") || filter.has("endDate"))
               {
-                m.range(r -> {
+                m.range(d -> d.date( r -> {
                   r.field("properties.datetime");
 
                   if (filter.has("startDate"))
                   {
-                    r.gte(JsonData.of(filter.getString("startDate")));
+                    r.gte(filter.getString("startDate"));
                   }
 
                   if (filter.has("endDate"))
                   {
-                    r.lte(JsonData.of(filter.getString("endDate")));
+                    r.lte(filter.getString("endDate"));
                   }
 
                   return r;
-                });
+                }));
               }
 
             }
@@ -762,21 +762,21 @@ public class ElasticSearchIndex implements Index
                 {
                   if (filter.has("startDate") || filter.has("endDate"))
                   {
-                    conditions.add(new Query.Builder().range(r -> {
+                    conditions.add(new Query.Builder().range(d -> d.date(r -> {
                       r.field("properties.datetime");
 
                       if (filter.has("startDate"))
                       {
-                        r.gte(JsonData.of(filter.getString("startDate")));
+                        r.gte(filter.getString("startDate"));
                       }
 
                       if (filter.has("endDate"))
                       {
-                        r.lte(JsonData.of(filter.getString("endDate")));
+                        r.lte(filter.getString("endDate"));
                       }
 
                       return r;
-                    }).build());
+                    })).build());
                   }
 
                 }
