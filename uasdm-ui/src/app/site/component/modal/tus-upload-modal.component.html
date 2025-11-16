@@ -24,7 +24,7 @@
           <div class="col-md-1"></div>
           <div class="col-md-10">
             <div class="form-group">
-              <boolean-field [(value)]="metadata.processOrtho" label="Generate PNG"></boolean-field>
+              <boolean-field [(value)]="metadata.processOrtho" label="Process upload"></boolean-field>
             </div>
           </div>
         </div>
@@ -48,7 +48,7 @@
         <div class="col-md-1"></div>
         <div class="col-md-10">
           <div class="form-group">
-            <boolean-field [(value)]="metadata.processDem" label="Generate hillshade from tif"></boolean-field>
+            <boolean-field [(value)]="metadata.processDem" label="Process upload"></boolean-field>
           </div>
         </div>
       </div>
@@ -182,7 +182,7 @@
               <tbody *ngIf="uploadTarget === 'dem'">
                 <tr>
                   <td>Digital Elevation Model (DEM)</td>
-                  <td>tif</td>
+                  <td>tif, zip, tar.gz</td>
                 </tr>
               </tbody>
               <tbody *ngIf="uploadTarget === 'ortho'">

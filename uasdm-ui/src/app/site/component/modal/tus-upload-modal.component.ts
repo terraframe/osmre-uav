@@ -105,7 +105,7 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 			this.extensions = ".laz,.las";
 		}
 		if (this.uploadTarget != null && this.uploadTarget === 'dem') {
-			this.extensions = ".tif";
+			this.extensions = ".tif,.zip,.gz";
 		}
 		if (this.uploadTarget != null && this.uploadTarget === 'ortho') {
 			this.extensions = ".tif,.png,.zip,.gz";

@@ -10,7 +10,7 @@
   </div>
   <div class="modal-footer">
     <div class="btn-holder" style="text-align: right;">
-      <button type="button" (click)="bsModalRef.hide()" class="btn btn-default" role="button" aria-disabled="false" style="padding: 4px 18px;">{{cancelText}}</button>
+      <button type="button" (click)="bsModalRef.hide()" class="btn btn-default m-2" role="button" aria-disabled="false" style="padding: 4px 18px;">{{cancelText}}</button>
       <button type="button" (click)="confirm()" [ngClass]="type === 'DANGER' ? 'btn-danger' : 'btn-primary'" class="btn" role="button" aria-disabled="false" style="padding: 4px 18px;">{{submitText}}</button>
     </div>
   </div>

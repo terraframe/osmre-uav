@@ -89,7 +89,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   {
     if (isMultispectral || uploadTarget.equals(ImageryComponent.DEM))
     {
-      return Arrays.asList("tif", "tiff");
+      return Arrays.asList("tif", "tiff", "xml");
     }
     else if (uploadTarget.equals(ImageryComponent.ORTHO))
     {

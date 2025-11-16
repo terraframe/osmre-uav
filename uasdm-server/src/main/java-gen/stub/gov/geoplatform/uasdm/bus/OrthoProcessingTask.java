@@ -42,7 +42,7 @@ import gov.geoplatform.uasdm.processing.CogTifValidator;
 import gov.geoplatform.uasdm.processing.GdalPNGGenerator;
 import gov.geoplatform.uasdm.processing.HillshadeProcessor;
 import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
-import gov.geoplatform.uasdm.processing.OrthoArchiveProcessor;
+import gov.geoplatform.uasdm.processing.GeoreferenceArchiveProcessor;
 import gov.geoplatform.uasdm.processing.PotreeConverterProcessor;
 import gov.geoplatform.uasdm.processing.StatusMonitorIF;
 import gov.geoplatform.uasdm.processing.WorkflowTaskMonitor;
@@ -91,9 +91,9 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
     {
       if (new ArchiveValidator().isValidArchive(infile))
       {
-        new OrthoArchiveProcessor(ImageryComponent.ORTHO + "/" + infile.getBaseName() + "_converted.tif", product, component, monitor) //
-            .addDownstream(new CogTifProcessor(ImageryComponent.ORTHO + "/" + infile.getBaseName() + CogTifProcessor.COG_EXTENSION, product, component, monitor)) //
-            .addDownstream(new GdalPNGGenerator(ImageryComponent.ORTHO + "/" + infile.getBaseName() + ".png", product, component, monitor)) //
+        new GeoreferenceArchiveProcessor(ImageryComponent.ORTHO + "/" + "gdal_orthophoto.tif", product, component, monitor) //
+            .addDownstream(new CogTifProcessor(ImageryComponent.ORTHO + "/" + "gdal_orthophoto" + CogTifProcessor.COG_EXTENSION, product, component, monitor)) //
+            .addDownstream(new GdalPNGGenerator(ImageryComponent.ORTHO + "/" + "gdal_orthophoto" + ".png", product, component, monitor)) //
             .process(infile);
       }
       else
@@ -109,16 +109,27 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
 
     if (this.getUploadTarget().equals(ImageryComponent.DEM) && this.getProcessDem())
     {
-      if (!new CogTifValidator().isValidCog(infile))
+      if (new ArchiveValidator().isValidArchive(infile))
       {
-        new CogTifProcessor(ImageryComponent.DEM + "/dsm" + CogTifProcessor.COG_EXTENSION, product, component, monitor) //
-            .addDownstream(new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, component, new WorkflowTaskMonitor(this))) //
-            .process(infile);
+        new GeoreferenceArchiveProcessor(ImageryComponent.DEM + "/" + "gdal_dem.tif", product, component, monitor) //
+            .addDownstream(new CogTifProcessor(ImageryComponent.DEM + "/" + "gdal_dem" + CogTifProcessor.COG_EXTENSION, product, component, monitor)) //
+            .addDownstream(new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, component, monitor)) //
+            .process(infile);        
+
       }
       else
       {
-        new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, component, new WorkflowTaskMonitor(this)) //
-            .process(infile);
+        if (!new CogTifValidator().isValidCog(infile))
+        {
+          new CogTifProcessor(ImageryComponent.DEM + "/dsm" + CogTifProcessor.COG_EXTENSION, product, component, monitor) //
+              .addDownstream(new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, component, new WorkflowTaskMonitor(this))) //
+              .process(infile);
+        }
+        else
+        {
+          new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, component, new WorkflowTaskMonitor(this)) //
+              .process(infile);
+        }
       }
     }
 
