@@ -85,9 +85,9 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     this.setConfigurationJson(configuration.toJson().toString());
   }
 
-  public static List<String> getSupportedExtensions(String uploadTarget, boolean isMultispectral, ProcessConfiguration config)
+  public static List<String> getSupportedExtensions(String uploadTarget, boolean isMultispectral, boolean isRadiometric, ProcessConfiguration config)
   {
-    if (isMultispectral || uploadTarget.equals(ImageryComponent.DEM))
+    if (isMultispectral || isRadiometric || uploadTarget.equals(ImageryComponent.DEM))
     {
       return Arrays.asList("tif", "tiff", "xml");
     }

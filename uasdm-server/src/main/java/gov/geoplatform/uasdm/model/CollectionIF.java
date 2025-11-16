@@ -48,7 +48,7 @@ public interface CollectionIF extends UasComponentIF
 
   public boolean isMultiSpectral();
   
-  public boolean isThermal();
+  public boolean isRadiometric();
   
   boolean isLidar();
 

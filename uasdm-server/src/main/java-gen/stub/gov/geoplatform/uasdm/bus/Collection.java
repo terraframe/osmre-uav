@@ -122,7 +122,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
   
   @Override
-  public boolean isThermal()
+  public boolean isRadiometric()
   {
     throw new UnsupportedOperationException();
   }

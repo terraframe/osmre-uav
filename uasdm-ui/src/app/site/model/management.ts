@@ -97,6 +97,7 @@ export class SiteEntity {
 	weatherConditions?: string;
 	presignedThumbnailDownload?: string;
 	isLidar?: boolean;
+	isRadiometric?: boolean;
 
 	// Document metadata fields
 	description?: string;

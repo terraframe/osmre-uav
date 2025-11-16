@@ -682,15 +682,25 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     }).orElse(false);
   }
   
+  /**
+   * A thermal sensor (such as Workswell) can capture data as either radiometric or RGB encoded thermal (designed for viewing with the human eye).
+   * Radiometric data is used for scientific purposes, and each pixel does NOT encode an "RGB" value. It encodes a real measured "radiance" values
+   * as recorded by the sensor. The images also: MUST be tif, and MUST only have a single band.
+   * 
+   * @return Whether or not the collection includes "radiometric" data used for scientific purposes, where the actual pixel values encode "radiance"
+   * values, NOT RGB data.
+   */
   @Override
-  public boolean isThermal()
+  public boolean isRadiometric()
   {
     return this.getMetadata().map(metadata -> {
       Sensor sensor = metadata.getSensor();
 
       if (sensor != null)
       {
-        return sensor.getSensorHasWaveLengthChildWaveLengths().stream().anyMatch(wl -> wl.getName().equalsIgnoreCase(WaveLength.THERMAL));
+        SensorType type = sensor.getSensorType();
+
+        return type.isRadiometric();
       }
 
       return false;

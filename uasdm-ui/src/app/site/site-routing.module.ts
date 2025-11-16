@@ -95,6 +95,11 @@ const routes: Routes = [
                     name: 'isLidar',
                     label: 'Is Lidar',
                     type: 'boolean'
+                },
+                {
+                    name: 'isRadiometric',
+                    label: 'Is Radiometric',
+                    type: 'boolean'
                 }
 
             ],

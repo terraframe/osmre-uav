@@ -1,0 +1,18 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <update>
+      <mdVertex name="gov.geoplatform.uasdm.graph.SensorType" label="Sensor Type">
+      	<create>
+			<attributes>
+				<boolean name="isRadiometric" required="false" defaultValue="false" label="Is Radiometric" />
+			</attributes>
+		</create>
+	  </mdVertex>
+    </update>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.graph.SensorType.isRadiometric" type="com.runwaysdk.system.metadata.MdAttributeBoolean"/>
+    </delete>
+  </undoIt>
+</version>

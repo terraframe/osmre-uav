@@ -67,6 +67,8 @@ public class SiteItem implements TreeComponent
   public static String        SENSOR              = "sensor";
 
   public static String        IS_LIDAR            = "isLidar";
+  
+  public static String        IS_RADIOMETRIC      = "isRadiometric";
 
   public static String        COLLECTION_DATE     = "collectionDate";
 
@@ -93,6 +95,8 @@ public class SiteItem implements TreeComponent
   private Boolean             metadataUploaded;
 
   private Boolean             isLidar;
+  
+  private Boolean             isRadiometric;
 
   private Geometry            geometry;
 
@@ -363,6 +367,16 @@ public class SiteItem implements TreeComponent
   {
     this.isLidar = isLidar;
   }
+  
+  public Boolean getIsRadiometric()
+  {
+    return isRadiometric;
+  }
+
+  public void setIsRadiometric(Boolean isRadiometric)
+  {
+    this.isRadiometric = isRadiometric;
+  }
 
   public JSONObject toJSON()
   {
@@ -380,6 +394,7 @@ public class SiteItem implements TreeComponent
     obj.put(METADATA_UPLOADED, this.getMetadataUploaded());
     obj.put(PRIVILEGE_TYPE, this.getPrivilegeType());
     obj.put(IS_LIDAR, this.getIsLidar());
+    obj.put(IS_RADIOMETRIC, this.getIsRadiometric());
     obj.put("hasAllZip", this.hasAllZip);
 
     if (this.getType().equals("Collection"))

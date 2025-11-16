@@ -242,7 +242,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.setConfiguration(configuration);
     task.apply();
 
-    task.initiate(archive, isMultispectral, ((CollectionIF)component).isThermal());
+    task.initiate(archive, isMultispectral, ((CollectionIF)component).isRadiometric());
   }
 
   private void startLidarProcessing(ApplicationFileResource infile, WorkflowTask uploadTask, LidarProcessConfiguration configuration)
