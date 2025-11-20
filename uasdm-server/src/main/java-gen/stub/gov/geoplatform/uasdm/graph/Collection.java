@@ -32,6 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -67,6 +68,7 @@ import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
 import gov.geoplatform.uasdm.cog.CogPreviewParams;
 import gov.geoplatform.uasdm.cog.TiTillerProxy;
 import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
+import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentWithAttributes;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -99,6 +101,8 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public static final String  NAME             = "name";
 
   public static final String  EMAIL            = "email";
+  
+  public static final String  FORMAT           = "format";
 
   final Logger                log              = LoggerFactory.getLogger(Collection.class);
 
@@ -134,6 +138,24 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public void appLock()
   {
     // Balk
+  }
+  
+  public CollectionFormat getFormat() {
+    if (StringUtils.isBlank(this.getSCollectionFormat()))
+      return null;
+    
+    return CollectionFormat.valueOf(this.getSCollectionFormat());
+  }
+  
+  public void setFormat(CollectionFormat format) {
+    this.setSCollectionFormat(format == null ? null : format.name());
+  }
+  
+  public void setFormat(String format) {
+    if (format != null)
+      CollectionFormat.valueOf(format); // validate
+    
+    this.setSCollectionFormat(format);
   }
 
   @Override
@@ -667,18 +689,10 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     return this.getMetadata().map(metadata -> {
       Sensor sensor = metadata.getSensor();
-
-      if (sensor != null)
-      {
-        SensorType type = sensor.getSensorType();
-
-        if (type.getIsMultispectral())
-        {
-          return true;
-        }
-      }
-
-      return false;
+      if (sensor == null) return false;
+      
+      var formats = sensor.getCollectionFormats();
+      return formats.contains(CollectionFormat.STILL_MULTISPECTRAL) || formats.contains(CollectionFormat.VIDEO_MULTISPECTRAL);
     }).orElse(false);
   }
   
@@ -695,15 +709,10 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     return this.getMetadata().map(metadata -> {
       Sensor sensor = metadata.getSensor();
-
-      if (sensor != null)
-      {
-        SensorType type = sensor.getSensorType();
-
-        return type.isRadiometric();
-      }
-
-      return false;
+      if (sensor == null) return false;
+      
+      var formats = sensor.getCollectionFormats();
+      return formats.contains(CollectionFormat.STILL_RADIOMETRIC) || formats.contains(CollectionFormat.VIDEO_RADIOMETRIC);
     }).orElse(false);
   }
 
@@ -712,15 +721,10 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     return this.getMetadata().map(metadata -> {
       Sensor sensor = metadata.getSensor();
-
-      if (sensor != null)
-      {
-        SensorType type = sensor.getSensorType();
-
-        return type.isLidar();
-      }
-
-      return false;
+      if (sensor == null) return false;
+      
+      var formats = sensor.getCollectionFormats();
+      return formats.contains(CollectionFormat.LIDAR);
     }).orElse(false);
   }
 

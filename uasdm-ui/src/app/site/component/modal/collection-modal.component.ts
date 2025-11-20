@@ -34,6 +34,7 @@ import { UserAccessModalComponent } from './user-access-modal.component';
 import { AuthService } from '@shared/service/auth.service';
 import { ImagePreviewModalComponent } from './image-preview-modal.component';
 import { TusUploadModalComponent } from './tus-upload-modal.component';
+import { COLLECTION_FORMATS } from '@site/model/sensor';
 
 @Component({
 	standalone: false,
@@ -138,6 +139,12 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		this.processable = this.metadataService.isProcessable(entity.type);
 	}
 
+	labelForFormat(format: string) {
+		var meta = COLLECTION_FORMATS.find(m => m.value === format);
+
+		return meta == null ? format : meta.label;
+	}
+
 	createImageFromBlob(image: Blob, imageData: any) {
 		let reader = new FileReader();
 		reader.addEventListener("load", () => {
@@ -217,6 +224,12 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	getData(component: string, folder: string, pageNumber: number, pageSize: number) {
 
 		this.loading = true;
+
+		if (folder === "image" && this.entity.format && this.entity.format.startsWith('VIDEO_')) {
+			folder = "video";
+			pageNumber = null;
+			pageSize = null;
+		}
 
 		this.service.getObjects(component, folder, pageNumber, pageSize, true).then(resultSet => {
 			this.page = resultSet;
@@ -416,7 +429,6 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	capitalize(str): string {
 		return str.replace(/^\w/, c => c.toUpperCase());
 	}
-
 
 	showVideo(item: SiteEntity): void {
 		this.video.name = null;

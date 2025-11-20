@@ -18,7 +18,7 @@ import { Subject } from 'rxjs';
     standalone: false,
   selector: 'sensors',
     templateUrl: './sensors.component.html',
-    styleUrls: ['./sensors.css']
+    styleUrls: []
 })
 export class SensorsComponent implements OnInit {
     bsModalRef: BsModalRef;

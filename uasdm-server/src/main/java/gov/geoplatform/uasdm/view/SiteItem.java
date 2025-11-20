@@ -30,6 +30,8 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.geojson.GeoJsonReader;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
 
+import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
+
 public class SiteItem implements TreeComponent
 {
   public static String        ID                  = "id";
@@ -65,10 +67,14 @@ public class SiteItem implements TreeComponent
   public static String        PLATFORM            = "platform";
 
   public static String        SENSOR              = "sensor";
+  
+  public static String        FORMAT              = "format";
 
   public static String        IS_LIDAR            = "isLidar";
   
   public static String        IS_RADIOMETRIC      = "isRadiometric";
+  
+  public static String        IS_MULTISPECTRAL    = "isMultispectral";
 
   public static String        COLLECTION_DATE     = "collectionDate";
 
@@ -94,9 +100,13 @@ public class SiteItem implements TreeComponent
 
   private Boolean             metadataUploaded;
 
+  private String              format;
+  
   private Boolean             isLidar;
   
   private Boolean             isRadiometric;
+  
+  private Boolean             isMultispectral;
 
   private Geometry            geometry;
 
@@ -357,6 +367,16 @@ public class SiteItem implements TreeComponent
   {
     this.platform = platform;
   }
+  
+  public String getFormat()
+  {
+    return format;
+  }
+
+  public void setFormat(CollectionFormat format)
+  {
+    this.format = format == null ? null : format.name();
+  }
 
   public Boolean getIsLidar()
   {
@@ -377,6 +397,16 @@ public class SiteItem implements TreeComponent
   {
     this.isRadiometric = isRadiometric;
   }
+  
+  public Boolean getIsMultispectral()
+  {
+    return isMultispectral;
+  }
+
+  public void setIsMultispectral(Boolean isMultispectral)
+  {
+    this.isMultispectral = isMultispectral;
+  }
 
   public JSONObject toJSON()
   {
@@ -393,8 +423,10 @@ public class SiteItem implements TreeComponent
     obj.put(OWNER_EMAIL, this.getOwnerEmail());
     obj.put(METADATA_UPLOADED, this.getMetadataUploaded());
     obj.put(PRIVILEGE_TYPE, this.getPrivilegeType());
+    obj.put(FORMAT, this.getFormat());
     obj.put(IS_LIDAR, this.getIsLidar());
     obj.put(IS_RADIOMETRIC, this.getIsRadiometric());
+    obj.put(IS_MULTISPECTRAL, this.getIsMultispectral());
     obj.put("hasAllZip", this.hasAllZip);
 
     if (this.getType().equals("Collection"))

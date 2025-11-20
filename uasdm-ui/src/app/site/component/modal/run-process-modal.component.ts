@@ -56,7 +56,7 @@ export class RunProcessModalComponent implements OnInit, OnDestroy {
 
     init(entity: SiteEntity) {
         this.entity = entity;
-        this.config.radiometricCalibration = this.entity.sensor.sensorType.isMultispectral ? "CAMERA" : "NONE";
+        this.config.radiometricCalibration = (this.entity.isRadiometric || this.entity.isMultispectral) ? "CAMERA" : "NONE";
 
         this.service.getDefaultRunConfig(this.entity.id).then((config: ProcessConfig) => {
             this.config = config;

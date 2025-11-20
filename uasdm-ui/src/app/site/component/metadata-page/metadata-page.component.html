@@ -271,10 +271,16 @@
                             </div>
                         </div>
                         <div class="row">
+                            <label for="sensor.collectionFormats" class="col-sm-2 col-form-label">Allowed Collection Formats</label>
+                            <div class="col-sm-10">
+                                <label style="line-height: 5rem;">{{getCollectionFormatLabels()}}</label>
+                            </div>
+                        </div>
+                        <div class="row">
                             <label for="sensor.wavelength" class="col-sm-2 col-form-label">Wave Length</label>
                             <div class="col-sm-10">
                                 <ul class="list-group">
-                                    <li class="list-group-item" *ngFor="let wavelength of metaObject.sensor.wavelengths">
+                                    <li class="list-group-item" style="line-height:1rem;" *ngFor="let wavelength of metaObject.sensor.wavelengths">
                                         {{wavelength.name}}
                                     </li>
                                 </ul>
@@ -322,10 +328,22 @@
                                     [value]="metaObject.sensor.pixelSizeHeight">
                             </div>
                         </div>
+                        
                     </ng-container>
                 </div>
             </div>
 
+            <div *ngIf="metaObject != null" class="form-group" style="margin-top: 2rem;">
+                <div class="">
+                    <label for="collectionFormat" class="">Collection Format:</label>
+                    <select *ngIf="collectionFormatMetadatas" [(ngModel)]="page.selection.format" id="collectionFormat" name="collectionFormat" class="form-control"
+                        (change)="onCollectionFormatChange()" required>
+                        <option></option>
+                        <option *ngFor="let format of collectionFormatMetadatas" [value]="format.value">{{format.label}}
+                        </option>
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
 

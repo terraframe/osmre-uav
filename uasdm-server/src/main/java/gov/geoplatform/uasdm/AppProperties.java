@@ -168,18 +168,6 @@ public class AppProperties
     }
   }
 
-  public static File getTempDirectory()
-  {
-    File temp = new File(GeoprismProperties.getGeoprismFileStorage(), Singleton.getProps().getString("temp.dir", "temp"));
-    
-    if (!temp.exists())
-    {
-      temp.mkdir();
-    }
-    
-    return temp;
-  }
-
   public static File getUploadDirectory()
   {
     File upload = new File(GeoprismProperties.getGeoprismFileStorage(), Singleton.getProps().getString("upload.dir", "upload"));

@@ -156,55 +156,9 @@
                 </tr>
               </thead>
               <tbody *ngIf="uploadTarget === 'raw'">
-                <ng-container *ngIf="!component.isLidar && !component.isRadiometric">
-                  <tr>
-                    <td>RGB Image Data</td>
-                    <td>jpg, jpeg, png</td>
-                  </tr>
-                  <tr>
-                    <td>Multispectral Image Data</td>
-                    <td>tif</td>
-                  </tr>
-                </ng-container>
-                <ng-container *ngIf="component.isLidar">
-                  <tr>
-                    <td>Pointcloud</td>
-                    <td>laz, las</td>
-                  </tr>
-                </ng-container>
-                <ng-container *ngIf="component.isRadiometric">
-                  <tr>
-                    <td>Radiometric Data</td>
-                    <td>tif</td>
-                  </tr>
-                </ng-container>
-                <tr>
-                  <td>Video</td>
-                  <td>mp4</td>
-                </tr>
-              </tbody>
-              <tbody *ngIf="uploadTarget === 'ptcloud'">
-                <tr>
-                  <td>Pointcloud</td>
-                  <td>laz, las</td>
-                </tr>
-              </tbody>
-              <tbody *ngIf="uploadTarget === 'dem'">
-                <tr>
-                  <td>Digital Elevation Model (DEM)</td>
-                  <td>tif, zip, tar.gz</td>
-                </tr>
-              </tbody>
-              <tbody *ngIf="uploadTarget === 'ortho'">
-                <tr>
-                  <td>Orthomosaic</td>
-                  <td>tif, png, zip, tar.gz</td>
-                </tr>
-              </tbody>
-              <tbody *ngIf="uploadTarget === 'video'">
-                <tr>
-                  <td>Video</td>
-                  <td>mp4</td>
+                <tr *ngFor="let row of supportedRawFormats">
+                  <td>{{ row.type }}</td>
+                  <td>{{ row.formats }}</td>
                 </tr>
               </tbody>
             </table>

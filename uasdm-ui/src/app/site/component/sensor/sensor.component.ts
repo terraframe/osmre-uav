@@ -8,22 +8,26 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { ErrorHandler } from '@shared/component';
 
-import { Sensor } from '@site/model/sensor';
+import { CollectionFormat, Sensor } from '@site/model/sensor';
 import { SensorService } from '@site/service/sensor.service';
 import { ClassificationService, Endpoint } from '@site/service/classification.service';
 import { Classification } from '@site/model/classification';
 
 import { AuthService } from '@shared/service/auth.service';
 
+import { COLLECTION_FORMATS } from '@site/model/sensor'
+
 
 @Component({
 	standalone: false,
   selector: 'sensor',
 	templateUrl: './sensor.component.html',
-	styleUrls: []
+	styleUrls: ['sensor.css']
 })
 export class SensorComponent implements OnInit {
     
+	public COLLECTION_FORMATS = COLLECTION_FORMATS;
+
     isAdmin:boolean = false;
     
     original: Sensor;
@@ -111,6 +115,33 @@ export class SensorComponent implements OnInit {
 				this.sensor.wavelengths.splice(indexOf, 1);
 			}
 		}
+	}
+
+	// assuming:
+	// export type CollectionFormat = typeof COLLECTION_FORMATS[number]["value"];
+	// sensor.collectionFormats: CollectionFormat[];
+
+	updateSelectedCollectionFormat(value: CollectionFormat, checked: boolean): void {
+		if (!this.sensor.collectionFormats) {
+			this.sensor.collectionFormats = [];
+		}
+
+		const current = this.sensor.collectionFormats;
+
+		if (checked) {
+			if (!current.includes(value)) {
+			this.sensor.collectionFormats = [...current, value];
+			}
+		} else {
+			this.sensor.collectionFormats = current.filter(v => v !== value);
+		}
+
+		console.log(this.sensor.collectionFormats);
+	}
+
+	getFormatLabel(fmt: CollectionFormat): string {
+		const found = COLLECTION_FORMATS.find(f => f.value === fmt);
+		return found ? found.label : fmt;
 	}
 
 	error(err: HttpErrorResponse): void {

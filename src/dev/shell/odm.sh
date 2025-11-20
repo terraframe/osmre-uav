@@ -26,6 +26,7 @@ fi
 
 # Exit immediately if anything errors out
 set -e
+set -x
 
 export S3_ENDPOINT=s3.us-east-1.amazonaws.com
 export S3_BUCKET=osmre-uas-dev

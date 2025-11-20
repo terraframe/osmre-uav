@@ -23,6 +23,8 @@ import { ManagementService } from '@site/service/management.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgxFileDropEntry } from 'ngx-file-drop';
 
+type SupportedRow = { type: string; formats: string };
+
 @Component({
 	standalone: false,
 	selector: 'tus-upload-modal',
@@ -215,6 +217,63 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 		if (this.isUploading) {
 			$event.returnValue = 'An upload is currently in progress. Are you sure you want to leave?';
 		}
+	}
+
+	get supportedRawFormats(): SupportedRow[] {
+		if (!this.component) {
+			return [];
+		}
+
+		const fmt = this.component.format;
+		const rows: SupportedRow[] = [];
+
+		// ---- Legacy behaviour (no format set) ----
+		if (!fmt) {
+			if (this.component.isLidar) {
+				rows.push({ type: 'Pointcloud', formats: 'laz, las' });
+			} else if (this.component.isRadiometric) {
+				rows.push({ type: 'Radiometric Data', formats: 'tif' });
+			} else {
+				// default legacy RGB/multispectral behaviour
+				rows.push(
+				{ type: 'RGB Image Data',           formats: 'jpg, jpeg, png' },
+				{ type: 'Multispectral Image Data', formats: 'tif' }
+				);
+			}
+
+			// Legacy table always includes Video row
+			rows.push({ type: 'Video', formats: 'mp4' });
+				return rows;
+		}
+
+		// ---- New behaviour driven by CollectionFormat ----
+		switch (fmt) {
+			case 'LIDAR':
+				rows.push({ type: 'Pointcloud', formats: 'laz, las' });
+				break;
+
+			case 'STILL_RADIOMETRIC':
+				rows.push({ type: 'Radiometric Data', formats: 'tif' });
+				break;
+
+			case 'STILL_MULTISPECTRAL':
+				rows.push({ type: 'Multispectral Image Data', formats: 'tif' });
+				break;
+
+			case 'STILL_IMAGERY_RGB':
+			case 'STILL_THERMAL_RGB':
+				rows.push({ type: 'RGB Image Data', formats: 'jpg, jpeg, png' });
+				break;
+
+			case 'VIDEO_RGB':
+			case 'VIDEO_THERMAL_RGB':
+			case 'VIDEO_RADIOMETRIC':
+			case 'VIDEO_MULTISPECTRAL':
+				rows.push({ type: 'Video', formats: 'mp4' });
+				break;
+		}
+
+		return rows;
 	}
 
 	error(err: any): void {

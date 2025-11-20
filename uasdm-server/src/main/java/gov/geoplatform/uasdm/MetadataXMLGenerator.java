@@ -42,6 +42,7 @@ import org.w3c.dom.Element;
 
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.transport.conversion.ConversionException;
 
 import gov.geoplatform.uasdm.bus.MissingMetadataMessage;
@@ -638,13 +639,8 @@ public class MetadataXMLGenerator
     if (! ( component instanceof CollectionIF ) && product == null)
       throw new ProgrammingErrorException("Product cannot be null for non-collection components.");
 
-    File temp = null;
-
-    try
+    try(CloseableFile temp = createTempFile(document))
     {
-
-      temp = createTempFile(document);
-
       String fileName = component.getFolderName() + FILENAME;
       String key = component.getS3location(component instanceof CollectionIF ? null : product, ImageryComponent.RAW) + fileName;
 
@@ -667,30 +663,16 @@ public class MetadataXMLGenerator
         col.setMetadataUploaded(true);
         col.appLock();
 
-        CollectionReportFacade.updateIncludeSize((CollectionIF) component).doIt(); // TODO
-                                                                                   // :
-                                                                                   // And
-                                                                                   // for
-                                                                                   // things
-                                                                                   // other
-                                                                                   // than
-                                                                                   // collection?
-      }
-    }
-    finally
-    {
-      if (temp != null)
-      {
-        FileUtils.deleteQuietly(temp);
+        CollectionReportFacade.updateIncludeSize((CollectionIF) component).doIt();
       }
     }
   }
 
-  private File createTempFile(Document document) throws TransformerFactoryConfigurationError
+  private CloseableFile createTempFile(Document document) throws TransformerFactoryConfigurationError
   {
     try
     {
-      File temp = File.createTempFile("metadata", ".xml", AppProperties.getTempDirectory());
+      CloseableFile temp = new CloseableFile(File.createTempFile("metadata", ".xml"), true);
 
       try (FileOutputStream fos = new FileOutputStream(temp))
       {

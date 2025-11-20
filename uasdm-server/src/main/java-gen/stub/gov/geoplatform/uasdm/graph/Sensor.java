@@ -16,6 +16,8 @@
 package gov.geoplatform.uasdm.graph;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,9 +26,12 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collector;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
@@ -45,10 +50,28 @@ public class Sensor extends SensorBase implements JSONSerializable
   private static final long  serialVersionUID = 1045467848;
 
   public static final String SENSOR_TYPE_OID  = "sensorTypeOid";
+  
+  public static final String COLLECTIONFORMATS = "collectionFormats";
+  
+  public static enum CollectionFormat {
+    STILL_IMAGERY_RGB,
+    STILL_THERMAL_RGB,
+    STILL_RADIOMETRIC,
+    STILL_MULTISPECTRAL,
+    VIDEO_RGB,
+    VIDEO_THERMAL_RGB,
+    VIDEO_RADIOMETRIC,
+    VIDEO_MULTISPECTRAL,
+    LIDAR
+  }
+  public static List<CollectionFormat> DEFAULT_FORMATS = Arrays.asList(new CollectionFormat[] { CollectionFormat.STILL_IMAGERY_RGB, CollectionFormat.VIDEO_RGB, CollectionFormat.STILL_THERMAL_RGB, CollectionFormat.VIDEO_THERMAL_RGB });
 
   public Sensor()
   {
     super();
+    
+    // Default value : RGB.
+    this.setCollectionFormats(DEFAULT_FORMATS);
   }
 
   @Override
@@ -99,6 +122,42 @@ public class Sensor extends SensorBase implements JSONSerializable
 
     return query.getResults();
   }
+  
+  public List<CollectionFormat> getCollectionFormats() {
+    String sa = getSCollectionFormats();
+    
+    if (StringUtils.isBlank(sa))
+      return new ArrayList<CollectionFormat>();
+    
+    try {
+        ObjectMapper om = new ObjectMapper();
+        return om.readValue(sa, new TypeReference<List<CollectionFormat>>() {});
+    } catch (Exception e) {
+        throw new RuntimeException("Invalid JSON for collection formats: " + sa, e);
+    }
+  }
+  
+  public void setCollectionFormats(List<CollectionFormat> formats) {
+    try {
+        ObjectMapper om = new ObjectMapper();
+        // Always store a JSON array, even if empty
+        this.setSCollectionFormats(om.writeValueAsString(
+            formats == null ? List.of() : formats
+        ));
+    } catch (Exception e) {
+        throw new RuntimeException("Failed to serialize collection formats", e);
+    }
+  }
+
+  public void addCollectionFormat(CollectionFormat format) {
+      if (format == null) throw new NullPointerException();
+    
+      List<CollectionFormat> current = getCollectionFormats();
+      if (!current.contains(format)) {
+          current.add(format);
+      }
+      setCollectionFormats(current);
+  }
 
   @Override
   public void delete()
@@ -112,7 +171,7 @@ public class Sensor extends SensorBase implements JSONSerializable
   {
     return SensorType.get(this.getObjectValue(SENSORTYPE));
   }
-
+  
   @Override
   public JSONObject toJSON()
   {
@@ -128,6 +187,7 @@ public class Sensor extends SensorBase implements JSONSerializable
     object.put(Sensor.HASGEOLOGGER, this.getHasGeologger());
     object.put(Sensor.HIGHRESOLUTION, this.getHighResolution());
     object.put(Sensor.FOCALLENGTH, this.getRealFocalLength());
+    object.put(Sensor.COLLECTIONFORMATS, new JSONArray(this.getSCollectionFormats()));
 
     if (this.getDateCreated() != null)
     {
@@ -187,6 +247,7 @@ public class Sensor extends SensorBase implements JSONSerializable
     object.put(Sensor.HASGEOLOGGER, this.getHasGeologger());
     object.put(Sensor.HIGHRESOLUTION, this.getHighResolution());
     object.put(Sensor.FOCALLENGTH, this.getRealFocalLength());
+    object.put(Sensor.COLLECTIONFORMATS, new JSONArray(this.getSCollectionFormats()));
 
     List<WaveLength> wavelengths = this.getSensorHasWaveLengthChildWaveLengths();
 
@@ -228,6 +289,7 @@ public class Sensor extends SensorBase implements JSONSerializable
     sensor.setRealSensorWidth(new BigDecimal(json.getDouble(Sensor.SENSORWIDTH)));
     sensor.setDescription(json.has(Sensor.DESCRIPTION) ? json.getString(Sensor.DESCRIPTION) : null);
     sensor.setModel(json.has(Sensor.MODEL) ? json.getString(Sensor.MODEL) : null);
+    sensor.setSCollectionFormats(json.has(Sensor.COLLECTIONFORMATS) ? json.getJSONArray(Sensor.COLLECTIONFORMATS).toString() : new JSONArray().toString());
 
     if (json.has(Sensor.HASGEOLOGGER))
     {

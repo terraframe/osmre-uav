@@ -51,16 +51,6 @@ public class SensorType extends SensorTypeBase implements Classification
     super();
   }
 
-  public boolean isLidar()
-  {
-    return super.getIsLidar() != null && super.getIsLidar().booleanValue();
-  }
-  
-  public boolean isRadiometric()
-  {
-    return super.getIsRadiometric() != null && super.getIsRadiometric().booleanValue();
-  }
-
   @Override
   public void apply()
   {
@@ -142,9 +132,6 @@ public class SensorType extends SensorTypeBase implements Classification
     JSONObject object = new JSONObject();
     object.put(SensorType.OID, this.getOid());
     object.put(SensorType.NAME, this.getName());
-    object.put(SensorType.ISMULTISPECTRAL, this.getIsMultispectral());
-    object.put(SensorType.ISLIDAR, this.isLidar());
-    object.put(SensorType.ISRADIOMETRIC, this.isRadiometric());
 
     if (this.getSeq() != null)
     {
@@ -189,33 +176,6 @@ public class SensorType extends SensorTypeBase implements Classification
     }
 
     st.setName(json.getString(SensorType.NAME));
-
-    if (json.has(SensorType.ISMULTISPECTRAL))
-    {
-      st.setIsMultispectral(json.getBoolean(SensorType.ISMULTISPECTRAL));
-    }
-    else
-    {
-      st.setIsMultispectral(Boolean.FALSE);
-    }
-
-    if (json.has(SensorType.ISLIDAR))
-    {
-      st.setIsLidar(json.getBoolean(SensorType.ISLIDAR));
-    }
-    else
-    {
-      st.setIsLidar(Boolean.FALSE);
-    }
-    
-    if (json.has(SensorType.ISRADIOMETRIC))
-    {
-      st.setIsRadiometric(json.getBoolean(SensorType.ISRADIOMETRIC));
-    }
-    else
-    {
-      st.setIsRadiometric(Boolean.FALSE);
-    }
 
     if (json.has(SensorType.SEQ))
     {

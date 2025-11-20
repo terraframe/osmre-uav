@@ -3,7 +3,7 @@
 ///
 
 import { PageResult } from '@shared/model/page';
-import { Sensor } from './sensor';
+import { CollectionFormat, Sensor } from './sensor';
 import { Platform } from './platform';
 import { UAV } from './uav'
 import { LocalizedValue } from '@shared/model/organization';
@@ -98,6 +98,8 @@ export class SiteEntity {
 	presignedThumbnailDownload?: string;
 	isLidar?: boolean;
 	isRadiometric?: boolean;
+	isMultispectral?: boolean;
+	format?: CollectionFormat;
 
 	// Document metadata fields
 	description?: string;
@@ -215,6 +217,7 @@ export class Selection {
 	weatherConditions?: string;
 	artifacts?: any[];
 	isPrivate?: boolean;
+	format?: string;
 };
 
 export class UploadForm extends ProcessConfig {

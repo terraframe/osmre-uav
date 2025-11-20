@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = -972114702)
+@com.runwaysdk.business.ClassSignature(hash = 292614792)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -13,12 +13,11 @@ public abstract class SensorTypeBase extends com.runwaysdk.business.graph.Vertex
   public final static String CLASS = "gov.geoplatform.uasdm.graph.SensorType";
   public final static java.lang.String ISLIDAR = "isLidar";
   public final static java.lang.String ISMULTISPECTRAL = "isMultispectral";
-  public final static java.lang.String ISRADIOMETRIC = "isRadiometric";
   public final static java.lang.String NAME = "name";
   public final static java.lang.String OID = "oid";
   public final static java.lang.String SEQ = "seq";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = -972114702;
+  private static final long serialVersionUID = 292614792;
   
   public SensorTypeBase()
   {
@@ -55,22 +54,6 @@ public abstract class SensorTypeBase extends com.runwaysdk.business.graph.Vertex
   public void setIsMultispectral(Boolean value)
   {
     this.setValue(ISMULTISPECTRAL, value);
-  }
-  
-  public Boolean getIsRadiometric()
-  {
-    return (Boolean) this.getObjectValue(ISRADIOMETRIC);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getIsRadiometricMd()
-  {
-    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.SensorType.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(ISRADIOMETRIC);
-  }
-  
-  public void setIsRadiometric(Boolean value)
-  {
-    this.setValue(ISRADIOMETRIC, value);
   }
   
   public String getName()

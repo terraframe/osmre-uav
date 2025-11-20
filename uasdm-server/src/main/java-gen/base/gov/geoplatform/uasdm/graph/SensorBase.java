@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = 887480747)
+@com.runwaysdk.business.ClassSignature(hash = -1276856020)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -42,12 +27,13 @@ public abstract class SensorBase extends com.runwaysdk.business.graph.VertexObje
   public final static java.lang.String REALPIXELSIZEWIDTH = "realPixelSizeWidth";
   public final static java.lang.String REALSENSORHEIGHT = "realSensorHeight";
   public final static java.lang.String REALSENSORWIDTH = "realSensorWidth";
+  public final static java.lang.String SCOLLECTIONFORMATS = "sCollectionFormats";
   public final static java.lang.String SENSORHEIGHT = "sensorHeight";
   public final static java.lang.String SENSORTYPE = "sensorType";
   public final static java.lang.String SENSORWIDTH = "sensorWidth";
   public final static java.lang.String SEQ = "seq";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 887480747;
+  private static final long serialVersionUID = -1276856020;
   
   public SensorBase()
   {
@@ -303,6 +289,22 @@ public abstract class SensorBase extends com.runwaysdk.business.graph.VertexObje
   public void setRealSensorWidth(java.math.BigDecimal value)
   {
     this.setValue(REALSENSORWIDTH, value);
+  }
+  
+  public String getSCollectionFormats()
+  {
+    return (String) this.getObjectValue(SCOLLECTIONFORMATS);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF getSCollectionFormatsMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Sensor.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeCharacterDAOIF)mdClassIF.definesAttribute(SCOLLECTIONFORMATS);
+  }
+  
+  public void setSCollectionFormats(String value)
+  {
+    this.setValue(SCOLLECTIONFORMATS, value);
   }
   
   public Integer getSensorHeight()

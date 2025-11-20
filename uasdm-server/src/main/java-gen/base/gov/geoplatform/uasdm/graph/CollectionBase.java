@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = 399923725)
+@com.runwaysdk.business.ClassSignature(hash = 986475137)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -46,12 +31,13 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
   public final static java.lang.String POCEMAIL = "pocEmail";
   public final static java.lang.String POCNAME = "pocName";
   public final static java.lang.String PRIVILEGETYPE = "privilegeType";
+  public final static java.lang.String SCOLLECTIONFORMAT = "sCollectionFormat";
   public final static java.lang.String SOUTHBOUND = "southBound";
   public final static java.lang.String UAV = "uav";
   public final static java.lang.String WEATHERCONDITIONS = "weatherConditions";
   public final static java.lang.String WESTBOUND = "westBound";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 399923725;
+  private static final long serialVersionUID = 986475137;
   
   public CollectionBase()
   {
@@ -395,6 +381,22 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
     return (com.runwaysdk.dataaccess.MdAttributeEnumerationDAOIF)mdClassIF.definesAttribute(PRIVILEGETYPE);
   }
   
+  public String getSCollectionFormat()
+  {
+    return (String) this.getObjectValue(SCOLLECTIONFORMAT);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getSCollectionFormatMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Collection.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(SCOLLECTIONFORMAT);
+  }
+  
+  public void setSCollectionFormat(String value)
+  {
+    this.setValue(SCOLLECTIONFORMAT, value);
+  }
+  
   public java.math.BigDecimal getSouthBound()
   {
     return (java.math.BigDecimal) this.getObjectValue(SOUTHBOUND);
@@ -462,6 +464,22 @@ public abstract class CollectionBase extends gov.geoplatform.uasdm.graph.UasComp
   protected String getDeclaredType()
   {
     return CLASS;
+  }
+  
+  public com.runwaysdk.business.graph.EdgeObject addCollectionHasMetadataChild(gov.geoplatform.uasdm.graph.CollectionMetadata collectionMetadata)
+  {
+    return super.addChild(collectionMetadata, "gov.geoplatform.uasdm.graph.CollectionHasMetadata");
+  }
+  
+  public void removeCollectionHasMetadataChild(gov.geoplatform.uasdm.graph.CollectionMetadata collectionMetadata)
+  {
+    super.removeChild(collectionMetadata, "gov.geoplatform.uasdm.graph.CollectionHasMetadata");
+  }
+  
+  @SuppressWarnings("unchecked")
+  public java.util.List<gov.geoplatform.uasdm.graph.CollectionMetadata> getCollectionHasMetadataChildCollectionMetadatas()
+  {
+    return super.getChildren("gov.geoplatform.uasdm.graph.CollectionHasMetadata",gov.geoplatform.uasdm.graph.CollectionMetadata.class);
   }
   
   public com.runwaysdk.business.graph.EdgeObject addMissionHasCollectionParent(gov.geoplatform.uasdm.graph.Mission mission)
