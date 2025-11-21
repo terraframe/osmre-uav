@@ -707,24 +707,30 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public boolean isRadiometric()
   {
-    return this.getMetadata().map(metadata -> {
-      Sensor sensor = metadata.getSensor();
-      if (sensor == null) return false;
-      
-      var formats = sensor.getCollectionFormats();
-      return formats.contains(CollectionFormat.STILL_RADIOMETRIC) || formats.contains(CollectionFormat.VIDEO_RADIOMETRIC);
-    }).orElse(false);
+    var format = this.getFormat();
+    if (format != null) return format.isRadiometric();
+    
+    return false;
   }
 
   @Override
   public boolean isLidar()
   {
+    var format = this.getFormat();
+    if (format != null) return format.isLidar();
+    
+    // Maintain legacy behaviour (before collection format existed)
     return this.getMetadata().map(metadata -> {
       Sensor sensor = metadata.getSensor();
-      if (sensor == null) return false;
-      
-      var formats = sensor.getCollectionFormats();
-      return formats.contains(CollectionFormat.LIDAR);
+
+      if (sensor != null)
+      {
+        SensorType type = sensor.getSensorType();
+
+        return type.isLidar();
+      }
+
+      return false;
     }).orElse(false);
   }
 

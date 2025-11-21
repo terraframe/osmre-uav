@@ -4,7 +4,11 @@
   background:#fff;
   border:1px solid #dee2e6;
   border-radius:.25rem;
+  max-height:150px;
   transition:border-color .2s, box-shadow .2s, transform .08s;
+}
+.thumb.video {
+  max-width:150px;
 }
 .thumb > img{ display:block; width:100%; height:auto; border-radius:.25rem; }
 .thumb:hover,

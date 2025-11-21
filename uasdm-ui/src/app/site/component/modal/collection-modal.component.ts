@@ -234,7 +234,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		this.service.getObjects(component, folder, pageNumber, pageSize, true).then(resultSet => {
 			this.page = resultSet;
 
-			const minNumberOfFiles = this.entity.isLidar ? 0 : 1;
+			const minNumberOfFiles = (this.entity.isLidar || (this.entity.format && this.entity.format.toLowerCase().includes("video"))) ? 0 : 1;
 
 			this.canReprocessImagery = this.page.results.length > minNumberOfFiles ? true : false;
 

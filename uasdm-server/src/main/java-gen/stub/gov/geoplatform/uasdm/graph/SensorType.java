@@ -184,4 +184,15 @@ public class SensorType extends SensorTypeBase implements Classification
 
     return st;
   }
+  
+  /**
+   * This method exists purely to maintain backwards compatibility with older collections which had this information on the sensorType. Nowadays, this information is
+   * accessed at 'collection.getFormat().isLidar()'.
+   * 
+   * @return
+   */
+  public boolean isLidar()
+  {
+     return super.getIsLidar() != null && super.getIsLidar().booleanValue();
+  }
 }

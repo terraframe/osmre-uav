@@ -62,7 +62,26 @@ public class Sensor extends SensorBase implements JSONSerializable
     VIDEO_THERMAL_RGB,
     VIDEO_RADIOMETRIC,
     VIDEO_MULTISPECTRAL,
-    LIDAR
+    LIDAR;
+    
+    public boolean isMultispectral() {
+      return name().toLowerCase().contains("multispectral");
+    }
+    public boolean isRadiometric() {
+      return name().toLowerCase().contains("radiometric");
+    }
+    public boolean isLidar() {
+      return name().toLowerCase().contains("lidar");
+    }
+    public boolean isRGB() {
+      return name().toLowerCase().contains("rgb");
+    }
+    public boolean isVideo() {
+      return name().toLowerCase().contains("video");
+    }
+    public boolean isStill() {
+      return name().toLowerCase().contains("still");
+    }
   }
   public static List<CollectionFormat> DEFAULT_FORMATS = Arrays.asList(new CollectionFormat[] { CollectionFormat.STILL_IMAGERY_RGB, CollectionFormat.VIDEO_RGB, CollectionFormat.STILL_THERMAL_RGB, CollectionFormat.VIDEO_THERMAL_RGB });
 

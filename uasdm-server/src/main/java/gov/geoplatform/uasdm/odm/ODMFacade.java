@@ -203,7 +203,7 @@ public class ODMFacade
   @SuppressWarnings("resource")
   private static ODMProcessingPayload filterArchive(ArchiveFileResource archive, ODMProcessConfiguration configuration) throws IOException, CsvValidationException
   {
-    List<String> extensions = ImageryProcessingJob.getSupportedExtensions(ImageryComponent.RAW, false, false, configuration);
+    List<String> extensions = ImageryProcessingJob.getSupportedExtensions(ImageryComponent.RAW, false, false, false, configuration);
     final ODMProcessingPayload payload = new ODMProcessingPayload(archive);
     
     Queue<ApplicationFileResource> queue = new LinkedList<>();

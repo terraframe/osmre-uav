@@ -18,6 +18,7 @@ package gov.geoplatform.uasdm;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -85,7 +86,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     this.setConfigurationJson(configuration.toJson().toString());
   }
 
-  public static List<String> getSupportedExtensions(String uploadTarget, boolean isMultispectral, boolean isRadiometric, ProcessConfiguration config)
+  public static List<String> getSupportedExtensions(String uploadTarget, boolean isMultispectral, boolean isRadiometric, boolean isVideo, ProcessConfiguration config)
   {
     if (isMultispectral || isRadiometric || uploadTarget.equals(ImageryComponent.DEM))
     {
@@ -99,7 +100,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     {
       return Arrays.asList("laz", "las");
     }
-    else if (uploadTarget.equals(ImageryComponent.VIDEO))
+    else if (uploadTarget.equals(ImageryComponent.VIDEO) || isVideo)
     {
       return Arrays.asList("mp4");
     }
