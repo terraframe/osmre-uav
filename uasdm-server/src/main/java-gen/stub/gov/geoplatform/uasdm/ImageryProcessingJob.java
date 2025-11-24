@@ -111,7 +111,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     }
     else
     {
-      return Arrays.asList("jpg", "jpeg", "png", "tif", "tiff");
+      return Arrays.asList("jpg", "jpeg", "png", "tif", "tiff", "mp4");
     }
   }
 

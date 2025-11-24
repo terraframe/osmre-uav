@@ -21,6 +21,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 
@@ -41,15 +42,12 @@ import com.runwaysdk.resource.ApplicationFileResource;
 import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.resource.CloseableFile;
-import com.runwaysdk.resource.FileResource;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.GenericException;
-import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
-import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.Quality;
 import gov.geoplatform.uasdm.processing.gcp.GroundControlPointFileValidator;
@@ -146,7 +144,7 @@ public class ODMService implements ODMServiceIF
 
     try (ODMProcessingPayload payload = ODMFacade.filterAndExtract(images, configuration, col))
     {
-      if (payload.getImageCount() > 0)
+      if (payload.getRawCount() > 0)
       {
         if (configuration.isIncludeGeoLocationFile() && StringUtils.isEmpty(payload.getGeoLocationFile()))
         {
@@ -166,7 +164,7 @@ public class ODMService implements ODMServiceIF
           GroundControlPointFileValidator.validate(ODMProcessConfiguration.FileFormat.ODM, payload, task);
         }
 
-        HttpNewResponse resp = this.taskNewInit(col, payload.getImageCount(), isMultispectral, configuration);
+        HttpNewResponse resp = this.taskNewInit(col, payload.getRawCount(), isMultispectral, configuration);
 
         if (resp.hasError() || resp.getHTTPResponse().isError())
         {
@@ -343,12 +341,16 @@ public class ODMService implements ODMServiceIF
       arr.put(param);
     }
 
-    if (configuration.getVideoResolution() != null)
-    {
+    if (col.getFormat() != null && col.getFormat().isVideo()) {
       JSONObject param = new JSONObject();
       param.put("name", "video-resolution");
-      param.put("value", configuration.getVideoResolution());
+      param.put("value", Objects.requireNonNullElse(configuration.getVideoResolution(), 4000));
       arr.put(param);
+      
+      JSONObject p2 = new JSONObject();
+      p2.put("name", "video-limit");
+      p2.put("value", Objects.requireNonNullElse(configuration.getVideoLimit(), 500));
+      arr.put(p2);
     }
 
     MultipartEntityBuilder builder = MultipartEntityBuilder.create();

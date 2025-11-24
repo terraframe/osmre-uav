@@ -108,7 +108,7 @@ public class ODMFacade
       colSizeMb += sizeMb;
     }
 
-    public int getImageCount()
+    public int getRawCount()
     {
       return imageNames.size();
     }

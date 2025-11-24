@@ -94,6 +94,10 @@ public class ODMProcessConfiguration implements ProcessConfiguration
   public static final String     PROCESS_DEM                       = "processDem";
 
   public static final String     PROCESS_ORTHO                     = "processOrtho";
+  
+  public static final String     VIDEO_RESOLUTION                  = "videoResolution";
+  
+  public static final String     VIDEO_LIMIT                       = "videoLimit";
 
   private boolean                includeGeoLocationFile;
 
@@ -108,6 +112,11 @@ public class ODMProcessConfiguration implements ProcessConfiguration
   private String                 groundControlPointFileName;
 
   private BigDecimal             resolution;
+  
+  /*
+   * Maximum number of frames to extract from video files for processing. Set to 0 for no limit. Default: 500
+   */
+  private Integer                videoLimit;
 
   /*
    * video-resolution <positive integer>
@@ -193,7 +202,6 @@ public class ODMProcessConfiguration implements ProcessConfiguration
     this.resolution = new BigDecimal(5);
     this.matcherNeighbors = Integer.valueOf(0);
     this.minNumFeatures = Integer.valueOf(10000);
-    this.videoResolution = Integer.valueOf(4000);
     this.pcQuality = Quality.MEDIUM;
     this.featureQuality = Quality.HIGH;
     this.geoLocationFormat = FileFormat.RX1R2;
@@ -319,6 +327,16 @@ public class ODMProcessConfiguration implements ProcessConfiguration
   {
     this.videoResolution = videoResolution;
   }
+  
+  public Integer getVideoLimit()
+  {
+    return videoLimit;
+  }
+
+  public void setVideoLimit(Integer videoLimit)
+  {
+    this.videoLimit = videoLimit;
+  }
 
   public Integer getMatcherNeighbors()
   {
@@ -398,6 +416,8 @@ public class ODMProcessConfiguration implements ProcessConfiguration
     object.addProperty(INCLUDE_GROUND_CONTROL_POINT_FILE, this.includeGroundControlPointFile);
     object.addProperty(GROUND_CONTROL_POINT_FILE_NAME, this.groundControlPointFileName);
     object.addProperty(PRODUCT_NAME, this.productName);
+    object.addProperty(VIDEO_RESOLUTION, videoResolution);
+    object.addProperty(VIDEO_LIMIT, videoLimit);
 
     return object;
   }
@@ -446,6 +466,16 @@ public class ODMProcessConfiguration implements ProcessConfiguration
     if (metadata.containsKey(RESOLUTION))
     {
       configuration.setResolution(new BigDecimal(metadata.get(RESOLUTION)));
+    }
+    
+    if (metadata.containsKey(VIDEO_RESOLUTION))
+    {
+      configuration.setVideoResolution(Integer.parseInt(metadata.get(VIDEO_RESOLUTION)));
+    }
+    
+    if (metadata.containsKey(VIDEO_LIMIT))
+    {
+      configuration.setVideoLimit(Integer.parseInt(metadata.get(VIDEO_LIMIT)));
     }
 
     if (metadata.containsKey(MATCHING_NEIGHBORS))
@@ -564,6 +594,16 @@ public class ODMProcessConfiguration implements ProcessConfiguration
       {
         configuration.setResolution(new BigDecimal(element.getAsString()));
       }
+    }
+    
+    if (object.has(VIDEO_RESOLUTION) && !object.get(VIDEO_RESOLUTION).isJsonNull())
+    {
+      configuration.setVideoResolution(object.get(VIDEO_RESOLUTION).getAsInt());
+    }
+    
+    if (object.has(VIDEO_LIMIT) && !object.get(VIDEO_LIMIT).isJsonNull())
+    {
+      configuration.setVideoLimit(object.get(VIDEO_LIMIT).getAsInt());
     }
 
     if (object.has(MATCHING_NEIGHBORS))

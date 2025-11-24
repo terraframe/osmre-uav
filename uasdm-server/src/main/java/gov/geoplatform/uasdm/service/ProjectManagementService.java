@@ -166,7 +166,13 @@ public class ProjectManagementService
 
           try (OutputStream ostream = new BufferedOutputStream(new FileOutputStream(zip)))
           {
-            List<String> files = downloadAll(this.collection, ImageryComponent.RAW, ostream, predicate, false);
+            var format = this.collection.getFormat();
+            List<String> files;
+            
+            if (format != null && format.isVideo())
+              files = downloadAll(this.collection, ImageryComponent.VIDEO, ostream, predicate, false);
+            else
+              files = downloadAll(this.collection, ImageryComponent.RAW, ostream, predicate, false);
 
             filenames.addAll(files);
           }
