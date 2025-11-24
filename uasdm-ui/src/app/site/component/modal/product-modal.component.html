@@ -175,15 +175,13 @@
                       <li
                         *ngFor="let item of product.page.resultSet | paginate: { itemsPerPage: product.page.pageSize, currentPage: product.page.pageNumber, totalItems: product.page.count }"
                         class="list-group-item col-3">
-                        <ng-container *ngIf="thumbnails[item.id] != null">                          
-                          <a class="thumbnail text-decoration-none text-reset" (click)="previewImage(item)">
-                            <img class="mx-auto d-block img-thumbnail" [src]="thumbnails[item.id] | safeHtml"
-                              (error)="getDefaultImgURL($event)" alt="Image">
-                            <div class="caption">
-                              <h4 class="media-heading">{{item.name}}</h4>
-                            </div>
-                          </a>
-                        </ng-container>
+                        <a class="thumbnail text-decoration-none text-reset" (click)="previewImage(item)">
+                          <img class="mx-auto d-block img-thumbnail" [src]="thumbnails[item.id] | safeHtml"
+                            (error)="getDefaultImgURL($event)" alt="Image">
+                          <div class="caption">
+                            <h4 class="media-heading">{{item.name}}</h4>
+                          </div>
+                        </a>
                       </li>
                     </ul>
                   </div>
