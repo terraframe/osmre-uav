@@ -313,8 +313,8 @@
 
           <div class="btn-holder" style="margin: 20px 0px 10px 0px;">
 
-            <div class="d-flex flex-row bd-highlight mb-3">
-              <div class="p-2">
+            <div class="d-flex flex-row">
+              <div >
                 <button type="button" class="btn btn-warning" [disabled]="processRunning" (click)="editMetadata()">
                   <i class="fa fa-edit" style="color:white"></i>
                   Edit Metadata
@@ -330,7 +330,7 @@
 
               </div>
               <div class="flex-fill"></div>
-              <div class="p-2">
+              <div>
                 <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
 
                 <button *ngIf="tabName === 'artifacts'" type="button" class="btn btn-secondary"
