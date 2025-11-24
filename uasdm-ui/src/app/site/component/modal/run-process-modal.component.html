@@ -92,13 +92,6 @@
 					placeholder="5" step="1" min="0" />
 			</div>
 
-			<!--         TODO: Determine if this should be removed because IDM doesn't currently process video. -->
-			<!--         <div class="form-group"> -->
-			<!--             <label for="videoResolution">Maximum output resolution of extracted video frames in pixels</label> -->
-			<!--             <input [(ngModel)]="config.videoResolution" name="videoResolution" type="number" class="form-control" -->
-			<!--                 placeholder="4000" step="1" min="0" /> -->
-			<!--         </div> -->
-
 			<div *ngIf="config.processOrtho || config.processDem" class="form-group">
 				<label for="matcherNeighbors">Matcher Nieghbors</label>
 				<input [(ngModel)]="config.matcherNeighbors" name="matcherNeighbors" type="number" class="form-control"
@@ -142,8 +135,17 @@
 				</select>
 			</div>
 
+			<div *ngIf="entity && entity.format && entity.format.toLowerCase().includes('video_') && config.processOrtho" class="form-group">
+				<label for="videoResolution" title="Maximum output resolution of extracted video frames in pixels">Video Resolution</label>
+				<input [(ngModel)]="config.videoResolution" name="`" type="number" class="form-control"
+					placeholder="4000" step="1" min="0" />
+			</div>
 
-
+			<div *ngIf="entity && entity.format && entity.format.toLowerCase().includes('video_') && config.processOrtho" class="form-group">
+				<label for="videoLimit" title="Maximum number of frames to extract from video files for processing. Set to 0 for no limit">Video Limit</label>
+				<input [(ngModel)]="config.videoLimit" name="`" type="number" class="form-control"
+					placeholder="500" step="1" min="0" />
+			</div>
 		</div>
 	</div>
 

@@ -210,7 +210,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
       }
       else
       {
-        ImageSizeMapping autoscalerConfig = AutoscalerAwsConfigService.autoscalerMappingForConfig(resp.getPayload().getImageCount(), (int)resp.getPayload().getColSizeMb());
+        ImageSizeMapping autoscalerConfig = AutoscalerAwsConfigService.autoscalerMappingForConfig(resp.getPayload().getRawCount(), (int)resp.getPayload().getColSizeMb());
         ODMRun.createAndApplyFor(this, autoscalerConfig.getSlug());
 
         this.appLock();

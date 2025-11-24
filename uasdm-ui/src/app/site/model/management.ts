@@ -141,6 +141,7 @@ export class ProcessConfig {
 	outFileNamePrefix?: string;
 	resolution?: number;
 	videoResolution?: number;
+	videoLimit?: number;
 	matcherNeighbors?: number;
 	minNumFeatures?: number;
 	pcQuality?: string;
