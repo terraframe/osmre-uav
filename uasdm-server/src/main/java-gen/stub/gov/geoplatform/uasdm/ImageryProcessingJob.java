@@ -104,10 +104,10 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     if (format != null) { 
       if (format.isLidar())
         return Arrays.asList("las", "laz");
-      else if (format.isMultispectral() || format.isRadiometric())
-        return Arrays.asList("tif", "tiff");
       else if (format.isVideo())
         return Arrays.asList("mp4");
+      else if (format.isMultispectral() || format.isRadiometric())
+        return Arrays.asList("tif", "tiff");
     }
     
     return Arrays.asList("jpg", "jpeg", "png", "tif", "tiff", "mp4");
