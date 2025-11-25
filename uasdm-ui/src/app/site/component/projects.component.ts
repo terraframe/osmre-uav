@@ -1490,11 +1490,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.children = this.childMap[this.content];
 
       // Add a new vector source and layer
-      const config = {
-        oid: this.hierarchy.oid,
-        typeCode: type.code
-      };
-
       this.createHierarchyLayer(type, "#00ffff", 0.5, "parent");
     }
     else {
@@ -1795,17 +1790,30 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   handleVisibilityChange(): void {
     this.hierarchy.visible = !this.hierarchy.visible;
 
-    if (!this.hierarchy.visible) {
-      this.map.setLayoutProperty("parent-polygon", 'visibility', 'none');
-      this.map.setLayoutProperty("parent-label", 'visibility', 'none');
-      this.map.setLayoutProperty("hierarchy-polygon", 'visibility', 'none');
-      this.map.setLayoutProperty("hierarchy-label", 'visibility', 'none');
-    } else {
-      this.map.setLayoutProperty("parent-polygon", 'visibility', 'visible');
-      this.map.setLayoutProperty("parent-label", 'visibility', 'visible');
-      this.map.setLayoutProperty("hierarchy-polygon", 'visibility', 'visible');
-      this.map.setLayoutProperty("hierarchy-label", 'visibility', 'visible');
+    const changeVisibility = (type) => {
+
+      try {
+        if (!this.hierarchy.visible) {
+          this.map.setLayoutProperty(type.code + "-polygon", 'visibility', 'none');
+          this.map.setLayoutProperty(type.code + "-label", 'visibility', 'none');
+        } else {
+          this.map.setLayoutProperty(type.code + "-polygon", 'visibility', 'visible');
+          this.map.setLayoutProperty(type.code + "-label", 'visibility', 'visible');
+        }
+      }
+      catch (e) {
+        // Ignore errors
+      }
     }
+
+    this.types.forEach(type => {
+      changeVisibility(type);
+    });
+
+    if (this.current != null) {
+      changeVisibility(this.current.metadata);
+    }
+
   }
 
 

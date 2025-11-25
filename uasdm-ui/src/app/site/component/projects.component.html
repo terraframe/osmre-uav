@@ -485,12 +485,9 @@
                     <hr style="margin-top:10px;margin-bottom:10px;">
 
                     <div class="list-group-item" style="padding:0;height:30px;">
-                      <boolean-field [value]="hierarchy.visible" (valueChange)="handleVisibilityChange()" label=""
+                      <boolean-field [value]="hierarchy.visible" (valueChange)="handleVisibilityChange()" [label]="hierarchy.label"
                         [inline]="true">
                       </boolean-field>
-                      <span style="padding-top: 2px;">
-                        <label style="padding-left: 5px;">{{hierarchy.label}}</label>
-                      </span>
                     </div>
 
                   </ng-container>
