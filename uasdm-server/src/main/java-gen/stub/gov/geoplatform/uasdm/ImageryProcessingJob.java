@@ -97,7 +97,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       return Arrays.asList("laz", "las");
     else if (ImageryComponent.VIDEO.equals(uploadTarget))
       return Arrays.asList("mp4");
-    else if (config.isLidar())
+    else if (config != null && config.isLidar())
       return Arrays.asList("las", "laz");
 
     // If they're uploading to raw, then we need to check the collection format
