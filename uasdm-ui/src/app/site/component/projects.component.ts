@@ -304,7 +304,24 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             filename: resumable.metadata.filename,
             resumable: resumable
           };
-        })
+        }).catch(e => {
+
+          const message = "A partial upload was detected for the file [" + resumable.metadata.filename + "].  However, the partial upload has expired and been removed from the server.  It will need to be reupload from the start."
+
+          const bsModalRef = this.modalService.show(NotificationModalComponent, {
+            animated: true,
+            backdrop: true,
+            ignoreBackdropClick: true,
+            class: "modal-xl"
+          });
+
+          bsModalRef.content.message = message;
+          bsModalRef.content.submitText = "OK";
+          bsModalRef.content.onConfirm.subscribe(() => {
+            this.uploadService.clearUpload(resumable.urlStorageKey);
+          });
+
+        });
       }
     });
   }

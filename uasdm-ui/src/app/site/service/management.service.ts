@@ -776,7 +776,7 @@ export class ManagementService {
 		let params: HttpParams = new HttpParams();
 		params = params.set('uploadUrl', uploadUrl);
 
-		return firstValueFrom(this.http
+		return firstValueFrom(this.noErrorHttpClient
 			.get<Task>(environment.apiUrl + '/api/upload/get-task', { params: params }));
 	}
 
