@@ -133,8 +133,12 @@
 
           <div class="card card-body bg-light">
             <div *ngIf="uploadTarget === 'raw' && component && component.isRadiometric" style="padding: 8px; background-color: #fff9f3; border-left: 4px solid #e4a664;">
-              <h4>Radiometric Sensor</h4>
-              <span>You are uploading to a radiometric sensor. These sensors capture scientific temperature or reflectance data, not standard RGB imagery. Imagery must contain a single band in .tif format — not RGB. Radiometric calibration is automatically enabled (as CAMERA), but if your sensor supports CAMERA+SUN, you may enable that during processing.</span>
+              <h4>Radiometric Collection</h4>
+              <span>You are uploading to a radiometric collection. These sensors capture scientific temperature or reflectance data, not standard RGB imagery. Imagery must contain a single band in .tif format — not RGB. Radiometric calibration is automatically enabled (as CAMERA), but if your sensor supports CAMERA+SUN, you may enable that during processing.</span>
+            </div>
+            <div *ngIf="uploadTarget === 'raw' && component && component.isMultispectral" style="padding: 8px; background-color: #f7f3ff; border-left: 4px solid #a68be0;">
+              <h4>Multispectral Collection</h4>
+              <span>You are uploading to a multispectral collection. These sensors capture multiple narrow wavelength bands, not standard RGB imagery. Radiometric calibration is automatically enabled (as CAMERA), but if your sensor supports CAMERA+SUN, you may enable that during processing.</span>
             </div>
             <h4>All uploaded files</h4>
             <ul>

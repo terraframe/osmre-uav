@@ -73,13 +73,16 @@
             </li>
           </ul>
         </div>
-        <div *ngIf="isAdmin && mode === 'WRITE'" class="btn-holder" style="text-align: right;margin-bottom: 40px;">
-          <button *ngIf="!newInstance" type="button" class="btn btn-default" (click)="handleOnCancel()">Cancel</button>
-          <button type="submit" class="btn btn-primary" (click)="handleOnSubmit()"
-            [disabled]="!ngForm.valid || platform.sensors.length === 0">Apply</button>
-        </div>
-        <div *ngIf="isAdmin && mode === 'READ'" class="btn-holder" style="text-align: right;margin-bottom: 40px;">
-          <button type="submit" class="btn btn-primary" (click)="handleOnEdit()">Edit</button>
+
+        <div *ngIf="isAdmin" class="form-group form-actions">
+          <div *ngIf="isAdmin && mode === 'WRITE'" class="btn-holder">
+            <button *ngIf="!newInstance" type="button" class="btn btn-default" (click)="handleOnCancel()">Cancel</button>
+            <button type="submit" class="btn btn-primary" (click)="handleOnSubmit()"
+              [disabled]="!ngForm.valid || platform.sensors.length === 0">Apply</button>
+          </div>
+          <div *ngIf="isAdmin && mode === 'READ'" class="btn-holder">
+            <button type="submit" class="btn btn-primary" (click)="handleOnEdit()">Edit</button>
+          </div>
         </div>
       </form>
     </div>

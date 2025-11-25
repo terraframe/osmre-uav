@@ -40,7 +40,7 @@ export const COLLECTION_FORMATS: CollectionFormatMetadata[] = [
   { label: "Still Imagery (RGB)",            value: "STILL_IMAGERY_RGB" },
   { label: "Still Thermal Imagery (RGB)",    value: "STILL_THERMAL_RGB" },
   { label: "Still Radiometric Imagery",      value: "STILL_RADIOMETRIC" },
-  { label: "Still Multrispectral Imagery",   value: "STILL_MULTISPECTRAL" },
+  { label: "Still Multispectral Imagery",   value: "STILL_MULTISPECTRAL" },
   { label: "Video (RGB)",                    value: "VIDEO_RGB" },
   { label: "Video Thermal (RGB)",            value: "VIDEO_THERMAL_RGB" },
   { label: "Video Radiometric",              value: "VIDEO_RADIOMETRIC" },
