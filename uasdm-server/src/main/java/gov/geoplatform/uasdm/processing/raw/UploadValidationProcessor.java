@@ -49,6 +49,7 @@ import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.Mission;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
+import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
@@ -69,6 +70,8 @@ public class UploadValidationProcessor
   protected boolean isRadiometric;
   
   protected boolean isVideo;
+  
+  protected CollectionFormat format;
   
   protected boolean isValid = true;
   
@@ -138,6 +141,24 @@ public class UploadValidationProcessor
     }
   }
   
+  public static CollectionFormat getCollectionFormat(AbstractWorkflowTask task)
+  {
+    if (task instanceof ImageryWorkflowTask) return null;
+    
+    WorkflowTask collectionWorkflowTask = (WorkflowTask) task;
+
+    var uasc = collectionWorkflowTask.getComponentInstance();
+    
+    if (uasc instanceof CollectionIF)
+    {
+      var format = ( (CollectionIF) uasc ).getFormat();
+      
+      return format;
+    }
+
+    return null;
+  }
+  
   public ApplicationFileResource getDownstreamFile() { return downstreamFile; }
 
   @SuppressWarnings("resource")
@@ -146,6 +167,7 @@ public class UploadValidationProcessor
     this.isMultispectral = isMultispectral(task);
     this.isRadiometric= isRadiometric(task);
     this.isVideo = isVideo(task);
+    this.format = getCollectionFormat(task);
     
     if (!UasComponentIF.isValidName(configuration.getProductName())) {
       task.lock();
@@ -257,7 +279,7 @@ public class UploadValidationProcessor
       }
       else if (count == 0)
       {
-        List<String> extensions = ImageryProcessingJob.getSupportedExtensions(task.getUploadTarget(), isMultispectral, isRadiometric, isVideo, configuration);
+        List<String> extensions = getSupportedExtensions(task, configuration);
         
         String msg = "The zip did not contain any files to process. Files must follow proper naming conventions and end in one of the following file extensions: " + StringUtils.join(extensions, ", ");
         
@@ -291,6 +313,14 @@ public class UploadValidationProcessor
 
       throw new InvalidZipException(t);
     }
+  }
+  
+  protected List<String> getSupportedExtensions(AbstractUploadTask task, ProcessConfiguration configuration)
+  {
+    if (format != null)
+      return ImageryProcessingJob.getSupportedExtensions(task.getUploadTarget(), format, configuration);
+    else
+      return ImageryProcessingJob.getSupportedExtensions(task.getUploadTarget(), isMultispectral, isRadiometric, isVideo, configuration);
   }
   
   private boolean validateFile(ApplicationFileResource res, AbstractUploadTask task, ProcessConfiguration configuration)
@@ -327,7 +357,7 @@ public class UploadValidationProcessor
       if (configuration.isODM() || configuration.isLidar())
       {
         final String ext = res.getNameExtension().toLowerCase();
-        final List<String> extensions = ImageryProcessingJob.getSupportedExtensions(task.getUploadTarget(), isMultispectral, isRadiometric, isVideo, configuration);
+        final List<String> extensions = getSupportedExtensions(task, configuration);
         final boolean isGeo = configuration.isODM() && ( res.getName().equalsIgnoreCase(configuration.toODM().getGeoLocationFileName()) && configuration.toODM().isIncludeGeoLocationFile() );
         final boolean isGcp = configuration.isODM() && ( res.getName().equalsIgnoreCase(configuration.toODM().getGroundControlPointFileName()) && configuration.toODM().isIncludeGroundControlPointFile() );
   

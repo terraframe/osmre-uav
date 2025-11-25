@@ -333,7 +333,7 @@
                 </div>
             </div>
 
-            <div *ngIf="metaObject != null" class="form-group" style="margin-top: 2rem;">
+            <div *ngIf="metaObject != null && page.selection.isNew" class="form-group" style="margin-top: 2rem;">
                 <div class="">
                     <label for="collectionFormat" class="">Collection Format:</label>
                     <select *ngIf="collectionFormatMetadatas" [(ngModel)]="page.selection.format" id="collectionFormat" name="collectionFormat" class="form-control"

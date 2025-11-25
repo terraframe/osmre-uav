@@ -21,7 +21,7 @@ import { AuthService } from '@shared/service/auth.service';
     standalone: false,
   selector: 'platform',
     templateUrl: './platform.component.html',
-    styleUrls: []
+    styleUrls: ['./platform.component.css']
 })
 export class PlatformComponent implements OnInit {
     
