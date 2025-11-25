@@ -306,7 +306,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
           };
         }).catch(e => {
 
-          const message = "A partial upload was detected for the file [" + resumable.metadata.filename + "].  However, the partial upload has expired and been removed from the server.  It will need to be reupload from the start."
+          const message = "A partial upload was detected for the file [" + resumable.metadata.filename + "].  However, the partial upload has expired and been removed from the server.  The file will need to be re-uploaded."
 
           const bsModalRef = this.modalService.show(NotificationModalComponent, {
             animated: true,
@@ -318,7 +318,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
           bsModalRef.content.message = message;
           bsModalRef.content.submitText = "OK";
           bsModalRef.content.onConfirm.subscribe(() => {
-            this.uploadService.clearUpload(resumable.urlStorageKey);
+            resumables.forEach(r => {
+
+              const segments = r.uploadUrl.split("/");
+              const uploadId = segments[segments.length - 1];
+
+              this.service.cancelUploadTask(uploadId);
+
+
+              this.uploadService.clearUpload(r.urlStorageKey)
+            });
           });
 
         });

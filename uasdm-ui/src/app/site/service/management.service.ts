@@ -797,4 +797,23 @@ export class ManagementService {
 				this.eventService.complete();
 			})));
 	}
+
+	cancelUploadTask(uploadId: string): Promise<void> {
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
+
+		const params = {
+			uploadId: uploadId,
+		};
+
+		this.eventService.start();
+
+		return firstValueFrom(this.http
+			.post<void>(environment.apiUrl + '/api/project/cancel-task', JSON.stringify(params), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			})));
+	}
+
 }

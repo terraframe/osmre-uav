@@ -88,6 +88,9 @@ public class ProjectManagementController extends AbstractController
   @Autowired
   private ProjectManagementService service;
 
+  @Autowired
+  private WorkflowService          workflowService;
+
   @GetMapping("/configuration")
   public ResponseEntity<String> configuration()
   {
@@ -356,7 +359,7 @@ public class ProjectManagementController extends AbstractController
   @GetMapping("/tasks-count")
   public ResponseEntity<String> getTasksCount(@RequestParam(required = false, name = "statuses") String statuses)
   {
-    JSONObject response = new WorkflowService().getTasksCount(this.getSessionId(), statuses);
+    JSONObject response = this.workflowService.getTasksCount(this.getSessionId(), statuses);
 
     return ResponseEntity.ok(response.toString());
   }
@@ -364,7 +367,7 @@ public class ProjectManagementController extends AbstractController
   @GetMapping("/tasks")
   public ResponseEntity<String> getTasks(@RequestParam(required = false, name = "statuses") String statuses, @RequestParam(required = false, name = "pageNumber") Integer pageNumber, @RequestParam(required = false, name = "pageSize") Integer pageSize, @RequestParam(required = false, name = "token") Integer token)
   {
-    JSONObject response = new WorkflowService().getTasks(this.getSessionId(), statuses, pageNumber, pageSize, token);
+    JSONObject response = this.workflowService.getTasks(this.getSessionId(), statuses, pageNumber, pageSize, token);
 
     return ResponseEntity.ok(response.toString());
   }
@@ -372,15 +375,23 @@ public class ProjectManagementController extends AbstractController
   @GetMapping("/component-tasks")
   public ResponseEntity<String> getComponentTasks(@RequestParam(required = false, name = "componentId") String componentId, @RequestParam(required = false, name = "productId") String productId)
   {
-    JSONArray response = new WorkflowService().getComponentTasks(this.getSessionId(), componentId, productId);
+    JSONArray response = this.workflowService.getComponentTasks(this.getSessionId(), componentId, productId);
 
     return ResponseEntity.ok(response.toString());
+  }
+
+  @PostMapping("/cancel-task")
+  public ResponseEntity<Void> cancelTask(@RequestBody IdBody body)
+  {
+    this.workflowService.cancel(this.getSessionId(), body.getId());
+
+    return ResponseEntity.ok(null);
   }
 
   @GetMapping("/task")
   public ResponseEntity<String> getTask(@RequestParam(required = false, name = "id") String id)
   {
-    JSONObject response = new WorkflowService().getTask(this.getSessionId(), id);
+    JSONObject response = this.workflowService.getTask(this.getSessionId(), id);
 
     return ResponseEntity.ok(response.toString());
   }
@@ -388,7 +399,7 @@ public class ProjectManagementController extends AbstractController
   @GetMapping("/get-upload-task")
   public ResponseEntity<String> getUploadTask(@RequestParam(required = false, name = "uploadId") String uploadId)
   {
-    JSONObject response = new WorkflowService().getUploadTask(this.getSessionId(), uploadId);
+    JSONObject response = this.workflowService.getUploadTask(this.getSessionId(), uploadId);
 
     return ResponseEntity.ok(response.toString());
   }
@@ -396,7 +407,7 @@ public class ProjectManagementController extends AbstractController
   @GetMapping("/get-messages")
   public ResponseEntity<String> getMessages(@RequestParam(required = false, name = "pageNumber") Integer pageNumber, @RequestParam(required = false, name = "pageSize") Integer pageSize)
   {
-    JSONObject response = new WorkflowService().getMessages(this.getSessionId(), pageNumber, pageSize);
+    JSONObject response = this.workflowService.getMessages(this.getSessionId(), pageNumber, pageSize);
 
     return ResponseEntity.ok(response.toString());
   }

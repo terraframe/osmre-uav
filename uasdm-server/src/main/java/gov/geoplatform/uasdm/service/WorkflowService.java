@@ -187,4 +187,17 @@ public class WorkflowService
     return task.toJSON();
   }
 
+  @Request(RequestType.SESSION)
+  public void cancel(String sessionId, String uploadId)
+  {
+    AbstractUploadTask task = AbstractUploadTask.getTaskByUploadId(uploadId);
+
+    if (task != null)
+    {
+      task.appLock();
+      task.setStatus("Failed");
+      task.apply();
+    }
+  }
+
 }

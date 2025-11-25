@@ -3,6 +3,7 @@ package gov.geoplatform.uasdm.service.request;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -172,6 +173,7 @@ public class UploadService
   }
 
   @Scheduled(fixedDelayString = "PT24H")
+//  @Scheduled(fixedDelay = 1, initialDelay = 0, timeUnit = TimeUnit.MINUTES)
   private void cleanup()
   {
     // Path locksDir = this.tusUploadDirectory.resolve("locks");
