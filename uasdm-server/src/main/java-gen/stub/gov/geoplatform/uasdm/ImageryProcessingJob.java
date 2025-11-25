@@ -108,6 +108,8 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         return Arrays.asList("mp4");
       else if (format.isMultispectral() || format.isRadiometric())
         return Arrays.asList("tif", "tiff");
+      else
+        return Arrays.asList("jpg", "jpeg", "png");
     }
     
     return Arrays.asList("jpg", "jpeg", "png", "tif", "tiff", "mp4");
