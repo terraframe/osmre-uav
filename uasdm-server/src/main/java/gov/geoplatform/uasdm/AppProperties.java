@@ -182,7 +182,7 @@ public class AppProperties
 
   public static Integer getChunkExpireTime()
   {
-    return Singleton.getProps().getInteger("chunk.expire.time", 1);
+    return Singleton.getProps().getInteger("chunk.expire.time", 2);
   }
 
   public static Integer getInviteUserTokenExpireTime()
