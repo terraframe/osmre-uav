@@ -107,11 +107,11 @@ public class WorkflowService
         workflowTask.setProcessPtcloud(configuration.toODM().getProcessPtcloud());
       }
 
-      if (uasComponent instanceof gov.geoplatform.uasdm.graph.Collection && //
-          ( (gov.geoplatform.uasdm.graph.Collection) uasComponent ).getStatus().equals("Processing"))
-      {
-        throw new ProcessingInProgressException();
-      }
+//      if (uasComponent instanceof gov.geoplatform.uasdm.graph.Collection && //
+//          ( (gov.geoplatform.uasdm.graph.Collection) uasComponent ).getStatus().equals("Processing"))
+//      {
+//        throw new ProcessingInProgressException();
+//      }
     }
     else
     {
