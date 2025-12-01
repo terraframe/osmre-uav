@@ -595,7 +595,7 @@ a.active {
 
 a.disabled {
   pointer-events: none;
-  cursor: not-allowed; 
+  cursor: not-allowed;
 }
 
 .img-disabled {
@@ -771,13 +771,15 @@ input[type=button],
 input[type=submit],
 button.btn,
 .btn {
-  height:40px
+  height: 40px
 }
 
 .btn-warning {
-	color: #fff;
-	background-color: #f0ad4e;
-	border-color: #eea236;
+  color: #fff;
+}
+
+.btn-warning:hover {
+  color: #fff;
 }
 
 
@@ -850,5 +852,3 @@ button.btn,
 // tree-node-expander {
 //   display: none !important;
 // }
-
-
