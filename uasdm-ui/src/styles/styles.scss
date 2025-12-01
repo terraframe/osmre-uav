@@ -235,8 +235,6 @@ a.thumbnail.non-clickable:focus {
 
 
 
-
-
 // ----- //
 
 a:hover,
@@ -767,6 +765,19 @@ ngx-file-drop button {
 
 .product-icon::before {
   padding-right: 5px;
+}
+
+input[type=button],
+input[type=submit],
+button.btn,
+.btn {
+  height:40px
+}
+
+.btn-warning {
+	color: #fff;
+	background-color: #f0ad4e;
+	border-color: #eea236;
 }
 
 
