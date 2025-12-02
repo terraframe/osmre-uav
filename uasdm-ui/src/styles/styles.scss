@@ -606,40 +606,6 @@ a.disabled {
   background: #707070;
 }
 
-// ------ Custom X checkbox
-
-input[type="checkbox"].x-box {
-  -webkit-appearance: initial;
-  appearance: initial;
-  background: white;
-  width: 20px;
-  height: 20px;
-  border: solid 1px lightgrey;
-  position: absolute;
-  border-radius: 0;
-  margin: 5px;
-  z-index: 9;
-}
-
-input[type="checkbox"].x-box:checked {
-  // background: red;
-}
-
-input[type="checkbox"].x-box:checked:after {
-  content: "x";
-  color: #242424;
-  font-size: 40px;
-  position: absolute;
-  left: 50%;
-  top: 35%;
-  -webkit-transform: translate(-50%, -50%);
-  -moz-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-}
-
-// ------ End Custom X checkbox
-
 
 .collapse {
   /* setup transition however you like */
