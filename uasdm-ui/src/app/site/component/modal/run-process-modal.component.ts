@@ -92,6 +92,18 @@ export class RunProcessModalComponent implements OnInit, OnDestroy {
         this.bsModalRef.hide();
     }
 
+    isVideo(): boolean {
+        return !(this.entity && this.entity.format) || this.entity.format.toLowerCase().includes('video_');
+    }
+
+    isRadiometric(): boolean {
+        return !(this.entity && this.entity.format) || this.entity.format.toLowerCase().includes('radiometric');
+    }
+
+    isMultispectral(): boolean {
+        return !(this.entity && this.entity.format) || this.entity.format.toLowerCase().includes('multispectral');
+    }
+
     error(err: HttpErrorResponse): void {
         this.message = ErrorHandler.getMessageFromError(err);
     }

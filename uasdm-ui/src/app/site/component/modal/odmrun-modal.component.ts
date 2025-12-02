@@ -35,6 +35,8 @@ export class ODMRunModalComponent implements OnInit, OnDestroy {
 	odmRun: ODMRun = null;
 	
 	config: ProcessConfig = null;
+
+	public loading: boolean = true;
 	
 	constructor(private service: ManagementService, private modalService: BsModalService, public bsModalRef: BsModalRef) {
 	}
@@ -51,12 +53,13 @@ export class ODMRunModalComponent implements OnInit, OnDestroy {
 	}
 
 	initOnArtifact(artifact: SiteEntity): void {
+		this.loading = true;
 		this.service.getODMRunByArtifact(artifact.id).then(odmRun => {
 			this.odmRun = odmRun;
 			this.config = odmRun.config;
 		}).catch((err: HttpErrorResponse) => {
 			this.error(err);
-		});
+		}).finally(() => { this.loading = false; })
 	}
 	
 	initOnWorkflowTask(task: Task): void {
@@ -65,7 +68,7 @@ export class ODMRunModalComponent implements OnInit, OnDestroy {
 			this.config = odmRun.config;
 		}).catch((err: HttpErrorResponse) => {
 			this.error(err);
-		});
+		}).finally(() => { this.loading = false; })
 	}
 	
 	formatDate(date: string): string {

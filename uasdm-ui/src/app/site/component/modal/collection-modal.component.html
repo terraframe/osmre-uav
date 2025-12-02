@@ -352,8 +352,8 @@
                 </button>
                 <button *ngIf="processable && enableSelectableImages"
                   [disabled]="processRunning || !canReprocessImagery" (click)="handleRunOrtho()" class="btn btn-primary"
-                  title="Reprocesses the selected raw imagery and generates new products." style="margin-left: 5px;">
-                  Process Imagery
+                  title="Reprocesses the selected raw and generates new products." style="margin-left: 5px;">
+                  Process
                   <i class="fa fa-sync-alt" [ngClass]="{'fa-spin' : processRunning}" aria-hidden="true"
                     style="color:white;vertical-align: middle;margin-left: 10px;"></i>
                 </button>
