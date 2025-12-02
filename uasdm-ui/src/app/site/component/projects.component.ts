@@ -325,7 +325,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
               this.service.cancelUploadTask(uploadId);
 
-
               this.uploadService.clearUpload(r.urlStorageKey)
             });
           });
