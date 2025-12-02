@@ -35,12 +35,15 @@ export class UploadService {
             chunkSize: 5 * 1024 * 1024, // 5MB chunks for optimal performance
             metadata: (metadata as any),
             onError: (error) => {
+
                 if (error.name === 'AbortError') {
                     onError(new Error('Upload was aborted'))
                 } else if (error.name === 'NetworkError') {
                     onError(new Error('Network connection lost - upload will resume automatically'))
                 } else {
-                    onError(error)
+                    console.log(error);
+
+                    onError(new Error('There was an issue during the upload. Please either try to resume the upload or cancel it and start over'))
                 }
             },
             onProgress: (bytesUploaded: number, bytesTotal: number) => {
@@ -85,8 +88,6 @@ export class UploadService {
     }
 
     clearUpload(urlStorageKey): void {
-        console.log('Removing', urlStorageKey)
-
         return this.storage.removeUpload(urlStorageKey);
     }
 

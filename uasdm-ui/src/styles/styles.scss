@@ -235,8 +235,6 @@ a.thumbnail.non-clickable:focus {
 
 
 
-
-
 // ----- //
 
 a:hover,
@@ -597,7 +595,7 @@ a.active {
 
 a.disabled {
   pointer-events: none;
-  cursor: not-allowed; 
+  cursor: not-allowed;
 }
 
 .img-disabled {
@@ -769,6 +767,21 @@ ngx-file-drop button {
   padding-right: 5px;
 }
 
+input[type=button],
+input[type=submit],
+button.btn,
+.btn {
+  height: 40px
+}
+
+.btn-warning {
+  color: #fff;
+}
+
+.btn-warning:hover {
+  color: #fff;
+}
+
 
 // Tree styling
 // .node-content-wrapper,
@@ -839,5 +852,3 @@ ngx-file-drop button {
 // tree-node-expander {
 //   display: none !important;
 // }
-
-

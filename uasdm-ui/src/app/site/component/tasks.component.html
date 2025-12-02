@@ -99,10 +99,10 @@
               <h3 class="col-sm-7">Issue</h3>
               <h3 class="col-sm-5" style="text-align:right; padding-right: 8em">Actions</h3>
             </div>
-            <div class="card"
+            <div class="card border border-default mb-2"
               *ngFor="let message of messages.resultSet | paginate: {id: 'message-pg-ctrl', itemsPerPage: messages.pageSize, currentPage: messages.pageNumber, totalItems: messages.count }">
 
-              <div class="card-body">
+              <div class="card-body bg-default">
                 <div class="row">
                   <ng-container [ngSwitch]="message.type">
                     <ng-container *ngSwitchCase="'MissingMetadataMessage'">
