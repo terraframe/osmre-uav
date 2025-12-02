@@ -276,7 +276,9 @@ export class Task {
 
 export class TaskGroup {
 	label: string;
-	collectionId: string;
+	collectionId: string; // Should be considered legacy. Use 'componentId' instead because it's not guaranteed to be a collection anymore since we added standalone products
+	componentId: string;
+	componentType: string; // Literally maps on the back-end to component.getClass().getSimpleName(). For collections, this is 'Collection'. For Mission, this is 'Mission'.
 	productId?: string;
 	productName?: string;
 	visible?: boolean;
