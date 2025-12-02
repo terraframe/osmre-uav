@@ -24,8 +24,8 @@
               [ngClass]="{'success':taskGroup.status === 'Complete','warning':taskGroup.status === 'Warning', 'pending blink':taskGroup.status === 'Processing' || taskGroup.status === 'Running' || taskGroup.status === 'Pending' || taskGroup.status === 'Queued','fail':taskGroup.status === 'Failed'}"></span>
 
             <button class="btn btn-default float-end" (click)="handleGotoTask(taskGroup)">
-              <span *ngIf="taskGroup.productId == '' || taskGroup.productId == null">View Collection</span>
-              <span *ngIf="taskGroup.productId != '' && taskGroup.productId != null">View Product</span>
+              <span *ngIf="taskGroup.componentType === 'Collection'">View Collection</span>
+              <span *ngIf="taskGroup.componentType !== 'Collection'">View Product</span>
             </button>
 
             <div style="margin-top:10px;margin-bottom:0;color:grey;">

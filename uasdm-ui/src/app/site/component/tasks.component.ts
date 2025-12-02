@@ -264,18 +264,18 @@ export class TasksComponent implements OnInit {
   }
 
   isVisible(task: TaskGroup) {
-    if (task.productId != null && task.productId != "") {
-      return this.visible[task.productId];
-    } else {
+    if (task.componentType === 'Collection') {
       return this.visible[task.collectionId];
+    } else {
+      return this.visible[task.productId];
     }
   }
 
   setVisible(task: TaskGroup, b: boolean) {
-    if (task.productId != null && task.productId != "") {
-      this.visible[task.productId] = b;
-    } else {
+    if (task.componentType === 'Collection') {
       this.visible[task.collectionId] = b;
+    } else {
+      this.visible[task.productId] = b;
     }
   }
 
@@ -338,7 +338,7 @@ export class TasksComponent implements OnInit {
   handleGotoTask(task: TaskGroup): void {
     // let breadcrumbs = []
 
-    if (task.productId == null || task.productId == '') {
+    if (task.componentType === 'Collection') {
       this.handleGoto(task.collectionId);
     } else {
       this.pService.getDetail(task.productId, 1, 20).then(detail => {
@@ -354,10 +354,10 @@ export class TasksComponent implements OnInit {
   }
 
   getTaskLabel(task: TaskGroup): string {
-    if (task.productId != null && task.productId != '') {
-      return task.productName;
-    } else {
+    if (task.componentType === 'Collection') {
       return task.label;
+    } else {
+      return task.productName;
     }
   }
 
