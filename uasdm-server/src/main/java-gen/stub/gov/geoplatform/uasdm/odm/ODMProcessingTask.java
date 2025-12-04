@@ -140,11 +140,11 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
     return list;
   }
   
-  protected void validate(ArchiveFileResource images, boolean isMultispectral, boolean isThermal)
+  protected void validate(ArchiveFileResource images, boolean isMultispectral, boolean isRadiometric)
   {
     boolean hasRadiometric = !this.getConfiguration().getRadiometricCalibration().equals(RadiometricCalibration.NONE);
     
-    if ((isMultispectral || isThermal) && !hasRadiometric) {
+    if ((isMultispectral || isRadiometric) && !hasRadiometric) {
       StringBuilder msg = new StringBuilder();
 
       if (isMultispectral) {
@@ -158,9 +158,9 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
              .append("in your processing settings (recommended: 'camera' or 'camera+sun' if a DLS is available).");
       }
 
-      if (isThermal) {
+      if (isRadiometric) {
           if (msg.length() > 0) msg.append(" ");
-          msg.append("Your collection was captured with a thermal sensor, ")
+          msg.append("Your collection was captured with a radiometric sensor, ")
              .append("but you did not enable radiometric calibration in your processing configuration. ")
              .append("The thermal orthomosaic will use raw sensor counts rather than real temperatures, ")
              .append("so any absolute temperature readings will be invalid. ")
@@ -172,9 +172,9 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
     }
   }
 
-  public void initiate(ArchiveFileResource images, boolean isMultispectral, boolean isThermal)
+  public void initiate(ArchiveFileResource images, boolean isMultispectral, boolean isRadiometric)
   {
-    validate(images, isMultispectral, isThermal);
+    validate(images, isMultispectral, isRadiometric);
     
     try
     {
@@ -210,7 +210,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
       }
       else
       {
-        ImageSizeMapping autoscalerConfig = AutoscalerAwsConfigService.autoscalerMappingForConfig(resp.getPayload().getImageCount(), (int)resp.getPayload().getColSizeMb());
+        ImageSizeMapping autoscalerConfig = AutoscalerAwsConfigService.autoscalerMappingForConfig(resp.getPayload().getRawCount(), (int)resp.getPayload().getColSizeMb());
         ODMRun.createAndApplyFor(this, autoscalerConfig.getSlug());
 
         this.appLock();

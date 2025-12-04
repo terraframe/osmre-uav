@@ -3,7 +3,7 @@
 ///
 
 import { PageResult } from '@shared/model/page';
-import { Sensor } from './sensor';
+import { CollectionFormat, Sensor } from './sensor';
 import { Platform } from './platform';
 import { UAV } from './uav'
 import { LocalizedValue } from '@shared/model/organization';
@@ -97,6 +97,9 @@ export class SiteEntity {
 	weatherConditions?: string;
 	presignedThumbnailDownload?: string;
 	isLidar?: boolean;
+	isRadiometric?: boolean;
+	isMultispectral?: boolean;
+	format?: CollectionFormat;
 
 	// Document metadata fields
 	description?: string;
@@ -138,6 +141,7 @@ export class ProcessConfig {
 	outFileNamePrefix?: string;
 	resolution?: number;
 	videoResolution?: number;
+	videoLimit?: number;
 	matcherNeighbors?: number;
 	minNumFeatures?: number;
 	pcQuality?: string;
@@ -214,6 +218,7 @@ export class Selection {
 	weatherConditions?: string;
 	artifacts?: any[];
 	isPrivate?: boolean;
+	format?: string;
 };
 
 export class UploadForm extends ProcessConfig {
@@ -276,7 +281,9 @@ export class Task {
 
 export class TaskGroup {
 	label: string;
-	collectionId: string;
+	collectionId: string; // Should be considered legacy. Use 'componentId' instead because it's not guaranteed to be a collection anymore since we added standalone products
+	componentId: string;
+	componentType: string; // Literally maps on the back-end to component.getClass().getSimpleName(). For collections, this is 'Collection'. For Mission, this is 'Mission'.
 	productId?: string;
 	productName?: string;
 	visible?: boolean;

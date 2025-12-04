@@ -56,7 +56,7 @@ export class RunProcessModalComponent implements OnInit, OnDestroy {
 
     init(entity: SiteEntity) {
         this.entity = entity;
-        this.config.radiometricCalibration = this.entity.sensor.sensorType.isMultispectral ? "CAMERA" : "NONE";
+        this.config.radiometricCalibration = (this.entity.isRadiometric || this.entity.isMultispectral) ? "CAMERA" : "NONE";
 
         this.service.getDefaultRunConfig(this.entity.id).then((config: ProcessConfig) => {
             this.config = config;
@@ -90,6 +90,18 @@ export class RunProcessModalComponent implements OnInit, OnDestroy {
     confirm(): void {
         this.onConfirm.next(this.config);
         this.bsModalRef.hide();
+    }
+
+    isVideo(): boolean {
+        return !(this.entity && this.entity.format) || this.entity.format.toLowerCase().includes('video_');
+    }
+
+    isRadiometric(): boolean {
+        return !(this.entity && this.entity.format) || this.entity.format.toLowerCase().includes('radiometric');
+    }
+
+    isMultispectral(): boolean {
+        return !(this.entity && this.entity.format) || this.entity.format.toLowerCase().includes('multispectral');
     }
 
     error(err: HttpErrorResponse): void {

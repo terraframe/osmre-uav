@@ -271,10 +271,19 @@
                             </div>
                         </div>
                         <div class="row">
+                            <label for="sensor.collectionFormats" class="col-sm-2 col-form-label">Allowed Collection
+                                Formats</label>
+                            <div class="col-sm-10">
+                                <label style="line-height: 5rem;">{{getCollectionFormatLabels()}}</label>
+                            </div>
+                        </div>
+                        <div class="row">
                             <label for="sensor.wavelength" class="col-sm-2 col-form-label">Wave Length</label>
                             <div class="col-sm-10">
                                 <ul class="list-group">
-                                    <li class="list-group-item" *ngFor="let wavelength of metaObject.sensor.wavelengths">
+                                    <li class="list-group-item"
+                                        style="line-height:1rem;color:rgb(33, 37,41);font-size:15px"
+                                        *ngFor="let wavelength of metaObject.sensor.wavelengths">
                                         {{wavelength.name}}
                                     </li>
                                 </ul>
@@ -288,7 +297,8 @@
                             </div>
                         </div>
                         <div class="row">
-                            <label for="sensor.sensorWidthUnits" class="col-sm-2 col-form-label">Sensor Width Units</label>
+                            <label for="sensor.sensorWidthUnits" class="col-sm-2 col-form-label">Sensor Width
+                                Units</label>
                             <div class="col-sm-10">
                                 <input type="text" readonly class="form-control-plaintext" id="sensor.sensorWidthUnits"
                                     value="Millimeters">
@@ -302,7 +312,8 @@
                             </div>
                         </div>
                         <div class="row">
-                            <label for="sensor.sensorHeightUnits" class="col-sm-2 col-form-label">Sensor Height Units</label>
+                            <label for="sensor.sensorHeightUnits" class="col-sm-2 col-form-label">Sensor Height
+                                Units</label>
                             <div class="col-sm-10">
                                 <input type="text" readonly class="form-control-plaintext" id="sensor.sensorHeightUnits"
                                     value="Millimeters">
@@ -316,16 +327,29 @@
                             </div>
                         </div>
                         <div class="row">
-                            <label for="sensor.pixelSizeHeight" class="col-sm-2 col-form-label">Pixel Size Height</label>
+                            <label for="sensor.pixelSizeHeight" class="col-sm-2 col-form-label">Pixel Size
+                                Height</label>
                             <div class="col-sm-10">
                                 <input type="text" readonly class="form-control-plaintext" id="sensor.pixelSizeWidth"
                                     [value]="metaObject.sensor.pixelSizeHeight">
                             </div>
                         </div>
+
                     </ng-container>
                 </div>
             </div>
 
+            <div *ngIf="metaObject != null && page.selection.isNew" class="form-group" style="margin-top: 2rem;">
+                <div class="">
+                    <label for="collectionFormat" class="">Collection Format:</label>
+                    <select *ngIf="collectionFormatMetadatas" [(ngModel)]="page.selection.format" id="collectionFormat"
+                        name="collectionFormat" class="form-control" (change)="onCollectionFormatChange()" required>
+                        <option></option>
+                        <option *ngFor="let format of collectionFormatMetadatas" [value]="format.value">{{format.label}}
+                        </option>
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
 

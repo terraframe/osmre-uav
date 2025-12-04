@@ -80,7 +80,9 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
 
     JSONObject obj = new JSONObject();
     obj.put("label", component.getName());
-    obj.put("collectionId", component.getOid());
+    obj.put("collectionId", component.getOid()); // Legacy support for front-end built before standalone product implementation
+    obj.put("componentId", component.getOid());
+    obj.put("componentType", component.getClass().getSimpleName());
 
     if (StringUtils.isNotBlank(this.getProductId()))
     {

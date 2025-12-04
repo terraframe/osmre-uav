@@ -46,6 +46,7 @@ public class UploadService
   @Request(RequestType.SESSION)
   public void upload(String sessionId, HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException
   {
+
     String userOid = Session.getCurrentSession().getUser().getOid();
 
     this.tusFileUploadService.process(servletRequest, servletResponse, userOid);
@@ -75,7 +76,6 @@ public class UploadService
         this.wService.updateOrCreateUploadTask(userOid, uploadInfo);
       }
     }
-
   }
 
   private UploadInfo getUploadInfo(String userOid, String uploadURI)
@@ -172,6 +172,7 @@ public class UploadService
   }
 
   @Scheduled(fixedDelayString = "PT24H")
+  // @Scheduled(fixedDelay = 1, initialDelay = 0, timeUnit = TimeUnit.MINUTES)
   private void cleanup()
   {
     // Path locksDir = this.tusUploadDirectory.resolve("locks");

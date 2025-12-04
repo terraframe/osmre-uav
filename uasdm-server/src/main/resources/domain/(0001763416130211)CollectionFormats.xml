@@ -1,0 +1,26 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create></create>
+    <update>
+      <mdVertex name="gov.geoplatform.uasdm.graph.Sensor">
+        <create>
+			<attributes>
+				<text name="sCollectionFormats" required="true" label="Valid Collection Formats" size="4096" />
+			</attributes>
+		</create>
+	  </mdVertex>
+	  <mdVertex name="gov.geoplatform.uasdm.graph.Collection">
+		<create>
+			<attributes>
+				<text name="sCollectionFormat" required="false" label="Collection Format" />
+			</attributes>
+		</create>
+	  </mdVertex>
+    </update>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.graph.Sensor.sCollectionFormat" type="com.runwaysdk.system.metadata.MdAttributeCharacter"/>
+    </delete>
+  </undoIt>
+</version>

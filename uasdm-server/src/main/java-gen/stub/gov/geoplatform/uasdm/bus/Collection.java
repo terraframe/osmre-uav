@@ -37,6 +37,7 @@ import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
+import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
@@ -122,7 +123,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
   
   @Override
-  public boolean isThermal()
+  public boolean isRadiometric()
   {
     throw new UnsupportedOperationException();
   }
@@ -464,6 +465,24 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     cQ.AND(cQ.getMetadataUploaded().EQ(false).OR(cQ.getMetadataUploaded().EQ((Boolean) null)));
 
     return cQ;
+  }
+
+  @Override
+  public CollectionFormat getFormat()
+  {
+    return null;
+  }
+
+  @Override
+  public void setFormat(CollectionFormat format)
+  {
+    
+  }
+
+  @Override
+  public void setFormat(String format)
+  {
+    
   }
 
 }

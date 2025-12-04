@@ -20,6 +20,12 @@
       </div>
       <div class="col-md-2"></div>
     </div>
+
+	<span *ngIf="loading">
+		<h4>
+			<i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+		</h4>
+	</span>
     
     <div *ngIf="config" class="card border border-secondary mb-2">
     	<div class="card-header bg-secondary">
@@ -111,7 +117,7 @@
 	            <select [(ngModel)]="config.radiometricCalibration" name="radiometricCalibration" class="form-control" disabled>
 	                <option value="NONE">NONE</option>
 	                <option value="CAMERA">CAMERA</option>
-	                <option value="CAMERA_SUN">CAMERA+SUN</option>
+	                <option value="CAMERA_SUN">CAMERA+SUN (experimental)</option>
 	            </select>
 	        </div>
 	

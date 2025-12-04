@@ -85,19 +85,6 @@ const routes: Routes = [
             title: 'Sensor Type',
             label: 'type',
             baseUrl: Endpoint.SENSOR_TYPE,
-            columns: [
-                {
-                    name: 'isMultispectral',
-                    label: 'Is Multispectral',
-                    type: 'boolean'
-                },
-                {
-                    name: 'isLidar',
-                    label: 'Is Lidar',
-                    type: 'boolean'
-                }
-
-            ],
             route: '/sensor-type'
         }
     },

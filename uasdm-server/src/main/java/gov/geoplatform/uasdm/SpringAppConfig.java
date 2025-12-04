@@ -24,11 +24,11 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
@@ -41,6 +41,7 @@ import net.geoprism.spring.web.JsonExceptionHandler;
 
 @Configuration
 @EnableWebMvc
+@EnableScheduling
 @ComponentScan(basePackages = { //
     "net.geoprism.registry.controller", //
     "net.geoprism.registry.service", //
@@ -50,7 +51,8 @@ import net.geoprism.spring.web.JsonExceptionHandler;
     "net.geoprism.spring", //
     "gov.geoplatform.uasdm.controller", //
     "gov.geoplatform.uasdm.service", //
-    "gov.geoplatform.uasdm.service.business" //
+    "gov.geoplatform.uasdm.service.business", //
+    "gov.geoplatform.uasdm.maintenance"
 }, excludeFilters = { //
     @ComponentScan.Filter(type = FilterType.REGEX, pattern = "net.geoprism.registry.service.SessionFilter"), //
     @ComponentScan.Filter(type = FilterType.REGEX, pattern = "net.geoprism.registry.controller.*"), //

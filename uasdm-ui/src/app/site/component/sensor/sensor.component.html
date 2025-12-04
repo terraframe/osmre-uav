@@ -48,10 +48,37 @@
         </select>
       </div>
       <div class="form-group">
+        <label class="form-label">Formats Captured With This Sensor</label>
+
+        <span *ngIf="!sensor.collectionFormats || sensor.collectionFormats.length === 0"
+              class="error-message">
+          A sensor requires at least one valid collection format
+        </span>
+
+        <div *ngFor="let format of COLLECTION_FORMATS">
+          <boolean-field
+            [value]="sensor.collectionFormats && sensor.collectionFormats.indexOf(format.value) !== -1"
+            [label]="format.label"
+            (valueChange)="updateSelectedCollectionFormat(format.value, $event)"
+            [disabled]="mode === 'READ'">
+          </boolean-field>
+        </div>
+      </div>
+      <div *ngIf="mode === 'READ'">
+        <span *ngFor="let fmt of sensor.collectionFormats; let last = last">
+          {{ getFormatLabel(fmt) }}<span *ngIf="!last">, </span>
+        </span>
+      </div>
+      
+      <div class="form-group">
+      	<label class="form-label">Location Tracking</label>
+      
         <boolean-field [value]="sensor.hasGeologger" (valueChange)="sensor.hasGeologger = $event"
           [label]="'Has GeoLogger'" [disabled]="mode === 'READ'"></boolean-field>
       </div>
       <div class="form-group">
+        <label class="form-label">Resolution</label>
+      
         <boolean-field [value]="sensor.highResolution" (valueChange)="sensor.highResolution = $event"
           [label]="'High Resolution'" [disabled]="mode === 'READ'"></boolean-field>
       </div>
@@ -100,13 +127,17 @@
         </ul>
       </div>
 
-      <div *ngIf="isAdmin && mode === 'WRITE'" class="btn-holder" style="text-align: right;margin-bottom: 40px;">
-        <button *ngIf="!newInstance" type="button" class="btn btn-default" (click)="handleOnCancel()">Cancel</button>
-        <button type="submit" class="btn btn-primary" (click)="handleOnSubmit()"
-          [disabled]="!ngForm.valid || sensor.wavelengths.length === 0">Apply</button>
-      </div>
-      <div *ngIf="isAdmin && mode === 'READ'" class="btn-holder" style="text-align: right;margin-bottom: 40px;">
-        <button type="submit" class="btn btn-primary" (click)="handleOnEdit()">Edit</button>
+      <div *ngIf="isAdmin" class="form-group form-actions"> <!-- Change class to 'sticky-actions' for a floating button-->
+        <div style="text-align: right;">
+          <ng-container *ngIf="mode === 'WRITE'">
+            <button *ngIf="!newInstance" type="button" class="btn btn-default" (click)="handleOnCancel()">Cancel</button>
+            <button type="submit" class="btn btn-primary" (click)="handleOnSubmit()"
+              [disabled]="!ngForm.valid || sensor.wavelengths.length === 0 || sensor.collectionFormats.length === 0">Apply</button>
+          </ng-container>
+          <ng-container *ngIf="mode === 'READ'">
+            <button type="submit" class="btn btn-primary" (click)="handleOnEdit()">Edit</button>
+          </ng-container>
+        </div>
       </div>
     </form>
   </div>

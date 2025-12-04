@@ -260,8 +260,6 @@ a.thumbnail.non-clickable:focus {
 
 
 
-
-
 // ----- //
 
 a:hover,
@@ -622,7 +620,7 @@ a.active {
 
 a.disabled {
   pointer-events: none;
-  cursor: not-allowed; 
+  cursor: not-allowed;
 }
 
 .img-disabled {
@@ -632,40 +630,6 @@ a.disabled {
 .card-disabled {
   background: #707070;
 }
-
-// ------ Custom X checkbox
-
-input[type="checkbox"].x-box {
-  -webkit-appearance: initial;
-  appearance: initial;
-  background: white;
-  width: 20px;
-  height: 20px;
-  border: solid 1px lightgrey;
-  position: absolute;
-  border-radius: 0;
-  margin: 5px;
-  z-index: 9;
-}
-
-input[type="checkbox"].x-box:checked {
-  // background: red;
-}
-
-input[type="checkbox"].x-box:checked:after {
-  content: "x";
-  color: #242424;
-  font-size: 40px;
-  position: absolute;
-  left: 50%;
-  top: 35%;
-  -webkit-transform: translate(-50%, -50%);
-  -moz-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-}
-
-// ------ End Custom X checkbox
 
 
 .collapse {
@@ -794,6 +758,21 @@ ngx-file-drop button {
   padding-right: 5px;
 }
 
+input[type=button],
+input[type=submit],
+button.btn,
+.btn {
+  height: 40px
+}
+
+.btn-warning {
+  color: #fff;
+}
+
+.btn-warning:hover {
+  color: #fff;
+}
+
 
 // Tree styling
 // .node-content-wrapper,
@@ -864,5 +843,3 @@ ngx-file-drop button {
 // tree-node-expander {
 //   display: none !important;
 // }
-
-

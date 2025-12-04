@@ -24,7 +24,7 @@
           <div class="col-md-1"></div>
           <div class="col-md-10">
             <div class="form-group">
-              <boolean-field [(value)]="metadata.processOrtho" label="Generate PNG"></boolean-field>
+              <boolean-field [(value)]="metadata.processOrtho" label="Process upload"></boolean-field>
             </div>
           </div>
         </div>
@@ -48,7 +48,7 @@
         <div class="col-md-1"></div>
         <div class="col-md-10">
           <div class="form-group">
-            <boolean-field [(value)]="metadata.processDem" label="Generate hillshade from tif"></boolean-field>
+            <boolean-field [(value)]="metadata.processDem" label="Process upload"></boolean-field>
           </div>
         </div>
       </div>
@@ -132,6 +132,21 @@
         <div *ngIf="!existingTask">
 
           <div class="card card-body bg-light">
+            <div *ngIf="uploadTarget === 'raw' && component && component.isRadiometric"
+              style="padding: 8px; background-color: #fff9f3; border-left: 4px solid #e4a664;">
+              <h4>Radiometric Collection</h4>
+              <span>You are uploading to a radiometric collection. These sensors capture scientific temperature or
+                reflectance data, not standard RGB imagery. Imagery must contain a single band in .tif format — not RGB.
+                Radiometric calibration is automatically enabled (as CAMERA), but if your sensor supports CAMERA+SUN,
+                you may enable that during processing.</span>
+            </div>
+            <div *ngIf="uploadTarget === 'raw' && component && component.isMultispectral"
+              style="padding: 8px; background-color: #f7f3ff; border-left: 4px solid #a68be0;">
+              <h4>Multispectral Collection</h4>
+              <span>You are uploading to a multispectral collection. These sensors capture multiple narrow wavelength
+                bands, not standard RGB imagery. Radiometric calibration is automatically enabled (as CAMERA), but if
+                your sensor supports CAMERA+SUN, you may enable that during processing.</span>
+            </div>
             <h4>All uploaded files</h4>
             <ul>
               <li *ngIf="uploadTarget === 'raw'">Must be compressed into a .zip or .tar.gz format.</li>
@@ -152,49 +167,9 @@
                 </tr>
               </thead>
               <tbody *ngIf="uploadTarget === 'raw'">
-                <ng-container *ngIf="!component.isLidar">
-                  <tr>
-                    <td>RGB Image Data</td>
-                    <td>jpg, jpeg, png</td>
-                  </tr>
-                  <tr>
-                    <td>Multispectral Image Data</td>
-                    <td>tif</td>
-                  </tr>
-                </ng-container>
-                <ng-container *ngIf="component.isLidar">
-                  <tr>
-                    <td>Pointcloud</td>
-                    <td>laz, las</td>
-                  </tr>
-                </ng-container>
-                <tr>
-                  <td>Video</td>
-                  <td>mp4</td>
-                </tr>
-              </tbody>
-              <tbody *ngIf="uploadTarget === 'ptcloud'">
-                <tr>
-                  <td>Pointcloud</td>
-                  <td>laz, las</td>
-                </tr>
-              </tbody>
-              <tbody *ngIf="uploadTarget === 'dem'">
-                <tr>
-                  <td>Digital Elevation Model (DEM)</td>
-                  <td>tif</td>
-                </tr>
-              </tbody>
-              <tbody *ngIf="uploadTarget === 'ortho'">
-                <tr>
-                  <td>Orthomosaic</td>
-                  <td>tif, png, zip, tar.gz</td>
-                </tr>
-              </tbody>
-              <tbody *ngIf="uploadTarget === 'video'">
-                <tr>
-                  <td>Video</td>
-                  <td>mp4</td>
+                <tr *ngFor="let row of supportedRawFormats">
+                  <td>{{ row.type }}</td>
+                  <td>{{ row.formats }}</td>
                 </tr>
               </tbody>
             </table>
@@ -220,8 +195,8 @@
             <div class="card-body">
               <h4>
                 Status:
-                <b> 
-                  Upload successfully completed and the files are being copied to S3. 
+                <b>
+                  Upload successfully completed and the files are being copied to S3.
                   See the <a routerLink="/site/tasks">task page</a> for more details.
                 </b>
               </h4>
@@ -232,19 +207,37 @@
             <ngx-file-drop [disabled]="isUploading" [accept]="extensions" [multiple]="false"
               dropZoneLabel="Drop files here" (onFileDrop)="onFileSelected($event)">
               <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
-                Drag & Drop File
-                <button type="button" class="btn btn-secondary" [disabled]="isUploading" (click)="openFileSelector()">Browse Files</button>
+                <div class="container-fluid">
+
+                  <div class="row">
+                    <div class="col-sm-12">
+                      <div class="text-center">
+                        Drag & Drop File
+                        <button type="button" class="btn btn-secondary" [disabled]="isUploading"
+                          (click)="openFileSelector()">Browse Files</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div *ngIf="selectedFile != null" class="row">
+                    <div class="col-sm-12">
+                      <div class="text-center">
+                        Selected File: <b>{{selectedFile.name}}</b>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
               </ng-template>
             </ngx-file-drop>
           </div>
           <div class="mb-2 mt-2">
 
-            <div *ngIf="selectedFile != null" class="row">
-              <label for="staticEmail" class="col-sm-2 col-form-label">Upload File</label>
+            <!-- <div *ngIf="selectedFile != null" class="row">
+              <label for="staticEmail" class="col-sm-2 col-form-label">Selected File</label>
               <div class="col-sm-10">
                 <input readonly type="text" class="form-control-plaintext" id="formFile" [value]="selectedFile.name">
               </div>
-            </div>
+            </div> -->
 
             <div class="row">
               <div class="col-sm-12">

@@ -1,0 +1,9 @@
+form .form-group:not(:first-child) {
+  padding-top: 1rem;
+}
+.container {
+  padding: 1rem;
+}
+.form-actions {
+  text-align: right;
+}

@@ -32,6 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -67,6 +68,7 @@ import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
 import gov.geoplatform.uasdm.cog.CogPreviewParams;
 import gov.geoplatform.uasdm.cog.TiTillerProxy;
 import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
+import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentWithAttributes;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -99,6 +101,8 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public static final String  NAME             = "name";
 
   public static final String  EMAIL            = "email";
+  
+  public static final String  FORMAT           = "format";
 
   final Logger                log              = LoggerFactory.getLogger(Collection.class);
 
@@ -134,6 +138,24 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public void appLock()
   {
     // Balk
+  }
+  
+  public CollectionFormat getFormat() {
+    if (StringUtils.isBlank(this.getSCollectionFormat()))
+      return null;
+    
+    return CollectionFormat.valueOf(this.getSCollectionFormat());
+  }
+  
+  public void setFormat(CollectionFormat format) {
+    this.setSCollectionFormat(format == null ? null : format.name());
+  }
+  
+  public void setFormat(String format) {
+    if (format != null)
+      CollectionFormat.valueOf(format); // validate
+    
+    this.setSCollectionFormat(format);
   }
 
   @Override
@@ -667,39 +689,37 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     return this.getMetadata().map(metadata -> {
       Sensor sensor = metadata.getSensor();
-
-      if (sensor != null)
-      {
-        SensorType type = sensor.getSensorType();
-
-        if (type.getIsMultispectral())
-        {
-          return true;
-        }
-      }
-
-      return false;
+      if (sensor == null) return false;
+      
+      var formats = sensor.getCollectionFormats();
+      return formats.contains(CollectionFormat.STILL_MULTISPECTRAL) || formats.contains(CollectionFormat.VIDEO_MULTISPECTRAL);
     }).orElse(false);
   }
   
+  /**
+   * A thermal sensor (such as Workswell) can capture data as either radiometric or RGB encoded thermal (designed for viewing with the human eye).
+   * Radiometric data is used for scientific purposes, and each pixel does NOT encode an "RGB" value. It encodes a real measured "radiance" values
+   * as recorded by the sensor. The images also: MUST be tif, and MUST only have a single band.
+   * 
+   * @return Whether or not the collection includes "radiometric" data used for scientific purposes, where the actual pixel values encode "radiance"
+   * values, NOT RGB data.
+   */
   @Override
-  public boolean isThermal()
+  public boolean isRadiometric()
   {
-    return this.getMetadata().map(metadata -> {
-      Sensor sensor = metadata.getSensor();
-
-      if (sensor != null)
-      {
-        return sensor.getSensorHasWaveLengthChildWaveLengths().stream().anyMatch(wl -> wl.getName().equalsIgnoreCase(WaveLength.THERMAL));
-      }
-
-      return false;
-    }).orElse(false);
+    var format = this.getFormat();
+    if (format != null) return format.isRadiometric();
+    
+    return false;
   }
 
   @Override
   public boolean isLidar()
   {
+    var format = this.getFormat();
+    if (format != null) return format.isLidar();
+    
+    // Maintain legacy behaviour (before collection format existed)
     return this.getMetadata().map(metadata -> {
       Sensor sensor = metadata.getSensor();
 

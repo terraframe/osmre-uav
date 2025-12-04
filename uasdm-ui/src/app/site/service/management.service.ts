@@ -776,7 +776,7 @@ export class ManagementService {
 		let params: HttpParams = new HttpParams();
 		params = params.set('uploadUrl', uploadUrl);
 
-		return firstValueFrom(this.http
+		return firstValueFrom(this.noErrorHttpClient
 			.get<Task>(environment.apiUrl + '/api/upload/get-task', { params: params }));
 	}
 
@@ -797,4 +797,23 @@ export class ManagementService {
 				this.eventService.complete();
 			})));
 	}
+
+	cancelUploadTask(uploadId: string): Promise<void> {
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
+
+		const params = {
+			uploadId: uploadId,
+		};
+
+		this.eventService.start();
+
+		return firstValueFrom(this.http
+			.post<void>(environment.apiUrl + '/api/project/cancel-task', JSON.stringify(params), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			})));
+	}
+
 }

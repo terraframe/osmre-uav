@@ -10,7 +10,7 @@ import { Subject } from 'rxjs';
 
 import { ErrorHandler } from '@shared/component';
 
-import { Sensor } from '@site/model/sensor';
+import { COLLECTION_FORMATS, Sensor } from '@site/model/sensor';
 import { Platform } from '@site/model/platform';
 import { SiteEntity, Selection, projectTypes } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
@@ -211,6 +211,8 @@ export class CreateCollectionModalComponent implements OnInit, OnDestroy {
 						return false;
 					}
 
+					if (this.hasField('collectionDate') && (page.selection.format == null || page.selection.format.length == 0))
+						return false;
 
 					return true;
 				}

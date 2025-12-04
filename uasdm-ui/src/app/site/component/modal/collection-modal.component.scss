@@ -6,6 +6,9 @@
   border-radius:.25rem;
   transition:border-color .2s, box-shadow .2s, transform .08s;
 }
+.thumb.video {
+  max-width:150px;
+}
 .thumb > img{ display:block; width:100%; height:auto; border-radius:.25rem; }
 .thumb:hover,
 .thumb:focus{
@@ -16,3 +19,50 @@
 }
 /* keep caption subtle */
 .thumb .caption{ margin-top:.25rem; font-size:.875rem; color:#6c757d; }
+
+
+// ------ Custom X checkbox
+
+.image-action {
+  -webkit-appearance: initial;
+  appearance: initial;
+  background: white;
+  width: 20px;
+  height: 20px;
+  border: solid 1px lightgrey;
+  position: absolute;
+  border-radius: 0;
+  margin: 5px; 
+  z-index: 9;
+}
+
+.image-action.exclude {
+  top: 8px;
+  left: 40px;
+}
+
+.image-action.download {
+  line-height:1;
+  font-size: 0.9rem;
+  padding-left: 2px;
+  padding-top: 2px;
+}
+
+.image-action:checked {
+  // background: red;
+}
+
+.image-action:checked:after {
+  content: "x";
+  color: #242424;
+  font-size: 40px;
+  position: absolute;
+  left: 50%;
+  top: 35%;
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+// ------ End Custom X checkbox

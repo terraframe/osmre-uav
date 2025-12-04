@@ -19,8 +19,8 @@
     <div *ngIf="entity != null">
       <div class="row">
         <div class="col-md-12">
-          <h2>{{entity.name}} <span *ngIf="!entity.metadataUploaded" class="dot pending"
-              style="margin-left: 0;margin-bottom: 5px;"></span></h2>
+          <h2>{{entity.name}} <span *ngIf="!entity.metadataUploaded" style="margin-left: 0;margin-bottom: 5px;"></span>
+          </h2>
         </div>
       </div>
 
@@ -47,6 +47,12 @@
         <div class="col-md-12">
           <label class="form-label">Collection End Date: </label> &nbsp; {{entity.collectionEndDate | idmdate : "MMM dd,
           yyyy" : false}}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <label class="form-label">Collection Format: </label> &nbsp; {{labelForFormat(entity.format)}}
         </div>
       </div>
 
@@ -155,33 +161,75 @@
             <tab heading="raw" (selectTab)="onSelect('image')">
               <i *ngIf="loading" class="fa fa-spinner fa-spin" style="margin-left:50%;"></i>
 
-              <div class="image-list-container">
+              <div *ngIf="!entity?.format || entity.format.startsWith('STILL_')" class="image-list-container">
 
                 <ul class="list-group list-group-horizontal flex-wrap">
                   <li
                     *ngFor="let item of page.results | paginate: { itemsPerPage: page.pageSize, currentPage: page.pageNumber, totalItems: page.count }"
                     class="list-group-item col-3">
-                    <a class="thumb d-block text-decoration-none text-reset"
+                    <a class="d-block text-decoration-none text-reset mx-auto d-block"
                       [ngClass]="{'card-disabled' : item.exclude, 'non-clickable' : !enableSelectableImages}">
-                      <input type="checkbox" class="x-box" *ngIf="enableSelectableImages" [checked]="item.exclude"
-                        (change)="toggleExcludeImage($event, item)" [title]="item.exclude ? 'Include image in processing' : 'Exclude image from processing'" style="cursor: pointer;" />
-                      <img class="mx-auto d-block" style="max-height: 150px"
-                        (click)="previewImage(item)"
-                        [ngClass]="{'img-disabled' : item.exclude}"
-                        [src]="thumbnails[item.key] != null ? (thumbnails[item.key] | safeHtml) : (context + '/assets/thumbnail-default.png')"
-                        title="View or download image"
-                        alt="Image">
-                      <div class="caption">
-                        <h4 class="media-heading">
+                      <i class="image-action download fa fa-download"
+                        (click)="handleDownloadFile(item)"
+                        title="Download image"
+                        style="cursor: pointer;"></i>
+                      <input type="checkbox" class="image-action exclude" *ngIf="enableSelectableImages" [checked]="item.exclude"
+                        (change)="toggleExcludeImage($event, item)"
+                        [title]="item.exclude ? 'Include image in processing' : 'Exclude image from processing'"
+                        style="cursor: pointer;" />
+                      <figure class="figure ">
+                        <img class="thumb figure-img img-fluid rounded" style="max-height: 150px"
+                          (click)="previewImage(item)" [ngClass]="{'img-disabled' : item.exclude}"
+                          [src]="thumbnails[item.key] != null ? (thumbnails[item.key] | safeHtml) : (context + '/assets/thumbnail-default.png')"
+                          title="View or download image" alt="Image">
+                        <figcaption class="figure-caption">
                           {{item.name}}
-                        </h4>
-                      </div>
+                        </figcaption>
+                      </figure>
+
                     </a>
                   </li>
                 </ul>
               </div>
-            </tab>
 
+              <!--Video raw-->
+              <div *ngIf="entity.format && entity.format.startsWith('VIDEO_') && video.src !== null">
+                <div class="row">
+                  <div class="col-md-1"></div>
+                  <div class="col-md-10">
+                    <h3>
+                      {{video.name}}
+                      <a (click)="handleDownloadVideo(video.src)"><i class="fas fa-download"></i></a>
+                      <a class="float-end" (click)="closeVideo()"><i class="fa fa-times" aria-hidden="true"></i></a>
+                    </h3>
+                  </div>
+                  <div class="col-md-1"></div>
+                </div>
+                <div class="row">
+                  <div class="col-md-1"></div>
+                  <div class="col-md-10">
+                    <video style="width:100%" controls>
+                      <source [src]="video.src" type="video/mp4" />
+                      Browser not supported
+                    </video>
+                  </div>
+                  <div class="col-md-1"></div>
+                </div>
+              </div>
+
+              <div *ngIf="this.entity?.format && this.entity.format.startsWith('VIDEO_')" class="image-list-container">
+                <ul class="list-group row">
+                  <li *ngFor="let item of page.results" class="list-group-item col-xs-3">
+                    <div class="thumb video" (click)="showVideo(item)">
+                      <img [src]="context + '/assets/thumbnail-video.png'" alt="Video">
+                      <div class="caption">
+                        <h4 class="media-heading">{{item.name}}</h4>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </tab>
             <tab heading="supporting data" (selectTab)="onSelect('data')">
               <i *ngIf="loading" class="fa fa-spinner fa-spin" style="margin-left:50%;"></i>
 
@@ -207,9 +255,8 @@
 
               </table>
             </tab>
-
-
-            <tab heading="video" (selectTab)="onSelect('video')">
+            <!--Legacy collection (before 'format' attribute existed)-->
+            <tab *ngIf="!entity.format" heading="video" (selectTab)="onSelect('video')">
               <i *ngIf="loading" class="fa fa-spinner fa-spin" style="margin-left:50%;"></i>
 
               <div *ngIf="video.src !== null">
@@ -238,8 +285,8 @@
 
               <div class="image-list-container">
                 <ul class="list-group row">
-                  <li *ngFor="let item of page.results" class="list-group-item col-3">
-                    <div class="thumbnail" (click)="showVideo(item)">
+                  <li *ngFor="let item of page.results" class="list-group-item col-xs-3">
+                    <div class="thumb video" (click)="showVideo(item)">
                       <img [src]="context + '/assets/thumbnail-video.png'" alt="Video">
                       <div class="caption">
                         <h4 class="media-heading">{{item.name}}</h4>
@@ -249,6 +296,7 @@
                 </ul>
               </div>
             </tab>
+            <!--End legacy support-->
             <tab heading="products" style="margin-top:10px;" (selectTab)="onSelect('artifacts')">
               <artifact-page *ngIf="tabName === 'artifacts'" [entity]="entity" [processRunning]="processRunning"
                 (onError)="error($event)"></artifact-page>
@@ -269,8 +317,9 @@
           </div>
 
           <div class="btn-holder" style="margin: 20px 0px 10px 0px;">
-            <div class="row">
-              <div class="col-sm-4">
+
+            <div class="d-flex flex-row">
+              <div>
                 <button type="button" class="btn btn-warning" [disabled]="processRunning" (click)="editMetadata()">
                   <i class="fa fa-edit" style="color:white"></i>
                   Edit Metadata
@@ -283,8 +332,10 @@
                   (click)="handleUpload()">
                   Upload
                 </button>
+
               </div>
-              <div class="col-md-8" style="text-align: right;">
+              <div class="flex-fill"></div>
+              <div>
                 <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
 
                 <button *ngIf="tabName === 'artifacts'" type="button" class="btn btn-secondary"
@@ -305,11 +356,12 @@
                 </button>
                 <button *ngIf="processable && enableSelectableImages"
                   [disabled]="processRunning || !canReprocessImagery" (click)="handleRunOrtho()" class="btn btn-primary"
-                  title="Reprocesses the selected raw imagery and generates new products." style="margin-left: 5px;">
-                  Process Imagery
+                  title="Reprocesses the selected raw and generates new products." style="margin-left: 5px;">
+                  Process
                   <i class="fa fa-sync-alt" [ngClass]="{'fa-spin' : processRunning}" aria-hidden="true"
                     style="color:white;vertical-align: middle;margin-left: 10px;"></i>
                 </button>
+
               </div>
             </div>
           </div>

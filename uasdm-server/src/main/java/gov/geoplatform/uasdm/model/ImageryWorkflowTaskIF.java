@@ -138,6 +138,9 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
                 child.setValue(Collection.POCEMAIL, poc.getString(Collection.EMAIL));
               }
             }
+            
+            if (selection.has(Collection.FORMAT))
+              ((CollectionIF)child).setFormat(selection.getString(Collection.FORMAT));
           }
 
           child.applyWithParent(component);

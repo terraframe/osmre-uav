@@ -21,6 +21,7 @@ import java.util.Optional;
 import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 
+import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentWithAttributes;
 import gov.geoplatform.uasdm.model.EdgeType;
@@ -89,32 +90,19 @@ public class CollectionMetadata extends CollectionMetadataBase implements Compon
   public boolean isMultiSpectral()
   {
     Sensor sensor = this.getSensor();
-
-    if (sensor != null)
-    {
-      SensorType type = sensor.getSensorType();
-
-      if (type.getIsMultispectral())
-      {
-        return true;
-      }
-    }
-
-    return false;
+    if (sensor == null) return false;
+    
+    var formats = sensor.getCollectionFormats();
+    return formats.contains(CollectionFormat.STILL_MULTISPECTRAL) || formats.contains(CollectionFormat.VIDEO_MULTISPECTRAL);
   }
 
   public boolean isLidar()
   {
     Sensor sensor = this.getSensor();
-
-    if (sensor != null)
-    {
-      SensorType type = sensor.getSensorType();
-
-      return type.isLidar();
-    }
-
-    return false;
+    if (sensor == null) return false;
+    
+    var formats = sensor.getCollectionFormats();
+    return formats.contains(CollectionFormat.LIDAR);
   }
 
 }

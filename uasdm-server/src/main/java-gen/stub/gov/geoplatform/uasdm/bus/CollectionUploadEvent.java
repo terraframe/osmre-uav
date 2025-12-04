@@ -17,11 +17,11 @@ package gov.geoplatform.uasdm.bus;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Random;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -33,11 +33,11 @@ import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.ApplicationFileResource;
 import com.runwaysdk.resource.ArchiveFileResource;
+import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Session;
 import com.runwaysdk.system.SingleActor;
 
-import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.Util;
@@ -62,6 +62,7 @@ import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
 import gov.geoplatform.uasdm.ws.UserNotificationMessage;
 import net.geoprism.GeoprismUser;
+import net.geoprism.configuration.GeoprismProperties;
 
 public class CollectionUploadEvent extends CollectionUploadEventBase
 {
@@ -121,10 +122,10 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 
           if (isCog && !infile.getName().endsWith(CogTifProcessor.COG_EXTENSION))
           {
-            File temp = new File(AppProperties.getTempDirectory(), Long.valueOf(new Random().nextInt()).toString());
-            temp.mkdir();
-
-            File newfile = new File(temp, infile.getBaseName() + CogTifProcessor.COG_EXTENSION);
+            CloseableFile tempParent = new CloseableFile(Files.createTempDirectory("cogrename").toFile(), true);
+            
+            // TODO : If you get a compile error here while upgrading to the latest runway, you can fix the compile error by removing  ", true, true);" and replacing it with ").deleteParentToo();"
+            CloseableFile newfile = new CloseableFile(new File(tempParent, infile.getBaseName() + CogTifProcessor.COG_EXTENSION).toURI(), true, true);
 
             FileUtils.copyFile(infile.getUnderlyingFile(), newfile);
 
@@ -136,10 +137,10 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
             task.createAction("Uploaded file ends with cog extension, but did not pass cog validation.", TaskActionType.ERROR.getType());
             task.apply();
 
-            File temp = new File(AppProperties.getTempDirectory(), Long.valueOf(new Random().nextInt()).toString());
-            temp.mkdir();
+            CloseableFile tempParent = new CloseableFile(Files.createTempDirectory("cogfailvalidate").toFile(), true);
 
-            File newfile = new File(temp, infile.getBaseName() + ".tif");
+            // TODO : If you get a compile error here while upgrading to the latest runway, you can fix the compile error by removing ", true, true);" and replacing it with ").deleteParentToo();"
+            CloseableFile newfile = new CloseableFile(new File(tempParent, infile.getBaseName() + ".tif").toURI(), true, true);
 
             FileUtils.copyFile(infile.getUnderlyingFile(), newfile);
 
@@ -242,7 +243,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.setConfiguration(configuration);
     task.apply();
 
-    task.initiate(archive, isMultispectral, ((CollectionIF)component).isThermal());
+    task.initiate(archive, isMultispectral, ((CollectionIF)component).isRadiometric());
   }
 
   private void startLidarProcessing(ApplicationFileResource infile, WorkflowTask uploadTask, LidarProcessConfiguration configuration)

@@ -172,18 +172,6 @@ public class AppProperties
     }
   }
 
-  public static File getTempDirectory()
-  {
-    File temp = new File(GeoprismProperties.getGeoprismFileStorage(), Singleton.getProps().getString("temp.dir", "temp"));
-
-    if (!temp.exists())
-    {
-      temp.mkdir();
-    }
-
-    return temp;
-  }
-
   public static File getUploadDirectory()
   {
     File upload = new File(GeoprismProperties.getGeoprismFileStorage(), Singleton.getProps().getString("upload.dir", "upload"));
@@ -198,7 +186,7 @@ public class AppProperties
 
   public static Integer getChunkExpireTime()
   {
-    return Singleton.getProps().getInteger("chunk.expire.time", 1);
+    return Singleton.getProps().getInteger("chunk.expire.time", 2);
   }
 
   public static Integer getInviteUserTokenExpireTime()

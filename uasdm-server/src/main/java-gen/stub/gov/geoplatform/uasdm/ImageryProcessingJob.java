@@ -46,6 +46,7 @@ import gov.geoplatform.uasdm.bus.ImageryUploadEvent;
 import gov.geoplatform.uasdm.bus.ImageryUploadEventQuery;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
+import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
@@ -84,12 +85,41 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   {
     this.setConfigurationJson(configuration.toJson().toString());
   }
-
-  public static List<String> getSupportedExtensions(String uploadTarget, boolean isMultispectral, ProcessConfiguration config)
+  
+  public static List<String> getSupportedExtensions(String uploadTarget, CollectionFormat format, ProcessConfiguration config)
   {
-    if (isMultispectral || uploadTarget.equals(ImageryComponent.DEM))
+    // First check the upload target. If they're manually uploading a product, it doesn't matter what the collection format is.
+    if (ImageryComponent.DEM.equals(uploadTarget))
+      return Arrays.asList("tif", "tiff", "xml");
+    else if (ImageryComponent.ORTHO.equals(uploadTarget))
+      return Arrays.asList("png", "tif", "tiff", "xml");
+    else if (ImageryComponent.PTCLOUD.equals(uploadTarget))
+      return Arrays.asList("laz", "las");
+    else if (ImageryComponent.VIDEO.equals(uploadTarget))
+      return Arrays.asList("mp4");
+    else if (config != null && config.isLidar())
+      return Arrays.asList("las", "laz");
+
+    // If they're uploading to raw, then we need to check the collection format
+    if (format != null) { 
+      if (format.isLidar())
+        return Arrays.asList("las", "laz");
+      else if (format.isVideo())
+        return Arrays.asList("mp4");
+      else if (format.isMultispectral() || format.isRadiometric())
+        return Arrays.asList("tif", "tiff");
+      else
+        return Arrays.asList("jpg", "jpeg", "png");
+    }
+    
+    return Arrays.asList("jpg", "jpeg", "png", "tif", "tiff", "mp4");
+  }
+
+  public static List<String> getSupportedExtensions(String uploadTarget, boolean isMultispectral, boolean isRadiometric, boolean isVideo, ProcessConfiguration config)
+  {
+    if (isMultispectral || isRadiometric || uploadTarget.equals(ImageryComponent.DEM))
     {
-      return Arrays.asList("tif", "tiff");
+      return Arrays.asList("tif", "tiff", "xml");
     }
     else if (uploadTarget.equals(ImageryComponent.ORTHO))
     {
@@ -99,7 +129,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     {
       return Arrays.asList("laz", "las");
     }
-    else if (uploadTarget.equals(ImageryComponent.VIDEO))
+    else if (uploadTarget.equals(ImageryComponent.VIDEO) || isVideo)
     {
       return Arrays.asList("mp4");
     }
@@ -110,7 +140,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     }
     else
     {
-      return Arrays.asList("jpg", "jpeg", "png", "tif", "tiff");
+      return Arrays.asList("jpg", "jpeg", "png", "tif", "tiff", "mp4");
     }
   }
 

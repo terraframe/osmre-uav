@@ -107,11 +107,11 @@ public class WorkflowService
         workflowTask.setProcessPtcloud(configuration.toODM().getProcessPtcloud());
       }
 
-      if (uasComponent instanceof gov.geoplatform.uasdm.graph.Collection && //
-          ( (gov.geoplatform.uasdm.graph.Collection) uasComponent ).getStatus().equals("Processing"))
-      {
-        throw new ProcessingInProgressException();
-      }
+//      if (uasComponent instanceof gov.geoplatform.uasdm.graph.Collection && //
+//          ( (gov.geoplatform.uasdm.graph.Collection) uasComponent ).getStatus().equals("Processing"))
+//      {
+//        throw new ProcessingInProgressException();
+//      }
     }
     else
     {
@@ -185,6 +185,19 @@ public class WorkflowService
     AbstractUploadTask task = AbstractUploadTask.getTaskByUploadId(uploadId);
 
     return task.toJSON();
+  }
+
+  @Request(RequestType.SESSION)
+  public void cancel(String sessionId, String uploadId)
+  {
+    AbstractUploadTask task = AbstractUploadTask.getTaskByUploadId(uploadId);
+
+    if (task != null)
+    {
+      task.appLock();
+      task.setStatus("Failed");
+      task.apply();
+    }
   }
 
 }
