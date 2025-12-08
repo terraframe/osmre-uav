@@ -2,7 +2,7 @@
 ///
 ///
 
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { ErrorHandler } from '@shared/component';
@@ -14,7 +14,7 @@ import { ManagementService } from '@site/service/management.service';
     standalone: false,
   selector: 'image-preview-modal',
     templateUrl: './image-preview-modal.component.html',
-    styleUrls: []
+    styleUrls: ['./image-preview-modal.component.css']
 } )
 export class ImagePreviewModalComponent {
 
