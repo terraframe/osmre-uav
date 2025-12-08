@@ -167,7 +167,7 @@ public class UASDMAccountController extends AbstractController
   }
 
   @GetMapping("/page")
-  public ResponseEntity<String> page(@NotEmpty @RequestParam String criteria) throws JSONException
+  public ResponseEntity<String> page(@NotEmpty @RequestParam(name = "criteria") String criteria) throws JSONException
   {
     JSONObject response = this.service.page(this.getClientRequest().getSessionId(), new JSONObject(criteria));
 

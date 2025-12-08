@@ -62,7 +62,7 @@ public class OrganizationController extends AbstractController
 
   @ResponseBody
   @GetMapping("/get")
-  public ResponseEntity<String> get(@NotEmpty @RequestParam String code) throws ParseException
+  public ResponseEntity<String> get(@NotEmpty @RequestParam(name = "code") String code) throws ParseException
   {
     OrganizationDTO[] orgs = this.service.getOrganizations(this.getSessionId(), new String[] { code });
 
@@ -71,7 +71,7 @@ public class OrganizationController extends AbstractController
 
   @ResponseBody
   @GetMapping("/search")
-  public ResponseEntity<String> search(@NotEmpty @RequestParam String text) throws ParseException
+  public ResponseEntity<String> search(@NotEmpty @RequestParam(name = "text") String text) throws ParseException
   {
     List<OrganizationDTO> orgs = this.service.search(this.getSessionId(), text);
 
@@ -85,7 +85,7 @@ public class OrganizationController extends AbstractController
   }
 
   @GetMapping("/get-children")
-  public ResponseEntity<String> getChildren(@RequestParam(required = false) String code, @RequestParam(required = false) Integer pageSize, @RequestParam(required = false) Integer pageNumber)
+  public ResponseEntity<String> getChildren(@RequestParam(name = "code", required = false) String code, @RequestParam(name = "pageSize", required = false) Integer pageSize, @RequestParam(name = "pageNumber", required = false) Integer pageNumber)
   {
     JsonObject page = this.service.getChildren(this.getSessionId(), code, pageSize, pageNumber);
 
@@ -93,7 +93,7 @@ public class OrganizationController extends AbstractController
   }
 
   @GetMapping("/get-ancestor-tree")
-  public ResponseEntity<String> getAncestorTree(@RequestParam(required = false) String rootCode, @NotEmpty @RequestParam String code, @RequestParam(required = false) Integer pageSize)
+  public ResponseEntity<String> getAncestorTree(@RequestParam(name = "rootCode", required = false) String rootCode, @NotEmpty @RequestParam(name = "code") String code, @RequestParam(required = false, name = "pageSize") Integer pageSize)
   {
     JsonObject page = this.service.getAncestorTree(this.getSessionId(), rootCode, code, pageSize);
 
@@ -109,7 +109,7 @@ public class OrganizationController extends AbstractController
   }
 
   @GetMapping("/page")
-  public ResponseEntity<String> page(@RequestParam(required = false) Integer pageSize, @RequestParam(required = false) Integer pageNumber)
+  public ResponseEntity<String> page(@RequestParam(required = false, name = "pageSize") Integer pageSize, @RequestParam(required = false, name = "pageNumber") Integer pageNumber)
   {
     Page<OrganizationView> page = this.service.getPage(this.getSessionId(), pageSize, pageNumber);
 

@@ -40,7 +40,7 @@ public class SessionEventLogController extends AbstractController
   private SessionEventService service;
 
   @GetMapping("/page")
-  public ResponseEntity<String> page(@RequestParam(required = true) Integer pageNumber, @RequestParam(required = true) Integer pageSize)
+  public ResponseEntity<String> page(@RequestParam(required = true, name = "pageNumber") Integer pageNumber, @RequestParam(required = true, name = "pageSize") Integer pageSize)
   {
     JSONObject page = this.service.page(getSessionId(), pageNumber, pageSize);
 
