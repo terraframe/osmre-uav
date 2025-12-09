@@ -60,96 +60,23 @@
     color:white;
 }
 
-/* 
-
-
-.nav.navbar-nav.navbar-right .dropdown .dropdown-toggle .glyphicon.glyphicon-menu-hamburger {
-  line-height: 144px;
+.header-help {
+  font-size: 0.9rem;
+  color: #3f3f3f;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  transition: color 0.2s, background 0.2s;
 }
 
-.navbar-header {
-  padding: 46px 0 46px 0;
-  float: left;
-}
-
-.navbar-default .navbar-header > a > img {
-height: 80%;
-position: absolute;
-top: 50%;
-transform: translateY(-50%);
-}
-
-.nav.navbar-nav.navbar-right {
-  float: right;
-}
-
-.navbar-default .navbar-header > a:first-child.navbar-brand {
-  line-height: 144px;
-  padding: 0;
-  margin-left: 20px;
-}
-.navbar.navbar-default .navbar-header:hover {
-  color: #e5e4d2;
-  color: var(--theme-accent-color-hover) !important;
-}
-
-.navbar-default:hover .navbar-brand {
-  color: #B6D7D8; 
-  color: var(--theme-accent-color) !important;
-}
-
-.navbar-brand {
-  color: #B6D7D8; 
-  color: var(--theme-accent-color);
-}
-
-.navbar-default .navbar-nav>.open>a, 
-.navbar-default .navbar-nav>.open>a:hover, 
-.navbar-default .navbar-nav>.open>a:focus {
-  background-color: #D7BD0C; 
-  background-color: var(--theme-primary-color);;
-  color: #555555;
-} 
-
-#navigator-header-container .navbar.navbar-default {
-  background-color: #D7BD0C; 
-  background-color: var(--theme-primary-color);
-  height: 50px;
-  border-radius: 0;
-  border: none;
-  margin-bottom: 0;
-}
-
-#navigator-header-container .nav.navbar-nav.navbar-right .dropdown .dropdown-toggle .glyphicon.glyphicon-menu-hamburger {
-  line-height: 50px;
-}
-
-#navigator-header-container .navbar-header {
-  padding: inherit;
-  float: left;
-}
-
-#navigator-header-container .dropdown-toggle {
-  line-height: 50px !important; 
-  padding: 0 !important; 
-}
-
-#navigator-header-container .navbar-default .navbar-header > a:first-child.navbar-brand {
-  line-height: 50px;
-  padding: 0;
-  margin-left: 0;
-}
-
-#navigator-header-container .dropdown-toggle {
-  line-height: 50px !important; 
-  padding: 0 !important; 
-}
-
-#navigator-header-container .user-indicator > p {
-  margin: 0;
-  margin-right: 20px;
-  line-height: 50px;
+.header-help:hover {
+  color: black;
+  background: rgba(0,0,0,0.08);
+  border-radius: 25px;
 }
 
 
-*/
+
+
+
+
