@@ -59,7 +59,7 @@ public class CloudOptimizedGeoTiffController extends AbstractController
    * @return
    */
   @GetMapping("/tilejson.json")
-  public ResponseEntity<String> tilejson(HttpServletRequest request, @RequestParam(required = true) String path)
+  public ResponseEntity<String> tilejson(HttpServletRequest request, @RequestParam(required = true, name = "path") String path)
   {
     JSONObject tilejson = this.service.tilejson(getSessionId(), request.getContextPath(), path, this.getAccessControl(request));
 
@@ -89,7 +89,7 @@ public class CloudOptimizedGeoTiffController extends AbstractController
   public static final String TILES_REGEX = "tiles\\/(.+\\/)?(\\d+)\\/(\\d+)\\/(\\d+)(@\\d+x)?(\\.[^?\\n\\r]+)?";
 
   @GetMapping("/tiles/**")
-  public ResponseEntity<?> tiles(HttpServletRequest request, @RequestParam(required = true) String path)
+  public ResponseEntity<?> tiles(HttpServletRequest request, @RequestParam(required = true, name = "path") String path)
   {
     String url = request.getRequestURI();
 

@@ -47,7 +47,7 @@ public class ProcessingReportController extends AbstractController
   private ProcessingReportService service;
 
   @GetMapping("/generate")
-  public ResponseEntity<ByteArrayResource> generate(HttpServletRequest request, @RequestParam(required = false) String date) throws IOException, ParseException
+  public ResponseEntity<ByteArrayResource> generate(HttpServletRequest request, @RequestParam(name = "date", required = false) String date) throws IOException, ParseException
   {
     Date _date = null;
     if (!StringUtils.isBlank(date))

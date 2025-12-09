@@ -12,8 +12,8 @@
 .thumb > img{ display:block; width:100%; height:auto; border-radius:.25rem; }
 .thumb:hover,
 .thumb:focus{
-  border-color:#0d6efd;
-  box-shadow:0 0 0 .2rem rgba(13,110,253,.15);
+  border-color:#007276;
+  box-shadow:0 0 0 .2rem rgba(0, 114, 118, 0.15);
   transform:translateY(-1px);
   outline:0;
 }
@@ -38,7 +38,10 @@
 
 .image-action.exclude {
   top: 8px;
-  left: 40px;
+}
+
+.image-action.exclude:hover {
+  border-color: #007276;
 }
 
 .image-action.download {
@@ -46,6 +49,7 @@
   font-size: 0.9rem;
   padding-left: 2px;
   padding-top: 2px;
+  right: 16px;
 }
 
 .image-action:checked {

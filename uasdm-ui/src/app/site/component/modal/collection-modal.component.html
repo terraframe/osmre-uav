@@ -169,7 +169,7 @@
                     class="list-group-item col-3">
                     <a class="d-block text-decoration-none text-reset mx-auto d-block"
                       [ngClass]="{'card-disabled' : item.exclude, 'non-clickable' : !enableSelectableImages}">
-                      <i class="image-action download fa fa-download"
+                      <i class="image-action download fa fa-download float-end"
                         (click)="handleDownloadFile(item)"
                         title="Download image"
                         style="cursor: pointer;"></i>
@@ -218,13 +218,15 @@
               </div>
 
               <div *ngIf="this.entity?.format && this.entity.format.startsWith('VIDEO_')" class="image-list-container">
-                <ul class="list-group row">
-                  <li *ngFor="let item of page.results" class="list-group-item col-xs-3">
-                    <div class="thumb video" (click)="showVideo(item)">
-                      <img [src]="context + '/assets/thumbnail-video.png'" alt="Video">
-                      <div class="caption">
-                        <h4 class="media-heading">{{item.name}}</h4>
-                      </div>
+                <ul class="list-group list-group-horizontal flex-wrap">
+                  <li *ngFor="let item of page.results" class="list-group-item col-3">
+                    <div (click)="showVideo(item)" style="cursor: pointer;">
+                      <figure class="figure ">
+                        <img [src]="context + '/assets/thumbnail-video.png'" alt="Video" class="thumb figure-img img-fluid rounded" style="max-height: 150px">
+                        <figcaption class="figure-caption">
+                          {{item.name}}
+                        </figcaption>
+                      </figure>                                           
                     </div>
                   </li>
                 </ul>
