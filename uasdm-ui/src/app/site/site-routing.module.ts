@@ -18,6 +18,7 @@ import { UAVsPageComponent } from './component/uav/uavs-page.component';
 import { UAVComponent } from './component/uav/uav.component';
 import { ReportsComponent } from './component/report/reports.component';
 import { EquipmentComponent } from './component/equipment/equipment.component';
+import { HelpComponent } from './component/help/help.component';
 
 const routes: Routes = [
     {
@@ -39,6 +40,11 @@ const routes: Routes = [
         path: 'tasks',
         canActivate: [AuthGuard],
         component: TasksComponent
+    },
+    {
+        path: 'help',
+        canActivate: [AuthGuard],
+        component: HelpComponent
     },
     {
         path: 'report',

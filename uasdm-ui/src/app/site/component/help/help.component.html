@@ -1,0 +1,271 @@
+<div>
+    <uasdm-header></uasdm-header>
+
+    <div id="app-container" class="container">
+        <h2 class="settings-header">
+            Help
+        </h2>
+
+        <h3 class="settings-subheader">Documentation</h3>
+        <ul>
+            <li><a href="https://terraframe.atlassian.net/l/c/iHQKhY3Q" target="_blank">IDM Documentation</a></li>
+            <li><a href="https://geoplatform.atlassian.net/wiki/spaces/BETC" target="_blank">GeoPlatform Documentation</a> (Access issued through the DOI)</li>
+        </ul>
+
+        <h3 class="settings-subheader">Help Desk</h3>
+        <span>Tickets can be submitted to our help desk via email. Select which kind of issue you need help with:</span>
+
+        <div>
+            <button type="button" class="btn btn-default" style="margin-top:10px;" (click)="isBugReportCollapsed = !isBugReportCollapsed"
+                [attr.aria-expanded]="!isBugReportCollapsed" aria-controls="collapseBasic">Bug Report
+            </button>
+            <div [collapse]="isBugReportCollapsed" id="bugReportCollapse" [isAnimated]="true"><div style="padding:10px;">
+                <div class="card mt-3">
+                    <div class="card-body">
+
+                        <!-- ======================================= -->
+                        <!-- SUBMIT BY EMAIL                         -->
+                        <!-- ======================================= -->
+                        <h5 class="fw-semibold mt-1">Submit via Email</h5>
+
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                        <p class="mb-0">
+                            Send your report via email to:
+                            <a [href]="'mailto:' + reportEmail" class="fw-bold">{{ reportEmail }}</a>
+                        </p>
+                        <button class="btn btn-sm btn-outline-secondary"
+                                (click)="copy(reportEmail)">
+                            <i class="fa-regular fa-copy"></i> Copy Address
+                        </button>
+                        </div>
+
+                        <p>Please include the following templates in your message:</p>
+
+                        <!-- SUBJECT TEMPLATE -->
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                        <h6 class="fw-semibold mb-0">Subject:</h6>
+                        <button class="btn btn-sm btn-outline-secondary"
+                                (click)="copy(subjectTemplate.innerText)">
+                            <i class="fa-regular fa-copy"></i> Copy Subject
+                        </button>
+                        </div>
+                        <pre #subjectTemplate class="bg-light p-2 border rounded mt-1">Bug Report: &lt;short description of issue&gt;</pre>
+
+                        <!-- BODY TEMPLATE -->
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                        <h6 class="fw-semibold mb-0">Body:</h6>
+                        <button class="btn btn-sm btn-outline-secondary"
+                                (click)="copy(bodyTemplate.innerText)">
+                            <i class="fa-regular fa-copy"></i> Copy Body
+                        </button>
+                        </div>
+
+                        <pre #bodyTemplate class="bg-light p-3 border rounded mt-1" style="white-space: pre-wrap;">Summary
+• Briefly describe the issue in one sentence.
+
+Steps to reproduce
+1. Go to:
+2. Perform action:
+3. Expected result:
+4. Actual result:
+
+Expected behavior
+• What should have happened?
+
+Actual behavior
+• What happened instead?
+• Include error messages if applicable.
+
+Environment
+• Application URL or instance:
+• IDM version:
+• OS:
+• Browser and version:
+• Network/VPN/proxy details (if relevant):
+
+Scope & impact
+• How often does the issue occur?
+• Does it block your workflow? (yes/no)
+• Who is affected?
+
+Attachments
+• Screenshots or screen recordings:
+• Relevant logs or console output:
+
+Additional context
+• Any configuration details, unusual circumstances, or related issues.
+
+Optional additional items:
+Issue default title:
+Assignees:
+Labels:</pre>
+                    </div>
+                    </div>
+            </div></div>
+        </div>
+        <div>
+            <button type="button" class="btn btn-default" style="margin-top:10px;" (click)="isFeatureCollapsed = !isFeatureCollapsed"
+                [attr.aria-expanded]="!isFeatureCollapsed" aria-controls="collapseBasic">Feature Request
+            </button>
+            <div [collapse]="isFeatureCollapsed" id="featureCollapse" [isAnimated]="true"><div style="padding:10px;">
+                <div class="card mt-3">
+                    <div class="card-body">
+
+                        <!-- ======================================= -->
+                        <!-- SUBMIT FEATURE REQUEST BY EMAIL         -->
+                        <!-- ======================================= -->
+                        <h5 class="fw-semibold mt-1">Submit via Email</h5>
+
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <p class="mb-0">
+                                Send your feature request via email to:
+                                <a [href]="'mailto:' + reportEmail" class="fw-bold">{{ reportEmail }}</a>
+                            </p>
+                            <button class="btn btn-sm btn-outline-secondary"
+                                    (click)="copy(reportEmail)">
+                                <i class="fa-regular fa-copy"></i> Copy Address
+                            </button>
+                        </div>
+
+                        <p>Please include the following templates in your message:</p>
+
+                        <!-- SUBJECT TEMPLATE -->
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <h6 class="fw-semibold mb-0">Subject:</h6>
+                            <button class="btn btn-sm btn-outline-secondary"
+                                    (click)="copy(featureSubjectTemplate.innerText)">
+                                <i class="fa-regular fa-copy"></i> Copy Subject
+                            </button>
+                        </div>
+                        <pre #featureSubjectTemplate class="bg-light p-2 border rounded mt-1">Feature Request: &lt;short description of request&gt;</pre>
+
+                        <!-- BODY TEMPLATE -->
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <h6 class="fw-semibold mb-0">Body:</h6>
+                            <button class="btn btn-sm btn-outline-secondary"
+                                    (click)="copy(featureBodyTemplate.innerText)">
+                                <i class="fa-regular fa-copy"></i> Copy Body
+                            </button>
+                        </div>
+
+                        <pre #featureBodyTemplate class="bg-light p-3 border rounded mt-1"
+                            style="white-space: pre-wrap;">Issue: Feature request
+Suggest an idea that would improve this project
+
+Summary
+• Briefly describe the feature you would like added.
+
+User story
+• As a [type of user], I want [feature], so that [benefit].
+
+Problem / Job-to-be-done
+• What problem does this feature solve?
+• What workflow or goal is currently difficult or impossible?
+
+Proposed solution
+• Describe how you think the feature should work.
+• Include specific behaviors, inputs, outputs, or UI expectations.
+
+Why this solution?
+• What makes this option valuable or necessary?
+• Who benefits?
+
+Considered alternatives
+• Have you tried other approaches? Why didn’t they work?
+
+Impact / Priority
+• How important is this for your work? (e.g., low / medium / high)
+
+Additional context
+• Screenshots, URLs, or examples
+• Related tickets, integrations, or dependencies
+
+Optional additional items:
+Issue default title:
+Assignees:
+Labels: enhancement</pre>
+                    </div>
+                </div>
+            </div></div>
+        </div>
+        <div>
+            <button type="button" class="btn btn-default" style="margin-top:10px;" (click)="isQuestionCollapsed = !isQuestionCollapsed"
+                [attr.aria-expanded]="!isQuestionCollapsed" aria-controls="collapseBasic">Question
+            </button>
+            <div [collapse]="isQuestionCollapsed" id="questionCollapse" [isAnimated]="true"><div style="padding:10px;">
+                <div class="card mt-3">
+                    <div class="card-body">
+
+                        <!-- ======================================= -->
+                        <!-- SUBMIT QUESTION BY EMAIL                -->
+                        <!-- ======================================= -->
+                        <h5 class="fw-semibold mt-1">Submit via Email</h5>
+
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <p class="mb-0">
+                                Send your question via email to:
+                                <a [href]="'mailto:' + reportEmail" class="fw-bold">{{ reportEmail }}</a>
+                            </p>
+                            <button class="btn btn-sm btn-outline-secondary"
+                                    (click)="copy(reportEmail)">
+                                <i class="fa-regular fa-copy"></i> Copy Address
+                            </button>
+                        </div>
+
+                        <p>Please include the following templates in your message:</p>
+
+                        <!-- SUBJECT TEMPLATE -->
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <h6 class="fw-semibold mb-0">Subject:</h6>
+                            <button class="btn btn-sm btn-outline-secondary"
+                                    (click)="copy(questionSubjectTemplate.innerText)">
+                                <i class="fa-regular fa-copy"></i> Copy Subject
+                            </button>
+                        </div>
+                        <pre #questionSubjectTemplate class="bg-light p-2 border rounded mt-1">Question: &lt;short description of question&gt;</pre>
+
+                        <!-- BODY TEMPLATE -->
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <h6 class="fw-semibold mb-0">Body:</h6>
+                            <button class="btn btn-sm btn-outline-secondary"
+                                    (click)="copy(questionBodyTemplate.innerText)">
+                                <i class="fa-regular fa-copy"></i> Copy Body
+                            </button>
+                        </div>
+
+                        <pre #questionBodyTemplate class="bg-light p-3 border rounded mt-1"
+                            style="white-space: pre-wrap;">Issue: Question
+Ask for clarification or guidance
+
+Question
+• What is your question?
+
+Context
+• Where in the application are you?
+• What are you trying to accomplish?
+
+Steps taken so far
+1.
+2.
+3.
+
+What you expected to happen
+• Describe what you thought would happen
+
+What actually happened (if applicable)
+• Describe what you observed
+
+Relevant details (if any)
+• Screenshots or URLs:
+• Environment (OS / browser / version):
+
+Optional additional items:
+Issue default title:
+Assignees:
+Labels:</pre>
+                    </div>
+                </div>
+            </div></div>
+        </div>
+    </div>
+</div>

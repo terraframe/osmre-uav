@@ -75,6 +75,7 @@ import { ProcessRunModalComponent } from './component/modal/process-run-modal.co
 import { UploadService } from './service/upload.service';
 import { TusUploadModalComponent } from './component/modal/tus-upload-modal.component';
 import { ArtifactUploadItemComponent } from './component/artifact-upload-item/artifact-upload-item.component';
+import { HelpComponent } from './component/help/help.component';
 
 @NgModule({
 	imports: [
@@ -114,6 +115,7 @@ import { ArtifactUploadItemComponent } from './component/artifact-upload-item/ar
 		ProductModalComponent,
 		FilterModalComponent,
 		ProjectsComponent,
+		HelpComponent,
 		ProcessingReportComponent,
 		TasksComponent,
 		ForbiddenNameDirective,
