@@ -338,7 +338,9 @@
                   <tab heading="Products" (selectTab)="activeTab = 'Products'">
                     <product-panel *ngIf="activeTab === 'Products'" [selection]="current" [organization]="organization"
                       [filter]="filter" [views]="views" (onViewsChange)="handleProductsChange($event)"
-                      (toggleMapOrtho)="handleMapOrtho($event)" (toggleMapDem)="handleMapDem($event)"></product-panel>
+                      (toggleMapOrtho)="handleMapOrtho($event)" 
+                      (toggleMapDem)="handleMapDem($event)">
+                    </product-panel>
                   </tab>
                 </tabset>
 
@@ -350,7 +352,9 @@
                   <tab heading="Products" (selectTab)="activeTab = 'Products'">
                     <product-panel *ngIf="activeTab === 'Products'" [selection]="current" [organization]="organization"
                       [filter]="filter" [views]="views" (onViewsChange)="handleProductsChange($event)"
-                      (toggleMapOrtho)="handleMapOrtho($event)"></product-panel>
+                      (toggleMapOrtho)="handleMapOrtho($event)"
+                      (toggleMapDem)="handleMapDem($event)">
+                    </product-panel>
                   </tab>
                 </tabset>
 
