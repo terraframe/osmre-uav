@@ -81,6 +81,7 @@ import { UploadService } from './service/upload.service';
 import { TusUploadModalComponent } from './component/modal/tus-upload-modal.component';
 import { ArtifactUploadItemComponent } from './component/artifact-upload-item/artifact-upload-item.component';
 import { LayerPanelComponent } from './component/layer-panel/layer-panel.component';
+import { HelpComponent } from './component/help/help.component';
 
 @NgModule({
 	imports: [
@@ -120,6 +121,7 @@ import { LayerPanelComponent } from './component/layer-panel/layer-panel.compone
 		ProductModalComponent,
 		FilterModalComponent,
 		ProjectsComponent,
+		HelpComponent,
 		ProcessingReportComponent,
 		TasksComponent,
 		ForbiddenNameDirective,

@@ -37,15 +37,15 @@ export const WAVELENGTHS: string[] = ["Natural Color RGB", "Thermal", "Red Edge"
 
 export interface CollectionFormatMetadata { label: string, value: string }
 export const COLLECTION_FORMATS: CollectionFormatMetadata[] = [
-  { label: "Still Imagery (RGB)",            value: "STILL_IMAGERY_RGB" },
-  { label: "Still Thermal Imagery (RGB)",    value: "STILL_THERMAL_RGB" },
-  { label: "Still Radiometric Imagery",      value: "STILL_RADIOMETRIC" },
-  { label: "Still Multispectral Imagery",   value: "STILL_MULTISPECTRAL" },
-  { label: "Video (RGB)",                    value: "VIDEO_RGB" },
-  { label: "Video Thermal (RGB)",            value: "VIDEO_THERMAL_RGB" },
-  { label: "Video Radiometric",              value: "VIDEO_RADIOMETRIC" },
-  { label: "Video Multispectral",            value: "VIDEO_MULTISPECTRAL" },
-  { label: "LIDAR",                          value: "LIDAR" }
+    { label: "Still Imagery", value: "STILL_IMAGERY_RGB" },
+    { label: "Still thermal imagery (non-radiometric)", value: "STILL_THERMAL_RGB" },
+    { label: "Still thermal imagery (radiometric)", value: "STILL_RADIOMETRIC" },
+    { label: "Multispectral Still Imagery (non-radiometric)", value: "STILL_MULTISPECTRAL" },
+    { label: "Video", value: "VIDEO_RGB" },
+    { label: "Thermal video (non-radiometric)", value: "VIDEO_THERMAL_RGB" },
+    { label: "Thermal video (radiometric)", value: "VIDEO_RADIOMETRIC" },
+    { label: "Multispectral Video", value: "VIDEO_MULTISPECTRAL" },
+    { label: "LIDAR", value: "LIDAR" }
 ] as const;
 export type CollectionFormat = typeof COLLECTION_FORMATS[number]["value"];
 

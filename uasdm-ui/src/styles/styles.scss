@@ -632,32 +632,6 @@ a.disabled {
 }
 
 
-.collapse {
-  /* setup transition however you like */
-  -webkit-transition: max-height 0.5s ease;
-  -moz-transition: max-height 1s ease;
-  -o-transition: max-height 1s ease;
-  -ms-transition: max-height 1s ease;
-  transition: max-height 1s ease;
-
-  /* override display, overflow and visibility */
-  display: block !important;
-  overflow: hidden !important;
-  visibility: visible !important;
-
-  max-height: 0;
-
-  &.in {
-    /* set max-height to something high so that
-    it can fit whatever you have inside your collapsible tag.
-    Not too high though, because the animation time will be based
-    on this value, so if it's too high the animation will be 
-    very fast */
-    max-height: 4000px;
-  }
-}
-
-
 
 .dot {
   height: 20px;
