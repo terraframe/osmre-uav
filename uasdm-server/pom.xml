@@ -280,7 +280,7 @@
     <dependency>
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-parsers-standard-package</artifactId>
-      <version>3.2.2</version>
+      <version>2.9.2</version>
       <exclusions>
         <exclusion>
           <groupId>xerces</groupId>
@@ -292,7 +292,7 @@
     <dependency>
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-core</artifactId>
-      <version>3.2.2</version>
+      <version>2.6.0</version>
     </dependency>
     <!-- We think this was used for Tika but not exactly sure how. it was commented out because it was setting off security flags as it gets out of date and we're not even sure how to test it.
     <dependency>
