@@ -15,15 +15,14 @@
  */
 package gov.geoplatform.uasdm.view;
 
-import java.util.Calendar;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import com.amazonaws.HttpMethod;
 
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 
@@ -142,9 +141,7 @@ public class SiteObjectsResultSet
         
         if (jo.has(SiteObject.KEY))
         {
-          Calendar cal = Calendar.getInstance();
-          cal.add(Calendar.HOUR, 24);
-          String presigned = RemoteFileFacade.presignUrl(getThumbnailPath(jo.getString(SiteObject.KEY)), cal.getTime(), HttpMethod.GET).toString();
+          String presigned = RemoteFileFacade.presignUrl(getThumbnailPath(jo.getString(SiteObject.KEY)), Duration.of(24, ChronoUnit.HOURS)).toString();
           jo.put(SiteObject.PRESIGNED_THUMBNAIL_DOWNLOAD, presigned);
         }
       }

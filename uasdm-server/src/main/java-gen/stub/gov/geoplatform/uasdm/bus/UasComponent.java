@@ -358,15 +358,11 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
-  public RemoteFileObject download(String key, List<Range> ranges)
+  public RemoteFileObject download(String key, String range)
   {
-    return RemoteFileFacade.download(key, ranges);
+    return RemoteFileFacade.download(key, range);
   }
 
-  public int getItemCount(String key)
-  {
-    return RemoteFileFacade.getItemCount(key);
-  }
 
   public List<UasComponentIF> getAncestors()
   {

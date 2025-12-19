@@ -82,7 +82,6 @@ import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
-import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
 import gov.geoplatform.uasdm.processing.raw.FileUploadProcessor;
@@ -615,9 +614,9 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
-  public RemoteFileObject download(String key, List<Range> ranges)
+  public RemoteFileObject download(String key, String range)
   {
-    return RemoteFileFacade.download(key, ranges);
+    return RemoteFileFacade.download(key, range);
   }
 
   public RemoteFileObject downloadReport(String productName, String folder)
@@ -629,11 +628,6 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     });
 
     return this.download(this.getS3location(product, folder) + "report.pdf");
-  }
-
-  public int getItemCount(String key)
-  {
-    return RemoteFileFacade.getItemCount(key);
   }
 
   public List<UasComponentIF> getAncestors()

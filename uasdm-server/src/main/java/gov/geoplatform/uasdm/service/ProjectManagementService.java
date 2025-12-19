@@ -35,6 +35,8 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.annotation.PreDestroy;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -93,7 +95,6 @@ import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.ProductIF;
-import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -1030,11 +1031,11 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public RemoteFileObject download(String sessionId, String id, String key, List<Range> ranges)
+  public RemoteFileObject download(String sessionId, String id, String key, String range)
   {
     UasComponentIF component = ComponentFacade.getComponent(id);
 
-    return component.download(key, ranges);
+    return component.download(key, range);
   }
 
   @Request(RequestType.SESSION)
@@ -1439,6 +1440,11 @@ public class ProjectManagementService
     }
 
     return new ODMProcessConfiguration();
+  }
+  
+  @PreDestroy
+  public void destroy() {
+    RemoteFileFacade.destroy();
   }
 
   // public void logLoginAttempt(String sessionId, String username)

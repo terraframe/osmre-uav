@@ -1,5 +1,7 @@
 package gov.geoplatform.uasdm.controller;
 
+import java.util.Date;
+
 import javax.servlet.ServletContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +43,7 @@ public abstract class AbstractController extends RunwaySpringController
 
     if (metadata.getLastModified() != null)
     {
-      httpHeaders.setDate("Last-Modified", metadata.getLastModified().getTime());
+      httpHeaders.setDate("Last-Modified", Date.from(metadata.getLastModified()).getTime());
     }
 
     return new ResponseEntity<InputStreamResource>(new InputStreamResource(file.getObjectContent()), httpHeaders, HttpStatus.OK);

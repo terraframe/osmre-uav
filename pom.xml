@@ -59,7 +59,7 @@
     <url>scm:git:ssh://git@github.com/terraframe/osmre-uav</url>
     <tag>0.15.3</tag>
   </scm>
-
+  
   <dependencies>
     <dependency>
       <groupId>junit</groupId>

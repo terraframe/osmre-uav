@@ -54,9 +54,37 @@
       <url>https://maven.geo-solutions.it/</url>
     </repository>
   </repositories>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>bom</artifactId>
+        <version>2.40.10</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
+  
   <dependencies>
-	<!-- Spring! -->
+    <!-- https://mvnrepository.com/artifact/software.amazon.awssdk/aws-sdk-java -->
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>aws-sdk-java</artifactId>
+      <version>2.40.10</version>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>s3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>apache-client</artifactId>
+    </dependency>    
+    
+    
+    <!-- Spring! -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
@@ -216,20 +244,9 @@
       <artifactId>commons-compress</artifactId>
       <version>1.26.1</version>
     </dependency>
-    <dependency>
-	  <groupId>com.amazonaws</groupId>
-	  <artifactId>aws-java-sdk</artifactId>
-	  <version>1.12.795</version>
-	  <exclusions>
-	    <exclusion>
-	      <groupId>com.amazonaws</groupId>
-	      <artifactId>aws-java-sdk-kinesisvideo</artifactId>
-	    </exclusion>
-	  </exclusions>
-    </dependency>
-	<!-- SOLR Dependencies -->
-	
-    <dependency>
+    
+    <!-- SOLR Dependencies -->	
+    <dependency>  
       <groupId>org.apache.solr</groupId>
       <artifactId>solr-solrj</artifactId>
       <version>9.10.0</version>

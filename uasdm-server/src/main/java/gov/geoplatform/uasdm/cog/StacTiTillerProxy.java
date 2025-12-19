@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.cog;
 
@@ -30,10 +30,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.util.MultiValueMap;
 
-import com.amazonaws.services.s3.AmazonS3URI;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.cog.model.TitilerCogBandStatistic;
 import gov.geoplatform.uasdm.cog.model.TitilerCogInfo;
 import gov.geoplatform.uasdm.cog.model.TitilerCogStatistics;
@@ -44,6 +44,8 @@ import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
+import software.amazon.awssdk.services.s3.S3Uri;
+import software.amazon.awssdk.services.s3.S3Utilities;
 
 public class StacTiTillerProxy extends TiTillerProxy
 {
@@ -63,8 +65,8 @@ public class StacTiTillerProxy extends TiTillerProxy
     Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
     parameters.put("url", Arrays.asList(this.url));
     parameters.put("assets", Arrays.asList(this.assets));
-    
-    passThroughParams(queryParams, parameters, new String[] {"asset_bidx", "rescale", "resampling", "color_formula", "colormap_name", "colormap", "return_mask"});
+
+    passThroughParams(queryParams, parameters, new String[] { "asset_bidx", "rescale", "resampling", "color_formula", "colormap_name", "colormap", "return_mask" });
 
     try
     {
@@ -82,10 +84,20 @@ public class StacTiTillerProxy extends TiTillerProxy
   public JSONObject tilejson(String contextPath)
   {
     Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
+
+    S3Utilities s3Utilities = S3Utilities.builder().build();
+    S3Uri s3Uri = s3Utilities.parseUri(URI.create(this.url));
     
     // Update the download count
-    // We know that the filename of the stac json is the product id. So parse out that id, fetch the product, and increment the count
-    String key = new AmazonS3URI(this.url).getKey();
+    // We know that the filename of the stac json is the product id. So parse
+    // out that id, fetch the product, and increment the count
+    String key = s3Uri.key().orElseThrow(() -> {
+      GenericException ex = new GenericException();
+      ex.setUserMessage("Unabled to parse key from url: " + this.url);
+      
+      return ex;
+    });
+
     String productId = key.substring(S3RemoteFileService.STAC_BUCKET.length() + 1, key.length() - 5);
     Product product = Product.get(productId);
     if (product != null)
@@ -94,18 +106,18 @@ public class StacTiTillerProxy extends TiTillerProxy
       if (component instanceof Collection)
       {
         CollectionReportFacade.updateDownloadCount((CollectionIF) component).doIt();
-        
+
         addMultispectralRGBParamsForStac(product, (Collection) component, parameters);
       }
     }
-    
+
     parameters.put("url", Arrays.asList(this.url));
     parameters.put("assets", Arrays.asList(this.assets));
-    
+
     // These are the min and max zooms which Mapbox will allow
     parameters.put("minzoom", Arrays.asList("0"));
     parameters.put("maxzoom", Arrays.asList("24"));
-    
+
     try
     {
       // We have to get the tilejson file from titiler and replace their urls
@@ -131,39 +143,40 @@ public class StacTiTillerProxy extends TiTillerProxy
       throw new ProgrammingErrorException(e);
     }
   }
-  
+
   protected void addMultispectralRGBParamsForStac(Product product, Collection collection, Map<String, List<String>> parameters)
   {
-    if ((collection).isMultiSpectral()
-        && assets.length() > 0 && assets.contains("odm_orthophoto"))
+    if ( ( collection ).isMultiSpectral() && assets.length() > 0 && assets.contains("odm_orthophoto"))
     {
       DocumentIF document = product.getMappableOrtho().get();
-      
+
       TitilerCogInfo info = this.getCogInfo(document);
       if (info != null)
       {
         int redIdx = info.getColorinterp().indexOf("red");
         int greenIdx = info.getColorinterp().indexOf("green");
         int blueIdx = info.getColorinterp().indexOf("blue");
-        
+
         if (redIdx != -1 && greenIdx != -1 && blueIdx != -1)
         {
           redIdx++;
           greenIdx++;
           blueIdx++;
-          
+
           parameters.put("asset_bidx", Arrays.asList(assets + "|" + String.valueOf(redIdx) + "," + String.valueOf(greenIdx) + "," + String.valueOf(blueIdx)));
-          
+
           TitilerCogStatistics stats = this.getCogStatistics(document);
           TitilerCogBandStatistic redStat = stats.getBandStatistic(String.valueOf(redIdx));
           TitilerCogBandStatistic greenStat = stats.getBandStatistic(String.valueOf(greenIdx));
           TitilerCogBandStatistic blueStat = stats.getBandStatistic(String.valueOf(blueIdx));
-          
+
           Double min = Math.min(redStat.getMin(), Math.min(greenStat.getMin(), blueStat.getMin()));
           Double max = Math.max(redStat.getMax(), Math.max(greenStat.getMax(), blueStat.getMax()));
 
-          // min = (min < 0) ? 0 : min; // TODO : No idea how the min value could be negative. But it's happening on my sample data and it doesn't render properly if it is.
-          
+          // min = (min < 0) ? 0 : min; // TODO : No idea how the min value
+          // could be negative. But it's happening on my sample data and it
+          // doesn't render properly if it is.
+
           parameters.put("rescale", Arrays.asList(String.valueOf(min) + "," + String.valueOf(max)));
         }
       }

@@ -22,6 +22,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -140,7 +141,7 @@ public class PointcloudController extends AbstractController
    * @return
    */
   @GetMapping("/data/**")
-  public ResponseEntity<InputStreamResource> data(@RequestHeader(name = "Range", required = false) String sRange)
+  public ResponseEntity<InputStreamResource> data(@RequestHeader(name = "Range", required = false) String range)
   {
     Pattern pattern = Pattern.compile(".*pointcloud\\/data\\/([^\\/]+)(?:\\/legacypotree)?\\/(.*)$", Pattern.CASE_INSENSITIVE);
 
@@ -153,9 +154,8 @@ public class PointcloudController extends AbstractController
 
       RemoteFileObject file = null;
 
-      if (!StringUtils.isBlank(sRange))
+      if (!StringUtils.isBlank(range))
       {
-        List<Range> range = Range.decodeRange(sRange);
         file = this.pService.download(this.getSessionId(), componentId, dataPath, range);
       }
       else
@@ -180,10 +180,10 @@ public class PointcloudController extends AbstractController
 
       if (metadata.getLastModified() != null)
       {
-        httpHeaders.setDate("Last-Modified", metadata.getLastModified().getTime());
+        httpHeaders.setDate("Last-Modified", Date.from(metadata.getLastModified()).getTime());
       }
 
-      if (!StringUtils.isBlank(sRange))
+      if (!StringUtils.isBlank(range))
       {
         httpHeaders.set("Cache-Control", "no-store");
       }

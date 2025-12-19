@@ -105,7 +105,7 @@ public interface UasComponentIF extends ComponentWithAttributes
 
   public RemoteFileObject download(String key);
 
-  public RemoteFileObject download(String key, List<Range> ranges);
+  public RemoteFileObject download(String key, String range);
 
   public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationFileResource archive, String uploadTarget, ProductIF product);
 

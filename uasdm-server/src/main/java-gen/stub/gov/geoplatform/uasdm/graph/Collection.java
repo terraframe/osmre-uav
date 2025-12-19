@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -101,7 +101,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public static final String  NAME             = "name";
 
   public static final String  EMAIL            = "email";
-  
+
   public static final String  FORMAT           = "format";
 
   final Logger                log              = LoggerFactory.getLogger(Collection.class);
@@ -139,22 +139,25 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     // Balk
   }
-  
-  public CollectionFormat getFormat() {
+
+  public CollectionFormat getFormat()
+  {
     if (StringUtils.isBlank(this.getSCollectionFormat()))
       return null;
-    
+
     return CollectionFormat.valueOf(this.getSCollectionFormat());
   }
-  
-  public void setFormat(CollectionFormat format) {
+
+  public void setFormat(CollectionFormat format)
+  {
     this.setSCollectionFormat(format == null ? null : format.name());
   }
-  
-  public void setFormat(String format) {
+
+  public void setFormat(String format)
+  {
     if (format != null)
       CollectionFormat.valueOf(format); // validate
-    
+
     this.setSCollectionFormat(format);
   }
 
@@ -325,8 +328,10 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
 
   @Override
-  public RemoteFileObject download(String key, List<Range> ranges)
+  public RemoteFileObject download(String key, String range)
   {
+    List<Range> ranges = Range.decodeRange(range);
+
     long isStart = ranges.stream().filter(r -> r.getStart().equals(0L)).count();
 
     if (isStart > 0)
@@ -334,7 +339,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       CollectionReportFacade.updateDownloadCount(this).doIt();
     }
 
-    return super.download(key, ranges);
+    return super.download(key, range);
   }
 
   /**
@@ -689,27 +694,33 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     return this.getMetadata().map(metadata -> {
       Sensor sensor = metadata.getSensor();
-      if (sensor == null) return false;
-      
+      if (sensor == null)
+        return false;
+
       var formats = sensor.getCollectionFormats();
       return formats.contains(CollectionFormat.STILL_MULTISPECTRAL) || formats.contains(CollectionFormat.VIDEO_MULTISPECTRAL);
     }).orElse(false);
   }
-  
+
   /**
-   * A thermal sensor (such as Workswell) can capture data as either radiometric or RGB encoded thermal (designed for viewing with the human eye).
-   * Radiometric data is used for scientific purposes, and each pixel does NOT encode an "RGB" value. It encodes a real measured "radiance" values
-   * as recorded by the sensor. The images also: MUST be tif, and MUST only have a single band.
+   * A thermal sensor (such as Workswell) can capture data as either radiometric
+   * or RGB encoded thermal (designed for viewing with the human eye).
+   * Radiometric data is used for scientific purposes, and each pixel does NOT
+   * encode an "RGB" value. It encodes a real measured "radiance" values as
+   * recorded by the sensor. The images also: MUST be tif, and MUST only have a
+   * single band.
    * 
-   * @return Whether or not the collection includes "radiometric" data used for scientific purposes, where the actual pixel values encode "radiance"
-   * values, NOT RGB data.
+   * @return Whether or not the collection includes "radiometric" data used for
+   *         scientific purposes, where the actual pixel values encode
+   *         "radiance" values, NOT RGB data.
    */
   @Override
   public boolean isRadiometric()
   {
     var format = this.getFormat();
-    if (format != null) return format.isRadiometric();
-    
+    if (format != null)
+      return format.isRadiometric();
+
     return false;
   }
 
@@ -717,8 +728,9 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public boolean isLidar()
   {
     var format = this.getFormat();
-    if (format != null) return format.isLidar();
-    
+    if (format != null)
+      return format.isLidar();
+
     // Maintain legacy behaviour (before collection format existed)
     return this.getMetadata().map(metadata -> {
       Sensor sensor = metadata.getSensor();

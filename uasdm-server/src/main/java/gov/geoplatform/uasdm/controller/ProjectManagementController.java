@@ -502,9 +502,7 @@ public class ProjectManagementController extends AbstractController
     {
       try
       {
-        final List<Range> ranges = Range.decodeRange(range);
-
-        return this.getRemoteFile(this.service.download(this.getSessionId(), id, key, ranges));
+        return this.getRemoteFile(this.service.download(this.getSessionId(), id, key, range));
       }
       catch (InvalidRangeException e)
       {
