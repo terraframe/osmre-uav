@@ -1,0 +1,33 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create></create>
+    <update>
+      <mdVertex name="gov.geoplatform.uasdm.graph.ODMRun">
+        <create>
+          <attributes>
+            <float name="resolution" length="5" decimal="2"/>
+            <text name="featureQuality"/>
+            <text name="pcQuality"/>
+            <integer name="matcherNeighbors"/>
+            <integer name="minNumFeatures"/>
+            <integer name="videoResolution"/>
+            <integer name="videoLimit"/>
+            <text name="radiometricCalibration"/>
+          </attributes>
+        </create>
+      </mdVertex>
+    </update>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.graph.ODMRun.resolution" type="com.runwaysdk.system.metadata.MdAttributeFloat"/>
+      <object key="gov.geoplatform.uasdm.graph.ODMRun.featureQuality" type="com.runwaysdk.system.metadata.MdAttributeText"/>
+      <object key="gov.geoplatform.uasdm.graph.ODMRun.pcQuality" type="com.runwaysdk.system.metadata.MdAttributeText"/>
+      <object key="gov.geoplatform.uasdm.graph.ODMRun.matcherNeighbors" type="com.runwaysdk.system.metadata.MdAttributeInteger"/>
+      <object key="gov.geoplatform.uasdm.graph.ODMRun.minNumFeatures" type="com.runwaysdk.system.metadata.MdAttributeInteger"/>
+      <object key="gov.geoplatform.uasdm.graph.ODMRun.videoResolution" type="com.runwaysdk.system.metadata.MdAttributeInteger"/>
+      <object key="gov.geoplatform.uasdm.graph.ODMRun.videoLimit" type="com.runwaysdk.system.metadata.MdAttributeInteger"/>
+      <object key="gov.geoplatform.uasdm.graph.ODMRun.radiometricCalibration" type="com.runwaysdk.system.metadata.MdAttributeInteger"/>
+    </delete>
+  </undoIt>
+</version>
