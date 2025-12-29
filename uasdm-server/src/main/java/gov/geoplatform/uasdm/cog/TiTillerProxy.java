@@ -63,6 +63,7 @@ import software.amazon.awssdk.http.HttpExecuteResponse;
 import software.amazon.awssdk.http.SdkHttpClient;
 import software.amazon.awssdk.http.SdkHttpMethod;
 import software.amazon.awssdk.http.SdkHttpRequest;
+import software.amazon.awssdk.http.SdkHttpResponse;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.http.auth.aws.signer.AwsV4FamilyHttpSigner;
 import software.amazon.awssdk.http.auth.aws.signer.AwsV4HttpSigner;
@@ -500,11 +501,13 @@ public class TiTillerProxy
           .putProperty(AwsV4FamilyHttpSigner.SERVICE_SIGNING_NAME, service) //
           .putProperty(AwsV4HttpSigner.REGION_NAME, AppProperties.getBucketRegion()));
 
-      try (SdkHttpClient httpClient = ApacheHttpClient.create())
+      // try (SdkHttpClient httpClient = ApacheHttpClient.create())
+      try
       {
+        SdkHttpClient httpClient = ApacheHttpClient.create();
         HttpExecuteRequest httpExecuteRequest = HttpExecuteRequest.builder() //
             .request(signedRequest.request()) //
-            .contentStreamProvider(signedRequest.payload().orElse(null)) //
+//            .contentStreamProvider(signedRequest.payload().orElse(null)) //
             .build();
 
         System.out.println("[*] Sending request to: " + uri);
@@ -513,7 +516,17 @@ public class TiTillerProxy
 
         System.out.println("[*] Request sent");
 
-        System.out.println("[*] Response status code: " + httpResponse.httpResponse().statusCode());
+        SdkHttpResponse response = httpResponse.httpResponse();
+
+        System.out.println("[*] Response status code: " + response.statusCode());
+
+        if (response.statusCode() != 200)
+        {
+          response.statusText().ifPresent(text -> System.out.println(text));
+
+          throw new ProgrammingErrorException("Bad response code: " + response.statusCode());
+        }
+
         // Read and print the response body
 
         return httpResponse.responseBody().orElse(null);
