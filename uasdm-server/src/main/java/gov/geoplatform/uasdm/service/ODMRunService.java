@@ -25,7 +25,7 @@ public class ODMRunService
     final JSONObject response = new JSONObject();
     var collection = Collection.get(collectionId);
     
-    final long rawSizeMb = collection.getDocuments().stream().map(d -> d.getFileSize()).reduce(0l, (a,b) -> a + b);
+    final long rawSizeMb = collection.getDocuments().stream().filter(d -> d != null).map(d -> d.getFileSize()).reduce(0l, (a,b) -> a + b);
     
     ProcessConfiguration configuration = ProcessConfiguration.parse(configJson);
     final boolean processOrtho = configuration.toODM().getProcessOrtho();
