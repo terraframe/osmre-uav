@@ -54,7 +54,7 @@
                   <ng-container *ngIf="group[section.folder] != null">
                     <table>
                       <tr *ngFor="let artifact of group[section.folder].items">
-                        <a (click)="handleDownloadFile(artifact)">{{ artifact.name }}</a>
+                        <a class="link" (click)="handleDownloadFile(artifact)">{{ artifact.name }}</a>
                       </tr>
                     </table>
                   </ng-container>
@@ -66,7 +66,7 @@
                         <label *ngIf="!group[section.folder].report || artifact.tool !== 'ODM'">
                           {{ artifact.tool}}
                         </label>
-                        <a *ngIf="group[section.folder].report && artifact.tool === 'ODM'"
+                        <a class="link" *ngIf="group[section.folder].report && artifact.tool === 'ODM'"
                           (click)="showODMRun(artifact)">
                           {{ artifact.tool }}
                         </a>

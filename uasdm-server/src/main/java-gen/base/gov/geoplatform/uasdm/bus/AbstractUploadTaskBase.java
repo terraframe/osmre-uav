@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -944722350)
+@com.runwaysdk.business.ClassSignature(hash = -1468338049)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -26,12 +11,42 @@ package gov.geoplatform.uasdm.bus;
 public abstract class AbstractUploadTaskBase extends gov.geoplatform.uasdm.bus.AbstractWorkflowTask
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.AbstractUploadTask";
-  public static java.lang.String UPLOADID = "uploadId";
-  private static final long serialVersionUID = -944722350;
+  public final static java.lang.String UPLOADCONFIGURATIONJSON = "uploadConfigurationJson";
+  public final static java.lang.String UPLOADID = "uploadId";
+  @SuppressWarnings("unused")
+  private static final long serialVersionUID = -1468338049;
   
   public AbstractUploadTaskBase()
   {
     super();
+  }
+  
+  public String getUploadConfigurationJson()
+  {
+    return getValue(UPLOADCONFIGURATIONJSON);
+  }
+  
+  public void validateUploadConfigurationJson()
+  {
+    this.validateAttribute(UPLOADCONFIGURATIONJSON);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getUploadConfigurationJsonMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.bus.AbstractUploadTask.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(UPLOADCONFIGURATIONJSON);
+  }
+  
+  public void setUploadConfigurationJson(String value)
+  {
+    if(value == null)
+    {
+      setValue(UPLOADCONFIGURATIONJSON, "");
+    }
+    else
+    {
+      setValue(UPLOADCONFIGURATIONJSON, value);
+    }
   }
   
   public String getUploadId()

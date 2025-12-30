@@ -71,7 +71,6 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	tabName: string;
 	showOrthoRerunMessage: boolean = false;
 	canReprocessImagery: boolean = false;
-	rawImagePreviewModal: BsModalRef;
 
 	constPageSize: number = 25;
 
@@ -268,13 +267,14 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	}
 
 	previewImage(document: any): void {
-		this.rawImagePreviewModal = this.modalService.show(ImagePreviewModalComponent, {
+		const rawImagePreviewModal = this.modalService.show(ImagePreviewModalComponent, {
 			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: false,
-			'class': 'image-preview-modal'
+			'class': 'image-preview-modal modal-xl'
 		});
-		this.rawImagePreviewModal.content.initRaw(this.entity.id, document.key, document.name);
+
+		rawImagePreviewModal.content.initRaw(this.entity.id, document.key, document.name);
 	}
 
 	isProcessable(item: any): boolean {

@@ -36,7 +36,7 @@ import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.odm.ODMStatus;
-import gov.geoplatform.uasdm.processing.ArchiveValidator;
+import gov.geoplatform.uasdm.processing.GeoreferenceValidator;
 import gov.geoplatform.uasdm.processing.CogTifProcessor;
 import gov.geoplatform.uasdm.processing.CogTifValidator;
 import gov.geoplatform.uasdm.processing.GdalPNGGenerator;
@@ -89,7 +89,7 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
 
     if (this.getUploadTarget().equals(ImageryComponent.ORTHO) && this.getProcessOrtho())
     {
-      if (new ArchiveValidator().isValidArchive(infile))
+      if (new GeoreferenceValidator().isValid(infile))
       {
         new GeoreferenceArchiveProcessor(ImageryComponent.ORTHO + "/" + "gdal_orthophoto.tif", product, component, monitor) //
             .addDownstream(new CogTifProcessor(ImageryComponent.ORTHO + "/" + "gdal_orthophoto" + CogTifProcessor.COG_EXTENSION, product, component, new WorkflowTaskMonitor(this))) //
@@ -109,7 +109,7 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
 
     if (this.getUploadTarget().equals(ImageryComponent.DEM) && this.getProcessDem())
     {
-      if (new ArchiveValidator().isValidArchive(infile))
+      if (new GeoreferenceValidator().isValid(infile))
       {
         new GeoreferenceArchiveProcessor(ImageryComponent.DEM + "/" + "gdal_dem.tif", product, component, monitor) //
             .addDownstream(new CogTifProcessor(ImageryComponent.DEM + "/" + "gdal_dem" + CogTifProcessor.COG_EXTENSION, product, component, new WorkflowTaskMonitor(this)) //

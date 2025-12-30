@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = 508654002)
+@com.runwaysdk.business.ClassSignature(hash = -1785660761)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -14,15 +14,23 @@ public abstract class ODMRunBase extends com.runwaysdk.business.graph.VertexObje
   public final static java.lang.String COMPONENT = "component";
   public final static java.lang.String CONFIG = "config";
   public final static java.lang.String INSTANCETYPE = "instanceType";
+  public final static java.lang.String FEATUREQUALITY = "featureQuality";
+  public final static java.lang.String MATCHERNEIGHBORS = "matcherNeighbors";
+  public final static java.lang.String MINNUMFEATURES = "minNumFeatures";
   public final static java.lang.String OID = "oid";
   public final static java.lang.String OUTPUT = "output";
+  public final static java.lang.String PCQUALITY = "pcQuality";
+  public final static java.lang.String RADIOMETRICCALIBRATION = "radiometricCalibration";
   public final static java.lang.String REPORT = "report";
+  public final static java.lang.String RESOLUTION = "resolution";
   public final static java.lang.String RUNEND = "runEnd";
   public final static java.lang.String RUNSTART = "runStart";
   public final static java.lang.String SEQ = "seq";
+  public final static java.lang.String VIDEOLIMIT = "videoLimit";
+  public final static java.lang.String VIDEORESOLUTION = "videoResolution";
   public final static java.lang.String WORKFLOWTASK = "workflowTask";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 508654002;
+  private static final long serialVersionUID = -1785660761;
   
   public ODMRunBase()
   {
@@ -77,6 +85,54 @@ public abstract class ODMRunBase extends com.runwaysdk.business.graph.VertexObje
     this.setValue(INSTANCETYPE, value);
   }
   
+  public String getFeatureQuality()
+  {
+    return (String) this.getObjectValue(FEATUREQUALITY);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getFeatureQualityMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.ODMRun.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(FEATUREQUALITY);
+  }
+  
+  public void setFeatureQuality(String value)
+  {
+    this.setValue(FEATUREQUALITY, value);
+  }
+  
+  public Integer getMatcherNeighbors()
+  {
+    return (Integer) this.getObjectValue(MATCHERNEIGHBORS);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF getMatcherNeighborsMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.ODMRun.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF)mdClassIF.definesAttribute(MATCHERNEIGHBORS);
+  }
+  
+  public void setMatcherNeighbors(Integer value)
+  {
+    this.setValue(MATCHERNEIGHBORS, value);
+  }
+  
+  public Integer getMinNumFeatures()
+  {
+    return (Integer) this.getObjectValue(MINNUMFEATURES);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF getMinNumFeaturesMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.ODMRun.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF)mdClassIF.definesAttribute(MINNUMFEATURES);
+  }
+  
+  public void setMinNumFeatures(Integer value)
+  {
+    this.setValue(MINNUMFEATURES, value);
+  }
+  
   public String getOid()
   {
     return (String) this.getObjectValue(OID);
@@ -104,6 +160,38 @@ public abstract class ODMRunBase extends com.runwaysdk.business.graph.VertexObje
     this.setValue(OUTPUT, value);
   }
   
+  public String getPcQuality()
+  {
+    return (String) this.getObjectValue(PCQUALITY);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getPcQualityMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.ODMRun.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(PCQUALITY);
+  }
+  
+  public void setPcQuality(String value)
+  {
+    this.setValue(PCQUALITY, value);
+  }
+  
+  public String getRadiometricCalibration()
+  {
+    return (String) this.getObjectValue(RADIOMETRICCALIBRATION);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getRadiometricCalibrationMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.ODMRun.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(RADIOMETRICCALIBRATION);
+  }
+  
+  public void setRadiometricCalibration(String value)
+  {
+    this.setValue(RADIOMETRICCALIBRATION, value);
+  }
+  
   public gov.geoplatform.uasdm.graph.Document getReport()
   {
     return (gov.geoplatform.uasdm.graph.Document) this.getObjectValue(REPORT);
@@ -118,6 +206,22 @@ public abstract class ODMRunBase extends com.runwaysdk.business.graph.VertexObje
   public void setReport(gov.geoplatform.uasdm.graph.Document value)
   {
     this.setValue(REPORT, value);
+  }
+  
+  public Float getResolution()
+  {
+    return (Float) this.getObjectValue(RESOLUTION);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeFloatDAOIF getResolutionMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.ODMRun.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeFloatDAOIF)mdClassIF.definesAttribute(RESOLUTION);
+  }
+  
+  public void setResolution(Float value)
+  {
+    this.setValue(RESOLUTION, value);
   }
   
   public java.util.Date getRunEnd()
@@ -166,6 +270,38 @@ public abstract class ODMRunBase extends com.runwaysdk.business.graph.VertexObje
   public void setSeq(Long value)
   {
     this.setValue(SEQ, value);
+  }
+  
+  public Integer getVideoLimit()
+  {
+    return (Integer) this.getObjectValue(VIDEOLIMIT);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF getVideoLimitMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.ODMRun.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF)mdClassIF.definesAttribute(VIDEOLIMIT);
+  }
+  
+  public void setVideoLimit(Integer value)
+  {
+    this.setValue(VIDEOLIMIT, value);
+  }
+  
+  public Integer getVideoResolution()
+  {
+    return (Integer) this.getObjectValue(VIDEORESOLUTION);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF getVideoResolutionMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.ODMRun.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeIntegerDAOIF)mdClassIF.definesAttribute(VIDEORESOLUTION);
+  }
+  
+  public void setVideoResolution(Integer value)
+  {
+    this.setValue(VIDEORESOLUTION, value);
   }
   
   public gov.geoplatform.uasdm.odm.ODMProcessingTask getWorkflowTask()
