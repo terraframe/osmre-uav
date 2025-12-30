@@ -33,11 +33,11 @@ import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.DevProperties;
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.odm.AutoscalerAwsConfigService.ImageSizeMapping;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.RadiometricCalibration;
+import gov.geoplatform.uasdm.service.ODMRunService;
 
 public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProcessingTaskIF
 {
@@ -117,6 +117,9 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
     {
       obj.put("odmOutput", this.getOdmOutput());
     }
+    
+    if (StringUtils.isNotBlank(getRuntimeEstimateJson()))
+      obj.put("runtimeEstimate", new JSONObject(getRuntimeEstimateJson()));
 
     return obj;
   }
@@ -216,6 +219,11 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
         this.appLock();
         this.setStatus(ODMStatus.RUNNING.getLabel());
         this.setOdmUUID(resp.getUUID());
+        
+        JSONObject estimate = new ODMRunService().estimateRuntimeInRequest(this.getImageryComponentOid(), this.getConfigurationJson());
+        if (estimate != null)
+          this.setRuntimeEstimateJson(estimate.toString());
+        
         this.setMessage("Your images are being processed. Check back later for updates.");
         this.apply();
 

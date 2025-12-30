@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.odm;
 
-@com.runwaysdk.business.ClassSignature(hash = 304358073)
+@com.runwaysdk.business.ClassSignature(hash = 1262875821)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -31,8 +16,9 @@ public abstract class ODMProcessingTaskBase extends gov.geoplatform.uasdm.bus.Wo
   public final static java.lang.String ODMOUTPUT = "odmOutput";
   public final static java.lang.String ODMUUID = "odmUUID";
   public final static java.lang.String PROCESSFILENAMEARRAY = "processFilenameArray";
+  public final static java.lang.String RUNTIMEESTIMATEJSON = "runtimeEstimateJson";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 304358073;
+  private static final long serialVersionUID = 1262875821;
   
   public ODMProcessingTaskBase()
   {
@@ -176,6 +162,34 @@ public abstract class ODMProcessingTaskBase extends gov.geoplatform.uasdm.bus.Wo
     else
     {
       setValue(PROCESSFILENAMEARRAY, value);
+    }
+  }
+  
+  public String getRuntimeEstimateJson()
+  {
+    return getValue(RUNTIMEESTIMATEJSON);
+  }
+  
+  public void validateRuntimeEstimateJson()
+  {
+    this.validateAttribute(RUNTIMEESTIMATEJSON);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getRuntimeEstimateJsonMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.odm.ODMProcessingTask.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(RUNTIMEESTIMATEJSON);
+  }
+  
+  public void setRuntimeEstimateJson(String value)
+  {
+    if(value == null)
+    {
+      setValue(RUNTIMEESTIMATEJSON, "");
+    }
+    else
+    {
+      setValue(RUNTIMEESTIMATEJSON, value);
     }
   }
   

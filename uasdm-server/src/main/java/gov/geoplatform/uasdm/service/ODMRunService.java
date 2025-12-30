@@ -22,6 +22,11 @@ public class ODMRunService
   @Request(RequestType.SESSION)
   public JSONObject estimateRuntime(String sessionId, String collectionId, String configJson)
   {
+    return estimateRuntimeInRequest(collectionId, configJson);
+  }
+  
+  public JSONObject estimateRuntimeInRequest(String collectionId, String configJson)
+  {
     final JSONObject response = new JSONObject();
     var collection = Collection.get(collectionId);
     
