@@ -500,6 +500,7 @@ public class TiTillerProxy
       
       SignedRequest signedRequest = awsSigner.sign(r -> r.identity(awsCreds) //
           .request(httpRequest) //
+          .putProperty(AwsV4FamilyHttpSigner.PAYLOAD_SIGNING_ENABLED, false) //
           .putProperty(AwsV4FamilyHttpSigner.SERVICE_SIGNING_NAME, service) //
           .putProperty(AwsV4HttpSigner.REGION_NAME, AppProperties.getBucketRegion()));
       
