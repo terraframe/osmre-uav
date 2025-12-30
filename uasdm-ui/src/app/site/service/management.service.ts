@@ -637,6 +637,17 @@ export class ManagementService {
 			.toPromise()
 	}
 
+	estimateRuntime(collectionId: string, configJson: any): Promise<any> {
+
+		let params: HttpParams = new HttpParams();
+		params = params.set('collectionId', collectionId);
+		params = params.set('configJson', JSON.stringify(configJson));
+
+		return this.http
+			.get(environment.apiUrl + '/api/odmrun/estimateRuntime', { params: params })
+			.toPromise()
+	}
+
 	applyMetadata(selection: Selection): Promise<void> {
 
 		let headers = new HttpHeaders({

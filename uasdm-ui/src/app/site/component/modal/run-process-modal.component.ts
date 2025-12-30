@@ -11,12 +11,13 @@ import { ManagementService } from '@site/service/management.service';
 import { SiteEntity, ProcessConfig, ProcessConfigType } from '@site/model/management';
 import { Subject } from 'rxjs';
 
+interface RuntimeEstimate {runtime: number, confidence: number, similarJobs: number};
 
 @Component({
     standalone: false,
-  selector: 'run-process-modal',
+    selector: 'run-process-modal',
     templateUrl: './run-process-modal.component.html',
-    styleUrls: ['./artifact-page.component.css']
+    styleUrls: ['./artifact-page.component.css', './run-process-modal.component.css']
 })
 export class RunProcessModalComponent implements OnInit, OnDestroy {
 
@@ -44,6 +45,10 @@ export class RunProcessModalComponent implements OnInit, OnDestroy {
 
     isAdvancedSettingsCollapsed = true;
 
+    estimate: RuntimeEstimate;
+
+    public loadingEstimate:boolean = false;
+
     /*
      * Called on confirm
      */
@@ -68,6 +73,17 @@ export class RunProcessModalComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.onConfirm = new Subject();
+    }
+
+    configChange(): void {
+        this.loadingEstimate = true;
+        this.service.estimateRuntime(this.entity.id, this.config).then((estimate: RuntimeEstimate) => {
+            this.estimate = estimate;
+        }).catch((err: HttpErrorResponse) => {
+            this.error(err);
+        }).finally(() => {
+            this.loadingEstimate = false;
+        });
     }
 
     isValid(): boolean {
@@ -102,6 +118,37 @@ export class RunProcessModalComponent implements OnInit, OnDestroy {
 
     isMultispectral(): boolean {
         return !(this.entity && this.entity.format) || this.entity.format.toLowerCase().includes('multispectral');
+    }
+
+    formatRuntime(seconds: number): string {
+        const d = Math.floor(seconds / 86400);
+        const h = Math.floor((seconds % 86400) / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = seconds % 60;
+
+        const parts: string[] = [];
+
+        if (d > 0) parts.push(`${d}d`);
+        if (h > 0) parts.push(`${h}h`);
+
+        if (d > 0 || h > 0 || m > 0) {
+            parts.push(`${m}m`);
+        } else {
+            parts.push(`${s}s`);
+        }
+
+        return parts.join(' ');
+    }
+
+    runtimeQuickLabel(seconds: number): string {
+        const totalHours = Math.round(seconds / 3600);
+
+        if (totalHours >= 24) {
+            const days = Math.floor(totalHours / 24);
+            return `${days} days`;
+        }
+
+        return `${totalHours} hours`;
     }
 
     error(err: HttpErrorResponse): void {

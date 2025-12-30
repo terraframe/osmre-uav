@@ -88,25 +88,25 @@
 
 			<div *ngIf="config.processOrtho || config.processDem" class="form-group">
 				<label for="resolution">Orthophoto and DEM Resolution (cm)</label>
-				<input [(ngModel)]="config.resolution" name="resolution" type="number" class="form-control"
+				<input [(ngModel)]="config.resolution" (change)="configChange()" name="resolution" type="number" class="form-control"
 					placeholder="5" step="1" min="0" />
 			</div>
 
 			<div *ngIf="config.processOrtho || config.processDem" class="form-group">
 				<label for="matcherNeighbors">Matcher Nieghbors</label>
-				<input [(ngModel)]="config.matcherNeighbors" name="matcherNeighbors" type="number" class="form-control"
+				<input [(ngModel)]="config.matcherNeighbors" (change)="configChange()" name="matcherNeighbors" type="number" class="form-control"
 					placeholder="0" step="1" min="0" />
 			</div>
 
 			<div *ngIf="config.processOrtho || config.processDem" class="form-group">
 				<label for="minNumFeatures">Minimum number of features to extract per image</label>
-				<input [(ngModel)]="config.minNumFeatures" name="minNumFeatures" type="number" class="form-control"
+				<input [(ngModel)]="config.minNumFeatures" (change)="configChange()" name="minNumFeatures" type="number" class="form-control"
 					placeholder="10000" step="1" min="0" />
 			</div>
 
 			<div *ngIf="config.processPtcloud" class="form-group">
 				<label for="pcQuality">Generated point cloud quality</label>
-				<select [(ngModel)]="config.pcQuality" name="pcQuality" class="form-control">
+				<select [(ngModel)]="config.pcQuality" (change)="configChange()" name="pcQuality" class="form-control">
 					<option value="ULTRA">ULTRA</option>
 					<option value="HIGH">HIGH</option>
 					<option value="MEDIUM">MEDIUM</option>
@@ -117,7 +117,7 @@
 
 			<div *ngIf="config.processOrtho" class="form-group">
 				<label for="featureQuality">Generated feature quality</label>
-				<select [(ngModel)]="config.featureQuality" name="featureQuality" class="form-control">
+				<select [(ngModel)]="config.featureQuality" (change)="configChange()" name="featureQuality" class="form-control">
 					<option value="ULTRA">ULTRA</option>
 					<option value="HIGH">HIGH</option>
 					<option value="MEDIUM">MEDIUM</option>
@@ -131,7 +131,7 @@
 
 			<div *ngIf="config.radiometricCalibration && (isRadiometric() || isMultispectral())" class="form-group">
 				<label for="radiometricCalibration">Radiometric calibration</label>
-				<select [(ngModel)]="config.radiometricCalibration" name="radiometricCalibration" class="form-control">
+				<select [(ngModel)]="config.radiometricCalibration" (change)="configChange()" name="radiometricCalibration" class="form-control">
 					<option value="NONE">NONE</option>
 					<option value="CAMERA">CAMERA</option>
 					<option value="CAMERA_SUN">CAMERA+SUN (experimental)</option>
@@ -140,13 +140,13 @@
 
 			<div *ngIf="isVideo() && config.processOrtho" class="form-group">
 				<label for="videoResolution" title="Maximum output resolution of extracted video frames in pixels">Video Resolution</label>
-				<input [(ngModel)]="config.videoResolution" name="`" type="number" class="form-control"
+				<input [(ngModel)]="config.videoResolution" (change)="configChange()" name="`" type="number" class="form-control"
 					placeholder="4000" step="1" min="0" />
 			</div>
 
 			<div *ngIf="isVideo() && config.processOrtho" class="form-group">
 				<label for="videoLimit" title="Maximum number of frames to extract from video files for processing. Set to 0 for no limit">Video Limit</label>
-				<input [(ngModel)]="config.videoLimit" name="`" type="number" class="form-control"
+				<input [(ngModel)]="config.videoLimit" (change)="configChange()" name="`" type="number" class="form-control"
 					placeholder="500" step="1" min="0" />
 			</div>
 		</div>
@@ -164,19 +164,19 @@
 		<tr class="artifact-row">
 			<td colspan="6">Ptcloud</td>
 			<td>
-				<boolean-field [(value)]="config.processPtcloud" label="Generate"></boolean-field>
+				<boolean-field [(value)]="config.processPtcloud" (valueChange)="configChange()" label="Generate"></boolean-field>
 			</td>
 		</tr>
 		<tr class="artifact-row">
 			<td colspan="6">DEM</td>
 			<td>
-				<boolean-field [(value)]="config.processDem" label="Generate"></boolean-field>
+				<boolean-field [(value)]="config.processDem" (valueChange)="configChange()" label="Generate"></boolean-field>
 			</td>
 		</tr>
 		<tr class="artifact-row">
 			<td colspan="6">Ortho</td>
 			<td>
-				<boolean-field [(value)]="config.processOrtho" label="Generate"></boolean-field>
+				<boolean-field [(value)]="config.processOrtho" (valueChange)="configChange()" label="Generate"></boolean-field>
 			</td>
 		</tr>
 	</table>
@@ -236,6 +236,32 @@
 					<p class="error-message">{{message}}</p>
 				</div>
 			</div>
+		</div>
+
+		<div *ngIf="estimate || loadingEstimate" class="runtime-header">
+			<ng-container *ngIf="estimate">
+				<div class="runtime-header__icon">⏱</div>
+
+				<div class="runtime-header__content">
+					<div class="runtime-header__title">
+					Estimated processing time
+					</div>
+
+					<div class="runtime-header__estimate">
+						<span *ngIf="estimate.runtime">
+							≈ {{runtimeQuickLabel(estimate.runtime)}} <span class="runtime-header__range">({{formatRuntime(estimate.runtime)}})</span>
+						</span>
+						<span *ngIf="!estimate.runtime">Unknown</span>
+					</div>
+
+					<div class="runtime-header__meta">
+						<span *ngIf="estimate.runtime">Based on {{estimate.similarJobs}} other similar jobs</span>
+						<span *ngIf="!estimate.runtime">Zero other similar jobs</span>
+					</div>
+				</div>
+			</ng-container>
+
+			<i *ngIf="loadingEstimate" class="fa fa-spin fa-spinner"></i>
 		</div>
 
 		<div class="form-group">
