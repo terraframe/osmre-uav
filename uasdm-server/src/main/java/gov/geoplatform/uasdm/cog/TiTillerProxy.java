@@ -489,17 +489,24 @@ public class TiTillerProxy
 
       URI uri = constructUri(endpoint, resourcePath, parameters);
 
-      SdkHttpRequest httpRequest = SdkHttpRequest.builder().uri(uri) //
+      SdkHttpRequest httpRequest = SdkHttpRequest.builder() //
+          .uri(uri) //
           .method(SdkHttpMethod.GET) //
-          .putHeader("Content-Type", "application/json").build();
+          // .putHeader("Content-Type", "application/json") //
+          .build();
 
       // // Sign it...
       AwsV4HttpSigner awsSigner = AwsV4HttpSigner.create();
-
+      
       SignedRequest signedRequest = awsSigner.sign(r -> r.identity(awsCreds) //
           .request(httpRequest) //
           .putProperty(AwsV4FamilyHttpSigner.SERVICE_SIGNING_NAME, service) //
           .putProperty(AwsV4HttpSigner.REGION_NAME, AppProperties.getBucketRegion()));
+      
+      // 6. Output signed headers
+      System.out.println("Signed Request:");
+      System.out.println(signedRequest.request().method() + " " + signedRequest.request().getUri());
+      signedRequest.request().headers().forEach((k, v) -> System.out.println(k + ": " + v));
 
       // try (SdkHttpClient httpClient = ApacheHttpClient.create())
       try
@@ -507,7 +514,7 @@ public class TiTillerProxy
         SdkHttpClient httpClient = ApacheHttpClient.create();
         HttpExecuteRequest httpExecuteRequest = HttpExecuteRequest.builder() //
             .request(signedRequest.request()) //
-//            .contentStreamProvider(signedRequest.payload().orElse(null)) //
+            // .contentStreamProvider(signedRequest.payload().orElse(null)) //
             .build();
 
         System.out.println("[*] Sending request to: " + uri);
