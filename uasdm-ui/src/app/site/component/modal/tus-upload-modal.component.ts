@@ -212,6 +212,12 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 		return this.isUploading;
 	}
 
+	public isVideo(): boolean {
+		if (this.component.format == null) return false;
+
+		return this.component.format.toLowerCase().includes("video");
+	}
+
 	@HostListener('window:beforeunload', ['$event'])
 	unloadNotification($event: any) {
 		if (this.isUploading) {
