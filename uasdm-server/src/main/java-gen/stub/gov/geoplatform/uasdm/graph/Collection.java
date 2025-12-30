@@ -687,6 +687,9 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public boolean isMultiSpectral()
   {
+    var format = this.getFormat();
+    if (format != null) return format.isMultispectral();
+    
     return this.getMetadata().map(metadata -> {
       Sensor sensor = metadata.getSensor();
       if (sensor == null) return false;

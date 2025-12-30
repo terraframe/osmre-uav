@@ -193,7 +193,7 @@ export class ProductModalComponent implements OnInit {
 			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: false,
-			'class': 'image-preview-modal'
+			'class': 'image-preview-modal modal-xl'
 		});
 		this.rawImagePreviewModal.content.initProduct(this.product.id, this.product.productName);
 	}

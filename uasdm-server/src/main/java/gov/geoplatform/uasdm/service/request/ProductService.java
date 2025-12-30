@@ -216,6 +216,7 @@ public class ProductService
     return product.getAllZip();
   }
 
+  @Request(RequestType.SESSION)
   public ODMRunView getODMRunByArtifact(String sessionId, String artifactId)
   {
     Document doc = Document.get(artifactId);
