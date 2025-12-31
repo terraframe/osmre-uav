@@ -161,7 +161,7 @@
             <tab heading="raw" (selectTab)="onSelect('image')">
               <i *ngIf="loading" class="fa fa-spinner fa-spin" style="margin-left:50%;"></i>
 
-              <div *ngIf="!entity?.format || entity.format.startsWith('STILL_')" class="image-list-container">
+              <div *ngIf="!entity?.format || entity.format.startsWith('STILL_') || entity.format === 'LIDAR'" class="image-list-container">
 
                 <ul class="list-group list-group-horizontal flex-wrap">
                   <li
