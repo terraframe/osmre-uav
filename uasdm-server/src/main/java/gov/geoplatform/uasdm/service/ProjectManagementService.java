@@ -168,7 +168,7 @@ public class ProjectManagementService
           {
             var format = this.collection.getFormat();
             List<String> files;
-            
+
             if (format != null && format.isVideo())
               files = downloadAll(this.collection, ImageryComponent.VIDEO, ostream, predicate, false);
             else
@@ -1279,7 +1279,7 @@ public class ProjectManagementService
   public JSONObject putFile(String sessionId, String id, String folder, String productName, String fileName, RemoteFileMetadata metadata, InputStream stream)
   {
     UasComponentIF component = ComponentFacade.getComponent(id);
-    ProductIF product = component.getProduct(productName).get();
+    ProductIF product = productName != null ? component.getProduct(productName).get() : null;
 
     DocumentIF doc = component.putFile(folder, fileName, product, metadata, stream);
 
@@ -1389,10 +1389,12 @@ public class ProjectManagementService
           config.setGeoLocationFileName(Product.GEO_LOCATION_FILE);
           config.setGeoLocationFormat(FileFormat.RX1R2);
         }
-        
-        if (Boolean.TRUE.equals(collection.isRadiometric()) || Boolean.TRUE.equals(collection.isMultiSpectral())) {
+
+        if (Boolean.TRUE.equals(collection.isRadiometric()) || Boolean.TRUE.equals(collection.isMultiSpectral()))
+        {
           config.setRadiometricCalibration(RadiometricCalibration.CAMERA);
-          // TODO : Some sensors support CAMERA+SUN, which might be preferable (even though ODM says its experimental)... Which sensors exactly?
+          // TODO : Some sensors support CAMERA+SUN, which might be preferable
+          // (even though ODM says its experimental)... Which sensors exactly?
         }
 
         collection.getMetadata().ifPresent(metadata -> {
