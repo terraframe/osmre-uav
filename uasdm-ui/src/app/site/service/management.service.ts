@@ -440,14 +440,14 @@ export class ManagementService {
 			.toPromise()
 	}
 
-	upload(id: string, productName: string, folder: string, file: File, fileName: string = null): Promise<Document> {
+	uploadToProduct(id: string, productName: string, folder: string, file: File, fileName: string = null): Promise<Document> {
 
 		this.eventService.start();
 
 		const formData = new FormData()
 
 		if (fileName == null) {
-			formData.append('file', file);
+			formData.append('file', file, file.name);
 		} else {
 			formData.append('file', file, fileName);
 		}
@@ -458,12 +458,34 @@ export class ManagementService {
 			formData.append('productName', productName);
 		}
 
-		return this.http.post<Document>(environment.apiUrl + '/api/project/upload', formData)
+		return this.http.post<Document>(environment.apiUrl + '/api/project/upload-to-product', formData)
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
 			.toPromise();
 	}
+
+	uploadToFolder(id: string, folder: string, file: File, fileName: string = null): Promise<Document> {
+
+		this.eventService.start();
+
+		const formData = new FormData()
+
+		if (fileName == null) {
+			formData.append('file', file, file.name);
+		} else {
+			formData.append('file', file, fileName);
+		}
+		formData.append('id', id);
+		formData.append('folder', folder);
+
+		return this.http.post<Document>(environment.apiUrl + '/api/project/upload-to-folder', formData)
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise();
+	}
+
 
 	tasks(statuses: string[], pageSize: number, pageNumber: number, token: number): Promise<PageResult<TaskGroup>> {
 

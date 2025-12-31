@@ -62,6 +62,7 @@ import gov.geoplatform.uasdm.controller.body.StandaloneProductBody;
 import gov.geoplatform.uasdm.controller.body.TaskIdBody;
 import gov.geoplatform.uasdm.controller.body.UploadArtifactFileBody;
 import gov.geoplatform.uasdm.controller.body.UploadIdBody;
+import gov.geoplatform.uasdm.controller.body.UploadToFolderBody;
 import gov.geoplatform.uasdm.model.InvalidRangeException;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
@@ -548,7 +549,7 @@ public class ProjectManagementController extends AbstractController
     return ResponseEntity.ok(response.toString());
   }
 
-  @PostMapping("/upload")
+  @PostMapping("/upload-to-product")
   public ResponseEntity<String> upload(@Valid @ModelAttribute UploadArtifactFileBody body) throws IOException
   {
     MultipartFile file = body.getFile();
@@ -556,9 +557,25 @@ public class ProjectManagementController extends AbstractController
     try (InputStream stream = file.getInputStream())
     {
       final BasicFileMetadata metadata = new BasicFileMetadata(file.getContentType(), file.getSize());
-      final String fileName = file.getName();
+      final String fileName = file.getOriginalFilename();
 
       JSONObject response = this.service.putFile(this.getSessionId(), body.getId(), body.getFolder(), body.getProductName(), fileName, metadata, stream);
+
+      return ResponseEntity.ok(response.toString());
+    }
+  }
+
+  @PostMapping("/upload-to-folder")
+  public ResponseEntity<String> upload(@Valid @ModelAttribute UploadToFolderBody body) throws IOException
+  {
+    MultipartFile file = body.getFile();
+
+    try (InputStream stream = file.getInputStream())
+    {
+      final BasicFileMetadata metadata = new BasicFileMetadata(file.getContentType(), file.getSize());
+      final String fileName = file.getOriginalFilename();
+
+      JSONObject response = this.service.putFile(this.getSessionId(), body.getId(), body.getFolder(), null, fileName, metadata, stream);
 
       return ResponseEntity.ok(response.toString());
     }
