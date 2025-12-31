@@ -144,12 +144,13 @@ public class SilvimetricProcessor extends ManagedDocument
             
             if (metric != null && metric.shouldGenerate(config)) {
               this.product = (Product) component.createProductIfNotExist(this.config.getProductName() + "_" + metric.getName());
-              
               this.s3Path = ImageryComponent.ORTHO + "/" + metric.getName() + ".tif";
               
-              if (this.downstream != null && this.downstream instanceof S3FileUpload) {
-                ((S3FileUpload)this.downstream).setProduct(product);
-                ((S3FileUpload)this.downstream).setS3Path(ImageryComponent.ORTHO + "/" + metric.getName() + ".cog.tif");
+              for (Processor ds : this.downstream) {
+                if (ds instanceof S3FileUpload) {
+                  ((S3FileUpload)ds).setProduct(product);
+                  ((S3FileUpload)ds).setS3Path(ImageryComponent.ORTHO + "/" + metric.getName() + ".cog.tif");
+                }
               }
               
               super.process(new FileResource(outfile));

@@ -617,6 +617,11 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   @Override
   public RemoteFileObject download(String key, List<Range> ranges)
   {
+    if (!key.startsWith(this.getS3location()))
+    {
+      return RemoteFileFacade.download(this.getS3location() + key, ranges);
+    }
+
     return RemoteFileFacade.download(key, ranges);
   }
 
@@ -815,7 +820,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   @Override
   public AbstractWorkflowTask createWorkflowTask(String uploadId, String uploadTarget)
   {
-    return this.createWorkflowTask(GeoprismUser.getCurrentUser().getOid(), uploadId, uploadTarget);    
+    return this.createWorkflowTask(GeoprismUser.getCurrentUser().getOid(), uploadId, uploadTarget);
   }
 
   @Override
