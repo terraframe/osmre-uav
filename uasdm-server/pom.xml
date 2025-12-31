@@ -21,7 +21,7 @@
   <parent>
     <groupId>gov.osmre.uasdm</groupId>
     <artifactId>uasdm</artifactId>
-    <version>1.5.4-SNAPSHOT</version>
+    <version>1.6.0</version>
   </parent>
   <artifactId>uasdm-server</artifactId>
   <packaging>jar</packaging>
@@ -403,7 +403,7 @@
                   <mainClass>com.runwaysdk.dataaccess.io.UndoAll</mainClass>
                   <arguments>
                     <argument>${project.basedir}/src/main/working</argument>
-                    <argument/>
+                    <argument />
                     <argument>false</argument>
                   </arguments>
                   <systemProperties>
@@ -450,7 +450,7 @@
                   <mainClass>net.geoprism.ImportSchema</mainClass>
                   <arguments>
                     <argument>${project.basedir}/src/main/working</argument>
-                    <argument/>
+                    <argument />
                     <argument>false</argument>
                   </arguments>
                   <systemProperties>
