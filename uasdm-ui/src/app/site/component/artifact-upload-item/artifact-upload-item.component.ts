@@ -39,7 +39,7 @@ export class ArtifactUploadItemComponent {
     const file: File = event.target.files[0];
 
     if (file) {
-      this.managementService.upload(this.componentId, this.productName, this.folder, file, this.replaceName).then(() => {
+      this.managementService.uploadToProduct(this.componentId, this.productName, this.folder, file, this.replaceName).then(() => {
         this.success.emit();
       }).catch(er => {
         this.error.emit(er);

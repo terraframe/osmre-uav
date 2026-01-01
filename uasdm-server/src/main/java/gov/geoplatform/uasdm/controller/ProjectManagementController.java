@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package gov.geoplatform.uasdm.controller;
 
@@ -62,6 +62,7 @@ import gov.geoplatform.uasdm.controller.body.StandaloneProductBody;
 import gov.geoplatform.uasdm.controller.body.TaskIdBody;
 import gov.geoplatform.uasdm.controller.body.UploadArtifactFileBody;
 import gov.geoplatform.uasdm.controller.body.UploadIdBody;
+import gov.geoplatform.uasdm.controller.body.UploadToFolderBody;
 import gov.geoplatform.uasdm.model.InvalidRangeException;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
@@ -546,7 +547,7 @@ public class ProjectManagementController extends AbstractController
     return ResponseEntity.ok(response.toString());
   }
 
-  @PostMapping("/upload")
+  @PostMapping("/upload-to-product")
   public ResponseEntity<String> upload(@Valid @ModelAttribute UploadArtifactFileBody body) throws IOException
   {
     MultipartFile file = body.getFile();
@@ -554,9 +555,25 @@ public class ProjectManagementController extends AbstractController
     try (InputStream stream = file.getInputStream())
     {
       final BasicFileMetadata metadata = new BasicFileMetadata(file.getContentType(), file.getSize());
-      final String fileName = file.getName();
+      final String fileName = file.getOriginalFilename();
 
       JSONObject response = this.service.putFile(this.getSessionId(), body.getId(), body.getFolder(), body.getProductName(), fileName, metadata, stream);
+
+      return ResponseEntity.ok(response.toString());
+    }
+  }
+
+  @PostMapping("/upload-to-folder")
+  public ResponseEntity<String> upload(@Valid @ModelAttribute UploadToFolderBody body) throws IOException
+  {
+    MultipartFile file = body.getFile();
+
+    try (InputStream stream = file.getInputStream())
+    {
+      final BasicFileMetadata metadata = new BasicFileMetadata(file.getContentType(), file.getSize());
+      final String fileName = file.getOriginalFilename();
+
+      JSONObject response = this.service.putFile(this.getSessionId(), body.getId(), body.getFolder(), null, fileName, metadata, stream);
 
       return ResponseEntity.ok(response.toString());
     }

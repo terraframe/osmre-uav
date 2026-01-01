@@ -17,44 +17,48 @@ package gov.geoplatform.uasdm.controller.body;
 
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.web.multipart.MultipartFile;
 
-import net.geoprism.spring.core.JsonArrayDeserializer;
-import net.geoprism.spring.core.JsonObjectDeserializer;
-
-public class UserInviteBody
+public class UploadToFolderBody
 {
   @NotNull
-  @JsonDeserialize(using = JsonObjectDeserializer.class)
-  JsonObject invite;
+  private MultipartFile file;
 
-  @JsonDeserialize(using = JsonArrayDeserializer.class)
-  JsonArray  roleIds;
+  @NotBlank
+  private String        id;
 
-  public UserInviteBody()
+  @NotBlank
+  private String        folder;
+
+  public MultipartFile getFile()
   {
-
+    return file;
   }
 
-  public JsonObject getInvite()
+  public void setFile(MultipartFile file)
   {
-    return invite;
+    this.file = file;
   }
 
-  public void setInvite(JsonObject invite)
+  public String getId()
   {
-    this.invite = invite;
+    return id;
   }
 
-  public JsonArray getRoleIds()
+  public void setId(String id)
   {
-    return roleIds;
+    this.id = id;
   }
 
-  public void setRoleIds(JsonArray roleIds)
+  public String getFolder()
   {
-    this.roleIds = roleIds;
+    return folder;
   }
+
+  public void setFolder(String folder)
+  {
+    this.folder = folder;
+  }
+
 }

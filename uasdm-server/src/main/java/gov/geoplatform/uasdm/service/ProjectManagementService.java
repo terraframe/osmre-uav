@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package gov.geoplatform.uasdm.service;
 
@@ -169,7 +169,7 @@ public class ProjectManagementService
           {
             var format = this.collection.getFormat();
             List<String> files;
-            
+
             if (format != null && format.isVideo())
               files = downloadAll(this.collection, ImageryComponent.VIDEO, ostream, predicate, false);
             else
@@ -1280,7 +1280,7 @@ public class ProjectManagementService
   public JSONObject putFile(String sessionId, String id, String folder, String productName, String fileName, RemoteFileMetadata metadata, InputStream stream)
   {
     UasComponentIF component = ComponentFacade.getComponent(id);
-    ProductIF product = component.getProduct(productName).get();
+    ProductIF product = productName != null ? component.getProduct(productName).get() : null;
 
     DocumentIF doc = component.putFile(folder, fileName, product, metadata, stream);
 
@@ -1390,10 +1390,12 @@ public class ProjectManagementService
           config.setGeoLocationFileName(Product.GEO_LOCATION_FILE);
           config.setGeoLocationFormat(FileFormat.RX1R2);
         }
-        
-        if (Boolean.TRUE.equals(collection.isRadiometric()) || Boolean.TRUE.equals(collection.isMultiSpectral())) {
+
+        if (Boolean.TRUE.equals(collection.isRadiometric()) || Boolean.TRUE.equals(collection.isMultiSpectral()))
+        {
           config.setRadiometricCalibration(RadiometricCalibration.CAMERA);
-          // TODO : Some sensors support CAMERA+SUN, which might be preferable (even though ODM says its experimental)... Which sensors exactly?
+          // TODO : Some sensors support CAMERA+SUN, which might be preferable
+          // (even though ODM says its experimental)... Which sensors exactly?
         }
 
         collection.getMetadata().ifPresent(metadata -> {

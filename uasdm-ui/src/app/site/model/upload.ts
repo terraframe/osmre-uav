@@ -1,3 +1,7 @@
+///
+///
+///
+
 export interface UploadProgress {
     bytesUploaded: number
     bytesTotal: number
