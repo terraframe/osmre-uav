@@ -492,22 +492,22 @@ public class TiTillerProxy
       SdkHttpRequest httpRequest = SdkHttpRequest.builder() //
           .uri(uri) //
           .method(SdkHttpMethod.GET) //
-          // .putHeader("Content-Type", "application/json") //
           .build();
 
       // // Sign it...
       AwsV4HttpSigner awsSigner = AwsV4HttpSigner.create();
-      
+
       SignedRequest signedRequest = awsSigner.sign(r -> r.identity(awsCreds) //
-          .request(httpRequest) //
-          .putProperty(AwsV4FamilyHttpSigner.PAYLOAD_SIGNING_ENABLED, false) //
+          .request(httpRequest).payload(null) //
           .putProperty(AwsV4FamilyHttpSigner.SERVICE_SIGNING_NAME, service) //
           .putProperty(AwsV4HttpSigner.REGION_NAME, AppProperties.getBucketRegion()));
-      
+
       // 6. Output signed headers
-      System.out.println("Signed Request:");
-      System.out.println(signedRequest.request().method() + " " + signedRequest.request().getUri());
-      signedRequest.request().headers().forEach((k, v) -> System.out.println(k + ": " + v));
+      // System.out.println("Signed Request:");
+      // System.out.println(signedRequest.request().method() + " " +
+      // signedRequest.request().getUri());
+      // signedRequest.request().headers().forEach((k, v) ->
+      // System.out.println(k + ": " + v));
 
       // try (SdkHttpClient httpClient = ApacheHttpClient.create())
       try
@@ -518,24 +518,35 @@ public class TiTillerProxy
             // .contentStreamProvider(signedRequest.payload().orElse(null)) //
             .build();
 
-        System.out.println("[*] Sending request to: " + uri);
+        // System.out.println("[*] Sending request to: " + uri);
 
         HttpExecuteResponse httpResponse = httpClient.prepareRequest(httpExecuteRequest).call();
 
-        System.out.println("[*] Request sent");
+        // System.out.println("[*] Request sent");
 
         SdkHttpResponse response = httpResponse.httpResponse();
 
-        System.out.println("[*] Response status code: " + response.statusCode());
+        // System.out.println("[*] Response status code: " +
+        // response.statusCode());
 
         if (response.statusCode() != 200)
         {
-          response.statusText().ifPresent(text -> System.out.println(text));
+          String message = httpResponse.responseBody().map(istream -> {
+            try
+            {
+              return IOUtils.toString(istream, "UTF-8");
+            }
+            catch (IOException e)
+            {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
 
-          throw new ProgrammingErrorException("Bad response code: " + response.statusCode());
+            return null;
+          }).orElse("null");
+
+          throw new ProgrammingErrorException("Bad response code [" + response.statusCode() + "]: " + message);
         }
-
-        // Read and print the response body
 
         return httpResponse.responseBody().orElse(null);
 
@@ -572,14 +583,15 @@ public class TiTillerProxy
       {
         for (String value : entry.getValue())
         {
-          if (entry.getKey().equals("url"))
-          {
-            queryParams.add(new BasicNameValuePair(entry.getKey(), value.replace("osmre-uas-dev", "osmre-uas-dev-public")));
-          }
-          else
-          {
-            queryParams.add(new BasicNameValuePair(entry.getKey(), value));
-          }
+          // if (entry.getKey().equals("url"))
+          // {
+          // queryParams.add(new BasicNameValuePair(entry.getKey(),
+          // value.replace("osmre-uas-dev", "osmre-uas-dev-public")));
+          // }
+          // else
+          // {
+          queryParams.add(new BasicNameValuePair(entry.getKey(), value));
+          // }
         }
       }
 
