@@ -498,7 +498,8 @@ public class TiTillerProxy
       AwsV4HttpSigner awsSigner = AwsV4HttpSigner.create();
 
       SignedRequest signedRequest = awsSigner.sign(r -> r.identity(awsCreds) //
-          .request(httpRequest).payload(null) //
+          .request(httpRequest) //
+          .payload(null) //
           .putProperty(AwsV4FamilyHttpSigner.SERVICE_SIGNING_NAME, service) //
           .putProperty(AwsV4HttpSigner.REGION_NAME, AppProperties.getBucketRegion()));
 
@@ -583,15 +584,7 @@ public class TiTillerProxy
       {
         for (String value : entry.getValue())
         {
-          // if (entry.getKey().equals("url"))
-          // {
-          // queryParams.add(new BasicNameValuePair(entry.getKey(),
-          // value.replace("osmre-uas-dev", "osmre-uas-dev-public")));
-          // }
-          // else
-          // {
           queryParams.add(new BasicNameValuePair(entry.getKey(), value));
-          // }
         }
       }
 
