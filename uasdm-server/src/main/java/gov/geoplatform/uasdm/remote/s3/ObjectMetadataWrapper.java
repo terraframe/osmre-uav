@@ -15,17 +15,16 @@
  */
 package gov.geoplatform.uasdm.remote.s3;
 
-import java.util.Date;
-
-import com.amazonaws.services.s3.model.ObjectMetadata;
+import java.time.Instant;
 
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 public class ObjectMetadataWrapper implements RemoteFileMetadata
 {
-  private ObjectMetadata metadata;
+  private GetObjectResponse metadata;
 
-  public ObjectMetadataWrapper(ObjectMetadata metadata)
+  public ObjectMetadataWrapper(GetObjectResponse metadata)
   {
     this.metadata = metadata;
   }
@@ -33,42 +32,42 @@ public class ObjectMetadataWrapper implements RemoteFileMetadata
   @Override
   public String getContentType()
   {
-    return this.metadata.getContentType();
+    return this.metadata.contentType();
   }
 
   @Override
   public String getContentDisposition()
   {
-    return this.metadata.getContentDisposition();
+    return this.metadata.contentDisposition();
   }
 
   @Override
   public long getContentLength()
   {
-    return this.metadata.getContentLength();
+    return this.metadata.contentLength();
   }
 
   @Override
-  public Long[] getContentRange()
+  public String getContentRange()
   {
-    return this.metadata.getContentRange();
+    return this.metadata.contentRange();
   }
 
   @Override
   public String getContentEncoding()
   {
-    return this.metadata.getContentEncoding();
+    return this.metadata.contentEncoding();
   }
 
   @Override
   public String getETag()
   {
-    return this.metadata.getETag();
+    return this.metadata.eTag();
   }
 
   @Override
-  public Date getLastModified()
+  public Instant getLastModified()
   {
-    return this.metadata.getLastModified();
+    return this.metadata.lastModified();
   }
 }

@@ -19,11 +19,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.util.Date;
+import java.time.Duration;
 import java.util.List;
 
-import com.amazonaws.HttpMethod;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
@@ -31,7 +29,6 @@ import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
-import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.StatusMonitorIF;
@@ -63,9 +60,9 @@ public class RemoteFileFacade
     return service.proxy(url);
   }
 
-  public static URL presignUrl(String key, Date expiration, HttpMethod httpMethod)
+  public static String presignUrl(String key, Duration duration)
   {
-    return service.presignUrl(key, expiration, httpMethod);
+    return service.presignUrl(key, duration);
   }
 
   public static RemoteFileObject download(String key)
@@ -73,9 +70,9 @@ public class RemoteFileFacade
     return service.download(key);
   }
 
-  public static RemoteFileObject download(String key, List<Range> ranges)
+  public static RemoteFileObject download(String key, String range)
   {
-    return service.download(key, ranges);
+    return service.download(key, range);
   }
 
   public static void createFolder(String key)
@@ -111,11 +108,6 @@ public class RemoteFileFacade
   public static void deleteObjects(String key, String bucket)
   {
     service.deleteObjects(key, bucket);
-  }
-
-  public static int getItemCount(String key)
-  {
-    return service.getItemCount(key);
   }
 
   public static SiteObjectsResultSet getSiteObjects(UasComponentIF component, String folder, List<SiteObject> objects, Long pageNumber, Long pageSize)
@@ -191,6 +183,11 @@ public class RemoteFileFacade
   public static String getUrl(String bucket, String key)
   {
     return service.getUrl(bucket, key);
+  }
+  
+  public static void destroy()
+  {
+    service.destroy();
   }
 
 }

@@ -15,7 +15,7 @@
  */
 package gov.geoplatform.uasdm.remote;
 
-import java.util.Date;
+import java.time.Instant;
 
 public class BasicFileMetadata implements RemoteFileMetadata
 {
@@ -47,9 +47,9 @@ public class BasicFileMetadata implements RemoteFileMetadata
   {
     return this.contentLength;
   }
-
+  
   @Override
-  public Long[] getContentRange()
+  public String getContentRange()
   {
 
     return null;
@@ -70,7 +70,7 @@ public class BasicFileMetadata implements RemoteFileMetadata
   }
 
   @Override
-  public Date getLastModified()
+  public Instant getLastModified()
   {
 
     return null;

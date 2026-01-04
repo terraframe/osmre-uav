@@ -15,8 +15,6 @@
  */
 package gov.geoplatform.uasdm.view;
 
-import java.net.URL;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -24,12 +22,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.amazonaws.HttpMethod;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import gov.geoplatform.uasdm.remote.RemoteFileFacade;
+import software.amazon.awssdk.services.s3.model.S3Object;
 
 public class SiteObject implements TreeComponent
 {
@@ -267,9 +262,9 @@ public class SiteObject implements TreeComponent
     return json;
   }
 
-  public static SiteObject create(UasComponentIF component, String prefix, S3ObjectSummary summary)
+  public static SiteObject create(UasComponentIF component, String prefix, S3Object summary)
   {
-    String key = summary.getKey();
+    String key = summary.key();
     String name = FilenameUtils.getName(key);
 
     SiteObject object = new SiteObject();
@@ -278,9 +273,9 @@ public class SiteObject implements TreeComponent
     object.setComponentId(component.getOid());
     object.setKey(key);
     object.setType(SiteObject.OBJECT);
-    object.setLastModified(summary.getLastModified());
+    object.setLastModified(Date.from(summary.lastModified()));
     object.setExclude(false);
-    object.setFileSize(summary.getSize());
+    object.setFileSize(summary.size());
 
     return object;
   }

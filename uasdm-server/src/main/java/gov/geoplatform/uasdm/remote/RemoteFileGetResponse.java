@@ -18,6 +18,7 @@ package gov.geoplatform.uasdm.remote;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,7 +75,7 @@ public class RemoteFileGetResponse implements ResponseIF
       
       if (metadata.getLastModified() != null)
       {
-        resp.getResponse().setDateHeader("Last-Modified", metadata.getLastModified().getTime());
+        resp.getResponse().setDateHeader("Last-Modified", Date.from(metadata.getLastModified()).getTime());
       }
 
       try (OutputStream ostream = resp.getOutputStream())

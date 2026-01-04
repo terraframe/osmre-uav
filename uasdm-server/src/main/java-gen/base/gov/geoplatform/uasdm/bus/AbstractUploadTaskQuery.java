@@ -15,7 +15,7 @@
  */
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = -2137363127)
+@com.runwaysdk.business.ClassSignature(hash = 788516584)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -52,6 +52,23 @@ public  class AbstractUploadTaskQuery extends gov.geoplatform.uasdm.bus.Abstract
   public String getClassType()
   {
     return gov.geoplatform.uasdm.bus.AbstractUploadTask.CLASS;
+  }
+  public com.runwaysdk.query.SelectableChar getUploadConfigurationJson()
+  {
+    return getUploadConfigurationJson(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getUploadConfigurationJson(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.AbstractUploadTask.UPLOADCONFIGURATIONJSON, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getUploadConfigurationJson(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.bus.AbstractUploadTask.UPLOADCONFIGURATIONJSON, alias, displayLabel);
+
   }
   public com.runwaysdk.query.SelectableChar getUploadId()
   {
@@ -102,6 +119,9 @@ public  class AbstractUploadTaskQuery extends gov.geoplatform.uasdm.bus.Abstract
   public interface AbstractUploadTaskQueryReferenceIF extends gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryReferenceIF
   {
 
+    public com.runwaysdk.query.SelectableChar getUploadConfigurationJson();
+    public com.runwaysdk.query.SelectableChar getUploadConfigurationJson(String alias);
+    public com.runwaysdk.query.SelectableChar getUploadConfigurationJson(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getUploadId();
     public com.runwaysdk.query.SelectableChar getUploadId(String alias);
     public com.runwaysdk.query.SelectableChar getUploadId(String alias, String displayLabel);
@@ -140,6 +160,23 @@ public  class AbstractUploadTaskQuery extends gov.geoplatform.uasdm.bus.Abstract
       return this.NE(abstractUploadTask.getOid());
     }
 
+  public com.runwaysdk.query.SelectableChar getUploadConfigurationJson()
+  {
+    return getUploadConfigurationJson(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getUploadConfigurationJson(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractUploadTask.UPLOADCONFIGURATIONJSON, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getUploadConfigurationJson(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractUploadTask.UPLOADCONFIGURATIONJSON, alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableChar getUploadId()
   {
     return getUploadId(null);
@@ -166,6 +203,9 @@ public  class AbstractUploadTaskQuery extends gov.geoplatform.uasdm.bus.Abstract
   public interface AbstractUploadTaskQueryMultiReferenceIF extends gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery.AbstractWorkflowTaskQueryMultiReferenceIF
   {
 
+    public com.runwaysdk.query.SelectableChar getUploadConfigurationJson();
+    public com.runwaysdk.query.SelectableChar getUploadConfigurationJson(String alias);
+    public com.runwaysdk.query.SelectableChar getUploadConfigurationJson(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getUploadId();
     public com.runwaysdk.query.SelectableChar getUploadId(String alias);
     public com.runwaysdk.query.SelectableChar getUploadId(String alias, String displayLabel);
@@ -252,6 +292,23 @@ public  class AbstractUploadTaskQuery extends gov.geoplatform.uasdm.bus.Abstract
       }
 
       return this.containsExactly(itemIdArray);
+  }
+  public com.runwaysdk.query.SelectableChar getUploadConfigurationJson()
+  {
+    return getUploadConfigurationJson(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getUploadConfigurationJson(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractUploadTask.UPLOADCONFIGURATIONJSON, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getUploadConfigurationJson(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.bus.AbstractUploadTask.UPLOADCONFIGURATIONJSON, alias, displayLabel);
+
   }
   public com.runwaysdk.query.SelectableChar getUploadId()
   {

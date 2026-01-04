@@ -18,6 +18,7 @@ package gov.geoplatform.uasdm.remote;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
@@ -43,9 +44,7 @@ public class RemoteFileGetRangeResponse implements ResponseIF
     try
     {
       RemoteFileMetadata metadata = this.object.getObjectMetadata();
-      final Long start = metadata.getContentRange()[0];
-      final Long end = metadata.getContentRange()[1];
-      final String contentRange = "bytes " + start + "-" + end + "/*";
+      final String contentRange = metadata.getContentRange();
       final String contentType = metadata.getContentType();
       final String contentEncoding = metadata.getContentEncoding();
 
@@ -60,7 +59,7 @@ public class RemoteFileGetRangeResponse implements ResponseIF
       resp.setHeader("Content-Range", contentRange);
       resp.setHeader("Content-Type", contentType);
       resp.setHeader("ETag", metadata.getETag());
-      resp.getResponse().setDateHeader("Last-Modified", metadata.getLastModified().getTime());
+      resp.getResponse().setDateHeader("Last-Modified", Date.from(metadata.getLastModified()).getTime());
 
       try (OutputStream ostream = resp.getOutputStream())
       {

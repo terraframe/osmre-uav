@@ -43,8 +43,8 @@ public class SensorType extends SensorTypeBase implements Classification
   public static final String LASER            = "Laser";
 
   public static final String MULTISPECTRAL    = "Multispectral";
-  
-  public static final String RADIOMETRIC = "Radiometric";
+
+  public static final String RADIOMETRIC      = "Radiometric";
 
   public SensorType()
   {
@@ -55,6 +55,12 @@ public class SensorType extends SensorTypeBase implements Classification
   public void apply()
   {
     boolean isNew = this.isNew();
+
+    if (isNew)
+    {
+      this.setIsMultispectral(false);
+      this.setIsLidar(false);
+    }
 
     super.apply();
 
@@ -184,15 +190,16 @@ public class SensorType extends SensorTypeBase implements Classification
 
     return st;
   }
-  
+
   /**
-   * This method exists purely to maintain backwards compatibility with older collections which had this information on the sensorType. Nowadays, this information is
-   * accessed at 'collection.getFormat().isLidar()'.
+   * This method exists purely to maintain backwards compatibility with older
+   * collections which had this information on the sensorType. Nowadays, this
+   * information is accessed at 'collection.getFormat().isLidar()'.
    * 
    * @return
    */
   public boolean isLidar()
   {
-     return super.getIsLidar() != null && super.getIsLidar().booleanValue();
+    return super.getIsLidar() != null && super.getIsLidar().booleanValue();
   }
 }

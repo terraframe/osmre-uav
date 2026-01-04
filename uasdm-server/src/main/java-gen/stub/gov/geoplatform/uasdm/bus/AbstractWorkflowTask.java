@@ -133,7 +133,7 @@ public abstract class AbstractWorkflowTask extends AbstractWorkflowTaskBase impl
     action.setWorkflowTask(this);
     action.apply();
 
-    if (type != null && type.equals("error"))
+    if (type != null && type.equals(TaskActionType.ERROR))
     {
       CollectionStatus.updateStatus(this);
 

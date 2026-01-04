@@ -81,6 +81,15 @@ RUN apt-get update > /dev/null && \
     echo ". ${CONDA_DIR}/etc/profile.d/conda.sh && conda activate base" >> ~/.bashrc
 
 
+# Make sure conda's shared libs (sqlite, etc.) are preferred over system libs
+ENV LD_LIBRARY_PATH=${CONDA_DIR}/lib:${LD_LIBRARY_PATH}
+
+# Ensure libmamba + sqlite in base are consistent and usable
+RUN conda install -n base -y -c conda-forge \
+      "sqlite>=3.45" \
+      conda-libmamba-solver libmamba \
+ && conda config --set solver libmamba
+
 
 # Install GDAL
 RUN conda install -c conda-forge gdal proj proj-data

@@ -14,8 +14,8 @@
 
           <div class="card-header clickable">
             <h4 class="card-title" style="display: inline-block; vertical-align: middle;">
-              <a data-toggle="collapse" (click)="setVisibility(taskGroup)"
-                [attr.aria-expanded]="!isVisible(taskGroup)" [attr.aria-controls]="'taskGroup'+ idx">
+              <a data-toggle="collapse" (click)="setVisibility(taskGroup)" [attr.aria-expanded]="!isVisible(taskGroup)"
+                [attr.aria-controls]="'taskGroup'+ idx">
                 <h4>{{getTaskLabel(taskGroup)}}</h4>
               </a>
             </h4>
@@ -58,8 +58,7 @@
 
                   <!-- Process Tasks -->
                   <div *ngIf="taskGroupType.type === 'PROCESS'">
-                    <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi"
-                      [taskCategory]="'Process'">
+                    <tasks-panel [taskGroupType]="taskGroupType" [groupTypeId]="grpi" [taskCategory]="'Process'">
                     </tasks-panel>
                   </div>
 
@@ -73,7 +72,7 @@
               </div>
             </span>
           </div>
-        </div> 
+        </div>
 
         <pagination-controls id="tasks-pg-ctrl" (pageChange)="onPageChange($event)"></pagination-controls>
       </div>
@@ -178,11 +177,14 @@
 
       <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item">
-          <a class="nav-link active" role="tab" data-toggle="tab" (click)="onTabClick($event, 'all')">All</a>
+          <a class="nav-link" [ngClass]="{'active' : activeTab === 'all'}" role="tab" data-toggle="tab"
+            (click)="onTabClick($event, 'all')">All</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" role="tab" data-toggle="tab" (click)="onTabClick($event, 'action-required')">Action
-            Required</a>
+          <a class="nav-link" [ngClass]="{'active' : activeTab === 'action-required'}" role="tab" data-toggle="tab"
+            (click)="onTabClick($event, 'action-required')">
+            Action Required
+          </a>
         </li>
         <!-- 
         <li>

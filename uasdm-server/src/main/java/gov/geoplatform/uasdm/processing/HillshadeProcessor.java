@@ -47,7 +47,9 @@ public class HillshadeProcessor extends ManagedDocument
   @Override
   public ProcessResult process(ApplicationFileResource res)
   {
-    File file = res.getUnderlyingFile();
+    ApplicationFileResource resource = ResourceUtil.getResource(res);
+
+    File file = resource.getUnderlyingFile();
 
     final String basename = FilenameUtils.getBaseName(file.getName());
 

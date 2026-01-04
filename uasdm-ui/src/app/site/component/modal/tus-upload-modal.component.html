@@ -1,3 +1,8 @@
+<!--
+
+
+
+-->
 <form #myForm="ngForm">
   <div class="modal-header">
     <h5 class="modal-title text-center">Upload</h5>
@@ -136,7 +141,9 @@
               style="padding: 8px; background-color: #fff9f3; border-left: 4px solid #e4a664;">
               <h4>Radiometric Collection</h4>
               <span>You are uploading to a radiometric collection. These sensors capture scientific temperature or
-                reflectance data, not standard RGB imagery. Imagery must contain a single band in .tif format — not RGB.
+                reflectance data, not standard RGB imagery.
+                <ng-container *ngIf="!isVideo()">Imagery must contain a single band in .tif format — not RGB.</ng-container>
+                <ng-container *ngIf="isVideo()">Video must be encoded as a singular band — not RGB.</ng-container>
                 Radiometric calibration is automatically enabled (as CAMERA), but if your sensor supports CAMERA+SUN,
                 you may enable that during processing.</span>
             </div>

@@ -15,11 +15,12 @@
  */
 package gov.geoplatform.uasdm.bus;
 
-@com.runwaysdk.business.ClassSignature(hash = 1728278482)
+@com.runwaysdk.business.ClassSignature(hash = 1598070527)
 public abstract class AbstractUploadTaskDTOBase extends gov.geoplatform.uasdm.bus.AbstractWorkflowTaskDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.bus.AbstractUploadTask";
-  private static final long serialVersionUID = 1728278482;
+  @SuppressWarnings("unused")
+  private static final long serialVersionUID = 1598070527;
   
   protected AbstractUploadTaskDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -42,7 +43,45 @@ public abstract class AbstractUploadTaskDTOBase extends gov.geoplatform.uasdm.bu
     return CLASS;
   }
   
+  public static java.lang.String UPLOADCONFIGURATIONJSON = "uploadConfigurationJson";
   public static java.lang.String UPLOADID = "uploadId";
+  public String getUploadConfigurationJson()
+  {
+    return getValue(UPLOADCONFIGURATIONJSON);
+  }
+  
+  public void setUploadConfigurationJson(String value)
+  {
+    if(value == null)
+    {
+      setValue(UPLOADCONFIGURATIONJSON, "");
+    }
+    else
+    {
+      setValue(UPLOADCONFIGURATIONJSON, value);
+    }
+  }
+  
+  public boolean isUploadConfigurationJsonWritable()
+  {
+    return isWritable(UPLOADCONFIGURATIONJSON);
+  }
+  
+  public boolean isUploadConfigurationJsonReadable()
+  {
+    return isReadable(UPLOADCONFIGURATIONJSON);
+  }
+  
+  public boolean isUploadConfigurationJsonModified()
+  {
+    return isModified(UPLOADCONFIGURATIONJSON);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getUploadConfigurationJsonMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(UPLOADCONFIGURATIONJSON).getAttributeMdDTO();
+  }
+  
   public String getUploadId()
   {
     return getValue(UPLOADID);

@@ -2,6 +2,41 @@
 # Release Notes
 
 
+## [1.6.0](https://github.com/terraframe/osmre-uav/releases/tag/1.6.0) (2025-12-31)
+
+### Features
+
+ - ability to process single file archives on product uploads   ([7d178](https://github.com/terraframe/osmre-uav/commit/7d1780a93eabae06a1e82464a7436e21fb016cb2))
+ - **processing** estimate processing runtime   ([26129](https://github.com/terraframe/osmre-uav/commit/2612908a9cd68953f5273fc60c311a09e3c52fb7))
+ - **help** new help section for viewing documentation and submitting tickets  ([1a053](https://github.com/terraframe/osmre-uav/commit/1a053056d89ae008f6067f0ab1605950d03895de))
+ - processing videos with ODM   ([05bf7](https://github.com/terraframe/osmre-uav/commit/05bf78186abeb0e46726e0757826b2b8cd676954))
+ - collections now specify a format on creation   ([53053](https://github.com/terraframe/osmre-uav/commit/5305390616416b9da02d8b0ca1d716ca3fec2318))
+ - ability to process tif and .aux.xml files to produce geotiff on manual uploads  ([c05a4](https://github.com/terraframe/osmre-uav/commit/c05a4abdb4fd75cfc57e15c24f52bf6102369ba6))
+ - switch from fine uploader to tus for basic collection upload   ([11dc3](https://github.com/terraframe/osmre-uav/commit/11dc3f54f72aee88d38a5fdea7a264481f7193c4))
+ - **processing-report** add instanceType and runtime columns   ([8774f](https://github.com/terraframe/osmre-uav/commit/8774fe540785abc0a7218a234aac25088b52c46f))
+ - **product** ortho thumbnail now clickable on product detail modal   ([7ff54](https://github.com/terraframe/osmre-uav/commit/7ff54a6b20a0cc2ed0810365c60d929b9edeb99d))
+ - **collection-modal** ability to view and download raw images   ([47885](https://github.com/terraframe/osmre-uav/commit/47885314324010276079b448de3e791c33e89a27))
+
+### Bug Fixes
+
+   - fixed issue preventing uploads to accessible support   ([6f790](https://github.com/terraframe/osmre-uav/commit/6f790877a6190252ab83e94aa349c6a6acb5b055))
+   - misspelling of neighbors   ([340e9](https://github.com/terraframe/osmre-uav/commit/340e96cd959eabdcc2775751bc11291462e009ed))
+   - set is multispectral and is lidar to false by default for new sensor types  ([7d2ab](https://github.com/terraframe/osmre-uav/commit/7d2ab100813d2517c40e28e879eeba124829e3cc))
+   - uasdm-server/pom.xml to reduce vulnerabilities The following vulnerabilities are fixed with an upgrade:- https://snyk.io/vuln/SNYK-JAVA-COMFASTERXMLJACKSONCORE-10500754- https://snyk.io/vuln/SNYK-JAVA-COMFASTERXMLJACKSONCORE-7569538- https://snyk.io/vuln/SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038424- https://snyk.io/vuln/SNYK-JAVA-COMFASTERXMLJACKSONCORE-3038426- https://snyk.io/vuln/SNYK-JAVA-COMFASTERXMLJACKSONCORE-10332631- https://snyk.io/vuln/SNYK-JAVA-COMMONSCODEC-561518  ([7dd09](https://github.com/terraframe/osmre-uav/commit/7dd09ce20036dfa7d28b487a2e27b190e7caaa35))
+   - uasdm-server/pom.xml to reduce vulnerabilities The following vulnerabilities are fixed with an upgrade:- https://snyk.io/vuln/SNYK-JAVA-ORGAPACHETIKA-14188255  ([ec224](https://github.com/terraframe/osmre-uav/commit/ec2242fcd2af6088978f91bd559dead2d0b04956))
+   - **artifact-upload** manual uploads to collections would display product viewer  ([98140](https://github.com/terraframe/osmre-uav/commit/98140412554b6650096fa64b2c8fb730744f71cb))
+   - **radometric** new 'radiometric' sensor flag w/ tif upload reqs   ([6b1b8](https://github.com/terraframe/osmre-uav/commit/6b1b890187b6c49d3f8980623906f1348f5119c9))
+   - uasdm-server/pom.xml to reduce vulnerabilities The following vulnerabilities are fixed with an upgrade:- https://snyk.io/vuln/SNYK-JAVA-ORGECLIPSEJETTYHTTP2-12047629  ([f74b9](https://github.com/terraframe/osmre-uav/commit/f74b9c9c2016f37e869410ae30b05deebe6196e8))
+   - **processing** provide warnings if processing multispectral with non-radiometric configuration. Also provide default setting forradiometric processing for thermal or multispectral sensors  ([e93af](https://github.com/terraframe/osmre-uav/commit/e93af821d4ab40b47f0b3bbefaf3fe65dca2939a))
+   - **processing-report** sensor name and type not appearing in report   ([1c74e](https://github.com/terraframe/osmre-uav/commit/1c74e03fbd8c11b38cce44e78aa560539c2466fd))
+   - **reprocessing** pointcloud not storing   ([9d4f4](https://github.com/terraframe/osmre-uav/commit/9d4f4c17a3c7ca7544b0f530b75b211a0a6ed608))
+   - uasdm-server/pom.xml to reduce vulnerabilities The following vulnerabilities are fixed with an upgrade:- https://snyk.io/vuln/SNYK-JAVA-ORGAPACHETIKA-12238980  ([c756f](https://github.com/terraframe/osmre-uav/commit/c756ffe6e743d6297f990f8f0af15e8df7b9ca46))
+   - remove the 'delete task' button from workflow tasks page   ([997ee](https://github.com/terraframe/osmre-uav/commit/997ee5461f1856c49edd5a086a597c17dbf04fb6))
+   - users being allowed to submit upload with invalid product name   ([03978](https://github.com/terraframe/osmre-uav/commit/039784aef962263824c73f6b9ea8cbc5ef9c8e0f))
+   - allow users to modify processing values upon reupload   ([e6a40](https://github.com/terraframe/osmre-uav/commit/e6a407a399e7f9e6d9f1991b672052bb82232ea4))
+
+
+
 ## [1.5.3](https://github.com/terraframe/osmre-uav/releases/tag/1.5.3) (2025-07-31)
 
 

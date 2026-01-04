@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package gov.geoplatform.uasdm.service;
 
@@ -39,7 +39,6 @@ import gov.geoplatform.uasdm.model.MetadataMessage;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import gov.geoplatform.uasdm.processing.ProcessingInProgressException;
 import me.desair.tus.server.upload.UploadInfo;
 
 @Service
@@ -71,8 +70,6 @@ public class WorkflowService
   @Transaction
   public void updateOrCreateUploadTask(String userOid, UploadInfo uploadInfo)
   {
-    ProcessConfiguration configuration = ProcessConfiguration.parse(uploadInfo);
-
     String uploadId = uploadInfo.getId().toString();
 
     AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForUpload(uploadId);
@@ -80,6 +77,7 @@ public class WorkflowService
     if (task == null)
     {
       Map<String, String> metadata = uploadInfo.getMetadata();
+      ProcessConfiguration configuration = ProcessConfiguration.parse(uploadInfo);
 
       String componentId = metadata.get("componentId");
       String uploadTarget = metadata.get("uploadTarget");
@@ -98,6 +96,12 @@ public class WorkflowService
         task.setPtEpsg(Integer.valueOf(metadata.get("ptEpsg")));
       }
 
+      if (task instanceof AbstractUploadTask)
+      {
+        AbstractUploadTask uploadTask = (AbstractUploadTask) task;
+        uploadTask.setConfiguration(configuration);
+      }
+
       if (task instanceof WorkflowTask && configuration.isODM())
       {
         WorkflowTask workflowTask = (WorkflowTask) task;
@@ -106,12 +110,6 @@ public class WorkflowService
         workflowTask.setProcessOrtho(configuration.toODM().getProcessOrtho());
         workflowTask.setProcessPtcloud(configuration.toODM().getProcessPtcloud());
       }
-
-//      if (uasComponent instanceof gov.geoplatform.uasdm.graph.Collection && //
-//          ( (gov.geoplatform.uasdm.graph.Collection) uasComponent ).getStatus().equals("Processing"))
-//      {
-//        throw new ProcessingInProgressException();
-//      }
     }
     else
     {

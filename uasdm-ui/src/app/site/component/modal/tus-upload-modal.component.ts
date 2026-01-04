@@ -104,7 +104,7 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 		}
 
 		if (this.uploadTarget != null && this.uploadTarget === 'ptcloud') {
-			this.extensions = ".laz,.las";
+			this.extensions = ".laz,.las,.zip,.gz";
 		}
 		if (this.uploadTarget != null && this.uploadTarget === 'dem') {
 			this.extensions = ".tif,.tiff,.zip,.gz";
@@ -210,6 +210,12 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 
 	public canDeactivate(): boolean {
 		return this.isUploading;
+	}
+
+	public isVideo(): boolean {
+		if (this.component.format == null) return false;
+
+		return this.component.format.toLowerCase().includes("video");
 	}
 
 	@HostListener('window:beforeunload', ['$event'])

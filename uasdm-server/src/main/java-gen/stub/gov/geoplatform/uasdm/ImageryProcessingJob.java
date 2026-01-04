@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package gov.geoplatform.uasdm;
 
@@ -85,10 +85,11 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   {
     this.setConfigurationJson(configuration.toJson().toString());
   }
-  
+
   public static List<String> getSupportedExtensions(String uploadTarget, CollectionFormat format, ProcessConfiguration config)
   {
-    // First check the upload target. If they're manually uploading a product, it doesn't matter what the collection format is.
+    // First check the upload target. If they're manually uploading a product,
+    // it doesn't matter what the collection format is.
     if (ImageryComponent.DEM.equals(uploadTarget))
       return Arrays.asList("tif", "tiff", "xml");
     else if (ImageryComponent.ORTHO.equals(uploadTarget))
@@ -101,7 +102,8 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       return Arrays.asList("las", "laz");
 
     // If they're uploading to raw, then we need to check the collection format
-    if (format != null) { 
+    if (format != null)
+    {
       if (format.isLidar())
         return Arrays.asList("las", "laz");
       else if (format.isVideo())
@@ -111,7 +113,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       else
         return Arrays.asList("jpg", "jpeg", "png");
     }
-    
+
     return Arrays.asList("jpg", "jpeg", "png", "tif", "tiff", "mp4");
   }
 
@@ -157,10 +159,11 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
    */
   public static JobHistory processFiles(String runAsUserOid, UploadInfo uploadInfo, InputStream istream) throws FileNotFoundException
   {
-    ProcessConfiguration configuration = ProcessConfiguration.parse(uploadInfo);
     String uploadId = uploadInfo.getId().toString();
 
     AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(uploadId);
+    ProcessConfiguration configuration = task.getConfiguration();
+
     VaultFile vfImageryZip = null;
 
     try

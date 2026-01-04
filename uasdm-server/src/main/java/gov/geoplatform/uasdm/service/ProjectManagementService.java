@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package gov.geoplatform.uasdm.service;
 
@@ -34,6 +34,8 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import javax.annotation.PreDestroy;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -93,7 +95,6 @@ import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.ProductIF;
-import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -168,7 +169,7 @@ public class ProjectManagementService
           {
             var format = this.collection.getFormat();
             List<String> files;
-            
+
             if (format != null && format.isVideo())
               files = downloadAll(this.collection, ImageryComponent.VIDEO, ostream, predicate, false);
             else
@@ -1030,11 +1031,11 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public RemoteFileObject download(String sessionId, String id, String key, List<Range> ranges)
+  public RemoteFileObject download(String sessionId, String id, String key, String range)
   {
     UasComponentIF component = ComponentFacade.getComponent(id);
 
-    return component.download(key, ranges);
+    return component.download(key, range);
   }
 
   @Request(RequestType.SESSION)
@@ -1279,7 +1280,7 @@ public class ProjectManagementService
   public JSONObject putFile(String sessionId, String id, String folder, String productName, String fileName, RemoteFileMetadata metadata, InputStream stream)
   {
     UasComponentIF component = ComponentFacade.getComponent(id);
-    ProductIF product = component.getProduct(productName).get();
+    ProductIF product = productName != null ? component.getProduct(productName).get() : null;
 
     DocumentIF doc = component.putFile(folder, fileName, product, metadata, stream);
 
@@ -1390,10 +1391,12 @@ public class ProjectManagementService
           config.setGeoLocationFileName(Product.GEO_LOCATION_FILE);
           config.setGeoLocationFormat(FileFormat.RX1R2);
         }
-        
-        if (Boolean.TRUE.equals(collection.isRadiometric()) || Boolean.TRUE.equals(collection.isMultiSpectral())) {
+
+        if (Boolean.TRUE.equals(collection.isRadiometric()) || Boolean.TRUE.equals(collection.isMultiSpectral()))
+        {
           config.setRadiometricCalibration(RadiometricCalibration.CAMERA);
-          // TODO : Some sensors support CAMERA+SUN, which might be preferable (even though ODM says its experimental)... Which sensors exactly?
+          // TODO : Some sensors support CAMERA+SUN, which might be preferable
+          // (even though ODM says its experimental)... Which sensors exactly?
         }
 
         collection.getMetadata().ifPresent(metadata -> {
@@ -1440,6 +1443,11 @@ public class ProjectManagementService
     }
 
     return new ODMProcessConfiguration();
+  }
+  
+  @PreDestroy
+  public void destroy() {
+    RemoteFileFacade.destroy();
   }
 
   // public void logLoginAttempt(String sessionId, String username)
