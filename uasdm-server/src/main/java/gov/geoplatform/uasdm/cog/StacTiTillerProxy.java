@@ -44,6 +44,7 @@ import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Uri;
 import software.amazon.awssdk.services.s3.S3Utilities;
 
@@ -85,7 +86,9 @@ public class StacTiTillerProxy extends TiTillerProxy
   {
     Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
 
-    S3Utilities s3Utilities = S3Utilities.builder().build();
+    S3Utilities s3Utilities = S3Utilities.builder() //
+        .region(Region.of(AppProperties.getBucketRegion())) //
+        .build();
     S3Uri s3Uri = s3Utilities.parseUri(URI.create(this.url));
     
     // Update the download count
