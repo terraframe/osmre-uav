@@ -30,7 +30,7 @@ public class ODMRunService
     final JSONObject response = new JSONObject();
     var collection = Collection.get(collectionId);
     
-    final long rawSizeMb = collection.getDocuments().stream().filter(d -> d != null).map(d -> d.getFileSize() == null ? 0 : d.getFileSize()).reduce(0l, (a,b) -> a + b);
+    final long rawSizeMb = collection.getRaw().stream().mapToLong(d -> d.getFileSize() == null ? 0L : d.getFileSize()).sum() / (1024L * 1024L);
     
     ProcessConfiguration configuration = ProcessConfiguration.parse(configJson);
     final boolean processOrtho = Boolean.TRUE.equals(configuration.toODM().getProcessOrtho());
@@ -118,7 +118,8 @@ public class ODMRunService
         + "  WHERE\n"
         + "    abs(rawSizeMb - :rawSizeMb) <= (:rawSizeMb * :rawSizeTolPct)\n"
         + "    " + String.join("\n    ", filters) + "\n"
-        + ");";
+        + ")\n"
+        + "WHERE\n runtimeSeconds != 0;";
     
     final GraphQuery<Map<String, Object>> query = new GraphQuery<Map<String, Object>>(statement, params);
 

@@ -7,6 +7,7 @@ import { CollectionFormat, Sensor } from './sensor';
 import { Platform } from './platform';
 import { UAV } from './uav'
 import { LocalizedValue } from '@shared/model/organization';
+import { RuntimeEstimate } from './odmrun';
 
 export const projectTypes: string[] = [
 	"Other",
@@ -160,14 +161,6 @@ export class ProcessConfig {
 	productNamePrefix?: string;
 }
 
-export class ODMRun {
-	output: string;
-	config: ProcessConfig;
-	report: SiteEntity;
-	runStart: string;
-	runEnd: string;
-}
-
 
 export class CollectionHierarchy {
 	site: string;
@@ -272,6 +265,7 @@ export class Task {
 	ancestors?: string[];
 	sensorName?: string;
 	showODMOutput?: boolean;
+	runtimeEstimate?: RuntimeEstimate;
 }
 
 export class TaskGroup {

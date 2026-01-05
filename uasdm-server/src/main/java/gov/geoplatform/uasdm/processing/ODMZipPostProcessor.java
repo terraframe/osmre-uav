@@ -126,13 +126,7 @@ public class ODMZipPostProcessor
       list = processingTask.getFileList();
     }
 
-    List<DocumentIF> raws = collection.getDocuments().stream()//
-        .filter(doc -> {
-          return doc.getS3location().contains("/raw/");
-        }).filter(doc -> {
-          // Exclude the metadata xml file
-          return !doc.getS3location().endsWith(".xml");
-        }).collect(Collectors.toList());
+    List<DocumentIF> raws = ((Collection)collection).getRaw();
 
     for (DocumentIF raw : raws)
     {

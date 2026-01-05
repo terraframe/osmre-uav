@@ -9,7 +9,7 @@ import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
 import { ErrorHandler } from '@shared/component';
 
-import { SiteEntity, UploadForm, Task, Selection, CollectionArtifacts, ODMRun, ProcessConfig } from '@site/model/management';
+import { SiteEntity, UploadForm, Task, Selection, CollectionArtifacts, ProcessConfig } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 import { environment } from 'src/environments/environment';
 
@@ -18,6 +18,7 @@ import {
 	fadeOutOnLeaveAnimation
 } from 'angular-animations';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ODMRun } from '@site/model/odmrun';
 
 @Component({
 	standalone: false,

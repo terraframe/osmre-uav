@@ -248,8 +248,11 @@
 					</div>
 
 					<div class="runtime-header__estimate">
-						<span *ngIf="estimate.runtime">
-							≈ {{runtimeQuickLabel(estimate.runtime)}} <span class="runtime-header__range">({{formatRuntime(estimate.runtime)}})</span>
+						<span *ngIf="estimate.runtime as rt">
+						≈ {{ getRuntimeDisplay(rt).primary }}
+						<span *ngIf="getRuntimeDisplay(rt).secondary as detail" class="runtime-header__range">
+							({{ detail }})
+						</span>
 						</span>
 						<span *ngIf="!estimate.runtime">Unknown</span>
 					</div>

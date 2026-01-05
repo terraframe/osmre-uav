@@ -16,10 +16,19 @@
           </attributes>
         </create>
       </mdVertex>
+      
+      <mdBusiness name="gov.geoplatform.uasdm.odm.ODMProcessingTask" label="ODM Processing" extends="gov.geoplatform.uasdm.bus.WorkflowTask">
+        <create>
+          <attributes>
+            <text name="runtimeEstimateJson"/>
+          </attributes>
+        </create>
+      </mdBusiness>
     </update>
   </doIt>
   <undoIt>
     <delete>
+      <object key="gov.geoplatform.uasdm.odm.ODMProcessingTask.runtimeEstimateJson" type="com.runwaysdk.system.metadata.MdAttributeInteger"/>
       <object key="gov.geoplatform.uasdm.graph.ODMRun.resolution" type="com.runwaysdk.system.metadata.MdAttributeFloat"/>
       <object key="gov.geoplatform.uasdm.graph.ODMRun.featureQuality" type="com.runwaysdk.system.metadata.MdAttributeText"/>
       <object key="gov.geoplatform.uasdm.graph.ODMRun.pcQuality" type="com.runwaysdk.system.metadata.MdAttributeText"/>
