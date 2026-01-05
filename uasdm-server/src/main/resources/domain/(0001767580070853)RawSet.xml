@@ -1,0 +1,59 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdVertex name="gov.geoplatform.uasdm.graph.RawSet" label="Document" generateController="false">
+        <attributes>
+          <char name="name" label="Name" size="256" required="true" />
+          <dateTime name="lastUpdateDate" label="Last Update Date" required="true" />
+          <boolean name="published" label="Published" required="false" /> 
+          <boolean name="locked" label="Locked" required="false" />
+          <reference name="lockedBy" label="Locked By" required="false" type="com.runwaysdk.system.SingleActor" />
+                   
+        </attributes>
+      </mdVertex>    
+    
+      <mdEdge name="gov.geoplatform.uasdm.graph.ComponentHasRawSet" label="Component Has Raw Set" parent="gov.geoplatform.uasdm.graph.UasComponent" child="gov.geoplatform.uasdm.graph.RawSet">
+      </mdEdge>      
+      
+      <mdEdge name="gov.geoplatform.uasdm.graph.RawSettHasDocument" label="Product Has Raw Set"  child="gov.geoplatform.uasdm.graph.Document" parent="gov.geoplatform.uasdm.graph.RawSet">
+      </mdEdge>            
+    
+    </create>
+    
+    <permissions>
+      <role roleName="geoprism.admin.Administrator">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.graph.RawSet">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.ComponentHasRawSet">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.RawSettHasDocument">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+        </grant>
+      </role>
+      <role roleName="geoprism.admin.DashboardBuilder">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.graph.RawSet">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.ComponentHasRawSet">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.RawSettHasDocument">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+        </grant>
+      </role>
+    </permissions>          
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.graph.RawSettHasDocument" type="com.runwaysdk.system.metadata.MdEdge" />
+      <object key="gov.geoplatform.uasdm.graph.ComponentHasRawSet" type="com.runwaysdk.system.metadata.MdEdge" />
+      <object key="gov.geoplatform.uasdm.graph.RawSet" type="com.runwaysdk.system.metadata.MdVertex" />   
+    </delete>
+  </undoIt>
+</version>

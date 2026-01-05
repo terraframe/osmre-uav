@@ -23,6 +23,7 @@ import org.json.JSONObject;
 
 import gov.geoplatform.uasdm.bus.AllPrivilegeType;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
+import gov.geoplatform.uasdm.graph.RawSet;
 import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
 
 public interface CollectionIF extends UasComponentIF
@@ -110,5 +111,7 @@ public interface CollectionIF extends UasComponentIF
   public void setHasAllZip(Boolean b);
 
   public Optional<CollectionMetadata> getMetadata();
+
+  public RawSet createRawSetIfNotExist(String setName);
 
 }

@@ -27,6 +27,7 @@ import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.Imagery;
 import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.graph.RawSet;
 import gov.geoplatform.uasdm.graph.Site;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
@@ -135,5 +136,11 @@ public class GraphStrategy implements ComponentStrategy
   public JSONArray bbox()
   {
     return UasComponent.bbox();
+  }
+  
+  @Override
+  public RawSet getRawSet(String oid)
+  {
+    return RawSet.get(oid);
   }
 }

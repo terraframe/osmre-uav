@@ -21,6 +21,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import gov.geoplatform.uasdm.graph.RawSet;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.ProductCriteria;
 
@@ -106,6 +107,11 @@ public class ComponentFacade
   public static List<ComponentProductDTO> getProducts(ProductCriteria criteria)
   {
     return STRATEGY.getProducts(criteria);
+  }
+
+  public static RawSet getRawSet(String oid)
+  {
+    return STRATEGY.getRawSet(oid);
   }
 
 }

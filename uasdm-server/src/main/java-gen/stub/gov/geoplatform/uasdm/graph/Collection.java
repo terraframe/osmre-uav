@@ -774,8 +774,10 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     return product;
   }
 
+  
   public static java.util.Collection<CollectionIF> getMissingMetadata(Integer pageNumber, Integer pageSize)
   {
+    {
     SingleActor singleActor = GeoprismUser.getCurrentUser();
 
     if (singleActor != null)

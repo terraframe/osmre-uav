@@ -1245,6 +1245,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     return Product.createIfNotExist(this, productName);
   }
 
+  @Override
+  public RawSet createRawSetIfNotExist(String setName)
+  {
+    return RawSet.createIfNotExist(this, setName);
+  }
+  
   public static <T extends UasComponent> Optional<T> getWithAccessControl(String oid)
   {
     HashMap<String, Object> parameters = new HashMap<String, Object>();
