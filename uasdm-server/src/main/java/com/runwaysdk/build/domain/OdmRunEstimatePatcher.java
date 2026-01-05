@@ -16,7 +16,13 @@
 package com.runwaysdk.build.domain;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang.StringUtils;
+import org.json.JSONObject;
 
 import com.orientechnologies.orient.core.id.ORID;
 import com.runwaysdk.business.graph.GraphQuery;
@@ -28,9 +34,7 @@ import com.runwaysdk.dataaccess.graph.orientdb.OrientDBRequest;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.session.Request;
 
-import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.graph.ODMRun;
-import gov.geoplatform.uasdm.graph.UasComponent;
 
 public class OdmRunEstimatePatcher
 {
@@ -48,144 +52,59 @@ public class OdmRunEstimatePatcher
 //  @Transaction // Transaction is causing max chunk read errors apparently
   public static void mainInTrans()
   {
-//    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(ODMRun.CLASS);
+    final MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(ODMRun.CLASS);
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT @rid,config FROM " + mdVertex.getDBClassName());
+
+    final GraphQuery<Map<String,Object>> query = new GraphQuery<Map<String,Object>>(statement.toString());
+
+    int count = 0;
     
+    // If we try to fetch an ODMRun object from the database the odm output causes max chunk read errors unfortunately
     GraphDBService service = GraphDBService.getInstance();
     GraphRequest request = service.getGraphDBRequest();
     OrientDBRequest orientDBRequest = (OrientDBRequest) request;
     
-    for(var statement : UPDATE_STATEMENTS) {
-      HashMap<String,Object> params = new HashMap<String,Object>();
-      service.command(orientDBRequest, statement, params);
+    for (Map<String,Object> values : query.getResults())
+    {
+      try
+      {
+        ORID rid = (ORID) values.get("@rid");
+        String config = (String) values.get("config");
+        
+        if (config == null || config.length() == 0) continue;
+        
+        JSONObject json = new JSONObject(config);
+        
+        Set<String> setParams = new HashSet<String>();
+        HashMap<String,Object> params = new HashMap<String,Object>();
+        params.put("rid", rid);
+        putParamIfExists("resolution", params, json, setParams);
+        putParamIfExists("featureQuality", params, json, setParams);
+        putParamIfExists("pcQuality", params, json, setParams);
+        putParamIfExists("matcherNeighbors", params, json, setParams);
+        putParamIfExists("minNumFeatures", params, json, setParams);
+        putParamIfExists("videoResolution", params, json, setParams);
+        putParamIfExists("videoLimit", params, json, setParams);
+        putParamIfExists("radiometricCalibration", params, json, setParams);
+        
+        if (setParams.size() > 0) {
+          String attrSetStatement = String.join(", ", setParams.stream().map(p -> p + "=:" + p).collect(Collectors.toList()));
+          service.command(orientDBRequest, "UPDATE odmr_un SET " + attrSetStatement + " WHERE @rid=:rid", params);
+          count++;
+        }
+      }
+      catch (DataNotFoundException ex) {}
     }
+    
+    System.out.println("Successfully updated " + count + " odm run objects that did not previously have component references.");
   }
   
-  public static final String[] UPDATE_STATEMENTS = new String[] {
-      
-    "UPDATE odmr_un\n"
-    + "SET resolution =\n"
-    + "  config\n"
-    + "    .subString(config.indexOf('\"resolution\":') + 13)\n"
-    + "    .subString(0,\n"
-    + "      if(\n"
-    + "        eval(\"config.subString(config.indexOf('\\\"resolution\\\":') + 13).indexOf(',') > -1\"),\n"
-    + "        config.subString(config.indexOf('\"resolution\":') + 13).indexOf(','),\n"
-    + "        config.subString(config.indexOf('\"resolution\":') + 13).indexOf('}')\n"
-    + "      )\n"
-    + "    )\n"
-    + "    .replace('\"','')\n"
-    + "    .trim()\n"
-    + "    .asFloat()\n"
-    + "WHERE config LIKE '%\"resolution\"%';",
-    
-    "UPDATE odmr_un\n"
-    + "SET pcQuality =\n"
-    + "  if(\n"
-    + "    eval(\"config.subString(config.indexOf('\\\"pcQuality\\\":') + 12).indexOf(',') > -1\"),\n"
-    + "    config.subString(config.indexOf('\"pcQuality\":') + 12)\n"
-    + "          .subString(0, config.subString(config.indexOf('\"pcQuality\":') + 12).indexOf(','))\n"
-    + "          .replace('\"','')\n"
-    + "          .trim(),\n"
-    + "    config.subString(config.indexOf('\"pcQuality\":') + 12)\n"
-    + "          .subString(0, config.subString(config.indexOf('\"pcQuality\":') + 12).indexOf('}'))\n"
-    + "          .replace('\"','')\n"
-    + "          .trim()\n"
-    + "  )\n"
-    + "WHERE config LIKE '%\"pcQuality\"%';",
-    
-    "UPDATE odmr_un\n"
-    + "SET featureQuality =\n"
-    + "  if(\n"
-    + "    eval(\"config.subString(config.indexOf('\\\"featureQuality\\\":') + 17).indexOf(',') > -1\"),\n"
-    + "    config.subString(config.indexOf('\"featureQuality\":') + 17)\n"
-    + "          .subString(0, config.subString(config.indexOf('\"featureQuality\":') + 17).indexOf(','))\n"
-    + "          .replace('\"','')\n"
-    + "          .trim(),\n"
-    + "    config.subString(config.indexOf('\"featureQuality\":') + 17)\n"
-    + "          .subString(0, config.subString(config.indexOf('\"featureQuality\":') + 17).indexOf('}'))\n"
-    + "          .replace('\"','')\n"
-    + "          .trim()\n"
-    + "  )\n"
-    + "WHERE config LIKE '%\"featureQuality\"%';",
-    
-    "UPDATE odmr_un\n"
-    + "SET matcherNeighbors =\n"
-    + "  config\n"
-    + "    .subString(config.indexOf('\"matcherNeighbors\":') + 19)\n"
-    + "    .subString(0,\n"
-    + "      if(\n"
-    + "        eval(\"config.subString(config.indexOf('\\\"matcherNeighbors\\\":') + 19).indexOf(',') > -1\"),\n"
-    + "        config.subString(config.indexOf('\"matcherNeighbors\":') + 19).indexOf(','),\n"
-    + "        config.subString(config.indexOf('\"matcherNeighbors\":') + 19).indexOf('}')\n"
-    + "      )\n"
-    + "    )\n"
-    + "    .replace('\"','')\n"
-    + "    .trim()\n"
-    + "    .asLong()\n"
-    + "WHERE config LIKE '%\"matcherNeighbors\"%';",
-    
-    "UPDATE odmr_un\n"
-    + "SET minNumFeatures =\n"
-    + "  config\n"
-    + "    .subString(config.indexOf('\"minNumFeatures\":') + 17)\n"
-    + "    .subString(0,\n"
-    + "      if(\n"
-    + "        eval(\"config.subString(config.indexOf('\\\"minNumFeatures\\\":') + 17).indexOf(',') > -1\"),\n"
-    + "        config.subString(config.indexOf('\"minNumFeatures\":') + 17).indexOf(','),\n"
-    + "        config.subString(config.indexOf('\"minNumFeatures\":') + 17).indexOf('}')\n"
-    + "      )\n"
-    + "    )\n"
-    + "    .replace('\"','')\n"
-    + "    .trim()\n"
-    + "    .asLong()\n"
-    + "WHERE config LIKE '%\"minNumFeatures\"%';",
-    
-    "UPDATE odmr_un\n"
-    + "SET videoResolution =\n"
-    + "  config\n"
-    + "    .subString(config.indexOf('\"videoResolution\":') + 18)\n"
-    + "    .subString(0,\n"
-    + "      if(\n"
-    + "        eval(\"config.subString(config.indexOf('\\\"videoResolution\\\":') + 18).indexOf(',') > -1\"),\n"
-    + "        config.subString(config.indexOf('\"videoResolution\":') + 18).indexOf(','),\n"
-    + "        config.subString(config.indexOf('\"videoResolution\":') + 18).indexOf('}')\n"
-    + "      )\n"
-    + "    )\n"
-    + "    .replace('\"','')\n"
-    + "    .trim()\n"
-    + "    .asLong()\n"
-    + "WHERE config LIKE '%\"videoResolution\"%';",
-    
-    "UPDATE odmr_un\n"
-    + "SET videoLimit =\n"
-    + "  config\n"
-    + "    .subString(config.indexOf('\"videoLimit\":') + 13)\n"
-    + "    .subString(0,\n"
-    + "      if(\n"
-    + "        eval(\"config.subString(config.indexOf('\\\"videoLimit\\\":') + 13).indexOf(',') > -1\"),\n"
-    + "        config.subString(config.indexOf('\"videoLimit\":') + 13).indexOf(','),\n"
-    + "        config.subString(config.indexOf('\"videoLimit\":') + 13).indexOf('}')\n"
-    + "      )\n"
-    + "    )\n"
-    + "    .replace('\"','')\n"
-    + "    .trim()\n"
-    + "    .asLong()\n"
-    + "WHERE config LIKE '%\"videoLimit\"%';",
-    
-    "UPDATE odmr_un\n"
-    + "SET radiometricCalibration =\n"
-    + "  if(\n"
-    + "    eval(\"config.subString(config.indexOf('\\\"radiometricCalibration\\\":') + 25).indexOf(',') > -1\"),\n"
-    + "    config.subString(config.indexOf('\"radiometricCalibration\":') + 25)\n"
-    + "          .subString(0, config.subString(config.indexOf('\"radiometricCalibration\":') + 25).indexOf(','))\n"
-    + "          .replace('\"','')\n"
-    + "          .trim(),\n"
-    + "    config.subString(config.indexOf('\"radiometricCalibration\":') + 25)\n"
-    + "          .subString(0, config.subString(config.indexOf('\"radiometricCalibration\":') + 25).indexOf('}'))\n"
-    + "          .replace('\"','')\n"
-    + "          .trim()\n"
-    + "  )\n"
-    + "WHERE config LIKE '%\"radiometricCalibration\"%';"
-    
-  };
+  private static void putParamIfExists(String name, HashMap<String,Object> params, JSONObject json, Set<String> setParams) {
+    if (json != null && json.has(name) && !json.isNull(name)) {
+      params.put(name, json.get(name));
+      setParams.add(name);
+    }
+  }
 }
