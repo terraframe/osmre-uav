@@ -12,6 +12,7 @@ import { Task, TaskGroup, TaskGroupType } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 import { ODMRunModalComponent } from '../modal/odmrun-modal.component';
 import { ProcessRunModalComponent } from '../modal/process-run-modal.component';
+import { getRuntimeDisplay } from '@site/model/odmrun';
 
 
 @Component({
@@ -42,6 +43,8 @@ export class TasksPanelComponent implements OnInit {
      * List of tasks
      */
 	taskGroups: TaskGroup[] = [];
+
+	public getRuntimeDisplay = getRuntimeDisplay;
 
 	constructor(private managementService: ManagementService, private modalService: BsModalService) {
 

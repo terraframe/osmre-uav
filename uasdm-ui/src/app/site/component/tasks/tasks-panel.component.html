@@ -27,6 +27,7 @@
               </li>
               <li>Created on: <b>{{task.createDate | idmdate}}</b></li>
               <li>Last update: <b>{{task.lastUpdateDate | idmdate}}</b></li>
+              <li *ngIf="task.status === 'Processing' && task.runtimeEstimate && task.runtimeEstimate.runtime && getRuntimeDisplay(task.runtimeEstimate.runtime) as runtimeEstimate">Runtime Estimate: {{runtimeEstimate.primary}} <ng-container *ngIf="runtimeEstimate.secondary">({{getRuntimeDisplay(task.runtimeEstimate.runtime).secondary}})</ng-container></li>
               <li style="word-break: break-all;">Message: <b>{{task.message}}</b></li>
               <li *ngIf="taskCategory == 'Upload'">Sensor: <b>{{task.sensorName}}</b></li>
             </ul>

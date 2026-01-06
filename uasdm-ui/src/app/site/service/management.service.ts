@@ -13,13 +13,14 @@ import { AuthService } from '@shared/service/auth.service';
 import { EventService } from '@shared/service/event.service';
 import { HttpBackendClient } from '@shared/service/http-backend-client.service';
 
-import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet, TaskGroup, Selection, CollectionArtifacts, ODMRun, ProcessConfig } from '../model/management';
+import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet, TaskGroup, Selection, CollectionArtifacts, ProcessConfig } from '../model/management';
 import { Sensor } from '../model/sensor';
 import { Platform } from '../model/platform';
 import { PageResult } from '@shared/model/page';
 import { Criteria, StacItem } from '@site/model/layer';
 import { environment } from 'src/environments/environment';
 import { MetadataResponse } from '@site/model/uav';
+import { ODMRun } from '@site/model/odmrun';
 
 
 
@@ -656,6 +657,17 @@ export class ManagementService {
 
 		return this.http
 			.get(environment.apiUrl + '/api/project/search', { params: params })
+			.toPromise()
+	}
+
+	estimateRuntime(collectionId: string, configJson: any): Promise<any> {
+
+		let params: HttpParams = new HttpParams();
+		params = params.set('collectionId', collectionId);
+		params = params.set('configJson', JSON.stringify(configJson));
+
+		return this.http
+			.get(environment.apiUrl + '/api/odmrun/estimateRuntime', { params: params })
 			.toPromise()
 	}
 

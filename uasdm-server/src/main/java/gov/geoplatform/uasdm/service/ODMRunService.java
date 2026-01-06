@@ -37,18 +37,23 @@ public class ODMRunService
   @Request(RequestType.SESSION)
   public JSONObject estimateRuntime(String sessionId, String collectionId, String configJson)
   {
+    return estimateRuntimeInRequest(collectionId, configJson);
+  }
+  
+  public JSONObject estimateRuntimeInRequest(String collectionId, String configJson)
+  {
     final JSONObject response = new JSONObject();
     var collection = Collection.get(collectionId);
     
-    final long rawSizeMb = collection.getDocuments().stream().filter(d -> d != null).map(d -> d.getFileSize()).reduce(0l, (a,b) -> a + b);
+    final long rawSizeMb = collection.getRaw().stream().mapToLong(d -> d.getFileSize() == null ? 0L : d.getFileSize()).sum() / (1024L * 1024L);
     
     ProcessConfiguration configuration = ProcessConfiguration.parse(configJson);
-    final boolean processOrtho = configuration.toODM().getProcessOrtho();
-    final boolean processPointcloud = configuration.toODM().getProcessPtcloud();
-    final boolean processDem = configuration.toODM().getProcessDem();
-    final boolean processVideo = collection.getFormat() != null && collection.getFormat().isVideo();
-    final boolean isMultispectral = collection.isMultiSpectral();
-    final boolean isRadiometric = collection.isRadiometric();
+    final boolean processOrtho = Boolean.TRUE.equals(configuration.toODM().getProcessOrtho());
+    final boolean processPointcloud = Boolean.TRUE.equals(configuration.toODM().getProcessPtcloud());
+    final boolean processDem = Boolean.TRUE.equals(configuration.toODM().getProcessDem());
+    final boolean processVideo = collection.getFormat() != null && Boolean.TRUE.equals(collection.getFormat().isVideo());
+    final boolean isMultispectral = Boolean.TRUE.equals(collection.isMultiSpectral());
+    final boolean isRadiometric = Boolean.TRUE.equals(collection.isRadiometric());
     
     final String clazz = MdVertexDAO.getMdVertexDAO(ODMRun.CLASS).getDBClassName();
 
@@ -60,25 +65,22 @@ public class ODMRunService
     params.put("rawSizeMb", rawSizeMb);
     params.put("rawSizeTolPct", 0.20);
 
-    // --- Add filters based on enabled processing ---
-    // Dense reconstruction knobs (shared by ortho/ptcloud/dem in typical ODM workflows)
+    // Dense reconstruction knobs (shared params)
     if (processOrtho || processPointcloud || processDem) {
-      filters.add("AND abs(pcQuality - :pcQuality) <= :pcQualityTol");
-      filters.add("AND abs(featureQuality - :featureQuality) <= :featureQualityTol");
+      filters.add("AND pcQuality = :pcQuality");
+      filters.add("AND featureQuality = :featureQuality");
       filters.add("AND abs(matcherNeighbors - :matcherNeighbors) <= :matcherNeighborsTol");
       filters.add("AND abs(minNumFeatures - :minNumFeatures) <= :minNumFeaturesTol");
 
       params.put("pcQuality", configuration.toODM().getPcQuality());
-      params.put("pcQualityTol", 1);
 
       params.put("featureQuality", configuration.toODM().getFeatureQuality());
-      params.put("featureQualityTol", 1);
 
       params.put("matcherNeighbors", configuration.toODM().getMatcherNeighbors());
-      params.put("matcherNeighborsTol", 10);
+      params.put("matcherNeighborsTol", 0);
 
       params.put("minNumFeatures", configuration.toODM().getMinNumFeatures());
-      params.put("minNumFeaturesTol", 10000);
+      params.put("minNumFeaturesTol", 1000);
     }
 
     // Gridded outputs
@@ -93,20 +95,20 @@ public class ODMRunService
       filters.add("AND abs(videoResolution - :videoResolution) <= :videoResolutionTol");
       filters.add("AND abs(videoLimit - :videoLimit) <= :videoLimitTol");
       params.put("videoResolution", configuration.toODM().getVideoResolution());
-      params.put("videoResolutionTol", 1);
+      params.put("videoResolutionTol", 300);
       params.put("videoLimit", configuration.toODM().getVideoLimit());
-      params.put("videoLimitTol", 10);
+      params.put("videoLimitTol", 20);
     }
     
-    // TODO : Multispectral
+    // Multispectral
     if (isMultispectral || isRadiometric) {
       filters.add("AND radiometricCalibration = :radiometricCalibration");
-      params.put("radiometricCalibration", true);
+      params.put("radiometricCalibration", configuration.toODM().getRadiometricCalibration().getCode().toUpperCase());
     }
     
-    final GraphQuery<Map<String, Object>> query = new GraphQuery<Map<String, Object>>("SELECT\n"
+    String statement = "SELECT\n"
         + "  avg(runtimeSeconds) AS estimatedRuntimeSeconds,\n"
-        + "  count(*) AS matchesUsed\n"
+        + "  count(*) AS similarJobs\n"
         + "FROM (\n"
         + "  SELECT\n"
         + "    rawSizeMb,\n"
@@ -131,19 +133,23 @@ public class ODMRunService
         + "  WHERE\n"
         + "    abs(rawSizeMb - :rawSizeMb) <= (:rawSizeMb * :rawSizeTolPct)\n"
         + "    " + String.join("\n    ", filters) + "\n"
-        + ");", params);
+        + ")\n"
+        + "WHERE\n runtimeSeconds != 0;";
+    
+    final GraphQuery<Map<String, Object>> query = new GraphQuery<Map<String, Object>>(statement, params);
 
     Map<String, Object> result = query.getSingleResult();
     if (result == null) return response;
     
     Double runtime = (Double) result.get("estimatedRuntimeSeconds");
-    Long matchesUsed = (Long) result.get("matchesUsed");
-    if (matchesUsed == 0) return response;
+    Long similarJobs = (Long) result.get("similarJobs");
+    if (similarJobs == 0) return response;
     
-    double confidence = 1.0 - Math.exp(-matchesUsed / 5.0);
+    double confidence = 1.0 - Math.exp(-similarJobs / 5.0);
     
     response.put("runtime", runtime);
     response.put("confidence", confidence);
+    response.put("similarJobs", similarJobs);
     return response;
   }
 }

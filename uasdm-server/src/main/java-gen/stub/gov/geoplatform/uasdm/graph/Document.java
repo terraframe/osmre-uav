@@ -174,6 +174,27 @@ public class Document extends DocumentBase implements DocumentIF
 
     return query.getSingleResult();
   }
+  
+  public static String getParentFolderFromS3Key(String key) {
+    if (key == null || key.isBlank()) {
+        return null;
+    }
+
+    // Trim trailing slash just in case
+    int end = key.endsWith("/") ? key.length() - 1 : key.length();
+
+    int lastSlash = key.lastIndexOf('/', end - 1);
+    if (lastSlash < 0) {
+        return null;
+    }
+
+    int prevSlash = key.lastIndexOf('/', lastSlash - 1);
+    if (prevSlash < 0) {
+        return null;
+    }
+
+    return key.substring(prevSlash + 1, lastSlash);
+  }
 
   public void addGeneratedProduct(ProductIF product)
   {

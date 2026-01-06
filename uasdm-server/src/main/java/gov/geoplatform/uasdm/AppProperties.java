@@ -328,7 +328,7 @@ public class AppProperties
 
   public static Boolean isKnowStacEnabled()
   {
-    return Singleton.getProps().getBoolean("knowstac.enabled", true);
+    return Singleton.getProps().getBoolean("knowstac.enabled", false);
   }
 
   public static String getKnowStacUrl()
