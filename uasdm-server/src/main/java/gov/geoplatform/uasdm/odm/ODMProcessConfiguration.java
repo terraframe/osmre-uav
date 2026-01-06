@@ -22,6 +22,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import me.desair.tus.server.upload.UploadInfo;
 
@@ -205,7 +206,7 @@ public class ODMProcessConfiguration implements ProcessConfiguration
     this.pcQuality = Quality.MEDIUM;
     this.featureQuality = Quality.HIGH;
     this.geoLocationFormat = FileFormat.RX1R2;
-    this.geoLocationFileName = "geo.txt";
+    this.geoLocationFileName = Product.GEO_LOCATION_FILE;
     this.radiometricCalibration = RadiometricCalibration.NONE;
     this.includeGroundControlPointFile = false;
     this.groundControlPointFileName = "gcp_list.txt";
