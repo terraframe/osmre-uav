@@ -11,12 +11,13 @@ import { ManagementService } from '@site/service/management.service';
 import { SiteEntity, ProcessConfig, ProcessConfigType } from '@site/model/management';
 import { Subject } from 'rxjs';
 
+import { RuntimeEstimate, getRuntimeDisplay } from '@site/model/odmrun';
 
 @Component({
     standalone: false,
-  selector: 'run-process-modal',
+    selector: 'run-process-modal',
     templateUrl: './run-process-modal.component.html',
-    styleUrls: ['./artifact-page.component.css']
+    styleUrls: ['./artifact-page.component.css', './run-process-modal.component.css']
 })
 export class RunProcessModalComponent implements OnInit, OnDestroy {
 
@@ -44,10 +45,16 @@ export class RunProcessModalComponent implements OnInit, OnDestroy {
 
     isAdvancedSettingsCollapsed = true;
 
+    estimate: RuntimeEstimate;
+
+    public loadingEstimate:boolean = false;
+
     /*
      * Called on confirm
      */
     public onConfirm: Subject<ProcessConfig>;
+
+    public getRuntimeDisplay = getRuntimeDisplay;
 
     // Make the process config type usable in the HTML template
     readonly ProcessConfigType = ProcessConfigType;
@@ -68,6 +75,17 @@ export class RunProcessModalComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.onConfirm = new Subject();
+    }
+
+    configChange(): void {
+        this.loadingEstimate = true;
+        this.service.estimateRuntime(this.entity.id, this.config).then((estimate: RuntimeEstimate) => {
+            this.estimate = estimate;
+        }).catch((err: HttpErrorResponse) => {
+            this.error(err);
+        }).finally(() => {
+            this.loadingEstimate = false;
+        });
     }
 
     isValid(): boolean {
@@ -103,6 +121,8 @@ export class RunProcessModalComponent implements OnInit, OnDestroy {
     isMultispectral(): boolean {
         return !(this.entity && this.entity.format) || this.entity.format.toLowerCase().includes('multispectral');
     }
+
+    
 
     error(err: HttpErrorResponse): void {
         this.message = ErrorHandler.getMessageFromError(err);

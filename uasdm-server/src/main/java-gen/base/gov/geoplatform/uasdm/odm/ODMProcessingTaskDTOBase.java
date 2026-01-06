@@ -1,26 +1,11 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.odm;
 
-@com.runwaysdk.business.ClassSignature(hash = 2128802105)
+@com.runwaysdk.business.ClassSignature(hash = -220891603)
 public abstract class ODMProcessingTaskDTOBase extends gov.geoplatform.uasdm.bus.WorkflowTaskDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.odm.ODMProcessingTask";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 2128802105;
+  private static final long serialVersionUID = -220891603;
   
   protected ODMProcessingTaskDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -48,6 +33,7 @@ public abstract class ODMProcessingTaskDTOBase extends gov.geoplatform.uasdm.bus
   public static java.lang.String ODMOUTPUT = "odmOutput";
   public static java.lang.String ODMUUID = "odmUUID";
   public static java.lang.String PROCESSFILENAMEARRAY = "processFilenameArray";
+  public static java.lang.String RUNTIMEESTIMATEJSON = "runtimeEstimateJson";
   public String getConfigurationJson()
   {
     return getValue(CONFIGURATIONJSON);
@@ -231,6 +217,43 @@ public abstract class ODMProcessingTaskDTOBase extends gov.geoplatform.uasdm.bus
   public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getProcessFilenameArrayMd()
   {
     return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(PROCESSFILENAMEARRAY).getAttributeMdDTO();
+  }
+  
+  public String getRuntimeEstimateJson()
+  {
+    return getValue(RUNTIMEESTIMATEJSON);
+  }
+  
+  public void setRuntimeEstimateJson(String value)
+  {
+    if(value == null)
+    {
+      setValue(RUNTIMEESTIMATEJSON, "");
+    }
+    else
+    {
+      setValue(RUNTIMEESTIMATEJSON, value);
+    }
+  }
+  
+  public boolean isRuntimeEstimateJsonWritable()
+  {
+    return isWritable(RUNTIMEESTIMATEJSON);
+  }
+  
+  public boolean isRuntimeEstimateJsonReadable()
+  {
+    return isReadable(RUNTIMEESTIMATEJSON);
+  }
+  
+  public boolean isRuntimeEstimateJsonModified()
+  {
+    return isModified(RUNTIMEESTIMATEJSON);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getRuntimeEstimateJsonMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(RUNTIMEESTIMATEJSON).getAttributeMdDTO();
   }
   
   public static gov.geoplatform.uasdm.odm.ODMProcessingTaskDTO get(com.runwaysdk.constants.ClientRequestIF clientRequest, String oid)

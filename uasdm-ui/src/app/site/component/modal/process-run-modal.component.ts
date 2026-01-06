@@ -9,7 +9,7 @@ import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
 import { ErrorHandler } from '@shared/component';
 
-import { SiteEntity, UploadForm, Task, Selection, CollectionArtifacts, ODMRun, ProcessConfig, ProcessConfigType } from '@site/model/management';
+import { SiteEntity, UploadForm, Task, Selection, CollectionArtifacts, ProcessConfig, ProcessConfigType } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 import { environment } from 'src/environments/environment';
 

@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -139,9 +140,21 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     // Balk
   }
-
-  public CollectionFormat getFormat()
-  {
+  
+  /**
+   * @return All raw "input" documents which may be used for processing, which may in practice be imagery, pointclouds, etc.
+   */
+  public List<DocumentIF> getRaw() {
+    return getDocuments().stream()//
+        .filter(doc -> {
+          return doc.getS3location().contains("/raw/");
+        }).filter(doc -> {
+          // Exclude the metadata xml file
+          return !doc.getS3location().endsWith(".xml");
+        }).collect(Collectors.toList());
+  }
+  
+  public CollectionFormat getFormat() {
     if (StringUtils.isBlank(this.getSCollectionFormat()))
       return null;
 

@@ -25,6 +25,7 @@ import org.json.JSONObject;
 
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
+import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.LayerClassification;
 import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
@@ -268,11 +269,12 @@ public class ProductView
 
       layer.put("public", this.published);
 
-      if (mappable.getKey().contains(ImageryComponent.ORTHO + "/"))
+      var parentFolder = Document.getParentFolderFromS3Key(mappable.getKey());
+      if (ImageryComponent.ORTHO.equals(parentFolder))
       {
         layer.put("classification", LayerClassification.ORTHO.name());
       }
-      else if (mappable.getKey().contains(ODMZipPostProcessor.DEM_GDAL + "/"))
+      else if (ODMZipPostProcessor.GDAL_PARENT_FOLDER.equals(parentFolder))
       {
         layer.put("classification", LayerClassification.DEM_DSM.name());
       }
