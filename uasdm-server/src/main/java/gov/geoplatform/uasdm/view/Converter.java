@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
@@ -416,20 +416,19 @@ public abstract class Converter<T extends UasComponentIF>
   public static RawSetView toView(RawSet set, List<UasComponentIF> components)
   {
     final SessionIF session = Session.getCurrentSession();
-    
+
     if (!session.checkTypeAccess(Operation.READ, set.getMdClass()))
     {
       throw new ReadPermissionException("User does not have read access", (ComponentIF) set, session.getUser());
     }
-    
+
     RawSetView view = new RawSetView();
-    
+
     populate(view, set, components);
-    
+
     return view;
   }
-  
-  
+
   protected static void populate(ProductView view, ProductIF product, List<UasComponentIF> components)
   {
     List<SiteItem> list = new LinkedList<SiteItem>();
@@ -442,9 +441,9 @@ public abstract class Converter<T extends UasComponentIF>
     UasComponentIF component = components.size() > 0 ? components.get(components.size() - 1) : null;
 
     final String s3Loc = component != null ? component.getS3location(product, ODMZipPostProcessor.POTREE) : "";
-    
+
     List<DocumentIF> docs = product.getDocuments();
-    
+
     boolean hasPointcloud = docs.stream().anyMatch(d -> d.getS3location().endsWith(".copc.laz"));
     hasPointcloud = hasPointcloud || RemoteFileFacade.objectExists(s3Loc + "metadata.json") || RemoteFileFacade.objectExists(s3Loc + "ept.json");
     hasPointcloud = hasPointcloud || RemoteFileFacade.objectExists(component != null ? component.getS3location(product, PointcloudService.LEGACY_POTREE_SUPPORT) : "" + "cloud.js");
@@ -518,94 +517,51 @@ public abstract class Converter<T extends UasComponentIF>
       }
     }
   }
-  
-  protected static void populate(RawSetView view, RawSet product, List<UasComponentIF> components)
+
+  protected static void populate(RawSetView view, RawSet set, List<UasComponentIF> components)
   {
-//    List<SiteItem> list = new LinkedList<SiteItem>();
-//
-//    for (UasComponentIF component : components)
-//    {
-//      list.add(Converter.toSiteItem(component, false));
-//    }
-//
-//    UasComponentIF component = components.size() > 0 ? components.get(components.size() - 1) : null;
-//
-//    final String s3Loc = component != null ? component.getS3location(product, ODMZipPostProcessor.POTREE) : "";
-//    
-//    List<DocumentIF> docs = product.getDocuments();
-//    
-//    boolean hasPointcloud = docs.stream().anyMatch(d -> d.getS3location().endsWith(".copc.laz"));
-//    hasPointcloud = hasPointcloud || RemoteFileFacade.objectExists(s3Loc + "metadata.json") || RemoteFileFacade.objectExists(s3Loc + "ept.json");
-//    hasPointcloud = hasPointcloud || RemoteFileFacade.objectExists(component != null ? component.getS3location(product, PointcloudService.LEGACY_POTREE_SUPPORT) : "" + "cloud.js");
-//    view.setHasPointcloud(hasPointcloud);
-//
-//    view.setHasAllZip(product.hasAllZip());
-//
-//    view.setComponents(list);
-//    view.setId(product.getOid());
-//    view.setName(product.getName());
-//    view.setProductName(product.getProductName() == null ? "" : product.getProductName());
-//    view.setPublished(product.isPublished());
-//    view.setLocked(product.isLocked());
-//    view.setPrimary(product.isPrimary());
-//
-//    final SessionIF session = Session.getCurrentSession();
-//
-//    if (session != null && ( session.userHasRole(RoleConstants.ADMIN) || component != null && component.getOwnerOid().equals(session.getUser().getOid()) ))
-//    {
-//      view.setRemovable(true);
-//    }
-//    else
-//    {
-//      view.setRemovable(false);
-//    }
-//
-//    List<DocumentIF> mappables = ( (Product) product ).getMappableDocuments();
-//    view.setMappables(mappables.stream().map(d -> DocumentView.fromDocument(d)).collect(Collectors.toList()));
-//
-//    if (product.getImageKey() == null || product.getImageKey().length() == 0)
-//    {
-//      product.calculateKeys(new LinkedList<UasComponentIF>(components));
-//    }
-//
-//    if (product.getImageKey() != null && product.getImageKey().length() > 0)
-//    {
-//      view.setImageKey(product.getImageKey());
-//    }
-//
-//    Optional<DocumentIF> ortho = ( (Product) product ).getMappableOrtho();
-//    if (ortho.isPresent())
-//    {
-//      view.setOrthoKey( ( (Document) ortho.get() ).getS3location());
-//    }
-//
-//    Optional<DocumentIF> dem = ( (Product) product ).getMappableDEM();
-//    if (dem.isPresent())
-//    {
-//      view.setDemKey( ( (Document) dem.get() ).getS3location());
-//    }
-//
-//    if (product.isPublished())
-//    {
-//      // "https://osmre-uas-dev-public.s3.amazonaws.com/-stac-/2c8712a5-d051-4249-a9bc-fedd3795ce74.json"
+    List<SiteItem> list = new LinkedList<SiteItem>();
+
+    for (UasComponentIF component : components)
+    {
+      list.add(Converter.toSiteItem(component, false));
+    }
+
+    UasComponentIF component = components.size() > 0 ? components.get(components.size() - 1) : null;
+
+    List<DocumentIF> docs = set.getDocuments();
+
+    view.setComponents(list);
+    view.setId(set.getOid());
+    view.setName(set.getName());
+    view.setPublished(set.isPublished());
+    view.setLocked(set.isLocked());
+
+    List<DocumentIF> mappables = set.getDocuments();
+    view.setDocuments(mappables.stream().map(d -> DocumentView.fromDocument(d)).collect(Collectors.toList()));
+
+    if (set.isPublished())
+    {
+      // "https://osmre-uas-dev-public.s3.amazonaws.com/-stac-/2c8712a5-d051-4249-a9bc-fedd3795ce74.json"
 //
 //      String bucket = "https://" + AppProperties.getPublicBucketName() + ".s3.amazonaws.com/";
 //
 //      view.setPublicStacUrl(bucket + S3RemoteFileService.STAC_BUCKET + "/" + product.getOid() + ".json");
-//      // view.setPublicTilejson(bucket + "cog/tilejson.json?path=" +
-//      // URLEncoder.encode(mappable.getS3location(),
-//      // StandardCharsets.UTF_8.name()));
-//    }
-//
-//    if (mappables.size() > 0)
-//    {
+      // view.setPublicTilejson(bucket + "cog/tilejson.json?path=" +
+      // URLEncoder.encode(mappable.getS3location(),
+      // StandardCharsets.UTF_8.name()));
+    }
+
+    if (mappables.size() > 0)
+    {
+      // TODO: Calculate the bounding box
 //      String bbox = product.getBoundingBox();
 //
 //      if (bbox != null)
 //      {
 //        view.setBoundingBox(bbox);
 //      }
-//    }
+    }
   }
 
   public static ProductDetailView toDetailView(ProductIF product, List<UasComponentIF> components, List<DocumentIF> generated, Integer pageNumber, Integer pageSize)
@@ -624,9 +580,9 @@ public abstract class Converter<T extends UasComponentIF>
     Page<JSONWrapper> page = product.getGeneratedFromDocuments(pageNumber, pageSize).map(r -> {
       return new JSONWrapper(r.toJSON());
     });
-    
+
     product.getMetadata().ifPresent(metadata -> {
-      
+
       view.setPilotName(metadata.getPocName());
 
       Sensor sensor = metadata.getSensor();

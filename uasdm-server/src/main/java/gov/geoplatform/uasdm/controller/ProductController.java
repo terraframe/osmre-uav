@@ -32,7 +32,7 @@ import gov.geoplatform.uasdm.controller.body.IdBody;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.service.request.ProductService;
 import gov.geoplatform.uasdm.view.ODMRunView;
-import gov.geoplatform.uasdm.view.ProductCriteria;
+import gov.geoplatform.uasdm.view.CollectionCriteria;
 import gov.geoplatform.uasdm.view.ProductDetailView;
 import gov.geoplatform.uasdm.view.ProductView;
 
@@ -63,7 +63,7 @@ public class ProductController extends AbstractController
   @GetMapping("/get-all")
   public ResponseEntity<String> getAll(@RequestParam(name = "criteria") String criteria)
   {
-    JSONArray response = service.getProducts(this.getSessionId(), ProductCriteria.deserialize(criteria));
+    JSONArray response = service.getProducts(this.getSessionId(), CollectionCriteria.deserialize(criteria));
 
     return ResponseEntity.ok(response.toString());
   }

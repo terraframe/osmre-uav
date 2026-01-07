@@ -64,8 +64,6 @@ import org.apache.tika.sax.BodyContentHandler;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
-import org.json.JSONObject;
-import org.json.simple.JSONArray;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -88,17 +86,14 @@ import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
-import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.index.elastic.ElasticSearchIndex;
-import gov.geoplatform.uasdm.model.ImageryComponent;
-import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.StacItem;
+import gov.geoplatform.uasdm.processing.SystemProcessExecutor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
-import gov.geoplatform.uasdm.service.IndexService;
 
 public class Sandbox
 {
@@ -119,71 +114,24 @@ public class Sandbox
   @Request
   public static void request() throws Exception
   {
-    // final MdVertexDAOIF mdCollection =
-    // MdVertexDAO.getMdVertexDAO(Collection.CLASS);
-    //
-    // StringBuilder builder = new StringBuilder();
-    // builder.append("SELECT FROM " + mdCollection.getDBClassName());
-    // builder.append(" ORDER BY name");
-    //
-    // final GraphQuery<CollectionIF> query = new
-    // GraphQuery<CollectionIF>(builder.toString());
-    //
-    // query.getResults().forEach(collection -> {
-    // collection.appLock();
-    // collection.setMetadataUploaded(false);
-    // collection.setUav(null);
-    // collection.setSensor(null);
-    // collection.apply();
-    // });
+    // HELLO
+    File file = new File("/home/jsmethie/Documents/OSMRE/data/small-fix/DJI_0583.jpeg");
+    
+    
+    SystemProcessExecutor executor = new SystemProcessExecutor();
+    executor.execute(new String[] { "exiftool", "-GPSLatitude", "-c", "%.9f", file.getAbsolutePath() });
 
-    // POST /components/_delete_by_query
-    // {"query":{"bool":{"must":[{"query_string":{"fields":["key"],"query":"abc/p1/m1/accessible_support/test.xml"}}]}}}
-    // POST /components/_delete_by_query
-    // {"query":{"bool":{"must":[{"query_string":{"fields":["key"],"query":"abc/p1/m1/accessible_support/test.xml"}}]}}}
+    String output = executor.getStdOut();
 
-    // IndexService.deleteDocuments("siteId",
-    // "aa4e3701-57d3-42b2-9728-2934989ee957");
-    //
+    if (output.contains("GPS") && output.contains(":"))
+    {
+      String[] tokens = output.split(":");
 
-    // JSONObject condition = new JSONObject();
-    // condition.put("field", "faaNumber");
-    // condition.put("value", "rgb");
-    //
-    // JSONArray must = new JSONArray();
-    // must.add(condition);
-    //
-    // JSONObject criteria = new JSONObject();
-    // criteria.put("must", must);
-
-//    JSONObject criteria = new JSONObject("{\"should\":[{\"field\":\"bounds\",\"id\":\"4642708e-ea82-4591-8a11-ff7039925118\",\"label\":\"Bounds\",\"value\":{\"_sw\":{\"lng\":-127.25881772939388,\"lat\":20.357148832341863},\"_ne\":{\"lng\":-64.67488227060727,\"lat\":52.711281241966475}}}],\"must\":[{\"field\":\"site\",\"id\":\"51956c50-c514-4694-97dd-e5723dbbb344\",\"label\":\"Site\",\"value\":\"abc\"}]}\n");
-//
-//    Page<StacItem> items = IndexService.getItems(criteria, 30, 1);
-//
-//    System.out.println(items.toJSON().toString());
-//
-//    // testElasticSearch();
-//
-//    IndexService.shutdown();
-    
-    
-    String statement = "SELECT FROM " + MdGraphClassDAO.getMdGraphClassDAO(ODMRun.CLASS).getDBClassName();
-    statement += " WHERE saved = :saved";
-    
-    GraphQuery<ODMRun> query = new GraphQuery<ODMRun>(statement);
-    query.setParameter("saved", true);
-    
-    List<ODMRun> results = query.getResults();
-    
-    System.out.println("Results size: " + results.size());
-    
-    for(ODMRun run : results) {
-      UasComponent component = run.getComponent();
+      String token = tokens[1];
       
-      int items = RemoteFileFacade.getItemCount(component.getS3location() + ImageryComponent.ORTHO + "/" + run.getOid());
-      
-      System.out.println("Items for version " + component.getS3location() + " - " + run.getOid() + ": " + items);      
+      System.out.println(token);
     }
+
   }
 //
   public static void testTika() throws Exception

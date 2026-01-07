@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = -229712764)
+@com.runwaysdk.business.ClassSignature(hash = 715219393)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -30,6 +15,8 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
   public final static java.lang.String EXCLUDE = "exclude";
   public final static java.lang.String FILESIZE = "fileSize";
   public final static java.lang.String LASTMODIFIED = "lastModified";
+  public final static java.lang.String LATITUDE = "latitude";
+  public final static java.lang.String LONGITUDE = "longitude";
   public final static java.lang.String NAME = "name";
   public final static java.lang.String OID = "oid";
   public final static java.lang.String ORTHOCORRECTIONMODEL = "orthoCorrectionModel";
@@ -39,7 +26,7 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
   public final static java.lang.String SEQ = "seq";
   public final static java.lang.String TOOL = "tool";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = -229712764;
+  private static final long serialVersionUID = 715219393;
   
   public DocumentBase()
   {
@@ -108,6 +95,38 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
   public void setLastModified(java.util.Date value)
   {
     this.setValue(LASTMODIFIED, value);
+  }
+  
+  public Double getLatitude()
+  {
+    return (Double) this.getObjectValue(LATITUDE);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeDoubleDAOIF getLatitudeMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Document.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeDoubleDAOIF)mdClassIF.definesAttribute(LATITUDE);
+  }
+  
+  public void setLatitude(Double value)
+  {
+    this.setValue(LATITUDE, value);
+  }
+  
+  public Double getLongitude()
+  {
+    return (Double) this.getObjectValue(LONGITUDE);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeDoubleDAOIF getLongitudeMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Document.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeDoubleDAOIF)mdClassIF.definesAttribute(LONGITUDE);
+  }
+  
+  public void setLongitude(Double value)
+  {
+    this.setValue(LONGITUDE, value);
   }
   
   public String getName()
@@ -316,6 +335,22 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
   public java.util.List<gov.geoplatform.uasdm.graph.Product> getProductHasDocumentParentProducts()
   {
     return super.getParents("gov.geoplatform.uasdm.graph.ProductHasDocument", gov.geoplatform.uasdm.graph.Product.class);
+  }
+  
+  public com.runwaysdk.business.graph.EdgeObject addRawSettHasDocumentParent(gov.geoplatform.uasdm.graph.RawSet rawSet)
+  {
+    return super.addParent(rawSet, "gov.geoplatform.uasdm.graph.RawSettHasDocument");
+  }
+  
+  public void removeRawSettHasDocumentParent(gov.geoplatform.uasdm.graph.RawSet rawSet)
+  {
+    super.removeParent(rawSet, "gov.geoplatform.uasdm.graph.RawSettHasDocument");
+  }
+  
+  @SuppressWarnings("unchecked")
+  public java.util.List<gov.geoplatform.uasdm.graph.RawSet> getRawSettHasDocumentParentRawSets()
+  {
+    return super.getParents("gov.geoplatform.uasdm.graph.RawSettHasDocument", gov.geoplatform.uasdm.graph.RawSet.class);
   }
   
   public static Document get(String oid)

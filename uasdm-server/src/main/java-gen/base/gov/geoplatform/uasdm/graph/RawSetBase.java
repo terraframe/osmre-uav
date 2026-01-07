@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = 1225701284)
+@com.runwaysdk.business.ClassSignature(hash = -714689047)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -11,6 +11,7 @@ package gov.geoplatform.uasdm.graph;
 public abstract class RawSetBase extends com.runwaysdk.business.graph.VertexObject
 {
   public final static String CLASS = "gov.geoplatform.uasdm.graph.RawSet";
+  public final static java.lang.String BOUNDINGBOX = "boundingBox";
   public final static java.lang.String LASTUPDATEDATE = "lastUpdateDate";
   public final static java.lang.String LOCKED = "locked";
   public final static java.lang.String LOCKEDBY = "lockedBy";
@@ -19,11 +20,27 @@ public abstract class RawSetBase extends com.runwaysdk.business.graph.VertexObje
   public final static java.lang.String PUBLISHED = "published";
   public final static java.lang.String SEQ = "seq";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 1225701284;
+  private static final long serialVersionUID = -714689047;
   
   public RawSetBase()
   {
     super();
+  }
+  
+  public String getBoundingBox()
+  {
+    return (String) this.getObjectValue(BOUNDINGBOX);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getBoundingBoxMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.RawSet.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(BOUNDINGBOX);
+  }
+  
+  public void setBoundingBox(String value)
+  {
+    this.setValue(BOUNDINGBOX, value);
   }
   
   public java.util.Date getLastUpdateDate()

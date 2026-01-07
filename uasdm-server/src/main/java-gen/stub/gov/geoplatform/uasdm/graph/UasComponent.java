@@ -76,6 +76,7 @@ import gov.geoplatform.uasdm.command.IndexUpdateDocumentCommand;
 import gov.geoplatform.uasdm.command.ReIndexStacItemCommand;
 import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
 import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.ComponentRawSet;
 import gov.geoplatform.uasdm.model.ComponentWithAttributes;
 import gov.geoplatform.uasdm.model.CompositeDeleteException;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -93,6 +94,7 @@ import gov.geoplatform.uasdm.view.AdminCondition;
 import gov.geoplatform.uasdm.view.Artifact;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
+import gov.geoplatform.uasdm.view.CreateRawSetView;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import net.geoprism.GeoprismUser;
@@ -1246,10 +1248,91 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
-  public RawSet createRawSetIfNotExist(String setName)
+  public RawSet createRawSetIfNotExist(CreateRawSetView view)
   {
-    return RawSet.createIfNotExist(this, setName);
+    return RawSet.createIfNotExist(this, view);
   }
+  
+  
+  @Override
+  public List<ComponentRawSet> getDerivedRawSets(String sortField, String sortOrder)
+  {
+    sortField = sortField != null ? sortField : "name";
+    sortOrder = sortOrder != null ? sortOrder : "DESC";
+
+    HashMap<String, Object> parameters = new HashMap<String, Object>();
+    parameters.put("rid", this.getRID());
+
+    // String expand = "unionall(*, " + String.join(", ",
+    // this.buildProductExpandClause()) + ")";
+
+    List<String> descends = new ArrayList<String>();
+    List<String> clause = this.buildProductExpandClause();
+    for (int i = 0; i < clause.size(); ++i)
+    {
+      List<String> d2 = new ArrayList<String>();
+      for (int j = 0; j < clause.size() - i; ++j)
+      {
+        d2.add(clause.get(j));
+      }
+      descends.add(String.join(".", d2));
+    }
+    String expand = "unionall(*, " + String.join(",", descends) + ")";
+
+    final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_RAW_SET);
+
+    boolean hasMetadataSort = ( sortField.equals("sensor") || sortField.equals("serialNumber") || sortField.equals("faaNumber") );
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("TRAVERSE OUT('" + mdEdge.getDBClassName() + "') FROM (");
+
+    if (hasMetadataSort)
+    {
+      String sortAttribute = "sensor.name";
+
+      if (sortField.equals("serialNumber"))
+      {
+        sortAttribute = "uav.serialNumber";
+      }
+      else if (sortField.equals("faaNumber"))
+      {
+        sortAttribute = "uav.faaNumber";
+      }
+
+      statement.append("  SELECT @rid FROM (\n");
+      statement.append("    SELECT @rid, first(out('collection_has_metadata'))." + sortAttribute + " AS sortBy FROM (\n");
+    }
+
+    statement.append("  SELECT FROM (");
+    statement.append("    SELECT EXPAND(" + expand + ")");
+    statement.append("    FROM :rid ");
+    statement.append("  )");
+
+    // Add the access criteria
+    addAccessFilter(parameters, statement);
+
+    if (sortField.equals("name"))
+    {
+      statement.append("  ORDER BY name " + sortOrder);
+    }
+    else if (sortField.equals("collectionDate"))
+    {
+      statement.append("  ORDER BY collectionDate " + sortOrder);
+    }
+    else if (hasMetadataSort)
+    {
+      statement.append(")\n");
+      statement.append("  ORDER BY sortBy " + sortOrder);
+      statement.append(")\n");
+    }
+
+    statement.append(")");
+
+    final GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(statement.toString(), parameters);
+
+    return ComponentRawSet.process(query.getResults());
+  }
+
   
   public static <T extends UasComponent> Optional<T> getWithAccessControl(String oid)
   {

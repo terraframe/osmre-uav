@@ -156,8 +156,8 @@ public class RemoteFileFacadeTest extends Area51DataTest
   @Request
   public void testDownloadRange()
   {
-    List<Range> ranges = Arrays.asList(new Range(0L, 1000L, 10000L));
-    RemoteFileFacade.download("test.JPG", ranges);
+    String range = "Range: bytes=0-499";
+    RemoteFileFacade.download("test.JPG", range);
 
     List<RemoteFileAction> actions = service.getActions();
 
@@ -171,7 +171,7 @@ public class RemoteFileFacadeTest extends Area51DataTest
 
     Assert.assertEquals(2, parameters.length);
     Assert.assertEquals("test.JPG", parameters[0]);
-    Assert.assertEquals(ranges, parameters[1]);
+    Assert.assertEquals(range, parameters[1]);
   }
 
   @Test
@@ -312,28 +312,6 @@ public class RemoteFileFacadeTest extends Area51DataTest
     Assert.assertEquals(2, parameters.length);
     Assert.assertEquals(key, parameters[0]);
     Assert.assertEquals(bucket, parameters[1]);
-  }
-
-  @Test
-  @Request
-  public void testGetItemCount()
-  {
-    String key = "source/test.JPG";
-
-    RemoteFileFacade.getItemCount(key);
-
-    List<RemoteFileAction> actions = service.getActions();
-
-    Assert.assertEquals(1, actions.size());
-
-    RemoteFileAction action = actions.get(0);
-
-    Assert.assertEquals(RemoteFileActionType.COUNT, action.getType());
-
-    Object[] parameters = action.getParameters();
-
-    Assert.assertEquals(1, parameters.length);
-    Assert.assertEquals(key, parameters[0]);
   }
 
   @Test

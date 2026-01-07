@@ -25,6 +25,7 @@ import gov.geoplatform.uasdm.bus.AllPrivilegeType;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
 import gov.geoplatform.uasdm.graph.RawSet;
 import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
+import gov.geoplatform.uasdm.view.CreateRawSetView;
 
 public interface CollectionIF extends UasComponentIF
 {
@@ -112,6 +113,6 @@ public interface CollectionIF extends UasComponentIF
 
   public Optional<CollectionMetadata> getMetadata();
 
-  public RawSet createRawSetIfNotExist(String setName);
+  public RawSet createRawSetIfNotExist(CreateRawSetView view);
 
 }

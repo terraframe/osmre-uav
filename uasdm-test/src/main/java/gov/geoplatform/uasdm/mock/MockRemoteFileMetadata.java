@@ -15,7 +15,7 @@
  */
 package gov.geoplatform.uasdm.mock;
 
-import java.util.Date;
+import java.time.Instant;
 
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 
@@ -41,9 +41,9 @@ public class MockRemoteFileMetadata implements RemoteFileMetadata
   }
 
   @Override
-  public Long[] getContentRange()
+  public String getContentRange()
   {
-    return new Long[] { 0L };
+    return "Range: bytes=0-499";
   }
 
   @Override
@@ -59,7 +59,7 @@ public class MockRemoteFileMetadata implements RemoteFileMetadata
   }
 
   @Override
-  public Date getLastModified()
+  public Instant getLastModified()
   {
     return null;
   }

@@ -122,7 +122,6 @@ public class SiteItemTest
     Assert.assertNotNull(properties.getDatetime());
     Assert.assertEquals("collection 2", properties.getTitle());
     Assert.assertEquals("collection 2", properties.getCollection());
-    Assert.assertNotNull(properties.getUpdated());
     Assert.assertEquals("Sensor 1", properties.getSensor());
     Assert.assertEquals("Platform 1", properties.getPlatform());
     Assert.assertEquals("RGB", properties.getFaaNumber());

@@ -88,7 +88,7 @@ import gov.geoplatform.uasdm.service.IndexService;
 import gov.geoplatform.uasdm.service.business.IDMHierarchyTypeSnapshotBusinessService;
 import gov.geoplatform.uasdm.service.request.IDMLabeledPropertyGraphSynchronizationService;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
-import gov.geoplatform.uasdm.view.ProductCriteria;
+import gov.geoplatform.uasdm.view.CollectionCriteria;
 import gov.geoplatform.uasdm.view.SiteObject;
 import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
@@ -1134,7 +1134,7 @@ public class Product extends ProductBase implements ProductIF
    * in('user_has_access')[user = 'a2c721a5-a547-4627-bf3a-8f5ae000052a'].size()
    * > 0 ) ORDER BY name ASC)
    */
-  public static List<ComponentProductDTO> getProducts(ProductCriteria criteria)
+  public static List<ComponentProductDTO> getProducts(CollectionCriteria criteria)
   {
     LabeledPropertyGraphTypeVersionBusinessServiceIF service = ApplicationContextHolder.getBean(LabeledPropertyGraphTypeVersionBusinessServiceIF.class);
     IDMHierarchyTypeSnapshotBusinessService hService = ApplicationContextHolder.getBean(IDMHierarchyTypeSnapshotBusinessService.class);

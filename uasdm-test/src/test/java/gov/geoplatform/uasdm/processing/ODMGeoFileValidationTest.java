@@ -41,9 +41,9 @@ public class ODMGeoFileValidationTest
   {
     ODMProcessingPayload payload = new ODMProcessingPayload(new ArchiveFileResource(new FileResource(new CloseableFile(""))));
     
-    payload.addImage("DSC00001.jpg");
-    payload.addImage("DSC00002.jpg");
-    payload.addImage("DSC00003.jpg");
+    payload.addImage("DSC00001.jpg", 0L);
+    payload.addImage("DSC00002.jpg", 0L);
+    payload.addImage("DSC00003.jpg", 0L);
     
     payload.setGeoLocationFile("EPSG:4326\nDSC00001.jpg    -092.5672988  47.6537057    0589.32\nDSC00002.jpg   -092.5672988  47.6537057    0589.32\nDSC00003.jpg   -092.5672988  47.6537057    0589.32");
     validateThrowErrors(payload);
@@ -54,9 +54,9 @@ public class ODMGeoFileValidationTest
   {
     ODMProcessingPayload payload = new ODMProcessingPayload(new ArchiveFileResource(new FileResource(new CloseableFile(""))));
     
-    payload.addImage("DSC00001.jpg");
-    payload.addImage("DSC00002.jpg");
-    payload.addImage("DSC00003.jpg");
+    payload.addImage("DSC00001.jpg", 0L);
+    payload.addImage("DSC00002.jpg", 0L);
+    payload.addImage("DSC00003.jpg", 0L);
     
     payload.setGeoLocationFile("EPSG:4326\nDSC00001.jpg	-092.5672988   47.6537057	0589.32\nDSC00002.jpg   -092.5672988  47.6537057	0589.32\nDSC00003.jpg   -092.5672988  47.6537057	0589.32");
     validateThrowErrors(payload);
@@ -67,9 +67,9 @@ public class ODMGeoFileValidationTest
   {
     ODMProcessingPayload payload = new ODMProcessingPayload(new ArchiveFileResource(new FileResource(new CloseableFile(""))));
     
-    payload.addImage("DSC00001.jpg");
-    payload.addImage("DSC00002.jpg");
-    payload.addImage("DSC00003.jpg");
+    payload.addImage("DSC00001.jpg", 0L);
+    payload.addImage("DSC00002.jpg", 0L);
+    payload.addImage("DSC00003.jpg", 0L);
     
     payload.setGeoLocationFile("DSC00001.jpg    -092.5672988   47.6537057   0589.32\\nDSC00002.jpg   -092.5672988  47.6537057    0589.32\\nDSC00003.jpg   -092.5672988   47.6537057   0589.32");
     validateThrowErrors(payload);
@@ -80,9 +80,9 @@ public class ODMGeoFileValidationTest
   {
     ODMProcessingPayload payload = new ODMProcessingPayload(new ArchiveFileResource(new FileResource(new CloseableFile(""))));
     
-    payload.addImage("DSC00001.JPG");
-    payload.addImage("DSC00002.JPG");
-    payload.addImage("DSC00003.JPG");
+    payload.addImage("DSC00001.JPG", 0L);
+    payload.addImage("DSC00002.JPG", 0L);
+    payload.addImage("DSC00003.JPG", 0L);
     
     payload.setGeoLocationFile("EPSG:4326\nDSC00001.jpg -092.5672988 47.6537057 0589.32\nDSC00002.jpg -092.5672988 47.6537057 0589.32\nDSC00003.jpg -092.5672988 47.6537057 0589.32");
     validateThrowErrors(payload);
@@ -108,9 +108,9 @@ public class ODMGeoFileValidationTest
   {
     ODMProcessingPayload payload = new ODMProcessingPayload(new ArchiveFileResource(new FileResource(new CloseableFile(""))));
     
-    payload.addImage("DSC00001.jpg");
-    payload.addImage("DSC00002.jpg");
-    payload.addImage("DSC00003.jpg");
+    payload.addImage("DSC00001.jpg", 0L);
+    payload.addImage("DSC00002.jpg", 0L);
+    payload.addImage("DSC00003.jpg", 0L);
     
     payload.setGeoLocationFile("EPSG:4326\nDSC00001.jpg -092.5672988 47.6537057 0589.32\nDSC00002.jpg 47.6537057 -092.5672988 0589.32\nDSC00003.jpg 47.6537057 -092.5672988 0589.32");
     validateThrowErrors(payload);
@@ -121,9 +121,9 @@ public class ODMGeoFileValidationTest
   {
     ODMProcessingPayload payload = new ODMProcessingPayload(new ArchiveFileResource(new FileResource(new CloseableFile(""))));
     
-    payload.addImage("DSC00001.jpg");
-    payload.addImage("DSC00002.jpg");
-    payload.addImage("DSC00003.jpg");
+    payload.addImage("DSC00001.jpg", 0L);
+    payload.addImage("DSC00002.jpg", 0L);
+    payload.addImage("DSC00003.jpg", 0L);
     
     payload.setGeoLocationFile("EPSG:4326\nDSC00001.jpg -0192.5672988 47.6537057 0589.32\nDSC00002.jpg -092.5672988 47.6537057 0589.32\nDSC00003.jpg -092.567298847.6537057  0589.32");
     validateThrowErrors(payload);

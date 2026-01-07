@@ -1,13 +1,21 @@
 package gov.geoplatform.uasdm.graph;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 
 import com.runwaysdk.business.graph.GraphQuery;
+import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
@@ -17,15 +25,26 @@ import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.session.Session;
 import com.runwaysdk.session.SessionIF;
+import com.runwaysdk.system.metadata.MdEdge;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.bus.InvalidUasComponentNameException;
+import gov.geoplatform.uasdm.model.ComponentRawSet;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
+import gov.geoplatform.uasdm.processing.SystemProcessExecutor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
+import gov.geoplatform.uasdm.remote.RemoteFileObject;
+import gov.geoplatform.uasdm.service.business.IDMHierarchyTypeSnapshotBusinessService;
+import gov.geoplatform.uasdm.view.CollectionCriteria;
+import gov.geoplatform.uasdm.view.CreateRawSetView;
+import net.geoprism.graph.HierarchyTypeSnapshot;
+import net.geoprism.graph.LabeledPropertyGraphSynchronization;
+import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
+import net.geoprism.registry.service.business.LabeledPropertyGraphTypeVersionBusinessServiceIF;
+import net.geoprism.spring.core.ApplicationContextHolder;
 
 public class RawSet extends RawSetBase
 {
@@ -58,7 +77,7 @@ public class RawSet extends RawSetBase
   {
     return this.getChildren(EdgeType.RAW_SET_HAS_DOCUMENT, DocumentIF.class);
   }
-  
+
   @Transaction
   public void apply(UasComponentIF component)
   {
@@ -81,7 +100,6 @@ public class RawSet extends RawSetBase
       this.addParent((UasComponent) component, EdgeType.COMPONENT_HAS_RAW_SET).apply();
     }
   }
-
 
   @Transaction
   public void toggleLock()
@@ -187,13 +205,60 @@ public class RawSet extends RawSetBase
    * @param productName
    * @return
    */
-  public static RawSet createIfNotExist(UasComponentIF uasComponent, String setName)
+  public static RawSet createIfNotExist(UasComponentIF uasComponent, CreateRawSetView view)
   {
-    RawSet set = find(uasComponent, setName).orElseGet(() -> {
+    // Get the documents
+    List<Document> documents = view.getFiles().stream().map(id -> Document.get(id)).collect(Collectors.toList());
+
+    // Ensure that each document has coordinates
+    documents.stream() //
+        .filter(document -> document.getLongitude() == null && document.getLatitude() == null) //
+        .forEach(document -> {
+          // GPS Longitude : 111.124293944 W
+          try (RemoteFileObject remoteFile = uasComponent.download(document.getKey()))
+          {
+
+            File tempFile = File.createTempFile(remoteFile.getName(), remoteFile.getNameExtension());
+
+            try
+            {
+              try (InputStream istream = remoteFile.getObjectContent())
+              {
+                FileUtils.copyToFile(istream, tempFile);
+
+                SystemProcessExecutor executor = new SystemProcessExecutor();
+                executor.execute(new String[] { "exiftool", "-GPSLongitude", tempFile.getAbsolutePath() });
+
+                String output = executor.getStdOut();
+
+                if (output.contains("GPS") && output.contains(":"))
+                {
+                  String[] tokens = output.split(":");
+
+                  String token = tokens[1];
+                  
+                  System.out.println(token);
+                }
+              }
+            }
+            finally
+            {
+              FileUtils.deleteQuietly(tempFile);
+            }
+          }
+          catch (IOException e)
+          {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+
+        });
+
+    RawSet set = find(uasComponent, view.getName()).orElseGet(() -> {
       RawSet newInstance = new RawSet();
-      newInstance.setName(setName);
-      newInstance.setPublished(false);      
-      
+      newInstance.setName(view.getName());
+      newInstance.setPublished(false);
+
       return newInstance;
     });
 
@@ -216,6 +281,137 @@ public class RawSet extends RawSetBase
     query.setParameter("name", name);
 
     return Optional.ofNullable(query.getSingleResult());
+  }
+
+  public static List<ComponentRawSet> getAll(CollectionCriteria criteria)
+  {
+    LabeledPropertyGraphTypeVersionBusinessServiceIF service = ApplicationContextHolder.getBean(LabeledPropertyGraphTypeVersionBusinessServiceIF.class);
+    IDMHierarchyTypeSnapshotBusinessService hService = ApplicationContextHolder.getBean(IDMHierarchyTypeSnapshotBusinessService.class);
+
+    LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(criteria.getHierarchy());
+    LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
+    HierarchyTypeSnapshot hierarchyType = hService.get(version).get(0);
+
+    SynchronizationEdge synchronizationEdge = SynchronizationEdge.get(version);
+    MdEdge siteEdge = synchronizationEdge.getGraphEdge();
+
+    VertexObject object = service.getObject(version, criteria.getUid());
+
+    String sortField = criteria.getSortField();
+    String sortOrder = criteria.getSortOrder();
+
+    HashMap<String, Object> parameters = new HashMap<String, Object>();
+    parameters.put("rid", object.getRID());
+
+    criteria.getConditions().forEach(condition -> {
+      parameters.put(condition.getField(), condition.getValue());
+    });
+
+    final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_RAW_SET);
+
+    boolean hasMetadataSort = ( sortField.equals("sensor") || sortField.equals("serialNumber") || sortField.equals("faaNumber") );
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("TRAVERSE OUT('" + mdEdge.getDBClassName() + "') FROM (");
+
+    if (hasMetadataSort)
+    {
+      String sortAttribute = "sensor.name";
+
+      if (sortField.equals("serialNumber"))
+      {
+        sortAttribute = "uav.serialNumber";
+      }
+      else if (sortField.equals("faaNumber"))
+      {
+        sortAttribute = "uav.faaNumber";
+      }
+
+      statement.append("  SELECT @rid FROM (\n");
+      statement.append("    SELECT @rid, first(out('collection_has_metadata'))." + sortAttribute + " AS sortBy FROM (\n");
+    }
+    else
+    {
+      statement.append("  SELECT FROM (\n");
+    }
+
+    // statement.append(" SELECT EXPAND(OUT('site_has_project')");
+    //
+    // criteria.getConditions().stream().filter(condition ->
+    // condition.isProject()).forEach(condition -> {
+    // statement.append("[" + condition.getSQL() + " = :" + condition.getField()
+    // + "]");
+    // });
+    //
+    // statement.append(".OUT('project_has_mission0').OUT('mission_has_collection0'))
+    // FROM (\n");
+
+    statement.append("TRAVERSE OUT ('mission_has_collection0') FROM ( TRAVERSE OUT ('project_has_mission0') FROM ( TRAVERSE OUT('site_has_project') FROM (");
+
+    statement.append("      SELECT FROM (\n");
+    statement.append("        TRAVERSE OUT('" + hierarchyType.getGraphMdEdge().getDbClassName() + "', '" + siteEdge.getDbClassName() + "') FROM :rid");
+    statement.append("      ) WHERE @class = 'site0' \n");
+
+    criteria.getConditions().stream().filter(condition -> condition.isSite()).forEach(condition -> {
+      statement.append("      AND " + condition.getSQL() + " = :" + condition.getField() + " \n");
+    });
+
+    statement.append("    )\n");
+    statement.append("  )))\n");
+
+    // Add the filter for permissions
+    MdVertexDAOIF mdClass = MdVertexDAO.getMdVertexDAO(UasComponent.CLASS);
+    MdEdgeDAOIF accessEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.USER_HAS_ACCESS);
+
+    MdAttributeDAOIF privateAttribute = mdClass.definesAttribute(UasComponent.ISPRIVATE);
+    MdAttributeDAOIF ownerAttribute = mdClass.definesAttribute(UasComponent.OWNER);
+
+    SessionIF session = Session.getCurrentSession();
+
+    statement.append(" WHERE (" + privateAttribute.getColumnName() + " = :isPrivate \n");
+    statement.append("   OR " + privateAttribute.getColumnName() + " IS NULL \n");
+
+    if (session != null)
+    {
+      statement.append("   OR " + ownerAttribute.getColumnName() + " = :owner \n");
+      statement.append("   OR in('" + accessEdge.getDBClassName() + "')[user = :owner].size() > 0 \n");
+    }
+    statement.append(" ) \n");
+
+    parameters.put("isPrivate", false);
+
+    if (session != null)
+    {
+      parameters.put("owner", session.getUser().getOid());
+    }
+
+    criteria.getConditions().stream().filter(condition -> condition.isCollection()).forEach(condition -> {
+      statement.append(" AND " + condition.getSQL() + " = :" + condition.getField() + " \n");
+    });
+
+    if (sortField.equals("name"))
+    {
+      statement.append("  ORDER BY name " + sortOrder);
+    }
+    else if (sortField.equals("collectionDate"))
+    {
+      statement.append("  ORDER BY collectionDate " + sortOrder);
+    }
+    else if (hasMetadataSort)
+    {
+      statement.append(")\n");
+      statement.append("  ORDER BY sortBy " + sortOrder);
+    }
+    statement.append(")\n");
+
+    // if (sortField.equals(Product.LASTUPDATEDATE))
+    // {
+    // statement.append(" ORDER BY " + sortField + " " + sortOrder);
+    // }
+
+    final GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(statement.toString(), parameters);
+
+    return ComponentRawSet.process(query.getResults());
   }
 
 }

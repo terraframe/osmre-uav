@@ -18,7 +18,7 @@ package gov.geoplatform.uasdm.mock;
 import java.util.UUID;
 
 import gov.geoplatform.uasdm.odm.NewResponse;
-import gov.geoplatform.uasdm.odm.Response;
+import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
 
 public class MockNewResponse extends MockODMResponse implements NewResponse
 {
@@ -33,5 +33,11 @@ public class MockNewResponse extends MockODMResponse implements NewResponse
   public String getUUID()
   {
     return this.uuid;
+  }
+  
+  @Override
+  public ODMProcessingPayload getPayload()
+  {
+    return null;
   }
 }

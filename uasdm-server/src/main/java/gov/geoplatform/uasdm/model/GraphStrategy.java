@@ -31,7 +31,7 @@ import gov.geoplatform.uasdm.graph.RawSet;
 import gov.geoplatform.uasdm.graph.Site;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
-import gov.geoplatform.uasdm.view.ProductCriteria;
+import gov.geoplatform.uasdm.view.CollectionCriteria;
 
 public class GraphStrategy implements ComponentStrategy
 {
@@ -92,7 +92,7 @@ public class GraphStrategy implements ComponentStrategy
   }
 
   @Override
-  public List<ComponentProductDTO> getProducts(ProductCriteria criteria)
+  public List<ComponentProductDTO> getProducts(CollectionCriteria criteria)
   {
     return Product.getProducts(criteria);
   }
@@ -142,5 +142,11 @@ public class GraphStrategy implements ComponentStrategy
   public RawSet getRawSet(String oid)
   {
     return RawSet.get(oid);
+  }
+
+  @Override
+  public List<ComponentRawSet> getRawSets(CollectionCriteria criteria)
+  {
+    return RawSet.getAll(criteria);
   }
 }
