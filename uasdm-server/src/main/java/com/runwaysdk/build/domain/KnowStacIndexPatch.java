@@ -69,7 +69,7 @@ public class KnowStacIndexPatch implements Runnable
       try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext())
       {
         // Mock bean
-        context.registerBean("tusFileUploadService", TusFileUploadService.class);
+        context.registerBean(TusFileUploadService.class, () -> new TusFileUploadService());
         context.scan("net.geoprism.spring", "gov.geoplatform.uasdm.service", "net.geoprism.registry.service.request", "net.geoprism.registry.service.business", "net.geoprism.registry.service.permission", "gov.geoplatform.uasdm.service.business");
         context.refresh();
 
