@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import com.runwaysdk.business.graph.GraphQuery;
@@ -16,6 +17,7 @@ import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import gov.geoplatform.uasdm.service.IndexService;
 import gov.geoplatform.uasdm.service.business.KnowStacBusinessService;
+import me.desair.tus.server.TusFileUploadService;
 
 public class KnowStacIndexPatch implements Runnable
 {
@@ -64,8 +66,13 @@ public class KnowStacIndexPatch implements Runnable
   {
     try
     {
-      try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext("net.geoprism.spring", "net.geoprism.registry.service.request", "gov.geoplatform.uasdm.service.request", "net.geoprism.registry.service.business", "net.geoprism.registry.service.permission", "gov.geoplatform.uasdm.service.business"))
+      try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext())
       {
+        // Mock bean
+        context.registerBean("tusFileUploadService", TusFileUploadService.class);
+        context.scan("net.geoprism.spring", "gov.geoplatform.uasdm.service", "net.geoprism.registry.service.request", "net.geoprism.registry.service.business", "net.geoprism.registry.service.permission", "gov.geoplatform.uasdm.service.business");
+        context.refresh();
+
         ConfigurableListableBeanFactory factory = context.getBeanFactory();
         KnowStacIndexPatch obj = (KnowStacIndexPatch) factory.initializeBean(new KnowStacIndexPatch(context.getBean(KnowStacBusinessService.class)), "knowStacIndexPatch");
         obj.run();
