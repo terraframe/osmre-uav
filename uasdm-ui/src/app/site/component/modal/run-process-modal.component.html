@@ -6,12 +6,12 @@
 
 
 <ng-template #odmConfig>
-	<div *ngIf="(config.processOrtho || config.processDem) && !isVideo()" class="form-group">
+	<div *ngIf="(config.processOrtho || config.processDem) && !isVideo(true)" class="form-group">
 		<boolean-field [(value)]="config.includeGeoLocationFile"
 			label="Use geo location file when processing (if uploaded)"></boolean-field>
 	</div>
 
-	<div class="form-group" *ngIf="config.processOrtho && config.includeGeoLocationFile && !isVideo()">
+	<div class="form-group" *ngIf="config.processOrtho && config.includeGeoLocationFile && !isVideo(true)">
 		<label for="geoLocationFormat">Geo location file format</label>
 		<select [(ngModel)]="config.geoLocationFormat" name="geoLocationFormat" class="form-control">
 			<option value="RX1R2">RX1R2</option>
@@ -19,7 +19,7 @@
 		</select>
 	</div>
 
-	<div class="form-group" *ngIf="config.processOrtho && config.includeGeoLocationFile && !isVideo()">
+	<div class="form-group" *ngIf="config.processOrtho && config.includeGeoLocationFile && !isVideo(true)">
 		<label for="geoLocationFileName">Geo location file name</label>
 		<input [(ngModel)]="config.geoLocationFileName" name="geoLocationFileName" type="input" class="form-control"
 			placeholder="File name..." />
@@ -44,12 +44,12 @@
 		</pre>
 	</div>
 
-	<div *ngIf="(config.processOrtho || config.processDem) && !isVideo()" class="form-group">
+	<div *ngIf="(config.processOrtho || config.processDem) && !isVideo(true)" class="form-group">
 		<boolean-field [(value)]="config.includeGroundControlPointFile"
 			label="Use ground control point file when processing (if uploaded)"></boolean-field>
 	</div>
 
-	<div class="form-group" *ngIf="config.processOrtho && config.includeGroundControlPointFile && !isVideo()">
+	<div class="form-group" *ngIf="config.processOrtho && config.includeGroundControlPointFile && !isVideo(true)">
 		<label for="groundControlPointFileName">Ground control point file name</label>
 		<input [(ngModel)]="config.groundControlPointFileName" name="groundControlPointFileName" type="input"
 			class="form-control" placeholder="File name..." />
@@ -138,13 +138,13 @@
 				</select>
 			</div>
 
-			<div *ngIf="isVideo() && config.processOrtho" class="form-group">
+			<div *ngIf="isVideo(false) && config.processOrtho" class="form-group">
 				<label for="videoResolution" title="Maximum output resolution of extracted video frames in pixels">Video Resolution</label>
 				<input [(ngModel)]="config.videoResolution" (change)="configChange()" name="`" type="number" class="form-control"
 					placeholder="4000" step="1" min="0" />
 			</div>
 
-			<div *ngIf="isVideo() && config.processOrtho" class="form-group">
+			<div *ngIf="isVideo(false) && config.processOrtho" class="form-group">
 				<label for="videoLimit" title="Maximum number of frames to extract from video files for processing. Set to 0 for no limit">Video Limit</label>
 				<input [(ngModel)]="config.videoLimit" (change)="configChange()" name="`" type="number" class="form-control"
 					placeholder="500" step="1" min="0" />
