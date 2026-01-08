@@ -110,8 +110,11 @@ export class RunProcessModalComponent implements OnInit, OnDestroy {
         this.bsModalRef.hide();
     }
 
-    isVideo(): boolean {
-        return !(this.entity && this.entity.format) || this.entity.format.toLowerCase().includes('video_');
+    isVideo(strict: boolean = false): boolean {
+        if (strict)
+            return this.entity.format.toLowerCase().includes('video_');
+        else
+            return !(this.entity && this.entity.format) || this.entity.format.toLowerCase().includes('video_');
     }
 
     isRadiometric(): boolean {

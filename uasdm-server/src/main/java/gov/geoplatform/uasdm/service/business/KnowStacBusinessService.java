@@ -41,7 +41,7 @@ public class KnowStacBusinessService
     {
       String message = resp.getError();
 
-      GenericException ex = new GenericException();
+      GenericException ex = new GenericException(message);
       ex.setUserMessage(message);
       throw ex;
     }

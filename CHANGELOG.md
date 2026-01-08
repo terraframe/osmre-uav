@@ -7,7 +7,6 @@
 ### Features
 
  - ability to process single file archives on product uploads   ([7d178](https://github.com/terraframe/osmre-uav/commit/7d1780a93eabae06a1e82464a7436e21fb016cb2))
- - **processing** estimate processing runtime   ([26129](https://github.com/terraframe/osmre-uav/commit/2612908a9cd68953f5273fc60c311a09e3c52fb7))
  - **help** new help section for viewing documentation and submitting tickets  ([1a053](https://github.com/terraframe/osmre-uav/commit/1a053056d89ae008f6067f0ab1605950d03895de))
  - processing videos with ODM   ([05bf7](https://github.com/terraframe/osmre-uav/commit/05bf78186abeb0e46726e0757826b2b8cd676954))
  - collections now specify a format on creation   ([53053](https://github.com/terraframe/osmre-uav/commit/5305390616416b9da02d8b0ca1d716ca3fec2318))
