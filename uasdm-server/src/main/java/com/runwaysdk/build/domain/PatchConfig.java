@@ -15,6 +15,7 @@ import org.springframework.context.annotation.FilterType;
         ".*UploadService", //
         ".*JsonExceptionHandler", //
         ".*IDMSessionService", //
+        ".*SessionService", //
         ".*UASDMLoginGuard", //
         ".*LogErrorFilter" //
     })
