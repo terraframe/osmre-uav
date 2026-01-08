@@ -37,6 +37,15 @@ public class KnowStacIndexPatch implements Runnable
 
     IndexService.shutdown();
 
+    try
+    {
+      Thread.sleep(60 * 1000L);
+    }
+    catch (InterruptedException e)
+    {
+      e.printStackTrace();
+    }
+
     logger.error("Rebuilding the STAC index");
 
     this.getProducts().forEach(product -> {
