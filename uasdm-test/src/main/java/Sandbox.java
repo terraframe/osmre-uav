@@ -119,7 +119,7 @@ public class Sandbox
     
     
     SystemProcessExecutor executor = new SystemProcessExecutor();
-    executor.execute(new String[] { "exiftool", "-GPSLatitude", "-c", "%.9f", file.getAbsolutePath() });
+    executor.execute(new String[] { "exiftool", "-GPSPosition", "-c", "%.9f", file.getAbsolutePath() });
 
     String output = executor.getStdOut();
 
@@ -127,9 +127,28 @@ public class Sandbox
     {
       String[] tokens = output.split(":");
 
-      String token = tokens[1];
+      String token = tokens[1].trim();
+
+      String[] coordinates = token.split(",");
+
+      String latitude = coordinates[0].trim();
+      String longitutde = coordinates[1].trim();
+
+      if (latitude.endsWith("S"))
+      {
+        latitude = "-" + latitude;
+      }
+
+      if (longitutde.endsWith("W"))
+      {
+        longitutde = "-" + longitutde;
+      }
+
+      latitude = latitude.replaceAll("S", "").replaceAll("N", "");
+      longitutde = longitutde.replaceAll("E", "").replaceAll("W", "");
       
-      System.out.println(token);
+      System.out.println(latitude);
+      System.out.println(longitutde);
     }
 
   }

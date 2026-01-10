@@ -12,7 +12,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.json.JSONArray;
+import org.locationtech.jts.geom.Coordinate;
 
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.business.graph.VertexObject;
@@ -213,47 +215,23 @@ public class RawSet extends RawSetBase
     // Ensure that each document has coordinates
     documents.stream() //
         .filter(document -> document.getLongitude() == null && document.getLatitude() == null) //
-        .forEach(document -> {
-          // GPS Longitude : 111.124293944 W
-          try (RemoteFileObject remoteFile = uasComponent.download(document.getKey()))
-          {
+        .forEach(document -> updateCoordinates(uasComponent, document));
 
-            File tempFile = File.createTempFile(remoteFile.getName(), remoteFile.getNameExtension());
+    // Calculate bounding box
+    final ReferencedEnvelope envelope = new ReferencedEnvelope();
 
-            try
-            {
-              try (InputStream istream = remoteFile.getObjectContent())
-              {
-                FileUtils.copyToFile(istream, tempFile);
+    documents.stream() //
+        .map(document -> new Coordinate(document.getLongitude(), document.getLatitude())) //
+        .filter(coord -> coord != null && !Double.isNaN(coord.x) && !Double.isNaN(coord.y)) //
+        .forEach(coord -> envelope.expandToInclude(coord.x, coord.y));
 
-                SystemProcessExecutor executor = new SystemProcessExecutor();
-                executor.execute(new String[] { "exiftool", "-GPSLongitude", tempFile.getAbsolutePath() });
+    JSONArray array = new JSONArray();
+    array.put(envelope.getMinX());
+    array.put(envelope.getMinY());
+    array.put(envelope.getMaxX());
+    array.put(envelope.getMaxY());
 
-                String output = executor.getStdOut();
-
-                if (output.contains("GPS") && output.contains(":"))
-                {
-                  String[] tokens = output.split(":");
-
-                  String token = tokens[1];
-                  
-                  System.out.println(token);
-                }
-              }
-            }
-            finally
-            {
-              FileUtils.deleteQuietly(tempFile);
-            }
-          }
-          catch (IOException e)
-          {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-          }
-
-        });
-
+    // Get or create the raw set
     RawSet set = find(uasComponent, view.getName()).orElseGet(() -> {
       RawSet newInstance = new RawSet();
       newInstance.setName(view.getName());
@@ -262,6 +240,8 @@ public class RawSet extends RawSetBase
       return newInstance;
     });
 
+    // Update values
+    set.setBoundingBox(array.toString());
     set.setLastUpdateDate(new Date());
     set.apply(uasComponent);
 
@@ -414,4 +394,63 @@ public class RawSet extends RawSetBase
     return ComponentRawSet.process(query.getResults());
   }
 
+  private static void updateCoordinates(UasComponentIF uasComponent, Document document)
+  {
+    // GPS Longitude : 111.124293944 W
+    try (RemoteFileObject remoteFile = uasComponent.download(document.getKey()))
+    {
+      File tempFile = File.createTempFile(remoteFile.getName(), remoteFile.getNameExtension());
+
+      try
+      {
+        try (InputStream istream = remoteFile.getObjectContent())
+        {
+          FileUtils.copyToFile(istream, tempFile);
+
+          SystemProcessExecutor executor = new SystemProcessExecutor();
+          executor.execute(new String[] { "exiftool", "-GPSPosition", "-c", "%.9f", tempFile.getAbsolutePath() });
+
+          String output = executor.getStdOut();
+
+          if (output.contains("GPS") && output.contains(":"))
+          {
+            String[] tokens = output.split(":");
+
+            String token = tokens[1].trim();
+
+            String[] coordinates = token.split(",");
+
+            String latitude = coordinates[0].trim();
+            String longitutde = coordinates[1].trim();
+
+            if (latitude.endsWith("S"))
+            {
+              latitude = "-" + latitude;
+            }
+
+            if (longitutde.endsWith("W"))
+            {
+              longitutde = "-" + longitutde;
+            }
+
+            latitude = latitude.replaceAll("S", "").replaceAll("N", "");
+            longitutde = longitutde.replaceAll("E", "").replaceAll("W", "");
+
+            document.setLongitude(Double.valueOf(longitutde));
+            document.setLatitude(Double.valueOf(latitude));
+            document.apply();
+          }
+        }
+      }
+      finally
+      {
+        FileUtils.deleteQuietly(tempFile);
+      }
+    }
+    catch (IOException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
 }

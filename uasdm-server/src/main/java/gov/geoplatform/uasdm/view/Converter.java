@@ -529,13 +529,12 @@ public abstract class Converter<T extends UasComponentIF>
 
     UasComponentIF component = components.size() > 0 ? components.get(components.size() - 1) : null;
 
-    List<DocumentIF> docs = set.getDocuments();
-
     view.setComponents(list);
     view.setId(set.getOid());
     view.setName(set.getName());
     view.setPublished(set.isPublished());
     view.setLocked(set.isLocked());
+    view.setBoundingBox(set.getBoundingBox());
 
     List<DocumentIF> mappables = set.getDocuments();
     view.setDocuments(mappables.stream().map(d -> DocumentView.fromDocument(d)).collect(Collectors.toList()));
@@ -543,24 +542,15 @@ public abstract class Converter<T extends UasComponentIF>
     if (set.isPublished())
     {
       // "https://osmre-uas-dev-public.s3.amazonaws.com/-stac-/2c8712a5-d051-4249-a9bc-fedd3795ce74.json"
-//
-//      String bucket = "https://" + AppProperties.getPublicBucketName() + ".s3.amazonaws.com/";
-//
-//      view.setPublicStacUrl(bucket + S3RemoteFileService.STAC_BUCKET + "/" + product.getOid() + ".json");
+      //
+      // String bucket = "https://" + AppProperties.getPublicBucketName() +
+      // ".s3.amazonaws.com/";
+      //
+      // view.setPublicStacUrl(bucket + S3RemoteFileService.STAC_BUCKET + "/" +
+      // product.getOid() + ".json");
       // view.setPublicTilejson(bucket + "cog/tilejson.json?path=" +
       // URLEncoder.encode(mappable.getS3location(),
       // StandardCharsets.UTF_8.name()));
-    }
-
-    if (mappables.size() > 0)
-    {
-      // TODO: Calculate the bounding box
-//      String bbox = product.getBoundingBox();
-//
-//      if (bbox != null)
-//      {
-//        view.setBoundingBox(bbox);
-//      }
     }
   }
 
