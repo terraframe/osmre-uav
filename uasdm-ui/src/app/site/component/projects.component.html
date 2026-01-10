@@ -546,7 +546,7 @@
             <article class="geoplatform-map-button">
               <div [style]="panelType === 3 ? 'background:#767676;': 'background:#fff;'"
                 style="padding:6px;border-radius:4px;">
-                <a (click)="panelType = 3" title="Search GeoPlatform">
+                <a (click)="panelType === 3 ? panelType = 0 : panelType = 3" title="Search GeoPlatform">
                   <i class="fa fa-search" [ngClass]="{'fa-inverse': panelType === 3}"></i>
                 </a>
               </div>
@@ -555,7 +555,7 @@
             <article class="imagery-map-button">
               <div [style]="panelType === 4 ? 'background:#767676;': 'background:#fff;'"
                 style="padding:3px;border-radius:4px;">
-                <a (click)="panelType = 4">
+                <a (click)="panelType === 4 ? panelType = 0 : panelType = 4" title="Mapped Images">
                   <span class="fa-stack">
                     <i class="fa fa-globe fa-stack-1x" [ngClass]="{'fa-inverse': panelType === 4}" style="margin: 0px;">
                     </i>
