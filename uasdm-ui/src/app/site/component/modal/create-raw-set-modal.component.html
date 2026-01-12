@@ -1,0 +1,47 @@
+<!--
+
+
+
+-->
+<div>
+    <form #myForm="ngForm">
+
+        <div class="modal-body">
+            <div *ngIf="message != null" class="error-container">
+                <div class="label-holder">
+                    <strong>Error</strong>
+                </div>
+                <div class="holder">
+                    <div>
+                        <p class="error-message">{{message}}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input #nameEl="ngModel" [(ngModel)]="name" name="name" type="input" class="form-control"
+                    placeholder="Name" required forbiddenName />
+                <div class="text-danger"
+                    *ngIf="nameEl.invalid && (nameEl.dirty || nameEl.touched)">
+                    <div *ngIf="nameEl.errors?.required">Product name is required.</div>
+                    <div *ngIf="nameEl.errors?.forbiddenName">
+                        No spaces or special characters such as &lt;, &gt;,
+                        -, +, =, !, &#64;, #, $, %, ^, &amp;, *, ?,/, \ or apostrophes are allowed.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="btn-holder" style="text-align: right;">
+                <button type="button" (click)="bsModalRef.hide()" class="btn btn-default" role="button"
+                    aria-disabled="false" style="padding: 4px 18px;">Cancel</button>
+
+                <button type="button" [disabled]="myForm.invalid && (myForm.dirty || myForm.touched)"
+                    (click)="confirm()" class="btn btn-primary" role="button" aria-disabled="false"
+                    style="padding: 4px 18px;">Submit</button>
+            </div>
+        </div>
+    </form>
+
+</div>

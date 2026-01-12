@@ -1,0 +1,63 @@
+<!--
+
+
+
+-->
+<div>
+
+  <i *ngIf="loading" class="fa fa-spinner fa-spin" style="margin-left:50%;"></i>
+
+  <div class="list-group" *ngIf="sets != null">
+    <div class="list-group-item" *ngFor="let set of sets">
+      <div class="row">
+        <div class="col-sm-4">
+          <h3> {{set.name}} </h3>
+        </div>
+        <div class="col-sm-4">
+        </div>
+        <div class="col-sm-4 no-edit-actions">
+          <span class="action-col">
+            <button type="button" class="btn btn-danger" [disabled]="processRunning" (click)="handleRemoveRawSet(set)">
+              Delete Set
+            </button>
+          </span>
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="col-sm-12">
+
+          <table style="width: 100%;">
+            <thead>
+              <th>File</th>
+              <th></th>
+            </thead>
+            <ng-container *ngFor="let document of set.documents; let i = index">
+              <tr class="artifact-row">
+                <td>{{document.name}}</td>
+                <td class="no-edit-actions">
+                  <div dropdown [dropup]="true" class="btn-group dropup">
+                    <button class="btn btn-secondary btn-sm dropdown-toggle" dropdownToggle type="button"
+                      data-bs-toggle="dropdown" aria-expanded="false">
+                      Actions
+                    </button>
+                    <ol *dropdownMenu class="dropdown-menu dropdown-menu-right">
+                      <li>
+                        <a [ngClass]="{'disabled': processRunning}" (click)="handleRemove(set, document)"
+                          class="dropdown-item text-danger">
+                          Remove from set
+                        </a>
+                      </li>
+                    </ol>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

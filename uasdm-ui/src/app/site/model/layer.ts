@@ -83,11 +83,11 @@ export class StacCollection {
 
 
 export enum ToggleableLayerType {
-    STAC = 0, PRODUCT = 1, KNOWSTAC = 2
+    STAC = 0, PRODUCT = 1, KNOWSTAC = 2, RAW_SET = 3
 }
 
 export enum LayerColor {
-    STAC = '#79E4E8', PRODUCT = '#9141AC', KNOWSTAC = '#E76EB1', SITE = '#800000'
+    STAC = '#79E4E8', PRODUCT = '#9141AC', KNOWSTAC = '#E76EB1', SITE = '#800000', RAW_SET = '#10FFCB'
 }
 
 
@@ -98,6 +98,7 @@ export class ToggleableLayer {
     active?: boolean;
     item?: any
     asset?: MapAsset;
+    geojson?: any;
 }
 
 export class StacLayer {

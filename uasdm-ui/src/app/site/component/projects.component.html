@@ -338,10 +338,15 @@
                   <tab heading="Products" (selectTab)="activeTab = 'Products'">
                     <product-panel *ngIf="activeTab === 'Products'" [selection]="current" [organization]="organization"
                       [filter]="filter" [views]="views" (onViewsChange)="handleProductsChange($event)"
-                      (toggleMapOrtho)="handleMapOrtho($event)" 
-                      (toggleMapDem)="handleMapDem($event)">
+                      (toggleMapOrtho)="handleMapOrtho($event)" (toggleMapDem)="handleMapDem($event)">
                     </product-panel>
                   </tab>
+                  <tab heading="Raw Sets" (selectTab)="activeTab = 'RAW_SETS'">
+                    <raw-set-panel *ngIf="activeTab === 'RAW_SETS'" [selection]="current" [organization]="organization"
+                      [filter]="filter" [views]="rawViews">
+                    </raw-set-panel>
+                  </tab>
+
                 </tabset>
 
                 <tabset *ngIf="current.type === 0" class="nav-full-width">
@@ -352,9 +357,15 @@
                   <tab heading="Products" (selectTab)="activeTab = 'Products'">
                     <product-panel *ngIf="activeTab === 'Products'" [selection]="current" [organization]="organization"
                       [filter]="filter" [views]="views" (onViewsChange)="handleProductsChange($event)"
-                      (toggleMapOrtho)="handleMapOrtho($event)"
-                      (toggleMapDem)="handleMapDem($event)">
+                      (toggleMapOrtho)="handleMapOrtho($event)" (toggleMapDem)="handleMapDem($event)">
                     </product-panel>
+                  </tab>
+                  <tab heading="Raw Sets" (selectTab)="activeTab = 'RAW_SETS'">
+                    <raw-set-panel *ngIf="activeTab === 'RAW_SETS'" [selection]="current" [organization]="organization"
+                      [filter]="filter" [views]="rawViews"
+                      (onViewsChange)="handleRawSetsChange($event)"
+                      (toggleMapSet)="handleMapSet($event)">
+                    </raw-set-panel>
                   </tab>
                 </tabset>
 

@@ -1,0 +1,59 @@
+/* container: tighter gaps */
+.raw-set-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;            /* default density */
+}
+.raw-set-actions.raw-set-actions--compact {
+  gap: 4px 6px;             /* tighter rows/cols */
+}
+
+/* chip: smaller padding/font/radius/gaps */
+.raw-set-action {
+  background: transparent;
+  border: none;
+  padding: 6px 10px;        /* default density */
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #444;
+  font: 500 13px/1.05 Roboto, system-ui, sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color .12s ease, color .12s ease;
+}
+
+.raw-set-actions--compact .raw-set-action {
+  padding: 0px 6px;
+  border-radius: 6px;
+  gap: 4px;
+  font: 500 12px/1 Roboto, system-ui, sans-serif; /* 🔻 smaller text, tight line-height */
+}
+
+/* icon: smaller & fixed width so labels line up nicely */
+.raw-set-action i {
+  font-size: 14px;
+  line-height: 1;
+  width: 16px;
+  text-align: center;
+}
+.raw-set-actions--compact .raw-set-action i {
+  font-size: 12px;          /* 🔻 tighter */
+  width: 14px;
+}
+
+.raw-set-actions {
+  padding-top: 6px;
+}
+
+/* interaction */
+.raw-set-action:hover { background: #f0f1f4; }
+.raw-set-actions--compact .raw-set-action:hover { background: #f2f3f6; } /* subtler */
+.raw-set-action:active { background: #e6e8ed; }
+.raw-set-action:focus-visible { outline: 2px solid #81548f55; outline-offset: 2px; }
+.raw-set-action:disabled { opacity: .45; cursor: not-allowed; }
+
+/* selected & danger states (unchanged) */
+.raw-set-action[aria-pressed="true"], .raw-set-action.active { background: #efe7ff; color: #4d2a64; }
+.raw-set-action.danger:hover { background: #ffecec; color: #b3261e; }
