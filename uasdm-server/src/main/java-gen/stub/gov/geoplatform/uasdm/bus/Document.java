@@ -18,6 +18,7 @@ package gov.geoplatform.uasdm.bus;
 import java.util.Date;
 
 import org.json.JSONObject;
+import org.locationtech.jts.geom.Point;
 
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
@@ -216,5 +217,10 @@ public class Document extends DocumentBase implements DocumentIF
   {
     throw new UnsupportedOperationException();
   }
-
+  
+  @Override
+  public Point getPoint()
+  {
+    return null;
+  }
 }

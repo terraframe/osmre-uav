@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
@@ -15,6 +16,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.json.JSONArray;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.business.graph.VertexObject;
@@ -90,7 +93,7 @@ public class RawSet extends RawSetBase
       MdVertexDAOIF mdVertex = MdVertexDAO.getMdVertexDAO(RawSet.CLASS);
       MdAttributeDAOIF mdAttribute = mdVertex.definesAttribute(RawSet.NAME);
 
-      InvalidUasComponentNameException ex = new InvalidUasComponentNameException("The product name [" + this.getName() + "] has an invalid character. Disallowed characters are " + UasComponentIF.DISALLOWED_FILENAME_REGEX);
+      InvalidUasComponentNameException ex = new InvalidUasComponentNameException("The set name [" + this.getName() + "] has an invalid character. Disallowed characters are " + UasComponentIF.DISALLOWED_FILENAME_REGEX);
       ex.setAttributeName(mdAttribute.getDisplayLabel(Session.getCurrentLocale()));
       throw ex;
     }
@@ -207,23 +210,36 @@ public class RawSet extends RawSetBase
    * @param productName
    * @return
    */
+  @Transaction
   public static RawSet createIfNotExist(UasComponentIF uasComponent, CreateRawSetView view)
   {
     // Get the documents
-    List<Document> documents = view.getFiles().stream().map(id -> Document.get(id)).collect(Collectors.toList());
+    List<Document> documents = view.getFiles().stream() //
+        .map(id -> Document.get(id)) //
+        .collect(Collectors.toList());
 
-    // Ensure that each document has coordinates
+    // TODO: REMOVE WHEN FRONT-END SUPPORT IS ADDED
+    List<DocumentIF> raws = ( (Collection) uasComponent ).getRaw();
+
+    documents = raws.stream() //
+        .map(d -> (Document) d) //
+        // .filter(d -> d.getKey().toUpperCase().endsWith(".PNG") ||
+        // d.getKey().toUpperCase().endsWith(".JPG") ||
+        // d.getKey().toUpperCase().endsWith(".JPEG")) //
+        .collect(Collectors.toList());
+
+    // Ensure that each document has Points
     documents.stream() //
-        .filter(document -> document.getLongitude() == null && document.getLatitude() == null) //
-        .forEach(document -> updateCoordinates(uasComponent, document));
+        .filter(document -> document.getPoint() == null) //
+        .forEach(document -> updatePoints(uasComponent, document));
 
     // Calculate bounding box
     final ReferencedEnvelope envelope = new ReferencedEnvelope();
 
     documents.stream() //
-        .map(document -> new Coordinate(document.getLongitude(), document.getLatitude())) //
-        .filter(coord -> coord != null && !Double.isNaN(coord.x) && !Double.isNaN(coord.y)) //
-        .forEach(coord -> envelope.expandToInclude(coord.x, coord.y));
+        .map(document -> document.getPoint()) //
+        .filter(point -> point != null) //
+        .forEach(point -> envelope.expandToInclude(point.getCoordinate()));
 
     JSONArray array = new JSONArray();
     array.put(envelope.getMinX());
@@ -244,6 +260,13 @@ public class RawSet extends RawSetBase
     set.setBoundingBox(array.toString());
     set.setLastUpdateDate(new Date());
     set.apply(uasComponent);
+
+    Set<String> existing = set.getDocuments().stream().map(d -> d.getOid()).collect(Collectors.toSet());
+
+    documents.stream() //
+        .filter(document -> document.getPoint() != null) //
+        .filter(document -> !existing.contains(document.getOid())) //
+        .forEach(document -> set.addChild(document, EdgeType.RAW_SET_HAS_DOCUMENT).apply());
 
     return set;
   }
@@ -394,10 +417,12 @@ public class RawSet extends RawSetBase
     return ComponentRawSet.process(query.getResults());
   }
 
-  private static void updateCoordinates(UasComponentIF uasComponent, Document document)
+  private static void updatePoints(UasComponentIF uasComponent, Document document)
   {
+    GeometryFactory geometryFactory = new GeometryFactory();
+
     // GPS Longitude : 111.124293944 W
-    try (RemoteFileObject remoteFile = uasComponent.download(document.getKey()))
+    try (RemoteFileObject remoteFile = document.download())
     {
       File tempFile = File.createTempFile(remoteFile.getName(), remoteFile.getNameExtension());
 
@@ -418,10 +443,10 @@ public class RawSet extends RawSetBase
 
             String token = tokens[1].trim();
 
-            String[] coordinates = token.split(",");
+            String[] Points = token.split(",");
 
-            String latitude = coordinates[0].trim();
-            String longitutde = coordinates[1].trim();
+            String latitude = Points[0].trim();
+            String longitutde = Points[1].trim();
 
             if (latitude.endsWith("S"))
             {
@@ -436,8 +461,13 @@ public class RawSet extends RawSetBase
             latitude = latitude.replaceAll("S", "").replaceAll("N", "");
             longitutde = longitutde.replaceAll("E", "").replaceAll("W", "");
 
-            document.setLongitude(Double.valueOf(longitutde));
-            document.setLatitude(Double.valueOf(latitude));
+            // Define your Point (longitude, latitude)
+            Coordinate coord = new Coordinate(Double.valueOf(longitutde), Double.valueOf(latitude));
+
+            // Create the Point
+            Point point = geometryFactory.createPoint(coord);
+
+            document.setPoint(point);
             document.apply();
           }
         }

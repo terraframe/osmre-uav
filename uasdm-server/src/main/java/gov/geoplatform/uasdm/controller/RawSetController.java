@@ -50,6 +50,14 @@ public class RawSetController extends AbstractController
     return ResponseEntity.ok(response);
   }
 
+  @GetMapping("/list")
+  public ResponseEntity<List<RawSetView>> list(@RequestParam(name = "collectionId") String collectionId)
+  {
+    List<RawSetView> response = service.list(this.getSessionId(), collectionId);
+    
+    return ResponseEntity.ok(response);
+  }
+  
   // @GetMapping("/detail")
   // public ResponseEntity<String> detail(@RequestParam(name = "id") String id,
   // @RequestParam(name = "pageNumber", defaultValue = "1") Integer pageNumber,
@@ -85,6 +93,14 @@ public class RawSetController extends AbstractController
     return ResponseEntity.ok(null);
   }
 
+//  @PostMapping("/remove-file")
+//  public ResponseEntity<Void> remove(@RequestBody IdBody body)
+//  {
+//    this.service.remove(this.getSessionId(), body.getId());
+//    
+//    return ResponseEntity.ok(null);
+//  }
+  
   @PostMapping("/create")
   public ResponseEntity<RawSetView> create(@RequestBody CreateRawSetView body)
   {

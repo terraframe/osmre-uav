@@ -30,6 +30,7 @@ import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 import com.runwaysdk.session.Session;
 
+import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.RawSet;
 import gov.geoplatform.uasdm.graph.UserAccessEntity;
 import gov.geoplatform.uasdm.model.CollectionIF;
@@ -114,22 +115,42 @@ public class RawSetService
     return array;
   }
 
-//  @Request(RequestType.SESSION)
-//  public RawSetDetailView getRawSetDetail(String sessionId, String id, Integer pageNumber, Integer pageSize)
-//  {
-//    RawSet set = ComponentFacade.getRawSet(id);
-//
-//    UasComponentIF component = set.getComponent();
-//    UserAccessEntity.validateAccess(component);
-//
-//    List<UasComponentIF> components = component.getAncestors();
-//    Collections.reverse(components);
-//    components.add(component);
-//
-//    final List<DocumentIF> generated = set.getGeneratedFromDocuments();
-//
-//    return Converter.toDetailView(set, components, generated, pageNumber, pageSize);
-//  }
+  @Request(RequestType.SESSION)
+  public List<RawSetView> list(String sessionId, String collectionId)
+  {
+    List<ComponentRawSetView> array = new LinkedList<>();
+
+    UasComponentIF component = Collection.get(collectionId);
+
+    List<UasComponentIF> components = component.getAncestors();
+    Collections.reverse(components);
+    components.add(component);
+    
+    List<RawSetView> views = component.getRawSets().stream().map(set -> {
+      return Converter.toView(set, components);
+    }).collect(Collectors.toList());
+
+    return views;
+  }
+
+  // @Request(RequestType.SESSION)
+  // public RawSetDetailView getRawSetDetail(String sessionId, String id,
+  // Integer pageNumber, Integer pageSize)
+  // {
+  // RawSet set = ComponentFacade.getRawSet(id);
+  //
+  // UasComponentIF component = set.getComponent();
+  // UserAccessEntity.validateAccess(component);
+  //
+  // List<UasComponentIF> components = component.getAncestors();
+  // Collections.reverse(components);
+  // components.add(component);
+  //
+  // final List<DocumentIF> generated = set.getGeneratedFromDocuments();
+  //
+  // return Converter.toDetailView(set, components, generated, pageNumber,
+  // pageSize);
+  // }
 
   @Request(RequestType.SESSION)
   public RawSetView togglePublish(String sessionId, String id)

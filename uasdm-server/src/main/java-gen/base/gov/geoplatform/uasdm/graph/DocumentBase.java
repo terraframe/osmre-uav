@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = 715219393)
+@com.runwaysdk.business.ClassSignature(hash = -1466896856)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -15,18 +15,17 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
   public final static java.lang.String EXCLUDE = "exclude";
   public final static java.lang.String FILESIZE = "fileSize";
   public final static java.lang.String LASTMODIFIED = "lastModified";
-  public final static java.lang.String LATITUDE = "latitude";
-  public final static java.lang.String LONGITUDE = "longitude";
   public final static java.lang.String NAME = "name";
   public final static java.lang.String OID = "oid";
   public final static java.lang.String ORTHOCORRECTIONMODEL = "orthoCorrectionModel";
+  public final static java.lang.String POINT = "point";
   public final static java.lang.String PROJECTIONNAME = "projectionName";
   public final static java.lang.String PTEPSG = "ptEpsg";
   public final static java.lang.String S3LOCATION = "s3location";
   public final static java.lang.String SEQ = "seq";
   public final static java.lang.String TOOL = "tool";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 715219393;
+  private static final long serialVersionUID = -1466896856;
   
   public DocumentBase()
   {
@@ -97,38 +96,6 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
     this.setValue(LASTMODIFIED, value);
   }
   
-  public Double getLatitude()
-  {
-    return (Double) this.getObjectValue(LATITUDE);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeDoubleDAOIF getLatitudeMd()
-  {
-    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Document.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeDoubleDAOIF)mdClassIF.definesAttribute(LATITUDE);
-  }
-  
-  public void setLatitude(Double value)
-  {
-    this.setValue(LATITUDE, value);
-  }
-  
-  public Double getLongitude()
-  {
-    return (Double) this.getObjectValue(LONGITUDE);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeDoubleDAOIF getLongitudeMd()
-  {
-    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Document.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeDoubleDAOIF)mdClassIF.definesAttribute(LONGITUDE);
-  }
-  
-  public void setLongitude(Double value)
-  {
-    this.setValue(LONGITUDE, value);
-  }
-  
   public String getName()
   {
     return (String) this.getObjectValue(NAME);
@@ -170,6 +137,22 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
   public void setOrthoCorrectionModel(String value)
   {
     this.setValue(ORTHOCORRECTIONMODEL, value);
+  }
+  
+  public org.locationtech.jts.geom.Point getPoint()
+  {
+    return (org.locationtech.jts.geom.Point) this.getObjectValue(POINT);
+  }
+  
+  public static com.runwaysdk.gis.dataaccess.MdAttributePointDAOIF getPointMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Document.CLASS);
+    return (com.runwaysdk.gis.dataaccess.MdAttributePointDAOIF)mdClassIF.definesAttribute(POINT);
+  }
+  
+  public void setPoint(org.locationtech.jts.geom.Point value)
+  {
+    this.setValue(POINT, value);
   }
   
   public String getProjectionName()
@@ -337,20 +320,20 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
     return super.getParents("gov.geoplatform.uasdm.graph.ProductHasDocument", gov.geoplatform.uasdm.graph.Product.class);
   }
   
-  public com.runwaysdk.business.graph.EdgeObject addRawSettHasDocumentParent(gov.geoplatform.uasdm.graph.RawSet rawSet)
+  public com.runwaysdk.business.graph.EdgeObject addRawSetHasDocumentParent(gov.geoplatform.uasdm.graph.RawSet rawSet)
   {
-    return super.addParent(rawSet, "gov.geoplatform.uasdm.graph.RawSettHasDocument");
+    return super.addParent(rawSet, "gov.geoplatform.uasdm.graph.RawSetHasDocument");
   }
   
-  public void removeRawSettHasDocumentParent(gov.geoplatform.uasdm.graph.RawSet rawSet)
+  public void removeRawSetHasDocumentParent(gov.geoplatform.uasdm.graph.RawSet rawSet)
   {
-    super.removeParent(rawSet, "gov.geoplatform.uasdm.graph.RawSettHasDocument");
+    super.removeParent(rawSet, "gov.geoplatform.uasdm.graph.RawSetHasDocument");
   }
   
   @SuppressWarnings("unchecked")
-  public java.util.List<gov.geoplatform.uasdm.graph.RawSet> getRawSettHasDocumentParentRawSets()
+  public java.util.List<gov.geoplatform.uasdm.graph.RawSet> getRawSetHasDocumentParentRawSets()
   {
-    return super.getParents("gov.geoplatform.uasdm.graph.RawSettHasDocument", gov.geoplatform.uasdm.graph.RawSet.class);
+    return super.getParents("gov.geoplatform.uasdm.graph.RawSetHasDocument", gov.geoplatform.uasdm.graph.RawSet.class);
   }
   
   public static Document get(String oid)

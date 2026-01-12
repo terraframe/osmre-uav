@@ -1,5 +1,6 @@
 <version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <doIt>
+<!-- 
     <create>
       <mdVertex name="gov.geoplatform.uasdm.graph.RawSet" label="Document" generateController="false">
         <attributes>
@@ -47,7 +48,9 @@
           </mdRelationshipPermission>
         </grant>
       </role>
-    </permissions>          
+    </permissions>         
+     -->  
+     
   </doIt>
   <undoIt>
     <delete>

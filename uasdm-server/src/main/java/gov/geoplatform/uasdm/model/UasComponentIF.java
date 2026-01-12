@@ -158,4 +158,6 @@ public interface UasComponentIF extends ComponentWithAttributes
   public List<ComponentRawSet> getDerivedRawSets(String sortField, String sortOrder);
 
   RawSet createRawSetIfNotExist(CreateRawSetView view);
+
+  public List<RawSet> getRawSets();
 }

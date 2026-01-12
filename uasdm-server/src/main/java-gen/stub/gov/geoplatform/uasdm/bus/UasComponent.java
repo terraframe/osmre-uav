@@ -56,7 +56,6 @@ import gov.geoplatform.uasdm.model.ComponentRawSet;
 import gov.geoplatform.uasdm.model.ComponentWithAttributes;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
-import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
@@ -720,6 +719,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   @Override
   public List<ComponentRawSet> getDerivedRawSets(String sortField, String sortOrder)
   {
-    return null;
+    return new LinkedList<>();
+  }
+
+  @Override
+  public List<RawSet> getRawSets()
+  {
+    return new LinkedList<>();
   }
 }

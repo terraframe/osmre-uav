@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -619,7 +619,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   public RemoteFileObject download(String key, String range)
   {
     if (!key.startsWith(this.getS3location()))
-   {
+    {
       return RemoteFileFacade.download(this.getS3location() + key, range);
     }
 
@@ -889,6 +889,11 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   public List<Product> getProducts()
   {
     return this.getChildren(EdgeType.COMPONENT_HAS_PRODUCT, Product.class);
+  }
+
+  public List<RawSet> getRawSets()
+  {
+    return this.getChildren(EdgeType.COMPONENT_HAS_RAW_SET, RawSet.class);
   }
 
   public Integer getNumberOfProducts()
@@ -1252,8 +1257,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   {
     return RawSet.createIfNotExist(this, view);
   }
-  
-  
+
   @Override
   public List<ComponentRawSet> getDerivedRawSets(String sortField, String sortOrder)
   {
@@ -1333,7 +1337,6 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     return ComponentRawSet.process(query.getResults());
   }
 
-  
   public static <T extends UasComponent> Optional<T> getWithAccessControl(String oid)
   {
     HashMap<String, Object> parameters = new HashMap<String, Object>();

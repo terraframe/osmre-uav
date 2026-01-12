@@ -35,10 +35,11 @@ import { AuthService } from '@shared/service/auth.service';
 import { ImagePreviewModalComponent } from './image-preview-modal.component';
 import { TusUploadModalComponent } from './tus-upload-modal.component';
 import { COLLECTION_FORMATS } from '@site/model/sensor';
+import { CreateRawSetModalComponent } from './create-raw-set-modal.component';
 
 @Component({
 	standalone: false,
-  selector: 'collection-modal',
+	selector: 'collection-modal',
 	templateUrl: './collection-modal.component.html',
 	styleUrls: ['./collection-modal.component.scss'],
 	providers: [BasicConfirmModalComponent, ArtifactPageComponent],
@@ -351,6 +352,18 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		});
 		confirmModalRef.content.init(this.entity);
 	}
+
+	handleCreateRawSet(): void {
+
+		const confirmModalRef = this.modalService.show(CreateRawSetModalComponent, {
+			animated: true,
+			backdrop: true,
+			ignoreBackdropClick: true,
+			'class': 'confirmation-modal modal-xl'
+		});
+		confirmModalRef.content.init(this.entity);
+	}
+
 
 
 	handleDownload(): void {

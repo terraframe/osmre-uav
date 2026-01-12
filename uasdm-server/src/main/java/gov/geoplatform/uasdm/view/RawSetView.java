@@ -2,12 +2,17 @@ package gov.geoplatform.uasdm.view;
 
 import java.util.List;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import gov.geoplatform.uasdm.serialization.SiteItemSerializer;
+
 public class RawSetView
 {
   private String             id;
 
   private String             name;
 
+  @JsonSerialize(contentUsing = SiteItemSerializer.class)
   private List<SiteItem>     components;
 
   private List<DocumentView> documents;

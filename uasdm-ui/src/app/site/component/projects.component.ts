@@ -16,7 +16,7 @@ import { BasicConfirmModalComponent } from "@shared/component/modal/basic-confir
 import { NotificationModalComponent } from "@shared/component/modal/notification-modal.component";
 import { AuthService } from "@shared/service/auth.service";
 
-import { SiteEntity, Product, Task, MapLayer, ViewerSelection, SELECTION_TYPE, Filter, CollectionProductView, UploadTask } from "../model/management";
+import { SiteEntity, Product, Task, MapLayer, ViewerSelection, SELECTION_TYPE, Filter, CollectionProductView, UploadTask, CollectionRawSetView, RawSet, MapLayerType } from "../model/management";
 
 import { EntityModalComponent } from "./modal/entity-modal.component";
 import { CollectionModalComponent } from "./modal/collection-modal.component";
@@ -26,6 +26,7 @@ import { ManagementService } from "../service/management.service";
 import { MapService } from "../service/map.service";
 import { MetadataService } from "../service/metadata.service";
 import { CookieService } from "ngx-cookie-service";
+import * as turf from '@turf/turf';
 
 import {
   fadeInOnEnterAnimation,
@@ -240,6 +241,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   collection: StacCollection = null;
 
   views: CollectionProductView[] = [];
+  rawViews: CollectionRawSetView[] = [];
 
   properties: StacProperty[] = null;
 
@@ -1139,33 +1141,82 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   addImageLayer(layer: MapLayer) {
 
-    let url = layer.url;
+    if (layer.type === MapLayerType.Raster) {
 
-    if (EnvironmentUtil.getApiUrl() !== "" && EnvironmentUtil.getApiUrl() != null) {
-      url = EnvironmentUtil.getApiUrl() + "/" + url;
+      let url = layer.url;
+
+      if (EnvironmentUtil.getApiUrl() !== "" && EnvironmentUtil.getApiUrl() != null) {
+        url = EnvironmentUtil.getApiUrl() + "/" + url;
+      }
+      if (!url.startsWith("/")) {
+        url = "/" + url;
+      }
+
+      this.map.addSource(layer.key, {
+        'type': 'raster',
+        'url': url
+      });
+
+      this.map.addLayer({
+        'id': layer.key,
+        'type': 'raster',
+        'source': layer.key,
+        'paint': {}
+      }, "points");
     }
-    if (!url.startsWith("/")) {
-      url = "/" + url;
+    else if (layer.type === MapLayerType.Geojson) {
+      this.map.addSource(layer.key, {
+        'type': 'geojson',
+        'data': layer.data
+      });
+
+
+      this.map.addLayer({
+        "id": layer.key,
+        "type": "circle",
+        "source": layer.key,
+        "paint": {
+          "circle-radius": 10,
+          "circle-color": LayerColor.RAW_SET,
+          "circle-stroke-width": 2,
+          "circle-stroke-color": "#FFFFFF"
+        }
+      }, "points");
+
+      // Label layer
+      this.map.addLayer({
+        "id": layer.key + "-label",
+        "source": layer.key,
+        "type": "symbol",
+        "paint": {
+          "text-color": "black",
+          "text-halo-color": "#fff",
+          "text-halo-width": 2
+        },
+        "layout": {
+          "text-field": "{label}",
+          "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+          "text-offset": [0, 0.6],
+          "text-anchor": "top",
+          "text-size": 12,
+        }
+      });
+
+
     }
-
-    this.map.addSource(layer.key, {
-      'type': 'raster',
-      'url': url
-    });
-
-    this.map.addLayer({
-      'id': layer.key,
-      'type': 'raster',
-      'source': layer.key,
-      'paint': {}
-    }, "points");
 
     // Add the layer to the list of layers to be recreated on style change
     this.layers.push(layer);
   }
 
-  removeImageLayer(id: string) {
+
+  removeImageLayer(id: string, hasLabel: boolean = false) {
     this.map.removeLayer(id);
+
+    if (hasLabel) {
+      this.map.removeLayer(id + "-label");
+    }
+
     this.map.removeSource(id);
 
     this.layers = this.layers.filter(l => l.key !== id);
@@ -2037,6 +2088,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         url += "&assets=" + encodeURIComponent(item.asset);
 
         this.addImageLayer({
+          type: MapLayerType.Raster,
           classification: "ORTHO",
           key: layer.id + '-' + item.id + '-' + item.asset,
           isMapped: true,
@@ -2056,6 +2108,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       url += "&assets=" + encodeURIComponent(item.asset);
 
       this.addImageLayer({
+        type: MapLayerType.Raster,
         classification: "ORTHO",
         key: item.id + '-' + item.asset,
         isMapped: true,
@@ -2065,12 +2118,23 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     else if (layer.type === ToggleableLayerType.PRODUCT) {
 
       this.addImageLayer({
+        type: MapLayerType.Raster,
         classification: layer.asset.classification,
         key: layer.id,
         isMapped: true,
         url: layer.asset.url
       });
     }
+    else if (layer.type === ToggleableLayerType.RAW_SET) {
+
+      this.addImageLayer({
+        type: MapLayerType.Geojson,
+        key: layer.id,
+        isMapped: true,
+        data: layer.geojson
+      });
+    }
+
   }
 
   hideToggleableLayer(layer: ToggleableLayer): void {
@@ -2086,6 +2150,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     else if (layer.type === ToggleableLayerType.PRODUCT) {
       this.removeImageLayer(layer.id);
+    }
+    else if (layer.type === ToggleableLayerType.RAW_SET) {
+      this.removeImageLayer(layer.id, true);
     }
   }
 
@@ -2183,8 +2250,68 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       });
       bsModalRef.content.init(item, this.properties);
     });
-
-
   }
 
+
+  // Raw Sets
+  handleRawSetsChange(rawViews: CollectionRawSetView[]): void {
+
+    this.rawViews = rawViews;
+
+    this.buildItemsLayer();
+  }
+
+  handleMapSet(set: RawSet): void {
+    set.mapped = !set.mapped;
+
+    this.handleRawSetAsset(set, set.mapped);
+  }
+
+  handleRawSetAsset(set: RawSet, mapIt: boolean): void {
+    const id = set.id;
+
+    if (mapIt) {
+
+      // Create the map layer from the StacItem
+      const index = this.mapLayers.findIndex(l => l.id === id);
+
+      const features = set.documents.filter(d => d.point != null).map(d => {
+        return turf.feature(d.point, { label: d.name, type: 'set-image' });
+      });
+
+      // The layer may already exist
+      if (index === -1) {
+        const layer: ToggleableLayer = {
+          id: id,
+          type: ToggleableLayerType.RAW_SET,
+          layerName: set.name,
+          active: true,
+          item: set,
+          geojson: {
+            type: "FeatureCollection",
+            features: features
+          }
+        };
+
+        this.mapLayers.push(layer);
+
+        this.showToggleableLayer(layer);
+      }
+
+      if (set.boundingBox != null) {
+        let bbox = JSON.parse(set.boundingBox);
+
+        let bounds = new LngLatBounds([bbox[0], bbox[1]], [bbox[2], bbox[3]]);
+
+        this.map.fitBounds(bounds, { padding: 50 });
+      }
+    }
+    else {
+      const index = this.mapLayers.findIndex(l => l.id === id);
+
+      if (index !== -1) {
+        this.handleRemoveToggleableLayer(this.mapLayers[index])
+      }
+    }
+  }
 }

@@ -161,7 +161,8 @@
             <tab heading="raw" (selectTab)="onSelect('image')">
               <i *ngIf="loading" class="fa fa-spinner fa-spin" style="margin-left:50%;"></i>
 
-              <div *ngIf="!entity?.format || entity.format.startsWith('STILL_') || entity.format === 'LIDAR'" class="image-list-container">
+              <div *ngIf="!entity?.format || entity.format.startsWith('STILL_') || entity.format === 'LIDAR'"
+                class="image-list-container">
 
                 <ul class="list-group list-group-horizontal flex-wrap">
                   <li
@@ -169,12 +170,10 @@
                     class="list-group-item col-3">
                     <a class="d-block text-decoration-none text-reset mx-auto d-block"
                       [ngClass]="{'card-disabled' : item.exclude, 'non-clickable' : !enableSelectableImages}">
-                      <i class="image-action download fa fa-download float-end"
-                        (click)="handleDownloadFile(item)"
-                        title="Download image"
-                        style="cursor: pointer;"></i>
-                      <input type="checkbox" class="image-action exclude" *ngIf="enableSelectableImages" [checked]="item.exclude"
-                        (change)="toggleExcludeImage($event, item)"
+                      <i class="image-action download fa fa-download float-end" (click)="handleDownloadFile(item)"
+                        title="Download image" style="cursor: pointer;"></i>
+                      <input type="checkbox" class="image-action exclude" *ngIf="enableSelectableImages"
+                        [checked]="item.exclude" (change)="toggleExcludeImage($event, item)"
                         [title]="item.exclude ? 'Include image in processing' : 'Exclude image from processing'"
                         style="cursor: pointer;" />
                       <figure class="figure ">
@@ -222,11 +221,12 @@
                   <li *ngFor="let item of page.results" class="list-group-item col-3">
                     <div (click)="showVideo(item)" style="cursor: pointer;">
                       <figure class="figure ">
-                        <img [src]="context + '/assets/thumbnail-video.png'" alt="Video" class="thumb figure-img img-fluid rounded" style="max-height: 150px">
+                        <img [src]="context + '/assets/thumbnail-video.png'" alt="Video"
+                          class="thumb figure-img img-fluid rounded" style="max-height: 150px">
                         <figcaption class="figure-caption">
                           {{item.name}}
                         </figcaption>
-                      </figure>                                           
+                      </figure>
                     </div>
                   </li>
                 </ul>
@@ -303,6 +303,10 @@
               <artifact-page *ngIf="tabName === 'artifacts'" [entity]="entity" [processRunning]="processRunning"
                 (onError)="error($event)"></artifact-page>
             </tab>
+            <tab heading="raw-sets" style="margin-top:10px;" (selectTab)="onSelect('raw-sets')">
+              <raw-set-page *ngIf="tabName === 'raw-sets'" [entity]="entity" [processRunning]="processRunning"
+                (onError)="error($event)"></raw-set-page>
+            </tab>
           </tabset>
         </div>
       </div>
@@ -334,11 +338,17 @@
                   (click)="handleUpload()">
                   Upload
                 </button>
+                <button *ngIf="tabName === 'image'" type="button" class="btn btn-primary"
+                  title="Create product group" [disabled]="processRunning" (click)="handleCreateRawSet()"
+                  style="margin-left: 5px;">
+                  Create raw set
+                </button>
 
               </div>
               <div class="flex-fill"></div>
               <div>
                 <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
+
 
                 <button *ngIf="tabName === 'artifacts'" type="button" class="btn btn-secondary"
                   title="Create product group" [disabled]="processRunning" (click)="handleCreateProductGroup()"

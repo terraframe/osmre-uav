@@ -316,6 +316,7 @@ export class ProductDocument {
 	name: string;
 	key: string;
 	presignedThumbnailDownload?: string;
+	point?: any;
 }
 
 export class ProductCriteria {
@@ -376,12 +377,18 @@ export class MapAsset {
 	url: string;
 }
 
+export enum MapLayerType {
+	Raster = 1,
+	Geojson,
+  }
 
 export class MapLayer {
-	classification: string;
+	type: MapLayerType;
+	classification?: string;
 	key: string;
 	isMapped?: boolean;
-	url: string;
+	url?: string;
+	data?: any;
 }
 
 //export class ProductDetail extends Product {
@@ -467,3 +474,24 @@ export class Page {
 	options?: SiteEntity[];
 	type?: string
 };
+
+export class RawSet {
+	id: string;
+	name: string;
+	components: SiteEntity[];
+	documents: ProductDocument[];
+	published: boolean;
+	boundingBox?: string;
+	locked?: boolean
+	mapped?: boolean
+
+	// UI state
+	document?: ProductDocument;
+	documentId?: string;
+}
+
+export class CollectionRawSetView {
+	componentId: string;
+	componentType: string;
+	sets: RawSet[];
+}

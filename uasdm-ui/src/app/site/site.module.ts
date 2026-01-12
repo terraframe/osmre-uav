@@ -82,6 +82,10 @@ import { TusUploadModalComponent } from './component/modal/tus-upload-modal.comp
 import { ArtifactUploadItemComponent } from './component/artifact-upload-item/artifact-upload-item.component';
 import { LayerPanelComponent } from './component/layer-panel/layer-panel.component';
 import { HelpComponent } from './component/help/help.component';
+import { RawSetPageComponent } from './component/modal/raw-set-page.component';
+import { CreateRawSetModalComponent } from './component/modal/create-raw-set-modal.component';
+import { RawSetService } from './service/raw-set.service';
+import { RawSetPanelComponent } from './component/raw-set-panel/raw-set-panel.component';
 
 @NgModule({
 	imports: [
@@ -150,7 +154,10 @@ import { HelpComponent } from './component/help/help.component';
 		KnowStacPanelComponent,
 		KnowStacModalComponent,
 		LegendPanelComponent,
-		ProcessRunModalComponent
+		ProcessRunModalComponent,
+		RawSetPageComponent,
+		CreateRawSetModalComponent,
+		RawSetPanelComponent
 	],
 	providers: [
 		ManagementService,
@@ -164,7 +171,8 @@ import { HelpComponent } from './component/help/help.component';
 		ReportService,
 		UserAccessService,
 		KnowStacService,
-		UploadService
+		UploadService,
+		RawSetService
 	]
 })
 export class SiteModule { }
