@@ -48,6 +48,10 @@ body {
   padding: 5px;
 }
 
+.hover-color:hover {
+  color: #00bfff;
+}
+
 .geoplatform-map-button {
   position: absolute;
   top: 70px;
@@ -79,7 +83,7 @@ body {
   display: inline-block;
 }
 
-.badge{
+.badge {
   position: relative;
   margin-left: 60%;
   margin-top: -60%;

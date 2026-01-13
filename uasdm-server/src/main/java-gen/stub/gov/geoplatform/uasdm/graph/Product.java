@@ -789,7 +789,7 @@ public class Product extends ProductBase implements ProductIF
 
     if (component.isPrivate() && !this.isPublished())
     {
-      GenericException ex = new GenericException();
+      GenericException ex = new GenericException("Private collections can not be published");
       ex.setUserMessage("Private collections can not be published");
       throw ex;
     }
