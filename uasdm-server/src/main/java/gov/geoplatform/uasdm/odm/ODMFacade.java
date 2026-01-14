@@ -56,6 +56,7 @@ import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.RadiometricCalibration;
 import gov.geoplatform.uasdm.processing.RadiometricImageryPreProcessor;
+import gov.geoplatform.uasdm.processing.geolocation.GeoLocationFileValidator;
 import gov.geoplatform.uasdm.processing.geolocation.RX1R2GeoFileConverter;
 
 public class ODMFacade
@@ -188,9 +189,9 @@ public class ODMFacade
     return service.taskInfo(uuid);
   }
 
-  public static ODMProcessingPayload filterAndExtract(ArchiveFileResource archive, ODMProcessConfiguration configuration, Collection col) throws IOException, CsvValidationException
+  public static ODMProcessingPayload filterAndExtract(AbstractWorkflowTask task, ArchiveFileResource archive, ODMProcessConfiguration configuration, Collection col) throws IOException, CsvValidationException
   {
-    ODMProcessingPayload payload = filterArchive(archive, configuration);
+    ODMProcessingPayload payload = filterArchive(task, archive, configuration);
 
     if (col != null && col.isRadiometric())
     {
@@ -201,7 +202,7 @@ public class ODMFacade
   }
   
   @SuppressWarnings("resource")
-  private static ODMProcessingPayload filterArchive(ArchiveFileResource archive, ODMProcessConfiguration configuration) throws IOException, CsvValidationException
+  private static ODMProcessingPayload filterArchive(AbstractWorkflowTask task, ArchiveFileResource archive, ODMProcessConfiguration configuration) throws IOException, CsvValidationException
   {
     List<String> extensions = ImageryProcessingJob.getSupportedExtensions(ImageryComponent.RAW, false, false, false, configuration);
     final ODMProcessingPayload payload = new ODMProcessingPayload(archive);
@@ -224,6 +225,9 @@ public class ODMFacade
       
       if (res.getName().equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile())
       {
+        // We want to set the geoLocation file here on the payload BEFORE we convert it so that the validator which uses it will use the unconverter format
+        payload.setGeoLocationFile(IOUtils.toString(res.openNewStream(), "UTF-8"));
+        
         if (configuration.getGeoLocationFormat().equals(FileFormat.RX1R2))
         {
           try (RX1R2GeoFileConverter reader = RX1R2GeoFileConverter.open(res.openNewStream()))
@@ -231,8 +235,6 @@ public class ODMFacade
             IOUtils.copy(new FileInputStream(reader.getOutput()), new FileOutputStream(res.getUnderlyingFile()));
           }
         }
-
-        payload.setGeoLocationFile(IOUtils.toString(res.openNewStream(), "UTF-8"));
       }
       else if (res.getName().equalsIgnoreCase("gcp_list.txt") && configuration.isIncludeGroundControlPointFile())
       {
