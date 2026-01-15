@@ -142,7 +142,7 @@ public class ODMService implements ODMServiceIF
   {
     initialize();
 
-    try (ODMProcessingPayload payload = ODMFacade.filterAndExtract(images, configuration, col))
+    try (ODMProcessingPayload payload = ODMFacade.filterAndExtract(task, images, configuration, col))
     {
       if (payload.getRawCount() > 0)
       {

@@ -22,7 +22,7 @@ public class EntityProductBody
   @NotBlank
   private String id;
 
-  @NotBlank
+  // This is blank when manually uploading a geologger file
   private String productName;
 
   public String getId()
