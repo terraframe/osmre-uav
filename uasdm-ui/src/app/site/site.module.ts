@@ -19,29 +19,6 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
 import { PopoverModule } from 'ngx-bootstrap/popover';
 
-import { MapAttributeComponent } from './component/map-attribute/map-attribute.component';
-import { ProductPanelComponent } from './component/product-panel/product-panel.component';
-import { EntityModalComponent } from './component/modal/entity-modal.component';
-import { MetadataModalComponent } from './component/modal/metadata-modal.component';
-import { ImagePreviewModalComponent } from './component/modal/image-preview-modal.component';
-import { ODMRunModalComponent } from './component/modal/odmrun-modal.component';
-import { CollectionModalComponent } from './component/modal/collection-modal.component';
-import { AccessibleSupportModalComponent } from './component/modal/accessible-support-modal.component';
-import { ProductModalComponent } from './component/modal/product-modal.component';
-import { ProjectsComponent } from './component/projects.component';
-import { TasksComponent } from './component/tasks.component';
-import { TasksPanelComponent } from './component/tasks/tasks-panel.component';
-import { SensorsComponent } from './component/sensor/sensors.component';
-import { SensorComponent } from './component/sensor/sensor.component';
-import { PlatformsComponent } from './component/platform/platforms.component';
-import { PlatformComponent } from './component/platform/platform.component';
-import { ClassificationsComponent } from './component/classification/classifications.component';
-import { ClassificationComponent } from './component/classification/classification.component';
-import { EquipmentComponent } from './component/equipment/equipment.component';
-import { ProcessingReportComponent } from './component/processing-report/processing-report.component';
-
-import { ForbiddenNameDirective } from './directive/forbidden-name.directive';
-import { OnlyNumber } from './directive/number-only.directive';
 
 import { ProductService } from './service/product.service';
 import { ManagementService } from './service/management.service';
@@ -53,35 +30,11 @@ import { ClassificationService } from './service/classification.service';
 
 import { SiteRoutingModule } from './site-routing.module';
 import { SharedModule } from '../shared/shared.module';
-import { UAVsComponent } from './component/uav/uavs.component';
-import { UAVsPageComponent } from './component/uav/uavs-page.component';
-import { UAVComponent } from './component/uav/uav.component';
-import { UAVService } from './service/uav.service';
-import { MetadataPageComponent } from './component/metadata-page/metadata-page.component';
-import { ReportsComponent } from './component/report/reports.component';
 import { ReportService } from './service/report.service';
-import { CreateCollectionModalComponent } from './component/modal/create-collection-modal.component';
-import { CreateStandaloneProductModalComponent } from './component/modal/create-standalone-product-group-modal.component';
-import { ArtifactPageComponent } from './component/modal/artifact-page.component';
-import { ArtifactUploadComponent } from './component/artifact-upload/artifact-upload.component';
-import { FilterModalComponent } from './component/modal/filter-modal.component';
-import { CreateProductGroupModalComponent } from './component/modal/create-product-group-modal.component';
-import { ShareProductModalComponent } from './component/modal/share-product-modal.component';
 import { UserAccessService } from './service/user-access.service';
-import { UserAccessModalComponent } from './component/modal/user-access-modal.component';
-import { StacItemPanelComponent } from './component/stac-item-panel/stac-item-panel.component';
 import { KnowStacService } from './service/know-stac.service';
-import { KnowStacPanelComponent } from './component/know-stac-panel/know-stac-panel.component';
-import { ImageryPanelComponent } from './component/imagery-panel/imagery-panel.component';
-import { KnowStacModalComponent } from './component/know-stac-modal/know-stac-modal.component';
-import { LegendPanelComponent } from './component/legend-panel/legend-panel.component';
-import { RunProcessModalComponent } from './component/modal/run-process-modal.component';
-import { ProcessRunModalComponent } from './component/modal/process-run-modal.component';
 import { UploadService } from './service/upload.service';
-import { TusUploadModalComponent } from './component/modal/tus-upload-modal.component';
-import { ArtifactUploadItemComponent } from './component/artifact-upload-item/artifact-upload-item.component';
-import { LayerPanelComponent } from './component/layer-panel/layer-panel.component';
-import { HelpComponent } from './component/help/help.component';
+import { UAVService } from './service/uav.service';
 
 @NgModule({
     imports: [
@@ -101,54 +54,7 @@ import { HelpComponent } from './component/help/help.component';
         SharedModule,
         SiteRoutingModule,
         PopoverModule.forRoot(),
-        NgxFileDropModule,
-        MapAttributeComponent,
-        ProductPanelComponent,
-        EntityModalComponent,
-        MetadataModalComponent,
-        ImagePreviewModalComponent,
-        CreateCollectionModalComponent,
-        CreateStandaloneProductModalComponent,
-        TusUploadModalComponent,
-        ODMRunModalComponent,
-        ArtifactPageComponent,
-        ArtifactUploadItemComponent,
-        RunProcessModalComponent,
-        CollectionModalComponent,
-        AccessibleSupportModalComponent,
-        ProductModalComponent,
-        FilterModalComponent,
-        ProjectsComponent,
-        HelpComponent,
-        ProcessingReportComponent,
-        TasksComponent,
-        ForbiddenNameDirective,
-        OnlyNumber,
-        SensorComponent,
-        SensorsComponent,
-        PlatformComponent,
-        PlatformsComponent,
-        TasksPanelComponent,
-        ClassificationsComponent,
-        ClassificationComponent,
-        UAVsComponent,
-        UAVsPageComponent,
-        UAVComponent,
-        MetadataPageComponent,
-        ReportsComponent,
-        EquipmentComponent,
-        StacItemPanelComponent,
-        EquipmentComponent,
-        LayerPanelComponent,
-        ArtifactUploadComponent,
-        CreateProductGroupModalComponent,
-        ShareProductModalComponent,
-        UserAccessModalComponent,
-        ImageryPanelComponent,
-        KnowStacPanelComponent,
-        KnowStacModalComponent,
-        LegendPanelComponent,
-        ProcessRunModalComponent
+        NgxFileDropModule
     ],
     providers: [
         ManagementService,
