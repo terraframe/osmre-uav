@@ -477,7 +477,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
     updateProductCount(product.getComponent());
   }
 
-  private static void updateProductCount(UasComponent component)
+  public static void updateProductCount(UasComponent component)
   {
     CollectionReportQuery query = new CollectionReportQuery(new QueryFactory());
     query.WHERE(query.getCollection().EQ(component.getOid()));
@@ -490,7 +490,7 @@ public class CollectionReport extends CollectionReportBase implements JSONSerial
 
         try
         {
-          Integer numberOfProducts = component.getNumberOfProducts();
+          Integer numberOfProducts = component.getNumberOfProductArtifacts();
 
           report.appLock();
           report.setNumberOfProducts(numberOfProducts);

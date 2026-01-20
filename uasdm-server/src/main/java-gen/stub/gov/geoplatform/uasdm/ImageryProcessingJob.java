@@ -29,7 +29,6 @@ import com.runwaysdk.constants.CommonProperties;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.ApplicationFileResource;
-import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.session.Session;
 import com.runwaysdk.system.VaultFile;
 import com.runwaysdk.system.scheduler.ExecutionContext;
@@ -51,6 +50,7 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
 import gov.geoplatform.uasdm.processing.raw.UploadValidationProcessor;
+import gov.geoplatform.uasdm.resource.EditableArchiveFileResource;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
@@ -228,7 +228,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
       if (ext.endsWith("gz") || ext.endsWith("zip"))
       {
-        res = new ArchiveFileResource(res);
+        res = new EditableArchiveFileResource(res);
       }
 
       var validator = new UploadValidationProcessor();

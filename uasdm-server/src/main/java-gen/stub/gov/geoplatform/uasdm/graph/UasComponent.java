@@ -886,17 +886,35 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     return this.getChildren(EdgeType.COMPONENT_HAS_DOCUMENT, DocumentIF.class);
   }
 
+  /**
+   * @return product groups.
+   */
   public List<Product> getProducts()
   {
     return this.getChildren(EdgeType.COMPONENT_HAS_PRODUCT, Product.class);
   }
 
-  public Integer getNumberOfProducts()
+  public Integer getNumberOfProductGroups()
   {
     MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_PRODUCT);
 
     StringBuilder statement = new StringBuilder();
     statement.append("SELECT OUT('" + mdEdge.getDBClassName() + "').size()");
+    statement.append(" FROM :rid ");
+
+    final GraphQuery<Integer> query = new GraphQuery<Integer>(statement.toString());
+    query.setParameter("rid", this.getRID());
+
+    return query.getSingleResult();
+  }
+  
+  public Integer getNumberOfProductArtifacts()
+  {
+    String chp = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_PRODUCT).getDBClassName();
+    String phd = MdEdgeDAO.getMdEdgeDAO(EdgeType.PRODUCT_HAS_DOCUMENT).getDBClassName();
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT OUT('" + chp + "').out('" + phd + "').size()");
     statement.append(" FROM :rid ");
 
     final GraphQuery<Integer> query = new GraphQuery<Integer>(statement.toString());

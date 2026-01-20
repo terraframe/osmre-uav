@@ -55,6 +55,7 @@ import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.resource.EditableArchiveFileResource;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
@@ -74,6 +75,9 @@ public class UploadValidationProcessor
   protected CollectionFormat format;
   
   protected boolean isValid = true;
+  
+  // The file being processed
+  protected ApplicationFileResource rootFile;
   
   protected ApplicationFileResource downstreamFile = null;
   
@@ -164,6 +168,7 @@ public class UploadValidationProcessor
   @SuppressWarnings("resource")
   public boolean process(ApplicationFileResource uploaded, AbstractUploadTask task, ProcessConfiguration configuration)
   {
+    this.rootFile = uploaded;
     this.isMultispectral = isMultispectral(task);
     this.isRadiometric= isRadiometric(task);
     this.isVideo = isVideo(task);
@@ -227,6 +232,8 @@ public class UploadValidationProcessor
         
         if (validateFile(res, task, configuration)) {
           count++;
+        } else {
+          removeFromProcessing(res);
         }
       }
       
@@ -358,8 +365,8 @@ public class UploadValidationProcessor
       {
         final String ext = res.getNameExtension().toLowerCase();
         final List<String> extensions = getSupportedExtensions(task, configuration);
-        final boolean isGeo = configuration.isODM() && ( res.getName().equalsIgnoreCase(configuration.toODM().getGeoLocationFileName()) && configuration.toODM().isIncludeGeoLocationFile() );
-        final boolean isGcp = configuration.isODM() && ( res.getName().equalsIgnoreCase(configuration.toODM().getGroundControlPointFileName()) && configuration.toODM().isIncludeGroundControlPointFile() );
+        final boolean isGeo = res.getName().equals("geo.txt") || (configuration.isODM() && ( res.getName().equalsIgnoreCase(configuration.toODM().getGeoLocationFileName()) && configuration.toODM().isIncludeGeoLocationFile() ));
+        final boolean isGcp = res.getName().equals("gcp_list.txt") || (configuration.isODM() && ( res.getName().equalsIgnoreCase(configuration.toODM().getGroundControlPointFileName()) && configuration.toODM().isIncludeGroundControlPointFile() ));
   
         if (isGeo)
         {
@@ -412,6 +419,14 @@ public class UploadValidationProcessor
     }
 
     return true;
+  }
+  
+  protected void removeFromProcessing(ApplicationFileResource res)
+  {
+    if (rootFile instanceof EditableArchiveFileResource)
+    {
+      ( (EditableArchiveFileResource) rootFile ).exclude(res);
+    }
   }
   
 }
