@@ -15,7 +15,7 @@ import { firstValueFrom } from 'rxjs';
 
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class UserAccessService {
 
 	constructor(private http: HttpClient, private eventService: EventService) { }

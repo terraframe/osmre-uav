@@ -16,7 +16,7 @@ import { environment } from 'src/environments/environment';
 
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class SessionService {
 
 	constructor(private eventService: EventService, private http: HttpClient, private authService: AuthService) {

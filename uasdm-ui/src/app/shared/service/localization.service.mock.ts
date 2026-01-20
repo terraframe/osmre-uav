@@ -5,7 +5,7 @@
 import { Injectable } from '@angular/core';
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class MockLocalizationService {
 
   public parseNumber(value: string) : number {

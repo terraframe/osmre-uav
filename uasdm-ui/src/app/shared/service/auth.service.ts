@@ -8,7 +8,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { User } from '../model/user';
 import { LocalizedValue } from '@shared/model/organization';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class AuthService {
 	private user: User = {
 		loggedIn: false,

@@ -23,7 +23,7 @@ export enum Endpoint {
     WAVE_LENGTH = '/api/wave-length'
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ClassificationService implements GenericTableService {
 
     constructor(private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService) {

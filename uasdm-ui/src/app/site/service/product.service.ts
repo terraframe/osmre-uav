@@ -14,7 +14,7 @@ import { environment } from 'src/environments/environment';
 
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ProductService {
 
 	constructor(private http: HttpClient, private eventService: EventService) { }

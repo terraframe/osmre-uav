@@ -24,7 +24,7 @@ import { ODMRun } from '@site/model/odmrun';
 
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ManagementService {
 
 	constructor(private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService, private authService: AuthService) { }

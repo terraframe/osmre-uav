@@ -63,7 +63,6 @@ module.exports = {
 //    ),
     new ngToolsWebpack.AngularCompilerPlugin({
       tsConfigPath: './tsconfig.json',
-      entryModule: './src/app/uasdm-app.module#UasdmAppModule',
       sourceMap: true
     })    
   ]

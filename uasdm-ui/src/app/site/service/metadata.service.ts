@@ -9,7 +9,7 @@ import { Metadata } from '../model/metadata';
 
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class MetadataService {
 
     private cache: any = {};

@@ -2,9 +2,7 @@
 ///
 ///
 
-import { NgModule } from '@angular/core';
-import { LocationStrategy, HashLocationStrategy } from '@angular/common';
-import { Routes, RouterModule } from '@angular/router';
+import { Routes } from '@angular/router';
 
 import { AdminGuardService } from '../shared/service/guard.service';
 
@@ -92,11 +90,4 @@ const routes: Routes = [
     }
 ];
 
-@NgModule( {
-    imports: [RouterModule.forChild( routes )],
-    exports: [RouterModule],
-    providers: [
-        { provide: LocationStrategy, useClass: HashLocationStrategy }
-    ]
-} )
-export class AdminRoutingModule { }
+export default routes;

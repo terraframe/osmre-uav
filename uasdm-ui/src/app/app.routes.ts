@@ -2,15 +2,13 @@
 ///
 ///
 
-import { NgModule } from '@angular/core';
-import { LocationStrategy, HashLocationStrategy } from '@angular/common';
-import { Routes, RouterModule } from '@angular/router';
+import { Routes } from '@angular/router';
 
 import { LoginComponent } from './core/component/login/login.component'
 import { ForgotPasswordComponent } from './core/component/forgotpassword/forgotpassword.component'
 import { ForgotPasswordCompleteComponent } from './core/component/forgotpassword-complete/forgotpassword-complete.component'
 
-const routes: Routes = [
+export const routes: Routes = [
     {
         path: 'menu',
         redirectTo: '/site/viewer',
@@ -36,23 +34,14 @@ const routes: Routes = [
     },
     {
         path: "admin",
-        loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule)
+        loadChildren: () => import('./admin/admin.routes')
     },
     {
         path: "site",
-        loadChildren: () => import('./site/site.module').then(m => m.SiteModule)
+        loadChildren: () => import('./site/site.routes')
     },
     {
         path: '**',
         redirectTo: '/site/viewer',
     }
 ];
-
-@NgModule( {
-    imports: [RouterModule.forRoot( routes )],
-    exports: [RouterModule],
-    providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }]
-} )
-export class UasdmAppRoutingModule { }
-
-export const routedComponents = [LoginComponent, ForgotPasswordComponent, ForgotPasswordCompleteComponent];

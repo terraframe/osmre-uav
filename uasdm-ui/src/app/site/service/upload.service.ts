@@ -9,9 +9,7 @@ import { WebStorageUrlStorage } from 'tus-js-client/lib/browser/urlStorage.js'
 
 
 
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root', })
 export class UploadService {
     private upload: Upload | null = null
 

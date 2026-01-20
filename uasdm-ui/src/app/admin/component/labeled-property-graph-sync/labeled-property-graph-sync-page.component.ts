@@ -5,16 +5,16 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-    standalone: false,
+  standalone: true,
   selector: 'labeled-property-graph-sync-page',
-    templateUrl: './labeled-property-graph-sync-page.component.html'
+  templateUrl: './labeled-property-graph-sync-page.component.html'
 })
 export class LPGSyncPageComponent implements OnInit {
 
-    constructor() { }
+  constructor() { }
 
-    ngOnInit(): void {
-        
-    }
+  ngOnInit(): void {
+
+  }
 
 }

@@ -11,7 +11,7 @@ import EnvironmentUtil from '@core/utility/environment-util';
 const mapboxKey = 'pk.eyJ1IjoidGVycmFmcmFtZSIsImEiOiJjanZxNTFnaTYyZ2RuNDlxcmNnejNtNjN6In0.-kmlS8Tgb2fNc1NPb5rJEQ';
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ConfigurationService {
 
     configuration: Configuration;
@@ -57,7 +57,7 @@ export class ConfigurationService {
     getKnowStacURL(): string {
         return this.getConfiguration().knowStacUrl;
     }
-    
+
     getMapboxKey(): string {
         return mapboxKey;
     }

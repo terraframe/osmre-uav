@@ -17,7 +17,7 @@ import { LocalizedValue } from '@shared/model/organization';
 
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class LPGSyncService implements GenericTableService {
 
     constructor(private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService) { }

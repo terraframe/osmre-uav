@@ -15,7 +15,7 @@ import { environment } from 'src/environments/environment';
 
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ProfileService {
 
     constructor( private eventService: EventService, private http: HttpClient ) { }
