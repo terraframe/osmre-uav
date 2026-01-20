@@ -7,12 +7,14 @@ import { Component, Input } from '@angular/core';
 import { EventService } from '@shared/service/event.service';
 import { ManagementService } from '@site/service/management.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
+import { NgIf } from '@angular/common';
 
 @Component({
-  standalone: false,
-  selector: 'artifact-upload',
-  templateUrl: './artifact-upload.component.html',
-  styleUrls: ['./artifact-upload.component.css']
+    standalone: true,
+    selector: 'artifact-upload',
+    templateUrl: './artifact-upload.component.html',
+    styleUrls: ['./artifact-upload.component.css'],
+    imports: [NgIf]
 })
 export class ArtifactUploadComponent {
   @Input() componentId: string;

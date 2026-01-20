@@ -61,6 +61,7 @@ export class MetadataService {
                 || fieldName === 'areaCovered'
                 || fieldName === 'weatherConditions'
                 || fieldName === 'isPrivate'
+                || fieldName === 'hasPIIConcern'
                 || fieldName === 'sensor'
                 || fieldName === 'uav');
         }

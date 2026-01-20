@@ -109,6 +109,7 @@ export class SiteEntity {
 	projectionName?: string;
 	orthoCorrectionModel?: string;
 	isPrivate?: boolean;
+	hasPIIConcern?: boolean;
 
 }
 
@@ -211,6 +212,7 @@ export class Selection {
 	weatherConditions?: string;
 	artifacts?: any[];
 	isPrivate?: boolean;
+	hasPIIConcern?: boolean;
 	format?: string;
 };
 

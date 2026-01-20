@@ -9,13 +9,15 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
 import { AuthService } from '@shared/service/auth.service';
+import { UasdmHeaderComponent } from '../../../shared/component/header/header.component';
 
 
 @Component({
-    standalone: false,
-  selector: 'system-info',
+    standalone: true,
+    selector: 'system-info',
     templateUrl: './system-info.component.html',
-    styleUrls: ['./system-info.css']
+    styleUrls: ['./system-info.css'],
+    imports: [UasdmHeaderComponent]
 })
 export class SystemInfoComponent implements OnInit {
     

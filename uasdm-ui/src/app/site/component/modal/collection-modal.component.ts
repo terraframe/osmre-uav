@@ -28,26 +28,33 @@ import EnvironmentUtil from '@core/utility/environment-util';
 import { environment } from 'src/environments/environment';
 import { WebSockets } from '@core/utility/web-sockets';
 import { ConfigurationService } from '@core/service/configuration.service';
-import { APP_BASE_HREF } from '@angular/common';
+import { APP_BASE_HREF, NgIf, NgFor, NgClass } from '@angular/common';
 import { CreateProductGroupModalComponent } from './create-product-group-modal.component';
 import { UserAccessModalComponent } from './user-access-modal.component';
 import { AuthService } from '@shared/service/auth.service';
 import { ImagePreviewModalComponent } from './image-preview-modal.component';
 import { TusUploadModalComponent } from './tus-upload-modal.component';
 import { COLLECTION_FORMATS } from '@site/model/sensor';
+import { RouterLink } from '@angular/router';
+import { TabsetComponent, TabDirective } from 'ngx-bootstrap/tabs';
+import { ArtifactUploadComponent } from '../artifact-upload/artifact-upload.component';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { SafeHtmlPipe } from '../../../shared/pipe/safe-html.pipe';
+import { IdmDatePipe } from '../../../shared/pipe/idmdate.pipe';
 
 @Component({
-	standalone: false,
-  selector: 'collection-modal',
-	templateUrl: './collection-modal.component.html',
-	styleUrls: ['./collection-modal.component.scss'],
-	providers: [BasicConfirmModalComponent, ArtifactPageComponent],
-	animations: [
-		fadeInOnEnterAnimation(),
-		fadeOutOnLeaveAnimation(),
-		slideInLeftOnEnterAnimation(),
-		slideInRightOnEnterAnimation(),
-	]
+    standalone: true,
+    selector: 'collection-modal',
+    templateUrl: './collection-modal.component.html',
+    styleUrls: ['./collection-modal.component.scss'],
+    providers: [BasicConfirmModalComponent, ArtifactPageComponent],
+    animations: [
+        fadeInOnEnterAnimation(),
+        fadeOutOnLeaveAnimation(),
+        slideInLeftOnEnterAnimation(),
+        slideInRightOnEnterAnimation(),
+    ],
+    imports: [NgIf, RouterLink, NgFor, TabsetComponent, TabDirective, NgClass, ArtifactUploadComponent, ArtifactPageComponent, NgxPaginationModule, SafeHtmlPipe, IdmDatePipe]
 })
 export class CollectionModalComponent implements OnInit, OnDestroy {
 	entity: SiteEntity;

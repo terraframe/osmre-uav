@@ -31,7 +31,7 @@ import {
   fadeInOnEnterAnimation,
   fadeOutOnLeaveAnimation
 } from "angular-animations";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, RouterLink } from "@angular/router";
 import { CreateCollectionModalComponent } from "./modal/create-collection-modal.component";
 import { CreateStandaloneProductModalComponent } from "./modal/create-standalone-product-group-modal.component";
 import { LayerColor, StacCollection, StacItem, StacLink, StacProperty, ToggleableLayer, ToggleableLayerType } from "@site/model/layer";
@@ -53,6 +53,19 @@ import { KnowStacService } from "@site/service/know-stac.service";
 import { isMapboxURL, transformMapboxUrl } from "maplibregl-mapbox-request-transformer";
 import { UploadService } from "@site/service/upload.service";
 import { TusUploadModalComponent } from "./modal/tus-upload-modal.component";
+import { NgIf, NgFor, NgClass, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet } from "@angular/common";
+import { CollapseDirective } from "ngx-bootstrap/collapse";
+import { UasdmHeaderComponent } from "../../shared/component/header/header.component";
+import { FormsModule } from "@angular/forms";
+import { TypeaheadDirective } from "ngx-bootstrap/typeahead";
+import { OrganizationFieldComponent } from "../../shared/component/organization-field/organization-field.component";
+import { TabsetComponent, TabDirective } from "ngx-bootstrap/tabs";
+import { ProductPanelComponent } from "./product-panel/product-panel.component";
+import { StacItemPanelComponent } from "./stac-item-panel/stac-item-panel.component";
+import { KnowStacPanelComponent } from "./know-stac-panel/know-stac-panel.component";
+import { ImageryPanelComponent } from "./imagery-panel/imagery-panel.component";
+import { AlertComponent } from "ngx-bootstrap/alert";
+import { LegendPanelComponent } from "./legend-panel/legend-panel.component";
 
 const enum PANEL_TYPE {
   SITE = 0,
@@ -63,14 +76,15 @@ const enum PANEL_TYPE {
 }
 
 @Component({
-  standalone: false,
-  selector: "projects",
-  templateUrl: "./projects.component.html",
-  styleUrls: ["./projects.css"],
-  animations: [
-    fadeInOnEnterAnimation(),
-    fadeOutOnLeaveAnimation()
-  ]
+    standalone: true,
+    selector: "projects",
+    templateUrl: "./projects.component.html",
+    styleUrls: ["./projects.css"],
+    animations: [
+        fadeInOnEnterAnimation(),
+        fadeOutOnLeaveAnimation()
+    ],
+    imports: [NgIf, NgFor, CollapseDirective, NgClass, UasdmHeaderComponent, FormsModule, TypeaheadDirective, OrganizationFieldComponent, TabsetComponent, TabDirective, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet, ProductPanelComponent, StacItemPanelComponent, KnowStacPanelComponent, ImageryPanelComponent, AlertComponent, RouterLink, LegendPanelComponent]
 })
 export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 

@@ -13,12 +13,15 @@ import { Subject } from 'rxjs';
 import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
 import { LPGSyncService } from '@shared/service/lpg-sync.service';
 import { LPGSync } from '@shared/model/lpg';
+import { NgIf } from '@angular/common';
+import { GenericTableComponent } from '../../../shared/component/generic-table/generic-table.component';
 
 @Component({
-    standalone: false,
-  selector: 'labeled-property-graph-sync-table',
+    standalone: true,
+    selector: 'labeled-property-graph-sync-table',
     templateUrl: './labeled-property-graph-sync-table.component.html',
-    styleUrls: ['./labeled-property-graph-sync-table.css']
+    styleUrls: ['./labeled-property-graph-sync-table.css'],
+    imports: [NgIf, GenericTableComponent]
 })
 export class LPGSyncTableComponent implements OnInit {
     bsModalRef: BsModalRef;

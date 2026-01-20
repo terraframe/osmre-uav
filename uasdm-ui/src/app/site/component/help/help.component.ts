@@ -12,6 +12,7 @@ import { PageResult } from '@shared/model/page';
 import EnvironmentUtil from '@core/utility/environment-util';
 import { environment } from 'src/environments/environment';
 import { LngLatBounds } from 'maplibre-gl';
+import { UasdmHeaderComponent } from '../../../shared/component/header/header.component';
 
 const enum VIEW_MODE {
     FORM = 0,
@@ -19,10 +20,11 @@ const enum VIEW_MODE {
 }
 
 @Component({
-    standalone: false,
+    standalone: true,
     selector: 'help',
     templateUrl: './help.component.html',
-    styleUrls: []
+    styleUrls: [],
+    imports: [UasdmHeaderComponent]
 })
 export class HelpComponent {
 

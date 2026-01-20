@@ -6,22 +6,25 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Subject } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
-import { Location } from '@angular/common';
+import { Location, NgIf, NgClass } from '@angular/common';
 
-import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
+import { FileUploader, FileUploaderOptions, FileUploadModule } from 'ng2-file-upload';
 
 import { EventService } from '@shared/service/event.service';
 import EnvironmentUtil from '@core/utility/environment-util';
+import { FormsModule } from '@angular/forms';
+import { LocalizeComponent } from '../../../shared/component/localize/localize.component';
+import { LocalizePipe } from '../../../shared/pipe/localize.pipe';
 
 
 
-@Component( {
-
-    standalone: false,
-  selector: 'system-logo',
+@Component({
+    standalone: true,
+    selector: 'system-logo',
     templateUrl: './system-logo.component.html',
-    styles: []
-} )
+    styles: [],
+    imports: [FormsModule, NgIf, FileUploadModule, NgClass, LocalizeComponent, LocalizePipe]
+})
 export class SystemLogoComponent implements OnInit {
     oid: string;
     message: string = null;

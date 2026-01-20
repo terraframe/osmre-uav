@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -93,6 +93,7 @@ import gov.geoplatform.uasdm.view.AdminCondition;
 import gov.geoplatform.uasdm.view.Artifact;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
+import gov.geoplatform.uasdm.view.EqOrNullCondition;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import net.geoprism.GeoprismUser;
@@ -617,7 +618,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   public RemoteFileObject download(String key, String range)
   {
     if (!key.startsWith(this.getS3location()))
-   {
+    {
       return RemoteFileFacade.download(this.getS3location() + key, range);
     }
 
@@ -662,7 +663,8 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.NAME)));
     list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.FOLDERNAME), true, new AdminCondition()));
     list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.DESCRIPTION)));
-    list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.ISPRIVATE)));
+    list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.HASPIICONCERN)));
+    list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.ISPRIVATE), false, new EqOrNullCondition(UasComponent.HASPIICONCERN, false)));
 
     return list;
   }
@@ -1323,6 +1325,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   public UasComponentIF getUasComponent()
   {
     return this;
+  }
+  
+  @Override
+  public boolean hasPIIConcern()
+  {
+    return this.getHasPIIConcern() != null && this.getHasPIIConcern();
   }
 
 }

@@ -21,21 +21,26 @@ import { UploadMetadata, UploadProgress } from '@site/model/upload';
 import { ModalTypes } from '@shared/model/modal';
 import { ManagementService } from '@site/service/management.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { NgxFileDropEntry } from 'ngx-file-drop';
+import { NgxFileDropEntry, NgxFileDropModule } from 'ngx-file-drop';
+import { FormsModule } from '@angular/forms';
+import { NgIf, NgFor, DecimalPipe } from '@angular/common';
+import { BooleanFieldComponent } from '../../../shared/component/boolean-field/boolean-field.component';
+import { RouterLink } from '@angular/router';
 
 type SupportedRow = { type: string; formats: string };
 
 @Component({
-	standalone: false,
-	selector: 'tus-upload-modal',
-	templateUrl: './tus-upload-modal.component.html',
-	styleUrls: [
-		'./upload-modal.component.css',
-	],
-	animations: [
-		fadeInOnEnterAnimation(),
-		fadeOutOnLeaveAnimation()
-	]
+    standalone: true,
+    selector: 'tus-upload-modal',
+    templateUrl: './tus-upload-modal.component.html',
+    styleUrls: [
+        './upload-modal.component.css',
+    ],
+    animations: [
+        fadeInOnEnterAnimation(),
+        fadeOutOnLeaveAnimation()
+    ],
+    imports: [FormsModule, NgIf, BooleanFieldComponent, NgFor, RouterLink, NgxFileDropModule, DecimalPipe]
 })
 export class TusUploadModalComponent implements OnInit, OnDestroy {
 

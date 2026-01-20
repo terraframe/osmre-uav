@@ -13,13 +13,22 @@ import { MapService } from '@site/service/map.service';
 import { ConfigurationService } from '@core/service/configuration.service';
 import { LngLat, Map, NavigationControl } from 'maplibre-gl';
 import { isMapboxURL, transformMapboxUrl } from 'maplibregl-mapbox-request-transformer';
+import { FormsModule } from '@angular/forms';
+import { TypeaheadDirective } from 'ngx-bootstrap/typeahead';
+import { NgIf, NgFor } from '@angular/common';
 
 
 @Component({
-    standalone: false,
-  selector: 'map-attribute',
+    standalone: true,
+    selector: 'map-attribute',
     templateUrl: './map-attribute.component.html',
     styleUrls: [],
+    imports: [
+        FormsModule,
+        TypeaheadDirective,
+        NgIf,
+        NgFor,
+    ],
 })
 export class MapAttributeComponent implements OnInit, AfterViewInit, OnDestroy {
 

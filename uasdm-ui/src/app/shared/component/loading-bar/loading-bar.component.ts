@@ -5,13 +5,14 @@
 import { Component, OnInit } from '@angular/core';
 
 import { EventService, IEventListener } from '../../service/event.service';
+import { NgIf } from '@angular/common';
 
 @Component({
-  
-  standalone: false,
-  selector: 'loading-bar',
-  templateUrl: './loading-bar.component.html',
-  styleUrls: []
+    standalone: true,
+    selector: 'loading-bar',
+    templateUrl: './loading-bar.component.html',
+    styleUrls: [],
+    imports: [NgIf]
 })
 export class LoadingBarComponent implements OnInit, IEventListener {
   showIndicator: boolean = false;

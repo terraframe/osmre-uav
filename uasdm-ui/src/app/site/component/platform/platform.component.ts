@@ -13,15 +13,20 @@ import { Classification } from '@site/model/classification';
 import { ClassificationService, Endpoint } from '@site/service/classification.service';
 import { SensorService } from '@site/service/sensor.service';
 import { Sensor } from '@site/model/sensor';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { AuthService } from '@shared/service/auth.service';
+import { UasdmHeaderComponent } from '../../../shared/component/header/header.component';
+import { NgIf, NgFor } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { BooleanFieldComponent } from '../../../shared/component/boolean-field/boolean-field.component';
 
 @Component({
-    standalone: false,
-  selector: 'platform',
+    standalone: true,
+    selector: 'platform',
     templateUrl: './platform.component.html',
-    styleUrls: ['./platform.component.css']
+    styleUrls: ['./platform.component.css'],
+    imports: [UasdmHeaderComponent, NgIf, FormsModule, NgFor, BooleanFieldComponent, RouterLink]
 })
 export class PlatformComponent implements OnInit {
     

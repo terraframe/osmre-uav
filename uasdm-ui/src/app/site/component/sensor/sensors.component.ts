@@ -13,12 +13,15 @@ import { SensorService } from '@site/service/sensor.service';
 import { Router } from '@angular/router';
 import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
 import { Subject } from 'rxjs';
+import { NgIf } from '@angular/common';
+import { GenericTableComponent } from '../../../shared/component/generic-table/generic-table.component';
 
 @Component({
-    standalone: false,
-  selector: 'sensors',
+    standalone: true,
+    selector: 'sensors',
     templateUrl: './sensors.component.html',
-    styleUrls: []
+    styleUrls: [],
+    imports: [NgIf, GenericTableComponent]
 })
 export class SensorsComponent implements OnInit {
     bsModalRef: BsModalRef;

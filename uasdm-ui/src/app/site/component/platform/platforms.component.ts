@@ -13,12 +13,15 @@ import { PlatformService } from '@site/service/platform.service';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
+import { NgIf } from '@angular/common';
+import { GenericTableComponent } from '../../../shared/component/generic-table/generic-table.component';
 
 @Component({
-    standalone: false,
-  selector: 'platforms',
+    standalone: true,
+    selector: 'platforms',
     templateUrl: './platforms.component.html',
-    styleUrls: ['./platforms.css']
+    styleUrls: ['./platforms.css'],
+    imports: [NgIf, GenericTableComponent]
 })
 export class PlatformsComponent implements OnInit {
     bsModalRef: BsModalRef;

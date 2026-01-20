@@ -2,7 +2,7 @@
 ///
 ///
 
-import { CommonModule } from '@angular/common';  
+import { CommonModule, NgIf } from '@angular/common';  
 import { BrowserModule } from '@angular/platform-browser';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
@@ -19,16 +19,19 @@ import {
 } from 'angular-animations';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ODMRun } from '@site/model/odmrun';
+import { FormsModule } from '@angular/forms';
+import { BooleanFieldComponent } from '../../../shared/component/boolean-field/boolean-field.component';
 
 @Component({
-	standalone: false,
-  selector: 'odmrun-modal',
-	templateUrl: './odmrun-modal.component.html',
-	styleUrls: ['./odmrun-modal.component.css'],
-	animations: [
-		fadeInOnEnterAnimation(),
-		fadeOutOnLeaveAnimation()
-	]
+    standalone: true,
+    selector: 'odmrun-modal',
+    templateUrl: './odmrun-modal.component.html',
+    styleUrls: ['./odmrun-modal.component.css'],
+    animations: [
+        fadeInOnEnterAnimation(),
+        fadeOutOnLeaveAnimation()
+    ],
+    imports: [NgIf, FormsModule, BooleanFieldComponent]
 })
 export class ODMRunModalComponent implements OnInit, OnDestroy {
 	message: string = "";

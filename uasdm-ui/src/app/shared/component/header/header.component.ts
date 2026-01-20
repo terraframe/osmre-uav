@@ -14,16 +14,18 @@ import EnvironmentUtil from '@core/utility/environment-util';
 import { Configuration } from '@core/model/application';
 import { environment } from 'src/environments/environment';
 import { ConfigurationService } from '@core/service/configuration.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { BsDropdownDirective, BsDropdownToggleDirective, BsDropdownMenuDirective } from 'ngx-bootstrap/dropdown';
+import { NgIf } from '@angular/common';
 
 
 
 @Component({
-
-    standalone: false,
-  selector: 'uasdm-header',
+    standalone: true,
+    selector: 'uasdm-header',
     templateUrl: './header.component.html',
-    styleUrls: ['./header.css']
+    styleUrls: ['./header.css'],
+    imports: [RouterLink, BsDropdownDirective, BsDropdownToggleDirective, BsDropdownMenuDirective, RouterLinkActive, NgIf]
 })
 export class UasdmHeaderComponent {
     context: string;

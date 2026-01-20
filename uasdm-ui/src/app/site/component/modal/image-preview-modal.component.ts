@@ -8,14 +8,17 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 import { ErrorHandler } from '@shared/component';
 
 import { ManagementService } from '@site/service/management.service';
+import { NgIf } from '@angular/common';
+import { SafeHtmlPipe } from '../../../shared/pipe/safe-html.pipe';
 
 
-@Component( {
-    standalone: false,
-  selector: 'image-preview-modal',
+@Component({
+    standalone: true,
+    selector: 'image-preview-modal',
     templateUrl: './image-preview-modal.component.html',
-    styleUrls: ['./image-preview-modal.component.css']
-} )
+    styleUrls: ['./image-preview-modal.component.css'],
+    imports: [NgIf, SafeHtmlPipe]
+})
 export class ImagePreviewModalComponent {
 
     message: string = null;

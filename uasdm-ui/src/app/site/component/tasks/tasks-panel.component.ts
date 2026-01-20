@@ -13,13 +13,17 @@ import { ManagementService } from '@site/service/management.service';
 import { ODMRunModalComponent } from '../modal/odmrun-modal.component';
 import { ProcessRunModalComponent } from '../modal/process-run-modal.component';
 import { getRuntimeDisplay } from '@site/model/odmrun';
+import { NgClass, NgFor, NgIf } from '@angular/common';
+import { CollapseDirective } from 'ngx-bootstrap/collapse';
+import { IdmDatePipe } from '../../../shared/pipe/idmdate.pipe';
 
 
 @Component({
-	standalone: false,
-  selector: 'tasks-panel',
-	templateUrl: './tasks-panel.component.html',
-	styleUrls: ['./tasks-panel.css']
+    standalone: true,
+    selector: 'tasks-panel',
+    templateUrl: './tasks-panel.component.html',
+    styleUrls: ['./tasks-panel.css'],
+    imports: [NgClass, CollapseDirective, NgFor, NgIf, IdmDatePipe]
 })
 export class TasksPanelComponent implements OnInit {
 

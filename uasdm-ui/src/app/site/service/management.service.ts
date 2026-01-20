@@ -767,6 +767,9 @@ export class ManagementService {
 		if (condition != null && condition.type === 'eq') {
 			return (entity[condition.name] === condition.value);
 		}
+		else if (condition != null && condition.type === 'eqn') {
+			return (entity[condition.name] === condition.value || entity[condition.name] == null);
+		}
 		else if (condition != null && condition.type === 'admin') {
 			return this.authService.isAdmin();
 		}

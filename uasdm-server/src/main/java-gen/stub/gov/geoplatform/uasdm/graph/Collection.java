@@ -121,12 +121,43 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public void apply(boolean regenerateMetadata)
   {
+    boolean hasPIIConcern = this.isModified(UasComponent.HASPIICONCERN) && this.hasPIIConcern();
+
+    if (hasPIIConcern)
+    {
+      this.setIsPrivate(true);
+    }
+
+    if (this.isNew())
+    {
+      this.setMetadataUploaded(false);
+    }
+    else if (this.isModified(UasComponent.ISPRIVATE) && this.isPrivate())
+    {
+      boolean isPublished = this.getProducts().stream().anyMatch(p -> p.isPublished());
+
+      if (isPublished)
+      {
+        GenericException ex = new GenericException();
+        ex.setUserMessage("A collection can not be made private if it has published products");
+        throw ex;
+      }
+    }
+
     if (this.getCollectionEndDate() == null)
     {
       this.setCollectionEndDate(this.getCollectionDate());
     }
 
     super.apply(regenerateMetadata);
+
+    if (this.hasPIIConcern())
+    {
+      this.getProducts().stream().filter(p -> !p.isLocked()).forEach(p -> {
+        p.toggleLock();
+      });
+    }
+
   }
 
   @Override
@@ -140,11 +171,13 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     // Balk
   }
-  
+
   /**
-   * @return All raw "input" documents which may be used for processing, which may in practice be imagery, pointclouds, etc.
+   * @return All raw "input" documents which may be used for processing, which
+   *         may in practice be imagery, pointclouds, etc.
    */
-  public List<DocumentIF> getRaw() {
+  public List<DocumentIF> getRaw()
+  {
     return getDocuments().stream()//
         .filter(doc -> {
           return doc.getS3location().contains("/raw/");
@@ -153,8 +186,9 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
           return !doc.getS3location().endsWith(".xml");
         }).collect(Collectors.toList());
   }
-  
-  public CollectionFormat getFormat() {
+
+  public CollectionFormat getFormat()
+  {
     if (StringUtils.isBlank(this.getSCollectionFormat()))
       return null;
 
@@ -366,22 +400,6 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public void applyWithParent(UasComponentIF parent)
   {
-    if (this.isNew())
-    {
-      this.setMetadataUploaded(false);
-    }
-    else if (this.isModified(UasComponent.ISPRIVATE) && this.isPrivate())
-    {
-      boolean isPublished = this.getProducts().stream().anyMatch(p -> p.isPublished());
-
-      if (isPublished)
-      {
-        GenericException ex = new GenericException();
-        ex.setUserMessage("A collection can not be made private if it has published products");
-        throw ex;
-      }
-    }
-
     super.applyWithParent(parent);
 
     if (this.isNew())
@@ -706,8 +724,9 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public boolean isMultiSpectral()
   {
     var format = this.getFormat();
-    if (format != null) return format.isMultispectral();
-    
+    if (format != null)
+      return format.isMultispectral();
+
     return this.getMetadata().map(metadata -> {
       Sensor sensor = metadata.getSensor();
       if (sensor == null)

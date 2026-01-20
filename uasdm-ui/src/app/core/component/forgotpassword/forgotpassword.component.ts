@@ -8,13 +8,18 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { ErrorHandler } from '@shared/component';
 
 import { ForgotPasswordService } from '../../service/forgotpassword.service';
+import { FormsModule } from '@angular/forms';
+import { LocalizeComponent } from '../../../shared/component/localize/localize.component';
+import { NgIf } from '@angular/common';
+import { LocalizePipe } from '../../../shared/pipe/localize.pipe';
 
 
 @Component({
-	standalone: false,
-  selector: 'forgotpassword',
-	templateUrl: './forgotpassword.component.html',
-	styleUrls: ['./forgotpassword.component.css']
+    standalone: true,
+    selector: 'forgotpassword',
+    templateUrl: './forgotpassword.component.html',
+    styleUrls: ['./forgotpassword.component.css'],
+    imports: [FormsModule, LocalizeComponent, NgIf, LocalizePipe]
 })
 export class ForgotPasswordComponent implements OnInit {
 	username: string;

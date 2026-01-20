@@ -6,19 +6,30 @@ import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { BsModalService } from 'ngx-bootstrap/modal';
-import { NgxFileDropEntry, FileSystemFileEntry, FileSystemDirectoryEntry } from 'ngx-file-drop';
+import { NgxFileDropEntry, FileSystemFileEntry, FileSystemDirectoryEntry, NgxFileDropModule } from 'ngx-file-drop';
 
 import { ErrorHandler, BasicConfirmModalComponent } from '@shared/component';
 
 import { SiteEntity, SiteObjectsResultSet } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 import { environment } from 'src/environments/environment';
+import { NgIf, NgFor } from '@angular/common';
+import { TabsetComponent, TabDirective } from 'ngx-bootstrap/tabs';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @Component({
-    standalone: false,
-  selector: 'accessible-support-modal',
+    standalone: true,
+    selector: 'accessible-support-modal',
     templateUrl: './accessible-support-modal.component.html',
     styleUrls: [],
+    imports: [
+        NgIf,
+        NgFor,
+        TabsetComponent,
+        TabDirective,
+        NgxFileDropModule,
+        NgxPaginationModule,
+    ],
 })
 export class AccessibleSupportModalComponent implements OnInit {
 

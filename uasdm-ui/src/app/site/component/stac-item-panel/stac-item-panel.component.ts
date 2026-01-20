@@ -11,6 +11,12 @@ import { Criteria, Filter, StacItem, ToggleableLayer, ToggleableLayerType } from
 import { PageResult } from '@shared/model/page';
 import { environment } from 'src/environments/environment';
 import { LngLatBounds } from 'maplibre-gl';
+import { FormsModule } from '@angular/forms';
+import { NgIf, NgFor, KeyValuePipe } from '@angular/common';
+import { TypeaheadDirective } from 'ngx-bootstrap/typeahead';
+import { BooleanFieldComponent } from '../../../shared/component/boolean-field/boolean-field.component';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { SafeHtmlPipe } from '../../../shared/pipe/safe-html.pipe';
 
 const enum VIEW_MODE {
 	FORM = 0,
@@ -18,9 +24,11 @@ const enum VIEW_MODE {
 }
 
 @Component({
-	selector: 'stac-item-panel',
-	templateUrl: './stac-item-panel.component.html',
-	styleUrls: []
+    selector: 'stac-item-panel',
+    templateUrl: './stac-item-panel.component.html',
+    styleUrls: [],
+    standalone: true,
+    imports: [FormsModule, NgIf, TypeaheadDirective, NgFor, BooleanFieldComponent, NgxPaginationModule, KeyValuePipe, SafeHtmlPipe]
 })
 export class StacItemPanelComponent implements OnInit, OnDestroy {
 

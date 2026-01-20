@@ -23,6 +23,10 @@ import {
 	fadeInOnEnterAnimation,
 	fadeOutOnLeaveAnimation
 } from 'angular-animations';
+import { NgIf, NgFor } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { BooleanFieldComponent } from '../../../shared/component/boolean-field/boolean-field.component';
+import { MetadataPageComponent } from '../metadata-page/metadata-page.component';
 
 export class Page {
 	index?: number;
@@ -32,14 +36,15 @@ export class Page {
 };
 
 @Component({
-	standalone: false,
-  selector: 'create-collection-modal',
-	templateUrl: './create-collection-modal.component.html',
-	styleUrls: ['./upload-modal.component.css'],
-	animations: [
-		fadeInOnEnterAnimation(),
-		fadeOutOnLeaveAnimation()
-	]
+    standalone: true,
+    selector: 'create-collection-modal',
+    templateUrl: './create-collection-modal.component.html',
+    styleUrls: ['./upload-modal.component.css'],
+    animations: [
+        fadeInOnEnterAnimation(),
+        fadeOutOnLeaveAnimation()
+    ],
+    imports: [NgIf, NgFor, FormsModule, BooleanFieldComponent, MetadataPageComponent]
 })
 export class CreateCollectionModalComponent implements OnInit, OnDestroy {
 	message: string = "";

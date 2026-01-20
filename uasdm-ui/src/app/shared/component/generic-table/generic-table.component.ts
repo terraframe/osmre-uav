@@ -3,18 +3,22 @@
 ///
 
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
-import { LazyLoadEvent } from 'primeng/api';
+import { LazyLoadEvent, PrimeTemplate } from 'primeng/api';
 
 import { PageResult } from '@shared/model/page';
 
 import { Subject } from 'rxjs';
 import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
-import { TableLazyLoadEvent } from 'primeng/table';
+import { TableLazyLoadEvent, TableModule } from 'primeng/table';
+import { NgFor, NgClass, NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
+import { DropdownModule } from 'primeng/dropdown';
+import { RouterLink } from '@angular/router';
 @Component({
-    standalone: false,
-  selector: 'generic-table',
+    standalone: true,
+    selector: 'generic-table',
     templateUrl: './generic-table.component.html',
-    styleUrls: ['./generic-table.css']
+    styleUrls: ['./generic-table.css'],
+    imports: [TableModule, PrimeTemplate, NgFor, NgClass, NgIf, NgSwitch, NgSwitchCase, DropdownModule, RouterLink, NgSwitchDefault]
 })
 export class GenericTableComponent implements OnInit, OnDestroy {
     page: PageResult<Object> = {

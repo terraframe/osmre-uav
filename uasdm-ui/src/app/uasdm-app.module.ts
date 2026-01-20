@@ -51,14 +51,11 @@ import { ConfigurationService } from '@core/service/configuration.service';
         SharedModule.forRoot(),
         CollapseModule.forRoot(),
         TreeModule,
-    ],
-    declarations: [
-        UasdmAppComponent,
         LoginHeaderComponent,
-
         // Routing components
-        routedComponents
+        routedComponents,
     ],
+    declarations: [UasdmAppComponent],
     providers: [
         {
             provide: APP_BASE_HREF,
@@ -80,7 +77,7 @@ import { ConfigurationService } from '@core/service/configuration.service';
             'useFactory': (service: ConfigurationService) => {
                 // Do initing of services that is required before app loads
                 // NOTE: this factory needs to return a function (that then returns a promise)
-                return () => service.load()  // + any other services...
+                return () => service.load(); // + any other services...
             },
             'deps': [ConfigurationService, HttpClientModule],
             'multi': true,

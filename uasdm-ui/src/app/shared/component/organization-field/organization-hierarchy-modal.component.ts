@@ -8,12 +8,13 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { ErrorHandler } from '@shared/component';
 
-import { TreeComponent, TreeNode } from '@ali-hm/angular-tree-component';
+import { TreeComponent, TreeNode, TreeModule } from '@ali-hm/angular-tree-component';
 import { Organization, OrganizationNode } from '@shared/model/organization';
 import { PageResult } from '@shared/model/page';
 import { OrganizationService } from '@shared/service/organization.service';
 import { Observer, Subject, Subscription } from 'rxjs';
-import { ContextMenuComponent, ContextMenuService } from '@perfectmemory/ngx-contextmenu';
+import { ContextMenuComponent, ContextMenuService, ContextMenuModule } from '@perfectmemory/ngx-contextmenu';
+import { NgIf } from '@angular/common';
 
 const PAGE_SIZE: number = 100;
 
@@ -35,10 +36,11 @@ class PaginatedTreeNode<T> {
 }
 
 @Component({
-	standalone: false,
-  selector: 'organization-hierarchy-modal',
-	templateUrl: './organization-hierarchy-modal.component.html',
-	styles: ['.modal-form .check-block .chk-area { margin: 10px 0px 0 0;}']
+    standalone: true,
+    selector: 'organization-hierarchy-modal',
+    templateUrl: './organization-hierarchy-modal.component.html',
+    styles: ['.modal-form .check-block .chk-area { margin: 10px 0px 0 0;}'],
+    imports: [ContextMenuModule, NgIf, TreeModule]
 })
 export class OrganizationHierarchyModalComponent implements OnInit, OnDestroy {
 

@@ -109,7 +109,7 @@ public class Product extends ProductBase implements ProductIF
   }
 
   public static final String  ODM_ALL_DIR               = "odm_all";
-  
+
   public static final String  SILVIMETRIC_ORTHO_REGEX   = ".*\\/" + ImageryComponent.ORTHO + "\\/(tree_canopy_cover|tree_structure|ground_surface_model|terrain_model)" + CogTifProcessor.COG_EXTENSION.replaceAll("\\.", "\\\\.");
 
   public static final String  MAPPABLE_ORTHO_REGEX      = ".*\\/" + ImageryComponent.ORTHO + "\\/[^\\/]+" + CogTifProcessor.COG_EXTENSION.replaceAll("\\.", "\\\\.");
@@ -146,6 +146,17 @@ public class Product extends ProductBase implements ProductIF
       InvalidUasComponentNameException ex = new InvalidUasComponentNameException("The product name [" + this.getProductName() + "] has an invalid character. Disallowed characters are " + UasComponentIF.DISALLOWED_FILENAME_REGEX);
       ex.setAttributeName(mdAttribute.getDisplayLabel(Session.getCurrentLocale()));
       throw ex;
+    }
+
+    if (isNew && component instanceof Collection)
+    {
+      Collection collection = (Collection) component;
+
+      if (collection.hasPIIConcern())
+      {
+        this.setLocked(!this.isLocked());
+        this.setLockedById(collection.getOwnerOid());
+      }
     }
 
     this.apply();
@@ -289,9 +300,9 @@ public class Product extends ProductBase implements ProductIF
   }
 
   /**
-   * WARNING
-   * This method does not create an associated metadata with the created product. All products must have metadata associated with them.
-   * You probably want to use component.createProductIfNotExist instead.
+   * WARNING This method does not create an associated metadata with the created
+   * product. All products must have metadata associated with them. You probably
+   * want to use component.createProductIfNotExist instead.
    * 
    * @param uasComponent
    * @param productName
@@ -321,9 +332,9 @@ public class Product extends ProductBase implements ProductIF
   }
 
   /**
-   * WARNING
-   * This method does not create an associated metadata with the created product. All products must have metadata associated with them.
-   * You probably want to use component.createProductIfNotExist instead.
+   * WARNING This method does not create an associated metadata with the created
+   * product. All products must have metadata associated with them. You probably
+   * want to use component.createProductIfNotExist instead.
    * 
    * @param uasComponent
    * @param productName

@@ -17,12 +17,21 @@ import { ConfigurationService } from '@core/service/configuration.service';
 import { PageResult } from '@shared/model/page';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorHandler } from '@shared/component';
+import { UasdmHeaderComponent } from '../../../shared/component/header/header.component';
+import { AccountsComponent } from '../account/accounts.component';
+import { SystemLogosComponent } from '../logo/system-logos.component';
+import { SessionEventComponent } from '../session-event/session-event.component';
+import { NgFor, NgIf } from '@angular/common';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { OrganizationSyncTableComponent } from '../organization-sync/organization-sync-table.component';
+import { LPGSyncTableComponent } from '../labeled-property-graph-sync/labeled-property-graph-sync-table.component';
 
 @Component({
-    standalone: false,
-  selector: 'system-configuration',
+    standalone: true,
+    selector: 'system-configuration',
     templateUrl: './system-configuration.component.html',
-    styleUrls: []
+    styleUrls: [],
+    imports: [UasdmHeaderComponent, AccountsComponent, SystemLogosComponent, SessionEventComponent, NgFor, NgIf, NgxPaginationModule, OrganizationSyncTableComponent, LPGSyncTableComponent]
 })
 export class SystemConfigurationComponent implements OnInit {
 

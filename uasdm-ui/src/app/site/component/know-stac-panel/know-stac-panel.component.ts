@@ -8,12 +8,17 @@ import { StacCollection, StacItem, StacLink, StacProperty } from '@site/model/la
 import { KnowStacService } from '@site/service/know-stac.service';
 import { LngLatBounds } from 'maplibre-gl';
 import { environment } from 'src/environments/environment';
+import { NgIf, NgFor, NgSwitch, NgSwitchCase, NgSwitchDefault, KeyValuePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { BooleanFieldComponent } from '../../../shared/component/boolean-field/boolean-field.component';
 
 
 @Component({
-	selector: 'know-stac-panel',
-	templateUrl: './know-stac-panel.component.html',
-	styleUrls: []
+    selector: 'know-stac-panel',
+    templateUrl: './know-stac-panel.component.html',
+    styleUrls: [],
+    standalone: true,
+    imports: [NgIf, NgFor, FormsModule, BooleanFieldComponent, NgSwitch, NgSwitchCase, NgSwitchDefault, KeyValuePipe]
 })
 export class KnowStacPanelComponent implements OnInit, OnDestroy {
 

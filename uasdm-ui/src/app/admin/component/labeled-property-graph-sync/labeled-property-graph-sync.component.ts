@@ -16,12 +16,16 @@ import { WebSocketSubject, webSocket } from 'rxjs/webSocket';
 import { WebSockets } from '@core/utility/web-sockets';
 import { EventService } from '@shared/service/event.service';
 import { ModalTypes } from '@shared/model/modal';
+import { UasdmHeaderComponent } from '../../../shared/component/header/header.component';
+import { NgIf, NgFor } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-    standalone: false,
-  selector: 'labeled-property-graph-sync',
+    standalone: true,
+    selector: 'labeled-property-graph-sync',
     templateUrl: './labeled-property-graph-sync.component.html',
-    styleUrls: []
+    styleUrls: [],
+    imports: [UasdmHeaderComponent, NgIf, FormsModule, NgFor]
 })
 export class LPGSyncComponent implements OnInit, OnDestroy {
 

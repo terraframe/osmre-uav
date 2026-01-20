@@ -27,9 +27,13 @@ import { AuthService } from '@shared/service/auth.service';
 import { ErrorHandler } from '@shared/component';
 import { LocalizedValue } from '@shared/model/organization';
 import { ShareProductModalComponent } from '../modal/share-product-modal.component';
+import { FormsModule } from '@angular/forms';
+import { NgFor, NgIf, NgClass } from '@angular/common';
+import { PopoverDirective } from 'ngx-bootstrap/popover';
+import { SafeHtmlPipe } from '../../../shared/pipe/safe-html.pipe';
 
 @Component({
-    standalone: false,
+    standalone: true,
     selector: 'product-panel',
     templateUrl: './product-panel.component.html',
     styleUrl: './product-panel.component.scss',
@@ -38,7 +42,8 @@ import { ShareProductModalComponent } from '../modal/share-product-modal.compone
         fadeOutOnLeaveAnimation(),
         bounceInOnEnterAnimation(),
         bounceOutOnLeaveAnimation()
-    ]
+    ],
+    imports: [FormsModule, NgFor, NgIf, NgClass, PopoverDirective, SafeHtmlPipe]
 })
 export class ProductPanelComponent implements OnDestroy {
 

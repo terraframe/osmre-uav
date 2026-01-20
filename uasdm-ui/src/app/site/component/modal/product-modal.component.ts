@@ -23,18 +23,26 @@ import {
 } from 'angular-animations';
 import { environment } from 'src/environments/environment';
 import { MetadataModalComponent } from './metadata-modal.component';
+import { NgIf, NgFor } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { TabsetComponent, TabDirective } from 'ngx-bootstrap/tabs';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { ArtifactPageComponent } from './artifact-page.component';
+import { SafeHtmlPipe } from '../../../shared/pipe/safe-html.pipe';
+import { IdmDatePipe } from '../../../shared/pipe/idmdate.pipe';
 
 @Component({
-	standalone: false,
-  selector: 'product-modal',
-	templateUrl: './product-modal.component.html',
-	providers: [CollectionModalComponent],
-	styleUrls: ['./product-modal.component.css'],
-	animations: [
-		fadeInOnEnterAnimation(),
-		fadeOutOnLeaveAnimation(),
-		bounceInOnEnterAnimation()
-	]
+    standalone: true,
+    selector: 'product-modal',
+    templateUrl: './product-modal.component.html',
+    providers: [CollectionModalComponent],
+    styleUrls: ['./product-modal.component.css'],
+    animations: [
+        fadeInOnEnterAnimation(),
+        fadeOutOnLeaveAnimation(),
+        bounceInOnEnterAnimation()
+    ],
+    imports: [NgIf, NgFor, RouterLink, TabsetComponent, TabDirective, NgxPaginationModule, ArtifactPageComponent, CollectionModalComponent, SafeHtmlPipe, IdmDatePipe]
 })
 export class ProductModalComponent implements OnInit {
 	product: ProductDetail;

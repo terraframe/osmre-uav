@@ -4,12 +4,14 @@
 
 import { Component } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-	standalone: false,
-  selector: 'processing-report',
-	templateUrl: './processing-report.component.html',
-	styleUrl: './processing-report.component.scss'
+    standalone: true,
+    selector: 'processing-report',
+    templateUrl: './processing-report.component.html',
+    styleUrl: './processing-report.component.scss',
+    imports: [FormsModule]
 })
 export class ProcessingReportComponent {
 

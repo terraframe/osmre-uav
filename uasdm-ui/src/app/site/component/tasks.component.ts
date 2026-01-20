@@ -18,17 +18,22 @@ import { ManagementService } from '../service/management.service';
 import EnvironmentUtil from '@core/utility/environment-util';
 import { WebSockets } from '@core/utility/web-sockets';
 import { ConfigurationService } from '@core/service/configuration.service';
-import { APP_BASE_HREF } from '@angular/common';
+import { APP_BASE_HREF, NgFor, NgClass, NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet } from '@angular/common';
 import { ProductService } from '@site/service/product.service';
 import { ProductModalComponent } from './modal/product-modal.component';
+import { CollapseDirective } from 'ngx-bootstrap/collapse';
+import { TasksPanelComponent } from './tasks/tasks-panel.component';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { UasdmHeaderComponent } from '../../shared/component/header/header.component';
 
 
 
 @Component({
-  standalone: false,
-  selector: 'tasks',
-  templateUrl: './tasks.component.html',
-  styleUrls: ['./tasks.css']
+    standalone: true,
+    selector: 'tasks',
+    templateUrl: './tasks.component.html',
+    styleUrls: ['./tasks.css'],
+    imports: [NgFor, NgClass, NgIf, CollapseDirective, TasksPanelComponent, NgxPaginationModule, UasdmHeaderComponent, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet]
 })
 export class TasksComponent implements OnInit {
 

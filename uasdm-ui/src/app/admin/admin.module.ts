@@ -43,43 +43,41 @@ import { TreeModule } from '@ali-hm/angular-tree-component';
 import { ContextMenuModule } from '@perfectmemory/ngx-contextmenu';
 
 @NgModule({
-	imports: [
-		CommonModule,
-		RouterModule,
-		FormsModule,
-		FileUploadModule,
-		NgxPaginationModule,
-		AlertModule,
-		BsDropdownModule,
-		TypeaheadModule,
-		AccordionModule,
-		SharedModule,
-		AdminRoutingModule,
-		ContextMenuModule,
-		TreeModule,
-	],
-	declarations: [
-		AccountsComponent,
-		AccountInviteComponent,
-		AccountInviteCompleteComponent,
-		AccountComponent,
-		SystemLogoComponent,
-		SystemLogosComponent,
-		UserImportComponent,
-		EmailComponent,
-		SystemInfoComponent,
-		SessionEventComponent,
+    imports: [
+        CommonModule,
+        RouterModule,
+        FormsModule,
+        FileUploadModule,
+        NgxPaginationModule,
+        AlertModule,
+        BsDropdownModule,
+        TypeaheadModule,
+        AccordionModule,
+        SharedModule,
+        AdminRoutingModule,
+        ContextMenuModule,
+        TreeModule,
+        AccountsComponent,
+        AccountInviteComponent,
+        AccountInviteCompleteComponent,
+        AccountComponent,
+        SystemLogoComponent,
+        SystemLogosComponent,
+        UserImportComponent,
+        EmailComponent,
+        SystemInfoComponent,
+        SessionEventComponent,
         SystemConfigurationComponent,
         LPGSyncTableComponent,
-		LPGSyncComponent,
-		OrganizationSyncTableComponent,
-		OrganizationSyncComponent
-	],
-	providers: [
-		SystemLogoService,
-		EmailService,
-		AccountService,
-		SessionEventService
-	]
+        LPGSyncComponent,
+        OrganizationSyncTableComponent,
+        OrganizationSyncComponent,
+    ],
+    providers: [
+        SystemLogoService,
+        EmailService,
+        AccountService,
+        SessionEventService
+    ]
 })
 export class AdminModule { }

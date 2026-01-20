@@ -12,12 +12,18 @@ import { SiteEntity, ProcessConfig, ProcessConfigType } from '@site/model/manage
 import { Subject } from 'rxjs';
 
 import { RuntimeEstimate, getRuntimeDisplay } from '@site/model/odmrun';
+import { NgIf, NgTemplateOutlet } from '@angular/common';
+import { BooleanFieldComponent } from '../../../shared/component/boolean-field/boolean-field.component';
+import { FormsModule } from '@angular/forms';
+import { CollapseDirective } from 'ngx-bootstrap/collapse';
+import { ForbiddenNameDirective } from '../../directive/forbidden-name.directive';
 
 @Component({
-    standalone: false,
+    standalone: true,
     selector: 'run-process-modal',
     templateUrl: './run-process-modal.component.html',
-    styleUrls: ['./artifact-page.component.css', './run-process-modal.component.css']
+    styleUrls: ['./artifact-page.component.css', './run-process-modal.component.css'],
+    imports: [NgIf, BooleanFieldComponent, FormsModule, CollapseDirective, ForbiddenNameDirective, NgTemplateOutlet]
 })
 export class RunProcessModalComponent implements OnInit, OnDestroy {
 

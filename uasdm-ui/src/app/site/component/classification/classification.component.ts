@@ -12,12 +12,17 @@ import { ErrorHandler } from '@shared/component';
 import { Classification, ClassificationComponentMetadata } from '@site/model/classification';
 import { ClassificationService } from '@site/service/classification.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UasdmHeaderComponent } from '../../../shared/component/header/header.component';
+import { NgIf, NgFor } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { BooleanFieldComponent } from '../../../shared/component/boolean-field/boolean-field.component';
 
 @Component({
-	standalone: false,
-	selector: 'classification',
-	templateUrl: './classification.component.html',
-	styleUrls: []
+    standalone: true,
+    selector: 'classification',
+    templateUrl: './classification.component.html',
+    styleUrls: [],
+    imports: [UasdmHeaderComponent, NgIf, FormsModule, NgFor, BooleanFieldComponent]
 })
 export class ClassificationComponent implements OnInit {
 

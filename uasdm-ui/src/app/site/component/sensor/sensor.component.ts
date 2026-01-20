@@ -4,7 +4,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { ErrorHandler } from '@shared/component';
 
@@ -16,13 +16,18 @@ import { Classification } from '@site/model/classification';
 import { AuthService } from '@shared/service/auth.service';
 
 import { COLLECTION_FORMATS } from '@site/model/sensor'
+import { UasdmHeaderComponent } from '../../../shared/component/header/header.component';
+import { NgIf, NgFor } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { BooleanFieldComponent } from '../../../shared/component/boolean-field/boolean-field.component';
 
 
 @Component({
-	standalone: false,
-  selector: 'sensor',
-	templateUrl: './sensor.component.html',
-	styleUrls: ['sensor.css']
+    standalone: true,
+    selector: 'sensor',
+    templateUrl: './sensor.component.html',
+    styleUrls: ['sensor.css'],
+    imports: [UasdmHeaderComponent, NgIf, FormsModule, NgFor, BooleanFieldComponent, RouterLink]
 })
 export class SensorComponent implements OnInit {
     

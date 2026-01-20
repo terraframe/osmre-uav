@@ -6,7 +6,7 @@ import { Component } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { ErrorHandler, ErrorModalComponent } from '@shared/component';
@@ -14,12 +14,18 @@ import { ErrorHandler, ErrorModalComponent } from '@shared/component';
 import { SessionService } from '@shared/service/session.service';
 import { ConfigurationService } from '@core/service/configuration.service';
 import EnvironmentUtil from '@core/utility/environment-util';
+import { LoginHeaderComponent } from './login-header.component';
+import { NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { LocalizeComponent } from '../../../shared/component/localize/localize.component';
+import { LocalizePipe } from '../../../shared/pipe/localize.pipe';
 
 @Component({
-  standalone: false,
-  selector: 'login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+    standalone: true,
+    selector: 'login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.css'],
+    imports: [LoginHeaderComponent, NgIf, FormsModule, RouterLink, LocalizeComponent, LocalizePipe]
 })
 export class LoginComponent {
   context: string;

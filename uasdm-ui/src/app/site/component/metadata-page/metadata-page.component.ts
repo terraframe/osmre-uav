@@ -12,16 +12,21 @@ import { UAVService } from '@site/service/uav.service';
 import { fadeInOnEnterAnimation, fadeOutOnLeaveAnimation } from 'angular-animations';
 import { Page } from '@site/model/management';
 import { COLLECTION_FORMATS, CollectionFormat, CollectionFormatMetadata } from '@site/model/sensor';
+import { NgIf, NgFor } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { BooleanFieldComponent } from '../../../shared/component/boolean-field/boolean-field.component';
+import { TypeaheadDirective } from 'ngx-bootstrap/typeahead';
 
 @Component({
-	standalone: false,
-  selector: 'metadata-page',
-	templateUrl: './metadata-page.component.html',
-	styleUrls: [],
-	animations: [
-		fadeInOnEnterAnimation(),
-		fadeOutOnLeaveAnimation()
-	]
+    standalone: true,
+    selector: 'metadata-page',
+    templateUrl: './metadata-page.component.html',
+    styleUrls: [],
+    animations: [
+        fadeInOnEnterAnimation(),
+        fadeOutOnLeaveAnimation()
+    ],
+    imports: [NgIf, FormsModule, BooleanFieldComponent, NgFor, TypeaheadDirective]
 })
 export class MetadataPageComponent implements OnInit {
 	/*

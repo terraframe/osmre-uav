@@ -17,13 +17,18 @@ import { WebSockets } from '@core/utility/web-sockets';
 import { ODMRunModalComponent } from './odmrun-modal.component';
 import { ModalTypes } from '@shared/model/modal';
 import { TusUploadModalComponent } from './tus-upload-modal.component';
+import { NgIf, NgFor, NgStyle, NgClass } from '@angular/common';
+import { BsDropdownDirective, BsDropdownToggleDirective, BsDropdownMenuDirective } from 'ngx-bootstrap/dropdown';
+import { ArtifactUploadItemComponent } from '../artifact-upload-item/artifact-upload-item.component';
+import { BooleanFieldComponent } from '../../../shared/component/boolean-field/boolean-field.component';
 
 @Component({
-	standalone: false,
-  selector: 'artifact-page',
-	templateUrl: './artifact-page.component.html',
-	styleUrls: ['./artifact-page.component.css'],
-	providers: []
+    standalone: true,
+    selector: 'artifact-page',
+    templateUrl: './artifact-page.component.html',
+    styleUrls: ['./artifact-page.component.css'],
+    providers: [],
+    imports: [NgIf, NgFor, NgStyle, BsDropdownDirective, BsDropdownToggleDirective, BsDropdownMenuDirective, NgClass, ArtifactUploadItemComponent, BooleanFieldComponent]
 })
 export class ArtifactPageComponent implements OnInit, OnDestroy {
 

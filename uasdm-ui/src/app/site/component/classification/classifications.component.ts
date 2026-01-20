@@ -13,12 +13,15 @@ import { Router } from '@angular/router';
 import { ClassificationService } from '@site/service/classification.service';
 import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
 import { Subject } from 'rxjs';
+import { NgIf } from '@angular/common';
+import { GenericTableComponent } from '../../../shared/component/generic-table/generic-table.component';
 
 @Component({
-    standalone: false,
+    standalone: true,
     selector: 'classifications',
     templateUrl: './classifications.component.html',
-    styleUrls: ['./classifications.css']
+    styleUrls: ['./classifications.css'],
+    imports: [NgIf, GenericTableComponent]
 })
 export class ClassificationsComponent implements OnInit {
 

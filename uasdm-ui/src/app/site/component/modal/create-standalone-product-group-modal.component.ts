@@ -23,6 +23,9 @@ import {
 	fadeInOnEnterAnimation,
 	fadeOutOnLeaveAnimation
 } from 'angular-animations';
+import { NgIf, NgFor } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MetadataPageComponent } from '../metadata-page/metadata-page.component';
 
 export class Page {
 	index?: number;
@@ -32,14 +35,15 @@ export class Page {
 };
 
 @Component({
-	standalone: false,
-  selector: 'create-standalone-pg-modal',
-	templateUrl: './create-standalone-product-group-modal.component.html',
-	styleUrls: ['./upload-modal.component.css'],
-	animations: [
-		fadeInOnEnterAnimation(),
-		fadeOutOnLeaveAnimation()
-	]
+    standalone: true,
+    selector: 'create-standalone-pg-modal',
+    templateUrl: './create-standalone-product-group-modal.component.html',
+    styleUrls: ['./upload-modal.component.css'],
+    animations: [
+        fadeInOnEnterAnimation(),
+        fadeOutOnLeaveAnimation()
+    ],
+    imports: [NgIf, FormsModule, NgFor, MetadataPageComponent]
 })
 export class CreateStandaloneProductModalComponent implements OnInit, OnDestroy {
 	message: string = "";

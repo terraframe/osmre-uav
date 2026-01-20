@@ -10,12 +10,16 @@ import { SessionEvent } from '../../model/session-event';
 import { SessionEventService } from '../../service/session-event.service';
 
 import { environment } from 'src/environments/environment';
+import { NgFor } from '@angular/common';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { IdmDatePipe } from '../../../shared/pipe/idmdate.pipe';
 
 @Component({
-	standalone: false,
-  selector: 'session-events',
-	templateUrl: './session-event.component.html',
-	styleUrls: []
+    standalone: true,
+    selector: 'session-events',
+    templateUrl: './session-event.component.html',
+    styleUrls: [],
+    imports: [NgFor, NgxPaginationModule, IdmDatePipe]
 })
 export class SessionEventComponent implements OnInit {
 	res: PageResult<SessionEvent> = {

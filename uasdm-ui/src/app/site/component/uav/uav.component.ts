@@ -11,13 +11,19 @@ import { UAV } from '@site/model/uav';
 import { UAVService } from '@site/service/uav.service';
 import { PlatformService } from '@site/service/platform.service';
 import { AuthService } from '@shared/service/auth.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { UasdmHeaderComponent } from '../../../shared/component/header/header.component';
+import { NgIf, NgFor } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { OrganizationFieldComponent } from '../../../shared/component/organization-field/organization-field.component';
+import { FilterPipe } from '../../../shared/pipe/filter.pipe';
 
 @Component({
-    standalone: false,
-  selector: 'uav',
+    standalone: true,
+    selector: 'uav',
     templateUrl: './uav.component.html',
-    styleUrls: []
+    styleUrls: [],
+    imports: [UasdmHeaderComponent, NgIf, FormsModule, NgFor, RouterLink, OrganizationFieldComponent, FilterPipe]
 })
 export class UAVComponent implements OnInit {
     

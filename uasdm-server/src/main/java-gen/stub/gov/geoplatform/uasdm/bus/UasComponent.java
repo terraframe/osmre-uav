@@ -708,4 +708,10 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   {
     return false;
   }
+  
+  @Override
+  public boolean hasPIIConcern()
+  {
+    return false;
+  }
 }
