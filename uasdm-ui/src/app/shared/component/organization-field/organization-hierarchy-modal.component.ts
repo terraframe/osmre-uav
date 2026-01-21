@@ -4,15 +4,15 @@
 
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ErrorHandler } from '@shared/component';
+import { TreeComponent, TreeNode, TreeModule, ITreeOptions } from '@ali-hm/angular-tree-component';
 
 import { BsModalRef } from 'ngx-bootstrap/modal';
-import { ErrorHandler } from '@shared/component';
 
-import { TreeComponent, TreeNode, TreeModule } from '@ali-hm/angular-tree-component';
 import { Organization, OrganizationNode } from '@shared/model/organization';
 import { PageResult } from '@shared/model/page';
 import { OrganizationService } from '@shared/service/organization.service';
-import { Observer, Subject, Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { ContextMenuComponent, ContextMenuService, ContextMenuModule } from '@perfectmemory/ngx-contextmenu';
 import { NgIf } from '@angular/common';
 
@@ -36,11 +36,11 @@ class PaginatedTreeNode<T> {
 }
 
 @Component({
-    standalone: true,
-    selector: 'organization-hierarchy-modal',
-    templateUrl: './organization-hierarchy-modal.component.html',
-    styles: ['.modal-form .check-block .chk-area { margin: 10px 0px 0 0;}'],
-    imports: [ContextMenuModule, NgIf, TreeModule]
+	standalone: true,
+	selector: 'organization-hierarchy-modal',
+	templateUrl: './organization-hierarchy-modal.component.html',
+	styles: ['.modal-form .check-block .chk-area { margin: 10px 0px 0 0;}'],
+	imports: [ContextMenuModule, NgIf, TreeModule]
 })
 export class OrganizationHierarchyModalComponent implements OnInit, OnDestroy {
 
@@ -66,7 +66,7 @@ export class OrganizationHierarchyModalComponent implements OnInit, OnDestroy {
 	 */
 	@ViewChild("nodeMenu") public nodeMenuComponent: ContextMenuComponent<TreeNode>;
 
-	options = {
+	options: ITreeOptions = {
 		idField: "code",
 		getChildren: (node: TreeNode) => {
 			return this.getChildren(node);
@@ -75,6 +75,9 @@ export class OrganizationHierarchyModalComponent implements OnInit, OnDestroy {
 			mouse: {
 				click: (tree: TreeComponent, node: TreeNode, $event: any) => {
 					this.treeNodeOnClick(node, $event);
+				},
+				contextMenu: (tree: TreeComponent, node: TreeNode, $event: any) => {
+					this.treeNodeOnMenu(node, $event);
 				}
 			}
 		},
@@ -256,6 +259,18 @@ export class OrganizationHierarchyModalComponent implements OnInit, OnDestroy {
 			treeNode.setActiveAndVisible();
 		}
 	}
+
+	treeNodeOnMenu(treeNode: TreeNode, $event: any): void {
+		$event.stopPropagation();
+		$event.preventDefault();
+
+		this.contextMenuService.show(this.nodeMenuComponent, {
+			x: $event.clientX,
+			y: $event.clientY,
+			value: treeNode
+		});
+	}
+
 
 	onSelect(treeNode: TreeNode): void {
 		const node: PaginatedTreeNode<Organization> = treeNode != null ? treeNode.data : null;

@@ -7,8 +7,8 @@ var ngToolsWebpack = require('@ngtools/webpack');
 
 module.exports = {
   entry: {
-    'uasdm-polyfills': './src/polyfills.ts',
-    'uasdm-vendor': './src/vendor.ts',
+    // 'uasdm-polyfills': './src/polyfills.ts',
+    // 'uasdm-vendor': './src/vendor.ts',
     'uasdm-app': './src/main.ts'
   },
 
