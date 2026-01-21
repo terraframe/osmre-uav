@@ -77,7 +77,9 @@ export class OrganizationHierarchyModalComponent implements OnInit, OnDestroy {
 					this.treeNodeOnClick(node, $event);
 				},
 				contextMenu: (tree: TreeComponent, node: TreeNode, $event: any) => {
-					this.treeNodeOnMenu(node, $event);
+					if (!this.disabled) {
+						this.treeNodeOnMenu(node, $event);
+					}
 				}
 			}
 		},

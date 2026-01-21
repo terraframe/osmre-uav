@@ -34,11 +34,11 @@ export const routes: Routes = [
     },
     {
         path: "admin",
-        loadChildren: () => import('./admin/admin.routes')
+        loadChildren: () => import('./admin/admin.routes').then(r => (r as unknown) as Routes)
     },
     {
         path: "site",
-        loadChildren: () => import('./site/site.routes')
+        loadChildren: () => import('./site/site.routes').then(r => (r as unknown) as Routes)
     },
     {
         path: '**',
