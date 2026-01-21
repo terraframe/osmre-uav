@@ -9,7 +9,7 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
 import { AuthService } from '@shared/service/auth.service';
-import { UasdmHeaderComponent } from '../../../shared/component/header/header.component';
+import { UasdmHeaderComponent } from '@shared/component/header/header.component';
 
 
 @Component({

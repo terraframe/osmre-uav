@@ -13,8 +13,8 @@ import { FileUploader, FileUploaderOptions, FileUploadModule } from 'ng2-file-up
 import { EventService } from '@shared/service/event.service';
 import EnvironmentUtil from '@core/utility/environment-util';
 import { FormsModule } from '@angular/forms';
-import { LocalizeComponent } from '../../../shared/component/localize/localize.component';
-import { LocalizePipe } from '../../../shared/pipe/localize.pipe';
+import { LocalizeComponent } from '@shared/component/localize/localize.component';
+import { LocalizePipe } from '@shared/pipe/localize.pipe';
 
 
 

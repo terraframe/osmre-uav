@@ -9,9 +9,9 @@ import { ErrorHandler } from '@shared/component';
 
 import { ForgotPasswordService } from '../../service/forgotpassword.service';
 import { FormsModule } from '@angular/forms';
-import { LocalizeComponent } from '../../../shared/component/localize/localize.component';
+import { LocalizeComponent } from '@shared/component/localize/localize.component';
 import { NgIf } from '@angular/common';
-import { LocalizePipe } from '../../../shared/pipe/localize.pipe';
+import { LocalizePipe } from '@shared/pipe/localize.pipe';
 
 
 @Component({

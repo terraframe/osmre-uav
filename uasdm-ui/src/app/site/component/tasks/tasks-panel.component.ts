@@ -15,7 +15,7 @@ import { ProcessRunModalComponent } from '../modal/process-run-modal.component';
 import { getRuntimeDisplay } from '@site/model/odmrun';
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { CollapseDirective } from 'ngx-bootstrap/collapse';
-import { IdmDatePipe } from '../../../shared/pipe/idmdate.pipe';
+import { IdmDatePipe } from '@shared/pipe/idmdate.pipe';
 
 
 @Component({

@@ -39,8 +39,8 @@ import { RouterLink } from '@angular/router';
 import { TabsetComponent, TabDirective } from 'ngx-bootstrap/tabs';
 import { ArtifactUploadComponent } from '../artifact-upload/artifact-upload.component';
 import { NgxPaginationModule } from 'ngx-pagination';
-import { SafeHtmlPipe } from '../../../shared/pipe/safe-html.pipe';
-import { IdmDatePipe } from '../../../shared/pipe/idmdate.pipe';
+import { SafeHtmlPipe } from '@shared/pipe/safe-html.pipe';
+import { IdmDatePipe } from '@shared/pipe/idmdate.pipe';
 
 @Component({
     standalone: true,

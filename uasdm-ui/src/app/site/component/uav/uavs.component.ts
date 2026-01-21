@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
 import { NgIf } from '@angular/common';
-import { GenericTableComponent } from '../../../shared/component/generic-table/generic-table.component';
+import { GenericTableComponent } from '@shared/component/generic-table/generic-table.component';
 
 @Component({
     standalone: true,

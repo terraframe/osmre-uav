@@ -20,7 +20,7 @@ import { TusUploadModalComponent } from './tus-upload-modal.component';
 import { NgIf, NgFor, NgStyle, NgClass } from '@angular/common';
 import { BsDropdownDirective, BsDropdownToggleDirective, BsDropdownMenuDirective } from 'ngx-bootstrap/dropdown';
 import { ArtifactUploadItemComponent } from '../artifact-upload-item/artifact-upload-item.component';
-import { BooleanFieldComponent } from '../../../shared/component/boolean-field/boolean-field.component';
+import { BooleanFieldComponent } from '@shared/component/boolean-field/boolean-field.component';
 
 @Component({
     standalone: true,

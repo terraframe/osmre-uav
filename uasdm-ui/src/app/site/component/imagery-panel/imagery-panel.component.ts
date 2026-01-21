@@ -13,7 +13,7 @@ import { environment } from 'src/environments/environment';
 import { ProductModalComponent } from '../modal/product-modal.component';
 import { KnowStacModalComponent } from '../know-stac-modal/know-stac-modal.component';
 import { NgIf, NgFor } from '@angular/common';
-import { SafeHtmlPipe } from '../../../shared/pipe/safe-html.pipe';
+import { SafeHtmlPipe } from '@shared/pipe/safe-html.pipe';
 
 
 @Component({

@@ -9,7 +9,7 @@ import { ErrorHandler } from '@shared/component';
 
 import { ManagementService } from '@site/service/management.service';
 import { NgIf } from '@angular/common';
-import { SafeHtmlPipe } from '../../../shared/pipe/safe-html.pipe';
+import { SafeHtmlPipe } from '@shared/pipe/safe-html.pipe';
 
 
 @Component({

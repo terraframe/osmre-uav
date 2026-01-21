@@ -13,7 +13,7 @@ import { Subject } from 'rxjs';
 
 import { RuntimeEstimate, getRuntimeDisplay } from '@site/model/odmrun';
 import { NgIf, NgTemplateOutlet } from '@angular/common';
-import { BooleanFieldComponent } from '../../../shared/component/boolean-field/boolean-field.component';
+import { BooleanFieldComponent } from '@shared/component/boolean-field/boolean-field.component';
 import { FormsModule } from '@angular/forms';
 import { CollapseDirective } from 'ngx-bootstrap/collapse';
 import { ForbiddenNameDirective } from '../../directive/forbidden-name.directive';

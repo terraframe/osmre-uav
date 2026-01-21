@@ -16,7 +16,7 @@ import { WebSocketSubject, webSocket } from 'rxjs/webSocket';
 import { WebSockets } from '@core/utility/web-sockets';
 import { EventService } from '@shared/service/event.service';
 import { ModalTypes } from '@shared/model/modal';
-import { UasdmHeaderComponent } from '../../../shared/component/header/header.component';
+import { UasdmHeaderComponent } from '@shared/component/header/header.component';
 import { NgIf, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 

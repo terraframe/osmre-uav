@@ -14,7 +14,7 @@ import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/mode
 import { LPGSyncService } from '@shared/service/lpg-sync.service';
 import { LPGSync } from '@shared/model/lpg';
 import { NgIf } from '@angular/common';
-import { GenericTableComponent } from '../../../shared/component/generic-table/generic-table.component';
+import { GenericTableComponent } from '@shared/component/generic-table/generic-table.component';
 
 @Component({
     standalone: true,

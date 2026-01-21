@@ -19,7 +19,7 @@ import {
 } from 'angular-animations';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { BooleanFieldComponent } from '../../../shared/component/boolean-field/boolean-field.component';
+import { BooleanFieldComponent } from '@shared/component/boolean-field/boolean-field.component';
 
 @Component({
     standalone: true,

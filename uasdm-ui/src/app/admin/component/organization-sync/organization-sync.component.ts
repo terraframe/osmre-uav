@@ -12,7 +12,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { OrganizationSync } from '@shared/model/organization';
 import { OrganizationSyncService } from '@shared/service/organization-sync.service';
-import { UasdmHeaderComponent } from '../../../shared/component/header/header.component';
+import { UasdmHeaderComponent } from '@shared/component/header/header.component';
 import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 

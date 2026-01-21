@@ -17,10 +17,10 @@ import { SystemLogo } from '../../model/system-logo';
 import { SystemLogoService } from '../../service/system-logo.service';
 import { SystemLogoComponent } from './system-logo.component';
 import EnvironmentUtil from '@core/utility/environment-util';
-import { LoadingBarComponent } from '../../../shared/component/loading-bar/loading-bar.component';
+import { LoadingBarComponent } from '@shared/component/loading-bar/loading-bar.component';
 import { NgIf, NgFor } from '@angular/common';
-import { LocalizeComponent } from '../../../shared/component/localize/localize.component';
-import { LocalizePipe } from '../../../shared/pipe/localize.pipe';
+import { LocalizeComponent } from '@shared/component/localize/localize.component';
+import { LocalizePipe } from '@shared/pipe/localize.pipe';
 
 @Component({
     standalone: true,

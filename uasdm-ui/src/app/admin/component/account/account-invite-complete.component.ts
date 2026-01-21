@@ -17,12 +17,12 @@ import { ErrorHandler, ErrorModalComponent } from '@shared/component';
 import { environment } from 'src/environments/environment';
 import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MustMatchDirective } from '../../../shared/directive/must-match.directive';
-import { LocalizeComponent } from '../../../shared/component/localize/localize.component';
-import { PhoneNumberValidatorDirective } from '../../../shared/directive/phone-number.directive';
-import { PasswordValidatorDirective } from '../../../shared/directive/password-validator.directive';
-import { PasswordStrengthBarComponent } from '../../../shared/component/password-strength-bar/password-strength-bar.component';
-import { LocalizePipe } from '../../../shared/pipe/localize.pipe';
+import { MustMatchDirective } from '@shared/directive/must-match.directive';
+import { LocalizeComponent } from '@shared/component/localize/localize.component';
+import { PhoneNumberValidatorDirective } from '@shared/directive/phone-number.directive';
+import { PasswordValidatorDirective } from '@shared/directive/password-validator.directive';
+import { PasswordStrengthBarComponent } from '@shared/component/password-strength-bar/password-strength-bar.component';
+import { LocalizePipe } from '@shared/pipe/localize.pipe';
 
 @Component({
     standalone: true,

@@ -20,7 +20,7 @@ import { UserImportComponent } from './user-import.component';
 import { AuthService } from '@shared/service/auth.service';
 import { environment } from 'src/environments/environment';
 import { NgIf } from '@angular/common';
-import { GenericTableComponent } from '../../../shared/component/generic-table/generic-table.component';
+import { GenericTableComponent } from '@shared/component/generic-table/generic-table.component';
 
 @Component({
     standalone: true,

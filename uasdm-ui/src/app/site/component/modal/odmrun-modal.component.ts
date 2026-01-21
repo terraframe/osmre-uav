@@ -20,7 +20,7 @@ import {
 import { HttpErrorResponse } from '@angular/common/http';
 import { ODMRun } from '@site/model/odmrun';
 import { FormsModule } from '@angular/forms';
-import { BooleanFieldComponent } from '../../../shared/component/boolean-field/boolean-field.component';
+import { BooleanFieldComponent } from '@shared/component/boolean-field/boolean-field.component';
 
 @Component({
     standalone: true,

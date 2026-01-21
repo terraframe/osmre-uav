@@ -30,7 +30,7 @@ import { ShareProductModalComponent } from '../modal/share-product-modal.compone
 import { FormsModule } from '@angular/forms';
 import { NgFor, NgIf, NgClass } from '@angular/common';
 import { PopoverDirective } from 'ngx-bootstrap/popover';
-import { SafeHtmlPipe } from '../../../shared/pipe/safe-html.pipe';
+import { SafeHtmlPipe } from '@shared/pipe/safe-html.pipe';
 
 @Component({
     standalone: true,

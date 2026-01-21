@@ -14,7 +14,7 @@ import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/mode
 import { OrganizationSync } from '@shared/model/organization';
 import { OrganizationSyncService } from '@shared/service/organization-sync.service';
 import { NgIf } from '@angular/common';
-import { GenericTableComponent } from '../../../shared/component/generic-table/generic-table.component';
+import { GenericTableComponent } from '@shared/component/generic-table/generic-table.component';
 
 @Component({
     standalone: true,

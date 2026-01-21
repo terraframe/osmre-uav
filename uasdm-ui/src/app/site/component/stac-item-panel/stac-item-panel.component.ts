@@ -14,9 +14,9 @@ import { LngLatBounds } from 'maplibre-gl';
 import { FormsModule } from '@angular/forms';
 import { NgIf, NgFor, KeyValuePipe } from '@angular/common';
 import { TypeaheadDirective } from 'ngx-bootstrap/typeahead';
-import { BooleanFieldComponent } from '../../../shared/component/boolean-field/boolean-field.component';
+import { BooleanFieldComponent } from '@shared/component/boolean-field/boolean-field.component';
 import { NgxPaginationModule } from 'ngx-pagination';
-import { SafeHtmlPipe } from '../../../shared/pipe/safe-html.pipe';
+import { SafeHtmlPipe } from '@shared/pipe/safe-html.pipe';
 
 const enum VIEW_MODE {
 	FORM = 0,

@@ -5,7 +5,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 
 import { BsModalRef } from 'ngx-bootstrap/modal';
-import { UasdmHeaderComponent } from '../../../shared/component/header/header.component';
+import { UasdmHeaderComponent } from '@shared/component/header/header.component';
 import { NgClass } from '@angular/common';
 import { CollapseDirective } from 'ngx-bootstrap/collapse';
 import { ClassificationsComponent } from '../classification/classifications.component';

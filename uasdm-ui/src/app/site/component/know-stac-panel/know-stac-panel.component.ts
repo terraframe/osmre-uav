@@ -10,7 +10,7 @@ import { LngLatBounds } from 'maplibre-gl';
 import { environment } from 'src/environments/environment';
 import { NgIf, NgFor, NgSwitch, NgSwitchCase, NgSwitchDefault, KeyValuePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { BooleanFieldComponent } from '../../../shared/component/boolean-field/boolean-field.component';
+import { BooleanFieldComponent } from '@shared/component/boolean-field/boolean-field.component';
 
 
 @Component({

@@ -14,7 +14,7 @@ import { ClassificationService } from '@site/service/classification.service';
 import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
 import { Subject } from 'rxjs';
 import { NgIf } from '@angular/common';
-import { GenericTableComponent } from '../../../shared/component/generic-table/generic-table.component';
+import { GenericTableComponent } from '@shared/component/generic-table/generic-table.component';
 
 @Component({
     standalone: true,

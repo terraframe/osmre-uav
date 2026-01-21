@@ -14,7 +14,7 @@ import { Page } from '@site/model/management';
 import { COLLECTION_FORMATS, CollectionFormat, CollectionFormatMetadata } from '@site/model/sensor';
 import { NgIf, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { BooleanFieldComponent } from '../../../shared/component/boolean-field/boolean-field.component';
+import { BooleanFieldComponent } from '@shared/component/boolean-field/boolean-field.component';
 import { TypeaheadDirective } from 'ngx-bootstrap/typeahead';
 
 @Component({

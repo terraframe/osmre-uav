@@ -10,10 +10,10 @@ import { Account, UserInvite } from '../../model/account';
 import { AccountService } from '../../service/account.service';
 import { NgIf, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LocalizeComponent } from '../../../shared/component/localize/localize.component';
-import { OrganizationFieldComponent } from '../../../shared/component/organization-field/organization-field.component';
-import { BooleanFieldComponent } from '../../../shared/component/boolean-field/boolean-field.component';
-import { LocalizePipe } from '../../../shared/pipe/localize.pipe';
+import { LocalizeComponent } from '@shared/component/localize/localize.component';
+import { OrganizationFieldComponent } from '@shared/component/organization-field/organization-field.component';
+import { BooleanFieldComponent } from '@shared/component/boolean-field/boolean-field.component';
+import { LocalizePipe } from '@shared/pipe/localize.pipe';
 
 @Component({
     standalone: true,

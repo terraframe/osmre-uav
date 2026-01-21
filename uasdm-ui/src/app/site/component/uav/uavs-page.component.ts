@@ -3,7 +3,7 @@
 ///
 
 import { Component, OnInit } from '@angular/core';
-import { UasdmHeaderComponent } from '../../../shared/component/header/header.component';
+import { UasdmHeaderComponent } from '@shared/component/header/header.component';
 import { UAVsComponent } from './uavs.component';
 
 @Component({
