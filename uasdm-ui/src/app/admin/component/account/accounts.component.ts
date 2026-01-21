@@ -64,7 +64,8 @@ export class AccountsComponent implements OnInit {
 			remove: true,
 			edit: true,
 			create: true,
-			label: 'User'
+			label: 'User',
+			sort: { field: 'username', order: 1 },
 		}
 
 		this.refresh = new Subject<void>();

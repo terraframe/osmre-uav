@@ -70,7 +70,8 @@ export class ReportsComponent implements OnInit {
             remove: false,
             view: false,
             create: false,
-            label: 'row'
+            label: 'row',
+            sort: { field: 'collectionName', order: 1 },
         }
         this.admin = this.authService.isAdmin();
     }

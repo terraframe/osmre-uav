@@ -42,7 +42,8 @@ export class OrganizationSyncTableComponent implements OnInit {
             remove: true,
             view: true,
             create: true,
-            label: 'Bureau Synchronization Profile'
+            label: 'Bureau Synchronization Profile',
+            sort: { field: 'url', order: 1 },
         }
         this.refresh = new Subject<void>();
     }

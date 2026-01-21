@@ -38,7 +38,8 @@ export class ClassificationsComponent implements OnInit {
             remove: true,
             view: true,
             create: true,
-            label: value.label
+            label: value.label,
+            sort: { field: 'name', order: 1 },
         }
     }
 

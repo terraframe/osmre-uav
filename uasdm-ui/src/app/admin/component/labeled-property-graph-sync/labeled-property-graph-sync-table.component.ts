@@ -45,7 +45,8 @@ export class LPGSyncTableComponent implements OnInit {
             remove: true,
             view: true,
             create: true,
-            label: 'Synchronization Profile'
+            label: 'Synchronization Profile',
+            sort: { field: 'url', order: 1 },
         }
         this.refresh = new Subject<void>();
     }

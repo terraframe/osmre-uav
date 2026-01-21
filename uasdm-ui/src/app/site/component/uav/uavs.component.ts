@@ -46,7 +46,8 @@ export class UAVsComponent implements OnInit {
             remove: true,
             view: true,
             create: true,
-            label: 'UAV'
+            label: 'UAV',
+            sort: { field: 'serialNumber', order: 1 },
         }
 
         this.refresh = new Subject<void>();
