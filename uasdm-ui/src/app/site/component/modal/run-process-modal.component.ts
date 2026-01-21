@@ -53,7 +53,7 @@ export class RunProcessModalComponent implements OnInit, OnDestroy {
 
     estimate: RuntimeEstimate;
 
-    public loadingEstimate:boolean = false;
+    public loadingEstimate: boolean = false;
 
     /*
      * Called on confirm
@@ -117,7 +117,7 @@ export class RunProcessModalComponent implements OnInit, OnDestroy {
     }
 
     isVideo(strict: boolean = false): boolean {
-        if (strict)
+        if (strict && this.entity && this.entity.format)
             return this.entity.format.toLowerCase().includes('video_');
         else
             return !(this.entity && this.entity.format) || this.entity.format.toLowerCase().includes('video_');
@@ -131,7 +131,7 @@ export class RunProcessModalComponent implements OnInit, OnDestroy {
         return !(this.entity && this.entity.format) || this.entity.format.toLowerCase().includes('multispectral');
     }
 
-    
+
 
     error(err: HttpErrorResponse): void {
         this.message = ErrorHandler.getMessageFromError(err);

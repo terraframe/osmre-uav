@@ -9,11 +9,9 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { CollectionArtifacts, ProductDetail, SiteEntity } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 
-import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { BasicConfirmModalComponent } from '@shared/component';
 import EnvironmentUtil from '@core/utility/environment-util';
 import { environment } from 'src/environments/environment';
-import { WebSockets } from '@core/utility/web-sockets';
 import { ODMRunModalComponent } from './odmrun-modal.component';
 import { ModalTypes } from '@shared/model/modal';
 import { TusUploadModalComponent } from './tus-upload-modal.component';
@@ -21,14 +19,16 @@ import { NgIf, NgFor, NgStyle, NgClass } from '@angular/common';
 import { BsDropdownDirective, BsDropdownToggleDirective, BsDropdownMenuDirective } from 'ngx-bootstrap/dropdown';
 import { ArtifactUploadItemComponent } from '../artifact-upload-item/artifact-upload-item.component';
 import { BooleanFieldComponent } from '@shared/component/boolean-field/boolean-field.component';
+import { WebsocketService } from '@core/service/websocket.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-    standalone: true,
-    selector: 'artifact-page',
-    templateUrl: './artifact-page.component.html',
-    styleUrls: ['./artifact-page.component.css'],
-    providers: [],
-    imports: [NgIf, NgFor, NgStyle, BsDropdownDirective, BsDropdownToggleDirective, BsDropdownMenuDirective, NgClass, ArtifactUploadItemComponent, BooleanFieldComponent]
+	standalone: true,
+	selector: 'artifact-page',
+	templateUrl: './artifact-page.component.html',
+	styleUrls: ['./artifact-page.component.css'],
+	providers: [],
+	imports: [NgIf, NgFor, NgStyle, BsDropdownDirective, BsDropdownToggleDirective, BsDropdownMenuDirective, NgClass, ArtifactUploadItemComponent, BooleanFieldComponent]
 })
 export class ArtifactPageComponent implements OnInit, OnDestroy {
 
@@ -62,38 +62,37 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 
 	context: string;
 
-	notifier: WebSocketSubject<any>;
-
-
 	constructor(
 		private service: ManagementService,
-		private modalService: BsModalService
+		private modalService: BsModalService,
+		private websocketService: WebsocketService
 	) {
 		this.context = EnvironmentUtil.getApiUrl();
+
+		this.websocketService.getNotifier()
+			.pipe(takeUntilDestroyed())
+			.subscribe((message) => {
+				if (message.type === 'UPLOAD_JOB_CHANGE'
+					&& message.content.status === 'Complete'
+					&& message.content.collection === this.entity.id) {
+					this.loadArtifacts();
+				}
+
+				if (message.type === 'PRODUCT_GROUP_CHANGE'
+					&& message.content.collection === this.entity.id) {
+					this.loadArtifacts();
+				}
+
+			});
+
 	}
 
 	ngOnInit(): void {
-
-		this.notifier = webSocket(WebSockets.buildBaseUrl() + "/websocket-notifier/notify");
-		this.notifier.subscribe(message => {
-			if (message.type === 'UPLOAD_JOB_CHANGE'
-				&& message.content.status === 'Complete'
-				&& message.content.collection === this.entity.id) {
-				this.loadArtifacts();
-			}
-
-			if (message.type === 'PRODUCT_GROUP_CHANGE'
-				&& message.content.collection === this.entity.id) {
-				this.loadArtifacts();
-			}
-
-		});
 
 		this.loadArtifacts();
 	}
 
 	ngOnDestroy(): void {
-		this.notifier.unsubscribe();
 	}
 
 	loadArtifacts(): void {

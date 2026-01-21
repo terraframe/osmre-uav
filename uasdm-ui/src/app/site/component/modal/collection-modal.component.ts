@@ -23,12 +23,8 @@ import {
 } from 'angular-animations';
 import { ArtifactPageComponent } from './artifact-page.component';
 import { RunProcessModalComponent } from './run-process-modal.component';
-import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import EnvironmentUtil from '@core/utility/environment-util';
 import { environment } from 'src/environments/environment';
-import { WebSockets } from '@core/utility/web-sockets';
-import { ConfigurationService } from '@core/service/configuration.service';
-import { APP_BASE_HREF, NgIf, NgFor, NgClass } from '@angular/common';
+import { NgIf, NgFor, NgClass } from '@angular/common';
 import { CreateProductGroupModalComponent } from './create-product-group-modal.component';
 import { UserAccessModalComponent } from './user-access-modal.component';
 import { AuthService } from '@shared/service/auth.service';
@@ -41,20 +37,22 @@ import { ArtifactUploadComponent } from '../artifact-upload/artifact-upload.comp
 import { NgxPaginationModule } from 'ngx-pagination';
 import { SafeHtmlPipe } from '@shared/pipe/safe-html.pipe';
 import { IdmDatePipe } from '@shared/pipe/idmdate.pipe';
+import { WebsocketService } from '@core/service/websocket.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-    standalone: true,
-    selector: 'collection-modal',
-    templateUrl: './collection-modal.component.html',
-    styleUrls: ['./collection-modal.component.scss'],
-    providers: [BasicConfirmModalComponent, ArtifactPageComponent],
-    animations: [
-        fadeInOnEnterAnimation(),
-        fadeOutOnLeaveAnimation(),
-        slideInLeftOnEnterAnimation(),
-        slideInRightOnEnterAnimation(),
-    ],
-    imports: [NgIf, RouterLink, NgFor, TabsetComponent, TabDirective, NgClass, ArtifactUploadComponent, ArtifactPageComponent, NgxPaginationModule, SafeHtmlPipe, IdmDatePipe]
+	standalone: true,
+	selector: 'collection-modal',
+	templateUrl: './collection-modal.component.html',
+	styleUrls: ['./collection-modal.component.scss'],
+	providers: [BasicConfirmModalComponent, ArtifactPageComponent],
+	animations: [
+		fadeInOnEnterAnimation(),
+		fadeOutOnLeaveAnimation(),
+		slideInLeftOnEnterAnimation(),
+		slideInRightOnEnterAnimation(),
+	],
+	imports: [NgIf, RouterLink, NgFor, TabsetComponent, TabDirective, NgClass, ArtifactUploadComponent, ArtifactPageComponent, NgxPaginationModule, SafeHtmlPipe, IdmDatePipe]
 })
 export class CollectionModalComponent implements OnInit, OnDestroy {
 	entity: SiteEntity;
@@ -91,17 +89,29 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	video: { src: string, name: string } = { src: null, name: null };
 	context: string;
 
-	notifier: WebSocketSubject<any>;
 	loading = false;
 
 	constructor(
 		private service: ManagementService,
 		private metadataService: MetadataService,
-		private authService: AuthService,
 		private modalService: BsModalService,
-		public bsModalRef: BsModalRef
+		public bsModalRef: BsModalRef,
+		private websocketService: WebsocketService
 	) {
 		this.context = environment.apiUrl;
+
+		this.websocketService.getNotifier()
+			.pipe(takeUntilDestroyed())
+			.subscribe((message) => {
+				if (this.entity != null && message.type === "UPLOAD_JOB_CHANGE" && message.content.collection === this.entity.id) {
+					if (this.tabName === 'image') {
+						this.onPageChange(this.page.pageNumber);
+					}
+					else if (this.tabName === 'video') {
+						this.getData(this.entity.id, this.tabName, null, null);
+					}
+				}
+			});
 	}
 
 	ngOnInit(): void {
@@ -111,23 +121,9 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		this.page.pageNumber = 1;
 		this.page.pageSize = this.constPageSize;
 		this.page.results = [];
-
-		this.notifier = webSocket(WebSockets.buildBaseUrl() + "/websocket-notifier/notify");
-		this.notifier.subscribe(message => {
-			if (this.entity != null && message.type === "UPLOAD_JOB_CHANGE" && message.content.collection === this.entity.id) {
-				if (this.tabName === 'image') {
-					this.onPageChange(this.page.pageNumber);
-				}
-				else if (this.tabName === 'video') {
-					this.getData(this.entity.id, this.tabName, null, null);
-				}
-			}
-		});
-
 	}
 
 	ngOnDestroy(): void {
-		this.notifier.unsubscribe();
 	}
 
 

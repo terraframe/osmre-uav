@@ -2,15 +2,15 @@
 ///
 ///
 
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, TemplateRef, Inject } from "@angular/core";
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, TemplateRef } from "@angular/core";
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BsModalService } from "ngx-bootstrap/modal";
 import { BsModalRef } from "ngx-bootstrap/modal";
 import { v4 as uuid } from "uuid";
-import { Map, LngLatBounds, NavigationControl, MapEvent, AttributionControl, RasterSourceSpecification } from "maplibre-gl";
+import { Map, LngLatBounds, NavigationControl, AttributionControl } from "maplibre-gl";
 
 import { Observable, Subject } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
-import { webSocket, WebSocketSubject } from "rxjs/webSocket";
 
 import { BasicConfirmModalComponent } from "@shared/component/modal/basic-confirm-modal.component";
 import { NotificationModalComponent } from "@shared/component/modal/notification-modal.component";
@@ -35,13 +35,11 @@ import { ActivatedRoute, RouterLink } from "@angular/router";
 import { CreateCollectionModalComponent } from "./modal/create-collection-modal.component";
 import { CreateStandaloneProductModalComponent } from "./modal/create-standalone-product-group-modal.component";
 import { LayerColor, StacCollection, StacItem, StacLink, StacProperty, ToggleableLayer, ToggleableLayerType } from "@site/model/layer";
-import { StacLayer } from "@site/model/layer";
 
-import { BBox, bbox, bboxPolygon, centroid, envelope, featureCollection } from "@turf/turf";
+import { bbox, bboxPolygon, centroid, envelope, featureCollection } from "@turf/turf";
 import EnvironmentUtil from "@core/utility/environment-util";
 import { environment } from "src/environments/environment";
 import { ConfigurationService } from "@core/service/configuration.service";
-import { WebSockets } from "@core/utility/web-sockets";
 import { LPGSync } from "@shared/model/lpg";
 import { LPGSyncService } from "@shared/service/lpg-sync.service";
 import { FilterModalComponent } from "./modal/filter-modal.component";
@@ -66,6 +64,7 @@ import { KnowStacPanelComponent } from "./know-stac-panel/know-stac-panel.compon
 import { ImageryPanelComponent } from "./imagery-panel/imagery-panel.component";
 import { AlertComponent } from "ngx-bootstrap/alert";
 import { LegendPanelComponent } from "./legend-panel/legend-panel.component";
+import { WebsocketService } from "@core/service/websocket.service";
 
 const enum PANEL_TYPE {
   SITE = 0,
@@ -76,15 +75,15 @@ const enum PANEL_TYPE {
 }
 
 @Component({
-    standalone: true,
-    selector: "projects",
-    templateUrl: "./projects.component.html",
-    styleUrls: ["./projects.css"],
-    animations: [
-        fadeInOnEnterAnimation(),
-        fadeOutOnLeaveAnimation()
-    ],
-    imports: [NgIf, NgFor, CollapseDirective, NgClass, UasdmHeaderComponent, FormsModule, TypeaheadDirective, OrganizationFieldComponent, TabsetComponent, TabDirective, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet, ProductPanelComponent, StacItemPanelComponent, KnowStacPanelComponent, ImageryPanelComponent, AlertComponent, RouterLink, LegendPanelComponent]
+  standalone: true,
+  selector: "projects",
+  templateUrl: "./projects.component.html",
+  styleUrls: ["./projects.css"],
+  animations: [
+    fadeInOnEnterAnimation(),
+    fadeOutOnLeaveAnimation()
+  ],
+  imports: [NgIf, NgFor, CollapseDirective, NgClass, UasdmHeaderComponent, FormsModule, TypeaheadDirective, OrganizationFieldComponent, TabsetComponent, TabDirective, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet, ProductPanelComponent, StacItemPanelComponent, KnowStacPanelComponent, ImageryPanelComponent, AlertComponent, RouterLink, LegendPanelComponent]
 })
 export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
@@ -188,8 +187,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   */
   private bsModalRef: BsModalRef;
 
-  notifier: WebSocketSubject<any>;
-
   tasks: Task[] = [];
 
   notifications: { text: string }[] = [];
@@ -269,7 +266,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     private route: ActivatedRoute,
     private cookieService: CookieService,
     private syncService: LPGSyncService,
-    private uploadService: UploadService
+    private uploadService: UploadService,
+    private websocketService: WebsocketService
   ) {
 
     this.subject = new Subject();
@@ -299,6 +297,17 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       });
     });
+
+    this.websocketService.getNotifier().pipe(takeUntilDestroyed()).subscribe((message) => {
+      console.log('Getting Notification:', message);
+      
+      if (message.type === "UPLOAD_JOB_CHANGE") {
+        this.tasks.push(message.content);
+      }
+      if (message.type === "NOTIFICATION") {
+        this.notifications.push(message.content);
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -307,16 +316,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.userName = this.service.getCurrentUser();
     this.organization = this.authService.getOrganization();
 
-    this.notifier = webSocket(WebSockets.buildBaseUrl() + "/websocket-notifier/notify");
-
-    this.notifier.subscribe(message => {
-      if (message.type === "UPLOAD_JOB_CHANGE") {
-        this.tasks.push(message.content);
-      }
-      if (message.type === "NOTIFICATION") {
-        this.notifications.push(message.content);
-      }
-    });
 
     const oid = this.route.snapshot.params["oid"];
     const action = this.route.snapshot.params["action"];
@@ -374,8 +373,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.map.remove();
-
-    this.notifier.complete();
   }
 
   ngAfterViewInit() {

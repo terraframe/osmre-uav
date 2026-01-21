@@ -12,13 +12,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LPGSyncService } from '@shared/service/lpg-sync.service';
 import { LabeledPropertyGraphType, LabeledPropertyGraphTypeEntry, LabeledPropertyGraphTypeVersion, LPGSync } from '@shared/model/lpg';
 import { BsModalService } from 'ngx-bootstrap/modal';
-import { WebSocketSubject, webSocket } from 'rxjs/webSocket';
-import { WebSockets } from '@core/utility/web-sockets';
 import { EventService } from '@shared/service/event.service';
 import { ModalTypes } from '@shared/model/modal';
 import { UasdmHeaderComponent } from '@shared/component/header/header.component';
 import { NgIf, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { WebsocketService } from '@core/service/websocket.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     standalone: true,
@@ -43,17 +43,23 @@ export class LPGSyncComponent implements OnInit, OnDestroy {
     entries: LabeledPropertyGraphTypeEntry[] = null;
     versions: LabeledPropertyGraphTypeVersion[] = null;
 
-    notifier: WebSocketSubject<any>;
-
     constructor(
         private service: LPGSyncService,
         private eventService: EventService,
         private authService: AuthService,
         private modalService: BsModalService,
         private route: ActivatedRoute,
-        private router: Router
+        private router: Router,
+        private websocketService: WebsocketService
     ) {
         this.isAdmin = this.authService.isAdmin();
+
+        this.websocketService.getNotifier().pipe(takeUntilDestroyed()).subscribe((message) => {
+            if (message.type === "SYNCHRONIZATION_JOB_CHANGE") {
+                this.handleJobUpdate(message.content);
+            }
+        });
+
     }
 
     ngOnInit(): void {
@@ -71,12 +77,6 @@ export class LPGSyncComponent implements OnInit, OnDestroy {
                 this.sync = sync;
                 this.original = JSON.parse(JSON.stringify(this.sync));
 
-                this.notifier = webSocket(WebSockets.buildBaseUrl() + "/websocket-notifier/notify");
-                this.notifier.subscribe(message => {
-                    if (message.type === "SYNCHRONIZATION_JOB_CHANGE") {
-                        this.handleJobUpdate(message.content);
-                    }
-                });
 
                 // Check if there is a job already in progress
                 this.handleJobUpdate({ oid: sync.oid });
@@ -87,9 +87,6 @@ export class LPGSyncComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        if (this.notifier != null) {
-            this.notifier.complete();
-        }
     }
 
     handleJobUpdate(content: { oid: string }): void {

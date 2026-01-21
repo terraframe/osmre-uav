@@ -445,14 +445,18 @@ public class S3RemoteFileService implements RemoteFileService
           }).collect(Collectors.toList());
 
       // Delete multiple objects in one request.
-      Delete del = Delete.builder().objects(keys).build();
 
-      DeleteObjectsRequest multiObjectDeleteRequest = DeleteObjectsRequest.builder() //
-          .bucket(bucketName) //
-          .delete(del) //
-          .build();
+      if (keys.size() > 0)
+      {
+        Delete del = Delete.builder().objects(keys).build();
 
-      client.deleteObjects(multiObjectDeleteRequest);
+        DeleteObjectsRequest multiObjectDeleteRequest = DeleteObjectsRequest.builder() //
+            .bucket(bucketName) //
+            .delete(del) //
+            .build();
+
+        client.deleteObjects(multiObjectDeleteRequest);
+      }
     }
     catch (SdkClientException e)
     {

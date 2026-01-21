@@ -11,29 +11,26 @@ import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confir
 import { CollectionModalComponent } from './modal/collection-modal.component';
 import { PageResult } from '@shared/model/page';
 
-import { webSocket, WebSocketSubject } from "rxjs/webSocket";
-
 import { Message, Task, TaskGroup } from '../model/management';
 import { ManagementService } from '../service/management.service';
-import EnvironmentUtil from '@core/utility/environment-util';
-import { WebSockets } from '@core/utility/web-sockets';
-import { ConfigurationService } from '@core/service/configuration.service';
-import { APP_BASE_HREF, NgFor, NgClass, NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet } from '@angular/common';
+import { NgFor, NgClass, NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet } from '@angular/common';
 import { ProductService } from '@site/service/product.service';
 import { ProductModalComponent } from './modal/product-modal.component';
 import { CollapseDirective } from 'ngx-bootstrap/collapse';
 import { TasksPanelComponent } from './tasks/tasks-panel.component';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { UasdmHeaderComponent } from '../../shared/component/header/header.component';
+import { WebsocketService } from '@core/service/websocket.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 
 
 @Component({
-    standalone: true,
-    selector: 'tasks',
-    templateUrl: './tasks.component.html',
-    styleUrls: ['./tasks.css'],
-    imports: [NgFor, NgClass, NgIf, CollapseDirective, TasksPanelComponent, NgxPaginationModule, UasdmHeaderComponent, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet]
+  standalone: true,
+  selector: 'tasks',
+  templateUrl: './tasks.component.html',
+  styleUrls: ['./tasks.css'],
+  imports: [NgFor, NgClass, NgIf, CollapseDirective, TasksPanelComponent, NgxPaginationModule, UasdmHeaderComponent, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet]
 })
 export class TasksComponent implements OnInit {
 
@@ -73,13 +70,25 @@ export class TasksComponent implements OnInit {
    */
   // tasks: PageResult<Task>;
 
-  notifier: WebSocketSubject<{ type: string, content: any }>;
-
   constructor(
     private managementService: ManagementService,
     private modalService: BsModalService,
-    private pService: ProductService
-  ) { }
+    private pService: ProductService,
+    private websocketService: WebsocketService
+  ) {
+    this.websocketService.getNotifier()
+      .pipe(takeUntilDestroyed())
+      .subscribe((message) => {
+        if (message.type === 'JOB_CHANGE') {
+          this.managementService.tasks(this.statuses, this.taskPage.pageSize, this.taskPage.pageNumber, this.token).then(data => {
+            if (data['token'] === this.token) {
+              this.updateTaskData(data);
+            }
+          });
+          this.getMessages();
+        }
+      });
+  }
 
   ngOnInit(): void {
     this.userName = this.managementService.getCurrentUser();
@@ -88,24 +97,9 @@ export class TasksComponent implements OnInit {
     });
 
     this.getMessages();
-
-    this.notifier = webSocket(WebSockets.buildBaseUrl() + "/websocket-notifier/notify");
-    this.notifier.subscribe(message => {
-      if (message.type === 'JOB_CHANGE') {
-        this.managementService.tasks(this.statuses, this.taskPage.pageSize, this.taskPage.pageNumber, this.token).then(data => {
-          if (data['token'] === this.token) {
-            this.updateTaskData(data);
-          }
-        });
-        this.getMessages();
-      }
-    });
-
   }
 
   ngOnDestroy(): void {
-
-    this.notifier.complete();
   }
 
   onPageChange(pageNumber: number): void {
@@ -186,7 +180,7 @@ export class TasksComponent implements OnInit {
           collection.groups[taskGroupTypeIndex].tasks.push(task);
         }
       }
-      else if (task.type === 'gov.geoplatform.uasdm.odm.ODMProcessingTask' 
+      else if (task.type === 'gov.geoplatform.uasdm.odm.ODMProcessingTask'
         || task.type === 'gov.geoplatform.uasdm.bus.OrthoProcessingTask'
         || task.type === 'gov.geoplatform.uasdm.lidar.LidarProcessingTask'
       ) {
@@ -241,15 +235,15 @@ export class TasksComponent implements OnInit {
         }
 
         if (group.status === 'Complete' && sortedTasks[0].actions.length > 0) {
-			group.status = sortedTasks[0].actions.map(action => action.type).reduce((a,b) => {
-				if (a === "error" || b === "error") {
-					return "Warning"; // Oddly, this isn't considered an error unless the WorkflowTask considers it to be one. If we're here in the code then it doesn't.
-				} else if (a === "warning" || b === "warning") {
-					return "Warning";
-				} else {
-					return "Complete";
-				}
-			}, "Complete");
+          group.status = sortedTasks[0].actions.map(action => action.type).reduce((a, b) => {
+            if (a === "error" || b === "error") {
+              return "Warning"; // Oddly, this isn't considered an error unless the WorkflowTask considers it to be one. If we're here in the code then it doesn't.
+            } else if (a === "warning" || b === "warning") {
+              return "Warning";
+            } else {
+              return "Complete";
+            }
+          }, "Complete");
         }
       }
     });
@@ -348,10 +342,10 @@ export class TasksComponent implements OnInit {
     } else {
       this.pService.getDetail(task.productId, 1, 20).then(detail => {
         this.bsModalRef = this.modalService.show(ProductModalComponent, {
-            animated: true,
-            backdrop: true,
-            ignoreBackdropClick: true,
-            'class': 'product-info-modal modal-xl'
+          animated: true,
+          backdrop: true,
+          ignoreBackdropClick: true,
+          'class': 'product-info-modal modal-xl'
         });
         this.bsModalRef.content.init(detail);
       });
