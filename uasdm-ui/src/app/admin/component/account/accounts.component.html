@@ -21,8 +21,10 @@
         <div class="row">
             <div class="col-md-12">
                 <generic-table *ngIf="config != null" [cols]="cols" [config]="config" [refresh]="refresh" (click)="onClick($event)"></generic-table>
-                <button *ngIf="isAdmin" (click)="uploadUsers()" class="btn btn-primary pull-left" style="margin:10px 0; margin-top: -40px;">Upload Users</button>
-                <button *ngIf="isAdmin" (click)="exportUsers()" class="btn btn-primary pull-left" style="margin:10px 0; margin-top: -40px;">Export Users</button>
+                <span *ngIf="isAdmin" class="pull-left">
+                    <button (click)="uploadUsers()" class="btn btn-primary" style="margin:10px 0; margin-top: -40px;">Upload Users</button>
+                    <button (click)="exportUsers()" class="btn btn-primary ms-1" style="margin:10px 0; margin-top: -40px;">Export Users</button>
+                </span>
             </div>
         </div>
 <!--     </div> -->
