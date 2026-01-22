@@ -359,7 +359,7 @@ public class S3RemoteFileService implements RemoteFileService
     }
     catch (SdkClientException e)
     {
-      throw new ProgrammingErrorException(e);
+      throw new ProgrammingErrorException("Unabled to copy folder [" + sourceBucket + "/" + sourceKey + "] to [" + destBucket + "/" + destKey + "]", e);
     }
   }
 
@@ -380,7 +380,7 @@ public class S3RemoteFileService implements RemoteFileService
     }
     catch (SdkClientException e)
     {
-      throw new ProgrammingErrorException(e);
+      throw new ProgrammingErrorException("Unabled to copy [" + sourceBucket + "/" + sourceKey + "] to [" + destBucket + "/" + destKey + "]", e);
     }
   }
 
@@ -405,7 +405,7 @@ public class S3RemoteFileService implements RemoteFileService
     }
     catch (SdkClientException e)
     {
-      throw new ProgrammingErrorException(e);
+      throw new ProgrammingErrorException("Unabled to delete object [" + key + "/" + bucket + "]", e);
     }
   }
 
@@ -460,7 +460,7 @@ public class S3RemoteFileService implements RemoteFileService
     }
     catch (SdkClientException e)
     {
-      throw new ProgrammingErrorException(e);
+      throw new ProgrammingErrorException("Unabled to delete objects for [" + key + "/" + bucket + "]", e);
     }
   }
 
