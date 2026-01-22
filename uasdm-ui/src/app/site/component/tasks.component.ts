@@ -20,7 +20,7 @@ import { CollapseDirective } from 'ngx-bootstrap/collapse';
 import { TasksPanelComponent } from './tasks/tasks-panel.component';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { UasdmHeaderComponent } from '../../shared/component/header/header.component';
-import { WebsocketService } from '@core/service/websocket.service';
+import { WebsocketService } from '@shared/service/websocket.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 

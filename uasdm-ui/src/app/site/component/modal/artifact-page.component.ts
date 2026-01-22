@@ -19,7 +19,7 @@ import { NgIf, NgFor, NgStyle, NgClass } from '@angular/common';
 import { BsDropdownDirective, BsDropdownToggleDirective, BsDropdownMenuDirective } from 'ngx-bootstrap/dropdown';
 import { ArtifactUploadItemComponent } from '../artifact-upload-item/artifact-upload-item.component';
 import { BooleanFieldComponent } from '@shared/component/boolean-field/boolean-field.component';
-import { WebsocketService } from '@core/service/websocket.service';
+import { WebsocketService } from '@shared/service/websocket.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({

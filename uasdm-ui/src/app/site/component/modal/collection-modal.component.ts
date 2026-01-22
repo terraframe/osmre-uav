@@ -37,7 +37,7 @@ import { ArtifactUploadComponent } from '../artifact-upload/artifact-upload.comp
 import { NgxPaginationModule } from 'ngx-pagination';
 import { SafeHtmlPipe } from '@shared/pipe/safe-html.pipe';
 import { IdmDatePipe } from '@shared/pipe/idmdate.pipe';
-import { WebsocketService } from '@core/service/websocket.service';
+import { WebsocketService } from '@shared/service/websocket.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({

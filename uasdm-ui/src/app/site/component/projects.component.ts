@@ -64,7 +64,7 @@ import { KnowStacPanelComponent } from "./know-stac-panel/know-stac-panel.compon
 import { ImageryPanelComponent } from "./imagery-panel/imagery-panel.component";
 import { AlertComponent } from "ngx-bootstrap/alert";
 import { LegendPanelComponent } from "./legend-panel/legend-panel.component";
-import { WebsocketService } from "@core/service/websocket.service";
+import { WebsocketService } from "@shared/service/websocket.service";
 
 const enum PANEL_TYPE {
   SITE = 0,

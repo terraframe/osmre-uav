@@ -7,6 +7,8 @@ import { Injectable } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import { User } from '../model/user';
 import { LocalizedValue } from '@shared/model/organization';
+import { SessionService } from './session.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -17,7 +19,7 @@ export class AuthService {
 		roles: []
 	};
 
-	constructor(private service: CookieService) {
+	constructor(private service: CookieService, private sessionService: SessionService) {
 
 		if (this.service.check("user")) {
 			let cookieData: string = this.service.get("user")
@@ -30,6 +32,11 @@ export class AuthService {
 			this.user.loggedIn = true;
 			this.user.organization = cookieDataJSON.organization;
 		}
+
+		this.sessionService.getUser().pipe(takeUntilDestroyed()).subscribe((user) => {
+			this.user = user;
+		});
+
 	}
 
 	setUser(user: User): void {
@@ -57,9 +64,9 @@ export class AuthService {
 	isAdmin(): boolean {
 		return this.user.roles.indexOf("geoprism.admin.Administrator") !== -1;
 	}
-	
+
 	isExternalProfile(): boolean {
-	  return this.user.externalProfile;
+		return this.user.externalProfile;
 	}
 
 	isWorker(): boolean {
@@ -67,7 +74,7 @@ export class AuthService {
 	}
 
 	getOrganization(): { code: string, label: LocalizedValue } {
-        return this.user.organization;
-    }
+		return this.user.organization;
+	}
 
 }

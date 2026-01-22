@@ -17,7 +17,7 @@ import { ModalTypes } from '@shared/model/modal';
 import { UasdmHeaderComponent } from '@shared/component/header/header.component';
 import { NgIf, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { WebsocketService } from '@core/service/websocket.service';
+import { WebsocketService } from '@shared/service/websocket.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({

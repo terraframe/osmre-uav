@@ -49,7 +49,7 @@ export class RunProcessModalComponent implements OnInit, OnDestroy {
         generateCopc: true
     };
 
-    isAdvancedSettingsCollapsed = true;
+    isAdvancedSettingsCollapsed = false;
 
     estimate: RuntimeEstimate;
 
