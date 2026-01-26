@@ -138,7 +138,7 @@
     <dependency>
       <groupId>org.keycloak</groupId>
       <artifactId>keycloak-servlet-filter-adapter</artifactId>
-      <version>23.0.4</version>
+      <version>24.0.0</version>
     </dependency>
     <dependency>
       <groupId>javax.websocket</groupId>
