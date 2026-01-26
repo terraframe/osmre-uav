@@ -267,10 +267,12 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
   }
 
   @Transaction
-  public static void updateStatus(String componentId, String productId)
+  public static int updateStatus(String componentId, String productId)
   {
+    int updated = 0;
+    
     if (StringUtils.isBlank(componentId))
-      return;
+      return updated;
 
     UasComponentIF component = UasComponent.get(componentId);
 
@@ -284,7 +286,7 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
     {
       tasks = WorkflowTask.getTasksForProduct(productId);
     }
-
+    
     if (tasks != null && tasks.size() > 0)
     {
       Map<String, LinkedList<WorkflowTask>> taskGroups = createTaskGroups(tasks);
@@ -324,8 +326,11 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
         collectionStatus.setStatus(status);
         collectionStatus.setLastModificationDate(new Date());
         collectionStatus.apply();
+        updated++;
       }
     }
+    
+    return updated;
   }
 
   public static Page<CollectionStatus> getUserWorkflowTasks(String statuses, Integer pageNumber, Integer pageSize)
