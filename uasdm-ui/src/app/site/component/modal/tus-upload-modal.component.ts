@@ -126,6 +126,11 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 	close(): void {
 		this.bsModalRef.hide();
 	}
+	
+	visitTaskPage(): void {
+	  // this.close won't close the outer modal... since we're modal inside a modal here
+	  window.location.href = '/#/site/tasks';
+	}
 
 	onFileSelected(files: NgxFileDropEntry[]): void {
 		this.selectedFile = null;

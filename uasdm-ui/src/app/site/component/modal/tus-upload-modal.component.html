@@ -202,9 +202,10 @@
             <div class="card-body">
               <h4>
                 Status:
-                <b>
-                  Upload successfully completed and the files are being copied to S3.
-                  See the <a routerLink="/site/tasks">task page</a> for more details.
+                <b style="word-break:normal;">
+                  Upload successfully completed and the files are being copied to centralized cloud storage.
+                  See the <a (click)="visitTaskPage()">task page</a> for more details. Once complete the data
+                  will be available to be processed into products.
                 </b>
               </h4>
             </div>
