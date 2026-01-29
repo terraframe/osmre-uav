@@ -51,7 +51,7 @@ import { KnowStacService } from "@site/service/know-stac.service";
 import { isMapboxURL, transformMapboxUrl } from "maplibregl-mapbox-request-transformer";
 import { UploadService } from "@site/service/upload.service";
 import { TusUploadModalComponent } from "./modal/tus-upload-modal.component";
-import { NgIf, NgFor, NgClass, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet } from "@angular/common";
+import { NgIf, NgFor, NgClass, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet, Location } from "@angular/common";
 import { CollapseDirective } from "ngx-bootstrap/collapse";
 import { UasdmHeaderComponent } from "../../shared/component/header/header.component";
 import { FormsModule } from "@angular/forms";
@@ -267,7 +267,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     private cookieService: CookieService,
     private syncService: LPGSyncService,
     private uploadService: UploadService,
-    private websocketService: WebsocketService
+    private websocketService: WebsocketService,
+    private location: Location
   ) {
 
     this.subject = new Subject();
@@ -300,7 +301,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.websocketService.getNotifier().pipe(takeUntilDestroyed()).subscribe((message) => {
       console.log('Getting Notification:', message);
-      
+
       if (message.type === "UPLOAD_JOB_CHANGE") {
         this.tasks.push(message.content);
       }
@@ -320,10 +321,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     const oid = this.route.snapshot.params["oid"];
     const action = this.route.snapshot.params["action"];
 
-    if (oid != null && action != null && action === "collection") {
+    if (oid != null && action != null && action === "entity") {
       this.handleViewSite(oid);
     }
-
 
     this.uploadService.findAllUploads().then(resumables => {
       if (resumables.length > 0) {
@@ -1208,6 +1208,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       event.stopPropagation();
     }
 
+    if (node != null) {
+      this.location.go('/site/viewer/entity/' + node.id);
+    } else {
+      this.location.go('/site/viewer/');
+    }
+
     if (node != null && node.geometry != null && node.geometry.type === "Point") {
       //this.map.fitBounds(this.allPointsBounds, { padding: 50 });
 
@@ -1307,6 +1313,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   back(breadcrumb: ViewerSelection): void {
 
     if (breadcrumb == null) {
+      this.location.go('/site/viewer/');
+
       if (this.breadcrumbs.length > 0) {
 
         if (this.hierarchy.oid != null && this.hierarchy.oid.length > 0) {
@@ -1334,6 +1342,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     else if (breadcrumb.type === SELECTION_TYPE.SITE) {
       const node: SiteEntity = breadcrumb.data as SiteEntity;
+
+      this.location.go('/site/viewer/entity/' + node.id);
 
       if (node.geometry != null && node.geometry.type === "Point") {
         //this.map.fitBounds(this.allPointsBounds, { padding: 50 });
@@ -1393,6 +1403,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   showLeafModal(collection: SiteEntity, folders: SiteEntity[], breadcrumbs: SiteEntity[]): void {
+    this.location.go('/site/viewer/entity/' + collection.id);
 
     if (collection.type === "Mission") {
       this.bsModalRef = this.modalService.show(AccessibleSupportModalComponent, {
@@ -1404,6 +1415,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.bsModalRef.content.init(collection, folders, breadcrumbs);
     }
     else {
+
       this.bsModalRef = this.modalService.show(CollectionModalComponent, {
         animated: true,
         backdrop: true,
