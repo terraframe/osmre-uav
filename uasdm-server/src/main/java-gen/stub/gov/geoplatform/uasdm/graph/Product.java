@@ -933,7 +933,6 @@ public class Product extends ProductBase implements ProductIF
       {
         if (iterator.hasNext())
         {
-
           LabeledPropertyGraphSynchronization synchronization = iterator.next();
           LabeledPropertyGraphType graphType = synchronization.getGraphType();
           LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
@@ -1052,9 +1051,17 @@ public class Product extends ProductBase implements ProductIF
           }
 
           String title = "Visual";
-          String role = "visual";
+          List<String> roles = new LinkedList<>();
+          roles.add("data");
 
-          item.addAsset(assetName, StacItem.buildAsset(type, title, location, role));
+          if (location.contains("/" + ImageryComponent.ORTHO + "/") //
+              && component instanceof Collection //
+              && ( (Collection) component ).isMultiSpectral())
+          {
+            roles.add("multispectral");
+          }
+
+          item.addAsset(assetName, StacItem.buildAsset(type, title, location, roles.toArray(new String[roles.size()])));
         }
       }
     }

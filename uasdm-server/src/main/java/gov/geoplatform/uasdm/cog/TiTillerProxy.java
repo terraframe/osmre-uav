@@ -154,14 +154,17 @@ public class TiTillerProxy
 
   public TitilerCogStatistics getCogStatistics(DocumentIF document)
   {
+    return getCogStatistics("s3://" + AppProperties.getBucketName() + "/" + document.getS3location());
+  }
+
+  public TitilerCogStatistics getCogStatistics(String url)
+  {
     try
     {
       InputStream stream = null;
 
-      String tifUrl = "s3://" + AppProperties.getBucketName() + "/" + document.getS3location();
-
       Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
-      parameters.put("url", Arrays.asList(tifUrl));
+      parameters.put("url", Arrays.asList(url));
 
       stream = authenticatedInvokeURL(new URI(AppProperties.getTitilerUrl()), "/cog/statistics", parameters);
 
@@ -175,14 +178,17 @@ public class TiTillerProxy
 
   public TitilerCogInfo getCogInfo(DocumentIF document)
   {
+    return getCogInfo("s3://" + AppProperties.getBucketName() + "/" + document.getS3location());
+  }
+
+  public TitilerCogInfo getCogInfo(String url)
+  {
     try
     {
       InputStream stream = null;
 
-      String tifUrl = "s3://" + AppProperties.getBucketName() + "/" + document.getS3location();
-
       Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
-      parameters.put("url", Arrays.asList(tifUrl));
+      parameters.put("url", Arrays.asList(url));
 
       stream = authenticatedInvokeURL(new URI(AppProperties.getTitilerUrl()), "/cog/info", parameters);
 

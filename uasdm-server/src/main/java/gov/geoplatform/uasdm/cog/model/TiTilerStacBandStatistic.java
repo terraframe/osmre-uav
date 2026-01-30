@@ -1,0 +1,194 @@
+package gov.geoplatform.uasdm.cog.model;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class TiTilerStacBandStatistic
+{
+  private Double min;
+
+  private Double max;
+
+  private Double mean;
+
+  private Long   count;
+
+  private Double sum;
+
+  private Double std;
+
+  private Double median;
+
+  private Double majority;
+
+  private Double minority;
+
+  private Long   unique;
+
+  @JsonProperty("valid_percent")
+  private Float  validPercent;
+
+  @JsonProperty("masked_pixels")
+  private Long   maskedPixels;
+
+  @JsonProperty("valid_pixels")
+  private Long   validPixels;
+
+  @JsonProperty("percentile_2")
+  private Double percentile2;
+
+  @JsonProperty("percentile_98")
+  private Double percentile98;
+
+  public Double getMin()
+  {
+    return min;
+  }
+
+  public void setMin(Double min)
+  {
+    this.min = min;
+  }
+
+  public Double getMax()
+  {
+    return max;
+  }
+
+  public void setMax(Double max)
+  {
+    this.max = max;
+  }
+
+  public Double getMean()
+  {
+    return mean;
+  }
+
+  public void setMean(Double mean)
+  {
+    this.mean = mean;
+  }
+
+  public Long getCount()
+  {
+    return count;
+  }
+
+  public void setCount(Long count)
+  {
+    this.count = count;
+  }
+
+  public Double getSum()
+  {
+    return sum;
+  }
+
+  public void setSum(Double sum)
+  {
+    this.sum = sum;
+  }
+
+  public Double getStd()
+  {
+    return std;
+  }
+
+  public void setStd(Double std)
+  {
+    this.std = std;
+  }
+
+  public Double getMedian()
+  {
+    return median;
+  }
+
+  public void setMedian(Double median)
+  {
+    this.median = median;
+  }
+
+  public Double getMajority()
+  {
+    return majority;
+  }
+
+  public void setMajority(Double majority)
+  {
+    this.majority = majority;
+  }
+
+  public Double getMinority()
+  {
+    return minority;
+  }
+
+  public void setMinority(Double minority)
+  {
+    this.minority = minority;
+  }
+
+  public Long getUnique()
+  {
+    return unique;
+  }
+
+  public void setUnique(Long unique)
+  {
+    this.unique = unique;
+  }
+
+  public Float getValidPercent()
+  {
+    return validPercent;
+  }
+
+  public void setValidPercent(Float validPercent)
+  {
+    this.validPercent = validPercent;
+  }
+
+  public Long getMaskedPixels()
+  {
+    return maskedPixels;
+  }
+
+  public void setMaskedPixels(Long maskedPixels)
+  {
+    this.maskedPixels = maskedPixels;
+  }
+
+  public Long getValidPixels()
+  {
+    return validPixels;
+  }
+
+  public void setValidPixels(Long validPixels)
+  {
+    this.validPixels = validPixels;
+  }
+
+  public Double getPercentile2()
+  {
+    return percentile2;
+  }
+
+  public void setPercentile2(Double percentile2)
+  {
+    this.percentile2 = percentile2;
+  }
+
+  public Double getPercentile98()
+  {
+    return percentile98;
+  }
+
+  public void setPercentile98(Double percentile98)
+  {
+    this.percentile98 = percentile98;
+  }
+
+}

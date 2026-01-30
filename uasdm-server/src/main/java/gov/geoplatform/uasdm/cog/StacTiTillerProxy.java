@@ -24,41 +24,46 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.util.MultiValueMap;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.GenericException;
-import gov.geoplatform.uasdm.cog.model.TitilerCogBandStatistic;
+import gov.geoplatform.uasdm.cog.model.TiTilerStacAssetInfo;
+import gov.geoplatform.uasdm.cog.model.TiTilerStacBandStatistic;
+import gov.geoplatform.uasdm.cog.model.TiTilerStacInfo;
+import gov.geoplatform.uasdm.cog.model.TiTilerStacStatistics;
+import gov.geoplatform.uasdm.cog.model.TiTillerStacBandMetadata;
 import gov.geoplatform.uasdm.cog.model.TitilerCogInfo;
-import gov.geoplatform.uasdm.cog.model.TitilerCogStatistics;
-import gov.geoplatform.uasdm.graph.Collection;
-import gov.geoplatform.uasdm.graph.Product;
-import gov.geoplatform.uasdm.graph.UasComponent;
-import gov.geoplatform.uasdm.model.CollectionIF;
-import gov.geoplatform.uasdm.model.DocumentIF;
-import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
-import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Uri;
 import software.amazon.awssdk.services.s3.S3Utilities;
 
 public class StacTiTillerProxy extends TiTillerProxy
 {
+  private static final String URL    = "url";
 
-  private String url;
+  private static final String ASSETS = "assets";
 
-  private String assets;
+  private String              url;
 
-  public StacTiTillerProxy(String url, String assets)
+  private String              assets;
+
+  private Boolean             multispectral;
+
+  public StacTiTillerProxy(String url, String assets, Boolean multispectral)
   {
     this.url = url;
     this.assets = assets;
+    this.multispectral = multispectral;
   }
 
   public InputStream tiles(String matrixSetId, Integer z, Integer x, Integer y, Integer scale, String format, MultiValueMap<String, String> queryParams)
@@ -90,29 +95,39 @@ public class StacTiTillerProxy extends TiTillerProxy
         .region(Region.of(AppProperties.getBucketRegion())) //
         .build();
     S3Uri s3Uri = s3Utilities.parseUri(URI.create(this.url));
-    
+
     // Update the download count
     // We know that the filename of the stac json is the product id. So parse
     // out that id, fetch the product, and increment the count
     String key = s3Uri.key().orElseThrow(() -> {
       GenericException ex = new GenericException();
       ex.setUserMessage("Unabled to parse key from url: " + this.url);
-      
+
       return ex;
     });
 
-    String productId = key.substring(S3RemoteFileService.STAC_BUCKET.length() + 1, key.length() - 5);
-    Product product = Product.get(productId);
-    if (product != null)
+    if (multispectral)
     {
-      UasComponent component = product.getComponent();
-      if (component instanceof Collection)
-      {
-        CollectionReportFacade.updateDownloadCount((CollectionIF) component).doIt();
-
-        addMultispectralRGBParamsForStac(product, (Collection) component, parameters);
-      }
+      this.calculateAndRescaleBands(parameters);
     }
+    // else
+    // {
+    // String productId = key.substring(S3RemoteFileService.STAC_BUCKET.length()
+    // + 1, key.length() - 5);
+    // Product product = Product.get(productId);
+    // if (product != null)
+    // {
+    // UasComponent component = product.getComponent();
+    // if (component instanceof Collection)
+    // {
+    // CollectionReportFacade.updateDownloadCount((CollectionIF)
+    // component).doIt();
+    //
+    // addMultispectralRGBParamsForStac(product, (Collection) component,
+    // parameters);
+    // }
+    // }
+    // }
 
     parameters.put("url", Arrays.asList(this.url));
     parameters.put("assets", Arrays.asList(this.assets));
@@ -147,31 +162,32 @@ public class StacTiTillerProxy extends TiTillerProxy
     }
   }
 
-  protected void addMultispectralRGBParamsForStac(Product product, Collection collection, Map<String, List<String>> parameters)
+  protected void calculateAndRescaleBands(Map<String, List<String>> parameters)
   {
-    if ( ( collection ).isMultiSpectral() && assets.length() > 0 && assets.contains("odm_orthophoto"))
-    {
-      DocumentIF document = product.getMappableOrtho().get();
+    this.getStacInfo().ifPresent(info -> {
+      TiTilerStacAssetInfo asset = info.getAsset(this.assets);
 
-      TitilerCogInfo info = this.getCogInfo(document);
-      if (info != null)
+      AtomicInteger redIdx = new AtomicInteger(asset.getColorinterp().indexOf("red"));
+      AtomicInteger greenIdx = new AtomicInteger(asset.getColorinterp().indexOf("green"));
+      AtomicInteger blueIdx = new AtomicInteger(asset.getColorinterp().indexOf("blue"));
+
+      if (redIdx.intValue() != -1 && greenIdx.intValue() != -1 && blueIdx.intValue() != -1)
       {
-        int redIdx = info.getColorinterp().indexOf("red");
-        int greenIdx = info.getColorinterp().indexOf("green");
-        int blueIdx = info.getColorinterp().indexOf("blue");
+        redIdx.incrementAndGet();
+        greenIdx.incrementAndGet();
+        blueIdx.incrementAndGet();
 
-        if (redIdx != -1 && greenIdx != -1 && blueIdx != -1)
-        {
-          redIdx++;
-          greenIdx++;
-          blueIdx++;
+        this.getStacStatistics().ifPresent(stats -> {
 
-          parameters.put("asset_bidx", Arrays.asList(assets + "|" + String.valueOf(redIdx) + "," + String.valueOf(greenIdx) + "," + String.valueOf(blueIdx)));
+          parameters.put("asset_bidx", Arrays.asList(this.assets + "|" + String.valueOf(redIdx.intValue()) + "," + String.valueOf(greenIdx.intValue()) + "," + String.valueOf(blueIdx.intValue())));
 
-          TitilerCogStatistics stats = this.getCogStatistics(document);
-          TitilerCogBandStatistic redStat = stats.getBandStatistic(String.valueOf(redIdx));
-          TitilerCogBandStatistic greenStat = stats.getBandStatistic(String.valueOf(greenIdx));
-          TitilerCogBandStatistic blueStat = stats.getBandStatistic(String.valueOf(blueIdx));
+          TiTillerStacBandMetadata redMetadata = asset.getBandMetadata().get(redIdx.get());
+          TiTillerStacBandMetadata greenMetadata = asset.getBandMetadata().get(greenIdx.get());
+          TiTillerStacBandMetadata blueMetadata = asset.getBandMetadata().get(blueIdx.get());
+
+          TiTilerStacBandStatistic redStat = stats.getAssetBand(this.assets + "_" + redMetadata.getName());
+          TiTilerStacBandStatistic greenStat = stats.getAssetBand(this.assets + "_" + greenMetadata.getName());
+          TiTilerStacBandStatistic blueStat = stats.getAssetBand(this.assets + "_" + blueMetadata.getName());
 
           Double min = Math.min(redStat.getMin(), Math.min(greenStat.getMin(), blueStat.getMin()));
           Double max = Math.max(redStat.getMax(), Math.max(greenStat.getMax(), blueStat.getMax()));
@@ -181,9 +197,50 @@ public class StacTiTillerProxy extends TiTillerProxy
           // doesn't render properly if it is.
 
           parameters.put("rescale", Arrays.asList(String.valueOf(min) + "," + String.valueOf(max)));
-        }
+        });
       }
+    });
+  }
+
+  public Optional<TiTilerStacInfo> getStacInfo()
+  {
+    try
+    {
+      Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
+      parameters.put(URL, Arrays.asList(url));
+      parameters.put(ASSETS, Arrays.asList(this.assets));
+
+      InputStream stream = authenticatedInvokeURL(new URI(AppProperties.getTitilerUrl()), "/stac/info", parameters);
+
+      ObjectMapper mapper = new ObjectMapper();
+
+      return Optional.ofNullable(mapper.readValue(stream, TiTilerStacInfo.class));
+    }
+    catch (URISyntaxException | IOException e)
+    {
+      throw new ProgrammingErrorException(e);
     }
   }
 
+  public Optional<TiTilerStacStatistics> getStacStatistics()
+  {
+    try
+    {
+      Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
+      parameters.put(URL, Arrays.asList(url));
+      parameters.put(ASSETS, Arrays.asList(this.assets));
+
+      try (InputStream stream = authenticatedInvokeURL(new URI(AppProperties.getTitilerUrl()), "/stac/statistics", parameters))
+      {
+        ObjectMapper mapper = new ObjectMapper();
+
+        return Optional.ofNullable(mapper.readValue(stream, TiTilerStacStatistics.class));
+      }
+    }
+    catch (URISyntaxException | IOException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+
+  }
 }

@@ -2059,6 +2059,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         url += "?url=" + encodeURIComponent(link.href);
         url += "&assets=" + encodeURIComponent(item.asset);
 
+        const asset = item.assets[item.asset];
+        if (asset.roles != null && asset.roles.indexOf('multispectral') !== -1) {
+          url += "&multispectral=true";
+        }
+
         this.addImageLayer({
           classification: "ORTHO",
           key: layer.id + '-' + item.id + '-' + item.asset,
@@ -2070,6 +2075,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     else if (layer.type === ToggleableLayerType.KNOWSTAC) {
       const item: StacItem = layer.item;
 
+      console.log('Stac Item', item);
+
+
       // Add the layer to the map
       const index = item.links.findIndex(link => link.rel === 'self');
       const link = item.links[index];
@@ -2077,6 +2085,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       let url = "/stac/tilejson.json";
       url += "?url=" + encodeURIComponent(link.href);
       url += "&assets=" + encodeURIComponent(item.asset);
+
+      const asset = item.assets[item.asset];
+      if (asset.roles != null && asset.roles.indexOf('multispectral') !== -1) {
+        url += "&multispectral=true";
+      }
 
       this.addImageLayer({
         classification: "ORTHO",
