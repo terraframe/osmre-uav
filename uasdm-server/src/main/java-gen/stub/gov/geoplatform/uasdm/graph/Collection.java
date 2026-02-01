@@ -752,7 +752,11 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       }
 
       return false;
-    }).orElse(false);
+    }).orElseGet(() -> {
+      log.error("Unable to find metadata. Returning false for multispectral");
+
+      return false;
+    });
   }
 
   /**

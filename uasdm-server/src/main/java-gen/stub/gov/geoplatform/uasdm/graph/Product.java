@@ -1051,11 +1051,10 @@ public class Product extends ProductBase implements ProductIF
           }
 
           String title = "Visual";
-          List<String> roles = new LinkedList<>();
+          List<String> roles = new LinkedList<String>();
           roles.add("data");
 
-          if (location.contains("/" + ImageryComponent.ORTHO + "/") //
-              && component instanceof Collection //
+          if (component instanceof Collection //
               && ( (Collection) component ).isMultiSpectral())
           {
             roles.add("multispectral");
