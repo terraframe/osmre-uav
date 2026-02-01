@@ -735,6 +735,8 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
       if (sensor == null)
       {
+        log.error("Metadata missing sensor information");
+
         return false;
       }
 
@@ -746,9 +748,14 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       }
 
       SensorType type = sensor.getSensorType();
-      if (type != null && type.getIsMultispectral())
+
+      if (type != null)
       {
-        return true;
+        return type.getIsMultispectral() != null && type.getIsMultispectral();
+      }
+      else
+      {
+        log.error("Unable to find sensor type for sensor");
       }
 
       return false;
