@@ -725,18 +725,32 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     var format = this.getFormat();
     if (format != null)
+    {
       return format.isMultispectral();
+    }
 
     // Maintain legacy behaviour (before collection format existed)
     return this.getMetadata().map(metadata -> {
       Sensor sensor = metadata.getSensor();
+
       if (sensor == null)
+      {
         return false;
+      }
+
+      List<CollectionFormat> formats = sensor.getCollectionFormats();
+
+      if (formats.contains(CollectionFormat.STILL_MULTISPECTRAL) || formats.contains(CollectionFormat.VIDEO_MULTISPECTRAL))
+      {
+        return true;
+      }
 
       SensorType type = sensor.getSensorType();
       if (type != null && type.getIsMultispectral())
+      {
         return true;
-      
+      }
+
       return false;
     }).orElse(false);
   }
