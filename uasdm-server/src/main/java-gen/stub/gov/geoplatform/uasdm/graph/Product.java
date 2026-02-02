@@ -66,6 +66,7 @@ import gov.geoplatform.uasdm.bus.UasComponentDeleteException;
 import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
 import gov.geoplatform.uasdm.command.IndexDeleteStacCommand;
 import gov.geoplatform.uasdm.command.ReIndexStacItemCommand;
+import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
@@ -625,6 +626,48 @@ public class Product extends ProductBase implements ProductIF
     return this.getPublished() != null && this.getPublished();
   }
 
+  public boolean isMultiSpectral()
+  {
+    return isMultiSpectral(this.getMetadata());
+  }
+
+  private boolean isMultiSpectral(Optional<CollectionMetadata> optional)
+  {
+    return optional.map(metadata -> {
+
+      if (metadata.isMultiSpectral())
+      {
+        return true;
+      }
+
+      Sensor sensor = metadata.getSensor();
+
+      if (sensor == null)
+      {
+        logger.error("Metadata missing sensor information");
+
+        return false;
+      }
+
+      SensorType type = sensor.getSensorType();
+
+      if (type != null)
+      {
+        return type.getIsMultispectral() != null && type.getIsMultispectral();
+      }
+      else
+      {
+        logger.error("Unable to find sensor type for sensor");
+      }
+
+      return false;
+    }).orElseGet(() -> {
+      logger.error("Unable to find metadata. Returning false for multispectral");
+
+      return false;
+    });
+  }
+
   /**
    * Downloads the product's ODM all.zip and refreshes S3 and database documents
    * with the data contained.
@@ -1054,8 +1097,7 @@ public class Product extends ProductBase implements ProductIF
           List<String> roles = new LinkedList<String>();
           roles.add("data");
 
-          if (component instanceof Collection //
-              && ( (Collection) component ).isMultiSpectral())
+          if (location.contains("/" + ImageryComponent.ORTHO + "/") && this.isMultiSpectral(opMeta))
           {
             roles.add("multispectral");
           }

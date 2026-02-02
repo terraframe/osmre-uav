@@ -547,7 +547,7 @@
               <div [style]="panelType === 3 ? 'background:#767676;': 'background:#fff;'"
                 style="padding:6px;border-radius:4px;">
                 <a (click)="panelType === 3 ? panelType = 0 : panelType = 3" title="Search GeoPlatform">
-                  <i class="fa fa-search hover-color" [ngClass]="{'fa-inverse': panelType === 3}"></i>
+                  <i class="fa fa-search hover-color" [ngClass]="{'inverse': panelType === 3}"></i>
                 </a>
               </div>
             </article>
@@ -556,11 +556,11 @@
               <div [style]="panelType === 4 ? 'background:#767676;': 'background:#fff;'"
                 style="padding:3px;border-radius:4px;">
                 <a (click)="panelType === 4 ? panelType = 0 : panelType = 4" title="Mapped Images">
-                  <span class="fa-stack">
-                    <i class="fa fa-globe fa-stack-1x" [ngClass]="{'fa-inverse': panelType === 4}" style="margin: 0px;">
+                  <span class="fa-stack" [ngClass]="{'inverse': panelType === 4}">
+                    <i class="fa fa-globe fa-stack-1x" style="margin: 0px;" [ngClass]="{'inverse': panelType === 4}">
                     </i>
                     <span class="badge"
-                      [style]="panelType === 4 ? 'color:#fff;': 'color:#767676;'">{{mapLayers.length}}</span>
+                      [style]="panelType === 4 ? 'color:#fff;': 'color:#767676;'" >{{mapLayers.length}}</span>
                   </span>
                 </a>
               </div>
