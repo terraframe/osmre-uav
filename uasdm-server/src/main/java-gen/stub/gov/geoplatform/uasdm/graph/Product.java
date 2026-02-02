@@ -1093,13 +1093,23 @@ public class Product extends ProductBase implements ProductIF
             type = "image/tiff; application=geotiff; profile=cloud-optimized";
           }
 
-          String title = "Visual";
+          String title = "Data";
+
           List<String> roles = new LinkedList<String>();
           roles.add("data");
 
-          if (location.contains("/" + ImageryComponent.ORTHO + "/") && this.isMultiSpectral(opMeta))
+          if (location.contains("/" + ImageryComponent.ORTHO + "/"))
           {
-            roles.add("multispectral");
+            title = "Ortho";
+
+            if (this.isMultiSpectral(opMeta))
+            {
+              roles.add("multispectral");
+            }
+          }
+          else if (location.contains("/" + ImageryComponent.DEM + "/"))
+          {
+            title = "Elevation";
           }
 
           item.addAsset(assetName, StacItem.buildAsset(type, title, location, roles.toArray(new String[roles.size()])));
