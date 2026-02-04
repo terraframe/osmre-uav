@@ -99,8 +99,6 @@ export class AccountService implements GenericTableService {
             'Content-Type': 'application/json'
         });
 
-        console.log("Submitting to inviteUser : ", JSON.stringify({ invite: invite, roleIds: roleIds }));
-
         this.eventService.start();
 
         return firstValueFrom(this.http

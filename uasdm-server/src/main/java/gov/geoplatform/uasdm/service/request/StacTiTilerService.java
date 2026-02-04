@@ -39,7 +39,7 @@ public class StacTiTilerService
   {
     try
     {
-      StacTiTillerProxy proxy = new StacTiTillerProxy(url, assets, false);
+      StacTiTillerProxy proxy = new StacTiTillerProxy(url, assets, false, false);
 
       InputStream tiles = proxy.tiles(matrixSetId, z, x, y, scale, format, queryParams);
 
@@ -62,9 +62,9 @@ public class StacTiTilerService
   }
 
   @Request(RequestType.SESSION)
-  public JSONObject tilejson(String sessionId, String contextPath, String url, String assets, Boolean multispectral)
+  public JSONObject tilejson(String sessionId, String contextPath, String url, String assets, Boolean multispectral, Boolean hillshade)
   {
-    StacTiTillerProxy proxy = new StacTiTillerProxy(url, assets, multispectral);
+    StacTiTillerProxy proxy = new StacTiTillerProxy(url, assets, multispectral, hillshade);
 
     return proxy.tilejson(contextPath);
   }

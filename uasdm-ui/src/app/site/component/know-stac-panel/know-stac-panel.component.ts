@@ -80,11 +80,11 @@ export class KnowStacPanelComponent implements OnInit, OnDestroy {
 			this.service.item(link.href).then(item => {
 				item.enabled = false;
 
-				if (item.assets.thumbnail != null) {
-					item.thumbnail = item.assets.thumbnail.href;
+				if (item.assets['thumbnail'] != null) {
+					item.thumbnail = item.assets['thumbnail'].href;
 				}
-				else if (item.assets['thumbnail-hd'] != null) {
-					item.thumbnail = item.assets['thumbnail-hd'].href;
+				else if (item.assets['overview'] != null) {
+					item.thumbnail = item.assets['overview'].href;
 				}
 
 				link.item = item;

@@ -68,8 +68,6 @@ export class ClassificationComponent implements OnInit {
 
 			if (this.newInstance) {
 
-				console.log('Navigate', this.metadata.route)
-
 				this.router.navigate(['/site/' + this.metadata.route, data.oid]);
 				this.newInstance = false;
 				this.original = data;

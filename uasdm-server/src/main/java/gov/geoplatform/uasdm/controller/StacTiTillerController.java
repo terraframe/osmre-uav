@@ -44,9 +44,14 @@ public class StacTiTillerController extends AbstractController
   private StacTiTilerService service;
 
   @GetMapping("/tilejson.json")
-  public ResponseEntity<String> tilejson(@RequestParam(name = "url", required = true) String url, @RequestParam(name = "assets", required = true) String assets, @RequestParam(name = "multispectral", required = false, defaultValue = "false") Boolean multispectral)
+  public ResponseEntity<String> tilejson( //
+      @RequestParam(name = "url", required = true) String url, //
+      @RequestParam(name = "assets", required = true) String assets, //
+      @RequestParam(name = "multispectral", required = false, defaultValue = "false") Boolean multispectral, //
+      @RequestParam(name = "hillshade", required = false, defaultValue = "false") Boolean hillshade //
+  )
   {
-    JSONObject tilejson = this.service.tilejson(this.getSessionId(), this.getRequest().getContextPath(), url, assets, multispectral);
+    JSONObject tilejson = this.service.tilejson(this.getSessionId(), this.getRequest().getContextPath(), url, assets, multispectral, hillshade);
 
     return new ResponseEntity<String>(tilejson.toString(), HttpStatus.OK);
   }

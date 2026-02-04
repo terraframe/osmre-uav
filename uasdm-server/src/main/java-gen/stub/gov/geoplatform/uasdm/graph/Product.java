@@ -1070,20 +1070,18 @@ public class Product extends ProductBase implements ProductIF
 
         if (ext.toUpperCase().equals("PNG"))
         {
-          String role = "visual";
-
-          item.addAsset("image-hd", StacItem.buildAsset("image/png", "Image", location, role));
+          item.addAsset("overview", StacItem.buildAsset("image/png", "Overview", location, "overview"));
 
           // Private thumbnail
           String rootPath = FilenameUtils.getPath(document.getS3location());
           String baseName = FilenameUtils.getBaseName(document.getName());
           final String thumbnail = this.isPublished() ? "https://" + bucketName + ".s3.amazonaws.com/" + rootPath + "thumbnails/" + baseName + ".png" : "s3://" + bucketName + "/" + rootPath + "thumbnails/" + baseName + ".png";
 
-          item.addAsset("thumbnail", StacItem.buildAsset("image/png", "Thumbnail", thumbnail, role));
+          item.addAsset("thumbnail", StacItem.buildAsset("image/png", "Thumbnail", thumbnail, "thumbnail"));
         }
         else
         {
-          String assetName = FilenameUtils.getBaseName(document.getName());
+          String assetName = FilenameUtils.getBaseName(document.getName()).replace(".", "_");
 
           String type = "image/tiff; application=geotiff;";
 
@@ -1109,6 +1107,7 @@ public class Product extends ProductBase implements ProductIF
           else if (location.contains("/" + ImageryComponent.DEM + "/"))
           {
             title = "Elevation";
+            roles.add("land-water");
           }
 
           item.addAsset(assetName, StacItem.buildAsset(type, title, location, roles.toArray(new String[roles.size()])));

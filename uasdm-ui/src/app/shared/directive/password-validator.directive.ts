@@ -18,8 +18,6 @@ export class PasswordValidatorDirective implements Validator {
 
 	validate(control: AbstractControl): { [key: string]: any } | null {
 
-		console.log("Checking password strength");
-
 		if (control.value != null && control.value !== '') {
 
 			let isValid: boolean = true;

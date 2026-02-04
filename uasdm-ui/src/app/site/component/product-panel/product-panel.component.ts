@@ -286,19 +286,15 @@ export class ProductPanelComponent implements OnDestroy {
     handleMapIt(product: Product): void {
 
         if (this.hasOrthoLayer(product)) {
-            console.log('Emit Ortho', product);
-
             this.toggleMapOrtho.emit(product);
         }
     }
 
     handleMapDem(product: Product): void {
         if (this.hasDemLayer(product)) {
-            console.log('Emit Hillshade', product);
 
             this.toggleMapDem.emit(product);
 
-            console.log('Emit finished', product);
         }
     }
 

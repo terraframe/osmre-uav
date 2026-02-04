@@ -58,11 +58,14 @@ public class StacTiTillerProxy extends TiTillerProxy
 
   private Boolean             multispectral;
 
-  public StacTiTillerProxy(String url, String assets, Boolean multispectral)
+  private Boolean             hillshade;
+
+  public StacTiTillerProxy(String url, String assets, Boolean multispectral, Boolean hillshade)
   {
     this.url = url;
     this.assets = assets;
     this.multispectral = multispectral;
+    this.hillshade = hillshade;
   }
 
   public InputStream tiles(String matrixSetId, Integer z, Integer x, Integer y, Integer scale, String format, MultiValueMap<String, String> queryParams)
@@ -71,7 +74,7 @@ public class StacTiTillerProxy extends TiTillerProxy
     parameters.put("url", Arrays.asList(this.url));
     parameters.put("assets", Arrays.asList(this.assets));
 
-    passThroughParams(queryParams, parameters, new String[] { "asset_bidx", "rescale", "resampling", "color_formula", "colormap_name", "colormap", "return_mask" });
+    passThroughParams(queryParams, parameters, new String[] { "algorithm", "buffer", "asset_bidx", "rescale", "resampling", "color_formula", "colormap_name", "colormap", "return_mask" });
 
     try
     {
@@ -105,28 +108,15 @@ public class StacTiTillerProxy extends TiTillerProxy
       return ex;
     });
 
-    if (multispectral)
+    if (this.multispectral)
     {
-      this.calculateAndRescaleBands(parameters);
+      this.calculateAndRescaleMultiBands(parameters);
     }
-    // else
-    // {
-    // String productId = key.substring(S3RemoteFileService.STAC_BUCKET.length()
-    // + 1, key.length() - 5);
-    // Product product = Product.get(productId);
-    // if (product != null)
-    // {
-    // UasComponent component = product.getComponent();
-    // if (component instanceof Collection)
-    // {
-    // CollectionReportFacade.updateDownloadCount((CollectionIF)
-    // component).doIt();
-    //
-    // addMultispectralRGBParamsForStac(product, (Collection) component,
-    // parameters);
-    // }
-    // }
-    // }
+    else if (this.hillshade)
+    {
+      parameters.put("algorithm", Arrays.asList("hillshade"));
+      parameters.put("colormap_name", Arrays.asList("terrain"));
+    }
 
     parameters.put("url", Arrays.asList(this.url));
     parameters.put("assets", Arrays.asList(this.assets));
@@ -161,7 +151,34 @@ public class StacTiTillerProxy extends TiTillerProxy
     }
   }
 
-  protected void calculateAndRescaleBands(Map<String, List<String>> parameters)
+  protected void calculateAndRescaleSingleBand(Map<String, List<String>> parameters)
+  {
+    this.getStacInfo().ifPresent(info -> {
+      TiTilerStacAssetInfo asset = info.getAsset(this.assets);
+
+      final TiTillerStacBandMetadata metadata = asset.getBandMetadata().get(0);
+
+      this.getStacStatistics().ifPresent(stats -> {
+
+        // parameters.put("asset_bidx", Arrays.asList(this.assets + "|" +
+        // String.valueOf(1)));
+
+        List<TiTilerStacBandStatistic> bands = Arrays.asList( //
+            stats.getAssetBand(this.assets + "_" + metadata.getName()) //
+        );
+
+        Optional<Double> max = bands.stream().filter(b -> b != null).map(b -> b.getMax()).reduce((a, b) -> Math.max(a, b));
+        Optional<Double> min = bands.stream().filter(b -> b != null).map(b -> b.getMin()).reduce((a, b) -> Math.min(a, b));
+
+        if (min.isPresent() && max.isPresent())
+        {
+          parameters.put("rescale", Arrays.asList(String.valueOf(min.get()) + "," + String.valueOf(max.get())));
+        }
+      });
+    });
+  }
+
+  protected void calculateAndRescaleMultiBands(Map<String, List<String>> parameters)
   {
     this.getStacInfo().ifPresent(info -> {
       TiTilerStacAssetInfo asset = info.getAsset(this.assets);

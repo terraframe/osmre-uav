@@ -300,8 +300,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.websocketService.getNotifier().pipe(takeUntilDestroyed()).subscribe((message) => {
-      console.log('Getting Notification:', message);
-
       if (message.type === "UPLOAD_JOB_CHANGE") {
         this.tasks.push(message.content);
       }
@@ -2063,6 +2061,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         if (asset.roles != null && asset.roles.indexOf('multispectral') !== -1) {
           url += "&multispectral=true";
         }
+        else if (asset.roles != null && asset.roles.indexOf('land-water') !== -1) {
+          url += "&hillshade=true";
+        }  
 
         this.addImageLayer({
           classification: "ORTHO",
@@ -2075,9 +2076,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     else if (layer.type === ToggleableLayerType.KNOWSTAC) {
       const item: StacItem = layer.item;
 
-      console.log('Stac Item', item);
-
-
       // Add the layer to the map
       const index = item.links.findIndex(link => link.rel === 'self');
       const link = item.links[index];
@@ -2089,6 +2087,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       const asset = item.assets[item.asset];
       if (asset.roles != null && asset.roles.indexOf('multispectral') !== -1) {
         url += "&multispectral=true";
+      }
+      else if (asset.roles != null && asset.roles.indexOf('land-water') !== -1) {
+        url += "&hillshade=true";
       }
 
       this.addImageLayer({
@@ -2202,11 +2203,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     ((link.item != null) ? new Promise<StacItem>(function (myResolve, myReject) {
       myResolve(link.item);
     }) : this.stacService.item(link.href)).then(item => {
-      if (item.assets.thumbnail != null) {
-        item.thumbnail = item.assets.thumbnail.href;
+      if (item.assets['thumbnail'] != null) {
+        item.thumbnail = item.assets['thumbnail'].href;
       }
-      else if (item.assets['thumbnail-hd'] != null) {
-        item.thumbnail = item.assets['thumbnail-hd'].href;
+      else if (item.assets['overview'] != null) {
+        item.thumbnail = item.assets['overview'].href;
       }
 
       link.item = item;
