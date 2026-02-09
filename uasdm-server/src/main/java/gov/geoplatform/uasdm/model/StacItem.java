@@ -60,7 +60,7 @@ public class StacItem implements JSONSerializable
 {
   private static final String NAMESPACE = "geoplatform";
 
-  private static final String EXTENSION = "https://raw.githubusercontent.com/terraframe/osmre-uav/refs/heads/master/geoplatform/v.1.0/schema.json";
+  private static final String EXTENSION = "https://raw.githubusercontent.com/terraframe/osmre-uav/refs/heads/master/geoplatform/v0.1.0/schema.json";
 
   @JsonPropertyOrder({ "maximum", "mean", "minimum", "stddev", "validPercent" })
   @JsonIgnoreProperties(ignoreUnknown = true)
