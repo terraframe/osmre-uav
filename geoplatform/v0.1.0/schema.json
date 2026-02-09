@@ -1,0 +1,143 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/terraframe/osmre-uav/refs/heads/master/geoplatform/v.1.0/schema.json#",
+  "title": "Geoplatform Extension",
+  "description": "STAC GeoPlatform IDM Extension for STAC Items.",
+  "oneOf": [
+    {
+      "$comment": "This is the schema for STAC Items.",
+      "allOf": [
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "properties",
+            "assets"
+          ],
+          "properties": {
+            "type": {
+              "const": "Feature"
+            },
+            "properties": {
+              "allOf": [
+                {
+                  "anyOf": [
+                    {"required": ["geoplatform:sensor"]},
+                    {"required": ["geoplatform:collection"]},
+                    {"required": ["geoplatform:project"]},
+                    {"required": ["geoplatform:site"]},
+                    {"required": ["geoplatform:faa_number"]},
+                    {"required": ["geoplatform:serial_number"]},
+                    {"required": ["geoplatform:operational"]},
+                    {"required": ["geoplatform:agency"]}
+                  ]
+                },
+                {
+                  "$ref": "#/definitions/fields"
+                }
+              ]
+            },
+            "assets": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/definitions/fields"
+              }
+            }
+          }
+        },
+        {
+          "$ref": "#/definitions/stac_extensions"
+        }
+      ]
+    }
+  ],
+  "definitions": {
+    "stac_extensions": {
+      "type": "object",
+      "required": [
+        "stac_extensions"
+      ],
+      "properties": {
+        "stac_extensions": {
+          "type": "array",
+          "contains": {
+            "contains": {
+              "const": "https://raw.githubusercontent.com/terraframe/know-stac/refs/heads/master/v.1.0/schema.json#"
+            }
+          }
+        }
+      }
+    },
+    "hierarchy" : {
+      "type": "object",
+      "properties": {
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "uuid": {
+          "title": "ID",
+          "type": "string",
+        }
+    },
+    "organization" : {
+      "type": "object",
+      "properties": {
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "code": {
+          "title": "Code",
+          "type": "string",
+        }
+    },
+    "fields": {
+      "$comment": "Add your new fields here. Don't require them here, do that above in the item schema.",
+      "type": "object",
+      "properties": {
+        "geoplatform:sensor": {
+          "title": "Sensor",
+          "type": "string"
+        },
+        "geoplatform:collection": {
+          "title": "Collection",
+          "type": "string"
+        },
+        "geoplatform:project": {
+          "title": "Project",
+          "type": "string"
+        },
+        "geoplatform:site": {
+          "title": "Site",
+          "type": "string"
+        },
+        "geoplatform:faa_number": {
+          "title": "FAA Number",
+          "type": "string"
+        },
+        "geoplatform:serial_number": {
+          "title": "FAA Number",
+          "type": "string"
+        },
+        "geoplatform:agency": {
+          "title": "Agency",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/organization"
+           }
+        },
+        "geoplatform:operational": {
+          "title": "Operational",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/hierarchy"
+           }
+      },
+      "patternProperties": {
+        "^(?!geoplatform:)": {}
+      },
+      "additionalProperties": false
+    }
+  }
+}

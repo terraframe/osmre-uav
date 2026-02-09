@@ -60,6 +60,11 @@ public class StacTiTillerProxy extends TiTillerProxy
 
   private Boolean             hillshade;
 
+  public StacTiTillerProxy(String url, String assets)
+  {
+    this(url, assets, false, false);
+  }
+
   public StacTiTillerProxy(String url, String assets, Boolean multispectral, Boolean hillshade)
   {
     this.url = url;

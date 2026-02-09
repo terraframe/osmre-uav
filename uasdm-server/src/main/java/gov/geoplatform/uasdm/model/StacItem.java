@@ -25,7 +25,6 @@ import org.json.JSONObject;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -56,9 +55,111 @@ import gov.geoplatform.uasdm.serialization.GeoJsonSerializer;
  */
 // @JsonSerialize(using = StacItemSerializer.class)
 @JsonPropertyOrder({ "stacVersion", "stacExtensions", "type", "id", "bbox", "geometry", "properties", "collection", "links", "assets" })
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class StacItem implements JSONSerializable
 {
+  private static final String NAMESPACE = "geoplatform";
+
+  private static final String EXTENSION = "https://raw.githubusercontent.com/terraframe/osmre-uav/refs/heads/master/geoplatform/v.1.0/schema.json";
+
+  @JsonPropertyOrder({ "maximum", "mean", "minimum", "stddev", "validPercent" })
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static class Statistics
+  {
+    private Double maximum;
+
+    private Double mean;
+
+    private Double minimum;
+
+    private Double stddev;
+
+    @JsonProperty("valid_percent")
+    private Float  validPercent;
+
+    public Double getMaximum()
+    {
+      return maximum;
+    }
+
+    public void setMaximum(Double maximum)
+    {
+      this.maximum = maximum;
+    }
+
+    public Double getMean()
+    {
+      return mean;
+    }
+
+    public void setMean(Double mean)
+    {
+      this.mean = mean;
+    }
+
+    public Double getMinimum()
+    {
+      return minimum;
+    }
+
+    public void setMinimum(Double minimum)
+    {
+      this.minimum = minimum;
+    }
+
+    public Double getStddev()
+    {
+      return stddev;
+    }
+
+    public void setStddev(Double stddev)
+    {
+      this.stddev = stddev;
+    }
+
+    public Float getValidPercent()
+    {
+      return validPercent;
+    }
+
+    public void setValidPercent(Float validPercent)
+    {
+      this.validPercent = validPercent;
+    }
+
+  }
+
+  @JsonPropertyOrder({ "name", "statistics" })
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static class Band
+  {
+    private String     name;
+
+    private Statistics statistics;
+
+    public String getName()
+    {
+      return name;
+    }
+
+    public void setName(String name)
+    {
+      this.name = name;
+    }
+
+    public Statistics getStatistics()
+    {
+      return statistics;
+    }
+
+    public void setStatistics(Statistics statistics)
+    {
+      this.statistics = statistics;
+    }
+  }
+
   @JsonPropertyOrder({ "href", "type", "title", "description", "roles" })
+  @JsonIgnoreProperties(ignoreUnknown = true)
   public static class Asset
   {
     // string REQUIRED. URI to the asset object. Relative and absolute URI are
@@ -109,9 +210,12 @@ public class StacItem implements JSONSerializable
     @JsonInclude(Include.NON_NULL)
     private List<String> roles;
 
+    private List<Band>   bands;
+
     public Asset()
     {
       this.roles = new LinkedList<String>();
+      this.bands = new LinkedList<Band>();
     }
 
     public String getHref()
@@ -168,6 +272,21 @@ public class StacItem implements JSONSerializable
     {
       this.roles.add(role);
     }
+
+    public List<Band> getBands()
+    {
+      return bands;
+    }
+
+    public void setBands(List<Band> bands)
+    {
+      this.bands = bands;
+    }
+
+    public void addBand(Band band)
+    {
+      this.bands.add(band);
+    }
   }
 
   @JsonIgnoreProperties(ignoreUnknown = true)
@@ -184,31 +303,41 @@ public class StacItem implements JSONSerializable
     private String                 description;
 
     @JsonInclude(Include.NON_NULL)
+    @JsonProperty("platform")
     private String                 platform;
 
     @JsonInclude(Include.NON_NULL)
+    @JsonProperty(NAMESPACE + ":sensor")
     private String                 sensor;
 
     @JsonInclude(Include.NON_NULL)
+    @JsonProperty(NAMESPACE + ":collection")
     private String                 collection;
 
     @JsonInclude(Include.NON_NULL)
+    @JsonProperty("mission")
     private String                 mission;
 
     @JsonInclude(Include.NON_NULL)
+    @JsonProperty(NAMESPACE + ":project")
     private String                 project;
 
     @JsonInclude(Include.NON_NULL)
+    @JsonProperty(NAMESPACE + ":site")
     private String                 site;
 
     @JsonInclude(Include.NON_NULL)
+    @JsonProperty(NAMESPACE + ":faa_number")
     private String                 faaNumber;
 
     @JsonInclude(Include.NON_NULL)
+    @JsonProperty(NAMESPACE + ":serial_number")
     private String                 serialNumber;
 
+    @JsonProperty(NAMESPACE + ":operational")
     private List<StacLocation>     operational;
 
+    @JsonProperty(NAMESPACE + ":agency")
     private List<StacOrganization> agency;
 
     public Date getDatetime()
@@ -424,11 +553,12 @@ public class StacItem implements JSONSerializable
   {
     this.published = false;
     this.type = "Feature";
-    this.stacVersion = "1.0.0";
-    this.stacExtensions = new LinkedList<String>();
+    this.stacVersion = "1.1.0";
     this.properties = new Properties();
     this.links = new LinkedList<StacLink>();
     this.assets = new TreeMap<String, StacItem.Asset>();
+    this.stacExtensions = new LinkedList<String>();
+    this.stacExtensions.add(EXTENSION);
   }
 
   public String getType()
@@ -578,6 +708,44 @@ public class StacItem implements JSONSerializable
     asset.setType(type);
     asset.setTitle(title);
     asset.setHref(href);
+
+    for (String role : roles)
+    {
+      asset.addRole(role);
+    }
+
+    return asset;
+  }
+
+  public static Statistics buildStatistics(Double maximum, Double mean, Double minimum, Double stddev, Float validPercent)
+  {
+    Statistics statistics = new Statistics();
+    statistics.setMaximum(maximum);
+    statistics.setMean(mean);
+    statistics.setMinimum(minimum);
+    statistics.setStddev(stddev);
+    statistics.setValidPercent(validPercent);
+
+    return statistics;
+  }
+
+  public static Band buildBand(String name, Statistics statistics)
+  {
+    Band band = new Band();
+    band.setName(name);
+    band.setStatistics(statistics);
+
+    return band;
+  }
+
+  public static Asset buildAsset(String type, String title, String href, List<Band> bands, String... roles)
+  {
+    Asset asset = new Asset();
+    asset.setType(type);
+    asset.setTitle(title);
+    asset.setHref(href);
+
+    bands.stream().forEach(asset::addBand);
 
     for (String role : roles)
     {

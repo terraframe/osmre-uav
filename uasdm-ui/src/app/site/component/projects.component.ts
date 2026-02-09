@@ -664,7 +664,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // Reload the item layers
-    this.handleCollectionChange(this.collection);
+    this.handleCollectionChange({ visible: false, collection: this.collection });
   }
 
   handleExtentChange(e: any): void {
@@ -1878,7 +1878,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     (<any>this.map.getSource("items")).setData(featureCollection(features));
   }
 
-  handleCollectionChange(collection: StacCollection): void {
+  handleCollectionChange(event: { visible: boolean, collection: StacCollection }): void {
+
+    const { collection, visible } = event;
+
 
     if (collection != null && collection.extent.spatial != null && collection.extent.spatial.bbox.length > 0) {
 
@@ -1902,8 +1905,15 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.collection = collection;
 
+    this.map.setLayoutProperty('collection', "visibility", visible ? 'visible' : 'none');
+
     this.buildItemsLayer();
   }
+
+  handleToggleCollectionVisibility(visible: boolean): void {
+    this.map.setLayoutProperty('collection', "visibility", visible ? 'visible' : 'none');
+  }
+
 
   handleProductsChange(views: CollectionProductView[]): void {
 
@@ -2061,9 +2071,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         if (asset.roles != null && asset.roles.indexOf('multispectral') !== -1) {
           url += "&multispectral=true";
         }
-        else if (asset.roles != null && asset.roles.indexOf('land-water') !== -1) {
+        else if (asset.roles != null && asset.roles.indexOf('elevation') !== -1) {
           url += "&hillshade=true";
-        }  
+        }
 
         this.addImageLayer({
           classification: "ORTHO",
@@ -2088,7 +2098,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       if (asset.roles != null && asset.roles.indexOf('multispectral') !== -1) {
         url += "&multispectral=true";
       }
-      else if (asset.roles != null && asset.roles.indexOf('land-water') !== -1) {
+      else if (asset.roles != null && asset.roles.indexOf('elevation') !== -1) {
         url += "&hillshade=true";
       }
 

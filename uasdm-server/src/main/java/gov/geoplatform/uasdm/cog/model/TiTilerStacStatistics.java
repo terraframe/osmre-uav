@@ -20,7 +20,7 @@ public class TiTilerStacStatistics
     this.assetBands.put(key, value);
   }
 
-  public Map<String, TiTilerStacBandStatistic> getAssets()
+  public Map<String, TiTilerStacBandStatistic> getAssetBands()
   {
     return assetBands;
   }

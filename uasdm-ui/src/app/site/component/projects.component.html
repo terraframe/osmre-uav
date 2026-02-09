@@ -338,8 +338,7 @@
                   <tab heading="Products" (selectTab)="activeTab = 'Products'">
                     <product-panel *ngIf="activeTab === 'Products'" [selection]="current" [organization]="organization"
                       [filter]="filter" [views]="views" (onViewsChange)="handleProductsChange($event)"
-                      (toggleMapOrtho)="handleMapOrtho($event)" 
-                      (toggleMapDem)="handleMapDem($event)">
+                      (toggleMapOrtho)="handleMapOrtho($event)" (toggleMapDem)="handleMapDem($event)">
                     </product-panel>
                   </tab>
                 </tabset>
@@ -352,8 +351,7 @@
                   <tab heading="Products" (selectTab)="activeTab = 'Products'">
                     <product-panel *ngIf="activeTab === 'Products'" [selection]="current" [organization]="organization"
                       [filter]="filter" [views]="views" (onViewsChange)="handleProductsChange($event)"
-                      (toggleMapOrtho)="handleMapOrtho($event)"
-                      (toggleMapDem)="handleMapDem($event)">
+                      (toggleMapOrtho)="handleMapOrtho($event)" (toggleMapDem)="handleMapDem($event)">
                     </product-panel>
                   </tab>
                 </tabset>
@@ -410,14 +408,15 @@
 
       <!-- KNOWSTAC PANEL -->
       <ng-container *ngIf="panelType === 3">
-        <div id="hierarchy-tree-container" class="location-management-widget-section"
-          style="height: calc(100vh - 50px);overflow-y: auto;overflow-x:hidden;">
 
-          <know-stac-panel [collection]="collection" [bounds]="bounds"
-            (collectionChange)="handleCollectionChange($event)" (onViewExtent)="handleViewExtent($event)"
-            (onToggleMapItem)="handleToggleMapItem($event)" (close)="handleStacCancel()" [(properties)]="properties">
-          </know-stac-panel>
-        </div>
+        <know-stac-panel [collection]="collection" [bounds]="bounds" [(properties)]="properties"
+          (collectionChange)="handleCollectionChange($event)"
+          (onViewExtent)="handleViewExtent($event)" 
+          (onToggleMapItem)="handleToggleMapItem($event)"
+          (onToggleVisibility)="handleToggleCollectionVisibility($event)"
+          (close)="handleStacCancel()"
+          >
+        </know-stac-panel>
       </ng-container>
 
       <!-- IMAGERY PANEL -->
@@ -560,7 +559,7 @@
                     <i class="fa fa-globe fa-stack-1x" style="margin: 0px;" [ngClass]="{'inverse': panelType === 4}">
                     </i>
                     <span class="badge"
-                      [style]="panelType === 4 ? 'color:#fff;': 'color:#767676;'" >{{mapLayers.length}}</span>
+                      [style]="panelType === 4 ? 'color:#fff;': 'color:#767676;'">{{mapLayers.length}}</span>
                   </span>
                 </a>
               </div>

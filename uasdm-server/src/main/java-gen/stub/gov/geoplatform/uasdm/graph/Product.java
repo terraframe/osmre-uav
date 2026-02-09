@@ -63,10 +63,12 @@ import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
 import gov.geoplatform.uasdm.bus.InvalidUasComponentNameException;
 import gov.geoplatform.uasdm.bus.UasComponentDeleteException;
+import gov.geoplatform.uasdm.cog.TiTillerProxy;
 import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
+import gov.geoplatform.uasdm.cog.model.TitilerCogBandStatistic;
+import gov.geoplatform.uasdm.cog.model.TitilerCogStatistics;
 import gov.geoplatform.uasdm.command.IndexDeleteStacCommand;
 import gov.geoplatform.uasdm.command.ReIndexStacItemCommand;
-import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
@@ -74,6 +76,7 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.StacItem;
+import gov.geoplatform.uasdm.model.StacItem.Band;
 import gov.geoplatform.uasdm.model.StacItem.Properties;
 import gov.geoplatform.uasdm.model.StacLink;
 import gov.geoplatform.uasdm.model.StacLocation;
@@ -1107,10 +1110,12 @@ public class Product extends ProductBase implements ProductIF
           else if (location.contains("/" + ImageryComponent.DEM + "/"))
           {
             title = "Elevation";
-            roles.add("land-water");
+            roles.add("elevation");
           }
 
-          item.addAsset(assetName, StacItem.buildAsset(type, title, location, roles.toArray(new String[roles.size()])));
+          List<Band> bands = getAssetBands(location, assetName);
+
+          item.addAsset(assetName, StacItem.buildAsset(type, title, location, bands, roles.toArray(new String[roles.size()])));
         }
       }
     }
@@ -1123,6 +1128,38 @@ public class Product extends ProductBase implements ProductIF
     item.addLink(StacLink.build(url, "self", "application/json"));
 
     return item;
+  }
+
+  private List<Band> getAssetBands(final String location, String assetName)
+  {
+    List<Band> bands = new LinkedList<>();
+
+    if (location.toUpperCase().endsWith("COG.TIF"))
+    {
+      try
+      {
+        TiTillerProxy proxy = new TiTillerProxy();
+        TitilerCogStatistics stats = proxy.getCogStatistics(location);
+
+        if (stats != null)
+        {
+          stats.getBandNames().forEachRemaining(bandName -> {
+            TitilerCogBandStatistic stat = stats.getBandStatistic(bandName);
+
+            bands.add(StacItem.buildBand(bandName, StacItem.buildStatistics(stat.getMax(), stat.getMean(), stat.getMin(), stat.getStd(), stat.getValid_percent())));
+          });
+
+        }
+
+      }
+      catch (Exception e)
+      {
+        // Unable to get band information
+        logger.error("Unable to derive asset band information for stac item", e);
+      }
+    }
+
+    return bands;
   }
 
   public Optional<CollectionMetadata> getMetadata()
