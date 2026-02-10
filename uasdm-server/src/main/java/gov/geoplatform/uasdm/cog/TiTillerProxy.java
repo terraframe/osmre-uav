@@ -442,7 +442,7 @@ public class TiTillerProxy
     }
     catch (Throwable t)
     {
-      logger.error(t);
+      logger.error("Error getting cog band data", t);
     }
   }
 
