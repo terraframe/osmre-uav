@@ -1,54 +1,67 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.cog.model;
 
 import java.util.List;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TitilerCogInfo
 {
-  private List<Float> bounds;
-  private Integer minzoom;
-  private Integer maxzoom;
-  private ArrayNode band_metadata;
-  private ArrayNode band_descriptions;
-  private String dtype;
-  private String nodata_type;
-  private List<String> colorinterp;
-  private String driver;
-  private Integer width;
-  private Integer height;
-  private List<Integer> overviews;
-  private Integer count;
-  private List<Float> scales;
-  private List<Float> offsets;
-  private Object nodata_value;
-  
-  public TitilerCogInfo()
-  {
-    
-  }
+  private List<Double>                  bounds;
 
-  public List<Float> getBounds()
+  private Integer                       minzoom;
+
+  private Integer                       maxzoom;
+
+  @JsonProperty("band_metadata")
+  private List<TiTillerBandMetadata>    bandMetadata;
+
+  @JsonProperty("band_descriptions")
+  private List<TiTillerBandDescription> bandDescriptions;
+
+  private String                        dtype;
+
+  @JsonProperty("nodata_type")
+  private String                        nodataType;
+
+  private List<String>                  colorinterp;
+
+  private String                        driver;
+
+  private List<Float>                   scales;
+
+  private List<Float>                   offsets;
+
+  private Integer                       count;
+
+  private Integer                       width;
+
+  private Integer                       height;
+
+  private List<Integer>                 overviews;
+
+  private Object                        nodata_value;
+
+  public List<Double> getBounds()
   {
     return bounds;
   }
 
-  public void setBounds(List<Float> bounds)
+  public void setBounds(List<Double> bounds)
   {
     this.bounds = bounds;
   }
@@ -73,24 +86,24 @@ public class TitilerCogInfo
     this.maxzoom = maxzoom;
   }
 
-  public ArrayNode getBand_metadata()
+  public List<TiTillerBandMetadata> getBandMetadata()
   {
-    return band_metadata;
+    return bandMetadata;
   }
 
-  public void setBand_metadata(ArrayNode band_metadata)
+  public void setBandMetadata(List<TiTillerBandMetadata> bandMetadata)
   {
-    this.band_metadata = band_metadata;
+    this.bandMetadata = bandMetadata;
   }
 
-  public ArrayNode getBand_descriptions()
+  public List<TiTillerBandDescription> getBandDescriptions()
   {
-    return band_descriptions;
+    return bandDescriptions;
   }
 
-  public void setBand_descriptions(ArrayNode band_descriptions)
+  public void setBandDescriptions(List<TiTillerBandDescription> bandDescriptions)
   {
-    this.band_descriptions = band_descriptions;
+    this.bandDescriptions = bandDescriptions;
   }
 
   public String getDtype()
@@ -103,14 +116,14 @@ public class TitilerCogInfo
     this.dtype = dtype;
   }
 
-  public String getNodata_type()
+  public String getNodataType()
   {
-    return nodata_type;
+    return nodataType;
   }
 
-  public void setNodata_type(String nodata_type)
+  public void setNodataType(String nodataType)
   {
-    this.nodata_type = nodata_type;
+    this.nodataType = nodataType;
   }
 
   public List<String> getColorinterp()
@@ -131,6 +144,36 @@ public class TitilerCogInfo
   public void setDriver(String driver)
   {
     this.driver = driver;
+  }
+
+  public List<Float> getScales()
+  {
+    return scales;
+  }
+
+  public void setScales(List<Float> scales)
+  {
+    this.scales = scales;
+  }
+
+  public List<Float> getOffsets()
+  {
+    return offsets;
+  }
+
+  public void setOffsets(List<Float> offsets)
+  {
+    this.offsets = offsets;
+  }
+
+  public Integer getCount()
+  {
+    return count;
+  }
+
+  public void setCount(Integer count)
+  {
+    this.count = count;
   }
 
   public Integer getWidth()
@@ -163,36 +206,6 @@ public class TitilerCogInfo
     this.overviews = overviews;
   }
 
-  public Integer getCount()
-  {
-    return count;
-  }
-
-  public void setCount(Integer count)
-  {
-    this.count = count;
-  }
-
-  public List<Float> getScales()
-  {
-    return scales;
-  }
-
-  public void setScales(List<Float> scales)
-  {
-    this.scales = scales;
-  }
-
-  public List<Float> getOffsets()
-  {
-    return offsets;
-  }
-
-  public void setOffsets(List<Float> offsets)
-  {
-    this.offsets = offsets;
-  }
-
   public Object getNodata_value()
   {
     return nodata_value;
@@ -202,4 +215,5 @@ public class TitilerCogInfo
   {
     this.nodata_value = nodata_value;
   }
+
 }

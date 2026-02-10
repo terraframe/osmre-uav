@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonPropertyOrder({ "name", "description" })
-public class TiTillerStacBandDescription
+public class TiTillerBandDescription
 {
   public String name;
 

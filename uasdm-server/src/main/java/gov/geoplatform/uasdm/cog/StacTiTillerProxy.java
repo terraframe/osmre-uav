@@ -41,7 +41,7 @@ import gov.geoplatform.uasdm.cog.model.TiTilerStacAssetInfo;
 import gov.geoplatform.uasdm.cog.model.TiTilerStacBandStatistic;
 import gov.geoplatform.uasdm.cog.model.TiTilerStacInfo;
 import gov.geoplatform.uasdm.cog.model.TiTilerStacStatistics;
-import gov.geoplatform.uasdm.cog.model.TiTillerStacBandMetadata;
+import gov.geoplatform.uasdm.cog.model.TiTillerBandMetadata;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Uri;
 import software.amazon.awssdk.services.s3.S3Utilities;
@@ -161,7 +161,7 @@ public class StacTiTillerProxy extends TiTillerProxy
     this.getStacInfo().ifPresent(info -> {
       TiTilerStacAssetInfo asset = info.getAsset(this.assets);
 
-      final TiTillerStacBandMetadata metadata = asset.getBandMetadata().get(0);
+      final TiTillerBandMetadata metadata = asset.getBandMetadata().get(0);
 
       this.getStacStatistics().ifPresent(stats -> {
 
@@ -194,9 +194,9 @@ public class StacTiTillerProxy extends TiTillerProxy
 
       if (redIdx.intValue() != -1 && greenIdx.intValue() != -1 && blueIdx.intValue() != -1)
       {
-        final TiTillerStacBandMetadata redMetadata = asset.getBandMetadata().get(redIdx.get());
-        final TiTillerStacBandMetadata greenMetadata = asset.getBandMetadata().get(greenIdx.get());
-        final TiTillerStacBandMetadata blueMetadata = asset.getBandMetadata().get(blueIdx.get());
+        final TiTillerBandMetadata redMetadata = asset.getBandMetadata().get(redIdx.get());
+        final TiTillerBandMetadata greenMetadata = asset.getBandMetadata().get(greenIdx.get());
+        final TiTillerBandMetadata blueMetadata = asset.getBandMetadata().get(blueIdx.get());
 
         this.getStacStatistics().ifPresent(stats -> {
 

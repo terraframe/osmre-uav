@@ -15,10 +15,10 @@ public class TiTilerStacAssetInfo
   private Integer                           maxzoom;
 
   @JsonProperty("band_metadata")
-  private List<TiTillerStacBandMetadata>    bandMetadata;
+  private List<TiTillerBandMetadata>    bandMetadata;
 
   @JsonProperty("band_descriptions")
-  private List<TiTillerStacBandDescription> bandDescriptions;
+  private List<TiTillerBandDescription> bandDescriptions;
 
   private String                            dtype;
 
@@ -76,22 +76,22 @@ public class TiTilerStacAssetInfo
     this.maxzoom = maxzoom;
   }
 
-  public List<TiTillerStacBandMetadata> getBandMetadata()
+  public List<TiTillerBandMetadata> getBandMetadata()
   {
     return bandMetadata;
   }
 
-  public void setBandMetadata(List<TiTillerStacBandMetadata> bandMetadata)
+  public void setBandMetadata(List<TiTillerBandMetadata> bandMetadata)
   {
     this.bandMetadata = bandMetadata;
   }
 
-  public List<TiTillerStacBandDescription> getBandDescriptions()
+  public List<TiTillerBandDescription> getBandDescriptions()
   {
     return bandDescriptions;
   }
 
-  public void setBandDescriptions(List<TiTillerStacBandDescription> bandDescriptions)
+  public void setBandDescriptions(List<TiTillerBandDescription> bandDescriptions)
   {
     this.bandDescriptions = bandDescriptions;
   }

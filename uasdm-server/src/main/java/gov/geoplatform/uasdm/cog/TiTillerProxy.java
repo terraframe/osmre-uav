@@ -30,6 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -46,6 +47,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.cog.model.TiTillerBandMetadata;
 import gov.geoplatform.uasdm.cog.model.TitilerCogBandStatistic;
 import gov.geoplatform.uasdm.cog.model.TitilerCogInfo;
 import gov.geoplatform.uasdm.cog.model.TitilerCogStatistics;
@@ -394,6 +396,10 @@ public class TiTillerProxy
 
           if (redIdx != -1 && greenIdx != -1 && blueIdx != -1)
           {
+            final TiTillerBandMetadata redMetadata = info.getBandMetadata().get(redIdx);
+            final TiTillerBandMetadata greenMetadata = info.getBandMetadata().get(greenIdx);
+            final TiTillerBandMetadata blueMetadata = info.getBandMetadata().get(blueIdx);
+
             redIdx++;
             greenIdx++;
             blueIdx++;
@@ -401,18 +407,23 @@ public class TiTillerProxy
             parameters.put("bidx", Arrays.asList(new String[] { String.valueOf(redIdx), String.valueOf(greenIdx), String.valueOf(blueIdx) }));
 
             TitilerCogStatistics stats = this.getCogStatistics(document);
-            TitilerCogBandStatistic redStat = stats.getBandStatistic(String.valueOf(redIdx));
-            TitilerCogBandStatistic greenStat = stats.getBandStatistic(String.valueOf(greenIdx));
-            TitilerCogBandStatistic blueStat = stats.getBandStatistic(String.valueOf(blueIdx));
 
-            Double min = Math.min(redStat.getMin(), Math.min(greenStat.getMin(), blueStat.getMin()));
-            Double max = Math.max(redStat.getMax(), Math.max(greenStat.getMax(), blueStat.getMax()));
+            List<TitilerCogBandStatistic> bands = Arrays.asList( //
+                stats.getBandStatistic(redMetadata.getName()), //
+                stats.getBandStatistic(greenMetadata.getName()), //
+                stats.getBandStatistic(blueMetadata.getName()));
+
+            Optional<Double> max = bands.stream().filter(b -> b != null).map(b -> b.getMax()).reduce((a, b) -> Math.max(a, b));
+            Optional<Double> min = bands.stream().filter(b -> b != null).map(b -> b.getMin()).reduce((a, b) -> Math.min(a, b));
 
             // min = (min < 0) ? 0 : min; // TODO : No idea how the min value
             // could be negative. But it's happening on my sample data and it
             // doesn't render properly if it is.
 
-            parameters.put("rescale", Arrays.asList(String.valueOf(min) + "," + String.valueOf(max)));
+            if (min.isPresent() && max.isPresent())
+            {
+              parameters.put("rescale", Arrays.asList(String.valueOf(min.get()) + "," + String.valueOf(max.get())));
+            }
           }
         }
       }
