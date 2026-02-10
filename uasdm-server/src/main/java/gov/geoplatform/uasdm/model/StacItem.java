@@ -745,7 +745,14 @@ public class StacItem implements JSONSerializable
     asset.setTitle(title);
     asset.setHref(href);
 
-    bands.stream().forEach(asset::addBand);
+    if (bands.size() > 0)
+    {
+      bands.stream().forEach(asset::addBand);
+    }
+    else
+    {
+      asset.setBands(null);
+    }
 
     for (String role : roles)
     {
