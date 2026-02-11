@@ -33,6 +33,7 @@
 td,
 th {
     width: 200px;
+    padding: .571rem .857rem;
 }
 
 .ui-table-scrollable-header.ui-widget-header {

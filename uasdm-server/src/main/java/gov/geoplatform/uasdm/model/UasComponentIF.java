@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.model;
 
@@ -26,11 +26,9 @@ import org.json.JSONWriter;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 
-import com.runwaysdk.ComponentIF;
 import com.runwaysdk.Pair;
-import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.dataaccess.MdClassDAOIF;
-import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.ApplicationFileResource;
 import com.runwaysdk.system.Actor;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
@@ -58,6 +56,8 @@ public interface UasComponentIF extends ComponentWithAttributes
   public void setName(String name);
 
   public boolean isPrivate();
+
+  public boolean hasPIIConcern();
 
   public String getFolderName();
 
@@ -97,24 +97,26 @@ public interface UasComponentIF extends ComponentWithAttributes
 
   public AbstractWorkflowTask createWorkflowTask(String uuid, String uploadTarget);
 
+  public AbstractWorkflowTask createWorkflowTask(String userOid, String uuid, String uploadTarget);
+
   public Actor getOwner();
 
   public List<UasComponentIF> getAncestors();
-  
+
   public List<UasComponentIF> getAncestors(boolean filterByPermissions);
 
   public RemoteFileObject download(String key);
 
-  public RemoteFileObject download(String key, List<Range> ranges);
+  public RemoteFileObject download(String key, String range);
 
-  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget, ProductIF product);
+  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationFileResource archive, String uploadTarget, ProductIF product);
 
   public DocumentIF putFile(String folder, String fileName, ProductIF product, RemoteFileMetadata metadata, InputStream stream);
 
   public DocumentIF createDocumentIfNotExist(String key, String name, DocumentIF.Metadata metadata);
 
   public ProductIF createProductIfNotExist(String productName);
-  
+
   public Optional<ProductIF> getPrimaryProduct();
 
   public void setPrimaryProduct(ProductIF product);

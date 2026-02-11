@@ -2,14 +2,14 @@
 ///
 ///
 
-import { CommonModule } from '@angular/common';  
+import { CommonModule, NgIf } from '@angular/common';  
 import { BrowserModule } from '@angular/platform-browser';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
 import { ErrorHandler } from '@shared/component';
 
-import { SiteEntity, UploadForm, Task, Selection, CollectionArtifacts, ODMRun, ProcessConfig } from '@site/model/management';
+import { SiteEntity, UploadForm, Task, Selection, CollectionArtifacts, ProcessConfig } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 import { environment } from 'src/environments/environment';
 
@@ -18,15 +18,20 @@ import {
 	fadeOutOnLeaveAnimation
 } from 'angular-animations';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ODMRun } from '@site/model/odmrun';
+import { FormsModule } from '@angular/forms';
+import { BooleanFieldComponent } from '@shared/component/boolean-field/boolean-field.component';
 
 @Component({
-	selector: 'odmrun-modal',
-	templateUrl: './odmrun-modal.component.html',
-	styleUrls: ['./odmrun-modal.component.css'],
-	animations: [
-		fadeInOnEnterAnimation(),
-		fadeOutOnLeaveAnimation()
-	]
+    standalone: true,
+    selector: 'odmrun-modal',
+    templateUrl: './odmrun-modal.component.html',
+    styleUrls: ['./odmrun-modal.component.css'],
+    animations: [
+        fadeInOnEnterAnimation(),
+        fadeOutOnLeaveAnimation()
+    ],
+    imports: [NgIf, FormsModule, BooleanFieldComponent]
 })
 export class ODMRunModalComponent implements OnInit, OnDestroy {
 	message: string = "";
@@ -34,6 +39,8 @@ export class ODMRunModalComponent implements OnInit, OnDestroy {
 	odmRun: ODMRun = null;
 	
 	config: ProcessConfig = null;
+
+	public loading: boolean = true;
 	
 	constructor(private service: ManagementService, private modalService: BsModalService, public bsModalRef: BsModalRef) {
 	}
@@ -50,12 +57,13 @@ export class ODMRunModalComponent implements OnInit, OnDestroy {
 	}
 
 	initOnArtifact(artifact: SiteEntity): void {
+		this.loading = true;
 		this.service.getODMRunByArtifact(artifact.id).then(odmRun => {
 			this.odmRun = odmRun;
 			this.config = odmRun.config;
 		}).catch((err: HttpErrorResponse) => {
 			this.error(err);
-		});
+		}).finally(() => { this.loading = false; })
 	}
 	
 	initOnWorkflowTask(task: Task): void {
@@ -64,7 +72,7 @@ export class ODMRunModalComponent implements OnInit, OnDestroy {
 			this.config = odmRun.config;
 		}).catch((err: HttpErrorResponse) => {
 			this.error(err);
-		});
+		}).finally(() => { this.loading = false; })
 	}
 	
 	formatDate(date: string): string {
@@ -101,8 +109,8 @@ export class ODMRunModalComponent implements OnInit, OnDestroy {
 	}
 	
 	downloadReport(): void {
-		// window.location.href = environment.apiUrl + '/project/download-report?colId=' + this.artifact.id + "&folder=" + this.artifact.folder;
-		window.location.href = environment.apiUrl + '/project/download?id=' + this.odmRun.report.component + "&key=" + this.odmRun.report.key;
+		// window.location.href = environment.apiUrl + '/api/project/download-report?colId=' + this.artifact.id + "&folder=" + this.artifact.folder;
+		window.location.href = environment.apiUrl + '/api/project/download?id=' + this.odmRun.report.component + "&key=" + this.odmRun.report.key;
 	}
 
 	close(): void {

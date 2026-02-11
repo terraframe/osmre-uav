@@ -1,19 +1,21 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package gov.geoplatform.uasdm.lidar;
+
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -22,7 +24,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
-import gov.geoplatform.uasdm.view.RequestParserIF;
+import me.desair.tus.server.upload.UploadInfo;
 
 public class LidarProcessConfiguration implements ProcessConfiguration
 {
@@ -62,7 +64,7 @@ public class LidarProcessConfiguration implements ProcessConfiguration
     this.generateGSM = false;
     this.generateTreeStructure = false;
     this.generateTerrainModel = false;
-    this.productName = Long.valueOf(System.currentTimeMillis()).toString();
+    this.productName = StringUtils.isBlank(outFileNamePrefix) ? Long.valueOf(System.currentTimeMillis()).toString() : outFileNamePrefix;
   }
 
   @Override
@@ -130,17 +132,11 @@ public class LidarProcessConfiguration implements ProcessConfiguration
   {
     this.productName = productName;
   }
-  
+
   public boolean hasProcess()
   {
-    return (
-        this.generateCopc ||
-        this.generateGSM ||
-        this.generateTerrainModel ||
-        this.generateTreeCanopyCover ||
-        this.generateTreeStructure);
+    return ( this.generateCopc || this.generateGSM || this.generateTerrainModel || this.generateTreeCanopyCover || this.generateTreeStructure );
   }
-
 
   public JsonObject toJson()
   {
@@ -154,6 +150,45 @@ public class LidarProcessConfiguration implements ProcessConfiguration
     object.addProperty(PRODUCT_NAME, this.productName);
 
     return object;
+  }
+
+  public static LidarProcessConfiguration parse(UploadInfo uploadInfo)
+  {
+    Map<String, String> metadata = uploadInfo.getMetadata();
+
+    LidarProcessConfiguration configuration = new LidarProcessConfiguration();
+
+    if (metadata.containsKey(PRODUCT_NAME))
+    {
+      configuration.setProductName(metadata.get(PRODUCT_NAME));
+    }
+
+    if (metadata.containsKey(GENERATE_COPC))
+    {
+      configuration.setGenerateCopc(Boolean.valueOf(metadata.get(GENERATE_COPC)));
+    }
+
+    if (metadata.containsKey(GENERATE_GSM))
+    {
+      configuration.setGenerateGSM(Boolean.valueOf(metadata.get(GENERATE_GSM)));
+    }
+    
+    if (metadata.containsKey(GENERATE_TERRAIN_MODEL))
+    {
+      configuration.setGenerateTerrainModel(Boolean.valueOf(metadata.get(GENERATE_TERRAIN_MODEL)));
+    }
+
+    if (metadata.containsKey(GENERATE_TREE_CANOPY_COVER))
+    {
+      configuration.setGenerateTreeCanopyCover(Boolean.valueOf(metadata.get(GENERATE_TREE_CANOPY_COVER)));
+    }
+    
+    if (metadata.containsKey(GENERATE_TREE_STRUCTURE))
+    {
+      configuration.setGenerateTreeStructure(Boolean.valueOf(metadata.get(GENERATE_TREE_STRUCTURE)));
+    }
+    
+    return configuration;
   }
 
   public static LidarProcessConfiguration parse(String jsonString)
@@ -220,48 +255,6 @@ public class LidarProcessConfiguration implements ProcessConfiguration
       {
         configuration.setGenerateTreeStructure(object.get(GENERATE_TREE_STRUCTURE).getAsBoolean());
       }
-    }
-
-    return configuration;
-  }
-
-  public static LidarProcessConfiguration parse(RequestParserIF parser)
-  {
-    LidarProcessConfiguration configuration = new LidarProcessConfiguration();
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(GENERATE_COPC)))
-    {
-      Boolean value = Boolean.valueOf(parser.getCustomParams().get(GENERATE_COPC));
-      configuration.setGenerateCopc(value);
-    }
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(GENERATE_GSM)))
-    {
-      Boolean value = Boolean.valueOf(parser.getCustomParams().get(GENERATE_GSM));
-      configuration.setGenerateGSM(value);
-    }
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(GENERATE_TERRAIN_MODEL)))
-    {
-      Boolean value = Boolean.valueOf(parser.getCustomParams().get(GENERATE_TERRAIN_MODEL));
-      configuration.setGenerateTerrainModel(value);
-    }
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(GENERATE_TREE_CANOPY_COVER)))
-    {
-      Boolean value = Boolean.valueOf(parser.getCustomParams().get(GENERATE_TREE_CANOPY_COVER));
-      configuration.setGenerateTreeCanopyCover(value);
-    }
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(GENERATE_TREE_STRUCTURE)))
-    {
-      Boolean value = Boolean.valueOf(parser.getCustomParams().get(GENERATE_TREE_STRUCTURE));
-      configuration.setGenerateTreeStructure(value);
-    }
-
-    if (!StringUtils.isEmpty(parser.getCustomParams().get(PRODUCT_NAME)))
-    {
-      configuration.setProductName(parser.getCustomParams().get(PRODUCT_NAME));
     }
 
     return configuration;

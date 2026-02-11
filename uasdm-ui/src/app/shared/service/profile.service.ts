@@ -15,7 +15,7 @@ import { environment } from 'src/environments/environment';
 
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ProfileService {
 
     constructor( private eventService: EventService, private http: HttpClient ) { }
@@ -73,7 +73,7 @@ export class ProfileService {
         params = params.set('statuses', JSON.stringify(statuses));
 
         return this.http
-            .get<{tasksCount:number}>(environment.apiUrl + '/project/tasks-count', { params: params })
+            .get<{tasksCount:number}>(environment.apiUrl + '/api/project/tasks-count', { params: params })
             .toPromise()
     }
 }

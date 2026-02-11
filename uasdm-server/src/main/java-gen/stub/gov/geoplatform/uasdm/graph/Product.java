@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -63,7 +63,10 @@ import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.SSLLocalhostTrustConfiguration;
 import gov.geoplatform.uasdm.bus.InvalidUasComponentNameException;
 import gov.geoplatform.uasdm.bus.UasComponentDeleteException;
+import gov.geoplatform.uasdm.cog.TiTillerProxy;
 import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
+import gov.geoplatform.uasdm.cog.model.TitilerCogBandStatistic;
+import gov.geoplatform.uasdm.cog.model.TitilerCogStatistics;
 import gov.geoplatform.uasdm.command.IndexDeleteStacCommand;
 import gov.geoplatform.uasdm.command.ReIndexStacItemCommand;
 import gov.geoplatform.uasdm.model.CollectionIF;
@@ -73,6 +76,7 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.StacItem;
+import gov.geoplatform.uasdm.model.StacItem.Band;
 import gov.geoplatform.uasdm.model.StacItem.Properties;
 import gov.geoplatform.uasdm.model.StacLink;
 import gov.geoplatform.uasdm.model.StacLocation;
@@ -85,11 +89,18 @@ import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
 import gov.geoplatform.uasdm.service.IndexService;
+<<<<<<< HEAD
+=======
+import gov.geoplatform.uasdm.service.business.IDMHierarchyTypeSnapshotBusinessService;
+>>>>>>> refs/remotes/origin/master
 import gov.geoplatform.uasdm.service.request.IDMLabeledPropertyGraphSynchronizationService;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.ProductCriteria;
 import gov.geoplatform.uasdm.view.SiteObject;
+<<<<<<< HEAD
 import net.geoprism.graph.GraphTypeSnapshot;
+=======
+>>>>>>> refs/remotes/origin/master
 import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphSynchronizationQuery;
@@ -109,6 +120,8 @@ public class Product extends ProductBase implements ProductIF
   }
 
   public static final String  ODM_ALL_DIR               = "odm_all";
+
+  public static final String  SILVIMETRIC_ORTHO_REGEX   = ".*\\/" + ImageryComponent.ORTHO + "\\/(tree_canopy_cover|tree_structure|ground_surface_model|terrain_model)" + CogTifProcessor.COG_EXTENSION.replaceAll("\\.", "\\\\.");
 
   public static final String  MAPPABLE_ORTHO_REGEX      = ".*\\/" + ImageryComponent.ORTHO + "\\/[^\\/]+" + CogTifProcessor.COG_EXTENSION.replaceAll("\\.", "\\\\.");
 
@@ -144,6 +157,17 @@ public class Product extends ProductBase implements ProductIF
       InvalidUasComponentNameException ex = new InvalidUasComponentNameException("The product name [" + this.getProductName() + "] has an invalid character. Disallowed characters are " + UasComponentIF.DISALLOWED_FILENAME_REGEX);
       ex.setAttributeName(mdAttribute.getDisplayLabel(Session.getCurrentLocale()));
       throw ex;
+    }
+
+    if (isNew && component instanceof Collection)
+    {
+      Collection collection = (Collection) component;
+
+      if (collection.hasPIIConcern())
+      {
+        this.setLocked(!this.isLocked());
+        this.setLockedById(collection.getOwnerOid());
+      }
     }
 
     this.apply();
@@ -286,6 +310,15 @@ public class Product extends ProductBase implements ProductIF
     }
   }
 
+  /**
+   * WARNING This method does not create an associated metadata with the created
+   * product. All products must have metadata associated with them. You probably
+   * want to use component.createProductIfNotExist instead.
+   * 
+   * @param uasComponent
+   * @param productName
+   * @return
+   */
   public static Product createIfNotExist(UasComponentIF uasComponent, String productName)
   {
     Product product = find(uasComponent, productName);
@@ -309,6 +342,15 @@ public class Product extends ProductBase implements ProductIF
     return product;
   }
 
+  /**
+   * WARNING This method does not create an associated metadata with the created
+   * product. All products must have metadata associated with them. You probably
+   * want to use component.createProductIfNotExist instead.
+   * 
+   * @param uasComponent
+   * @param productName
+   * @return
+   */
   public static Product createIfNotExistOrThrow(UasComponentIF uasComponent, String productName)
   {
     Product product = find(uasComponent, productName);
@@ -594,6 +636,48 @@ public class Product extends ProductBase implements ProductIF
     return this.getPublished() != null && this.getPublished();
   }
 
+  public boolean isMultiSpectral()
+  {
+    return isMultiSpectral(this.getMetadata());
+  }
+
+  private boolean isMultiSpectral(Optional<CollectionMetadata> optional)
+  {
+    return optional.map(metadata -> {
+
+      if (metadata.isMultiSpectral())
+      {
+        return true;
+      }
+
+      Sensor sensor = metadata.getSensor();
+
+      if (sensor == null)
+      {
+        logger.error("Metadata missing sensor information");
+
+        return false;
+      }
+
+      SensorType type = sensor.getSensorType();
+
+      if (type != null)
+      {
+        return type.getIsMultispectral() != null && type.getIsMultispectral();
+      }
+      else
+      {
+        logger.error("Unable to find sensor type for sensor");
+      }
+
+      return false;
+    }).orElseGet(() -> {
+      logger.error("Unable to find metadata. Returning false for multispectral");
+
+      return false;
+    });
+  }
+
   /**
    * Downloads the product's ODM all.zip and refreshes S3 and database documents
    * with the data contained.
@@ -769,7 +853,7 @@ public class Product extends ProductBase implements ProductIF
 
     if (component.isPrivate() && !this.isPublished())
     {
-      GenericException ex = new GenericException();
+      GenericException ex = new GenericException("Private collections can not be published");
       ex.setUserMessage("Private collections can not be published");
       throw ex;
     }
@@ -902,7 +986,6 @@ public class Product extends ProductBase implements ProductIF
       {
         if (iterator.hasNext())
         {
-
           LabeledPropertyGraphSynchronization synchronization = iterator.next();
           LabeledPropertyGraphType graphType = synchronization.getGraphType();
           LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
@@ -918,7 +1001,7 @@ public class Product extends ProductBase implements ProductIF
 
             HierarchyTypeSnapshot hierarchyType = hTypeService.get(version, graphType.getHierarchy());
 
-            List<StacLocation> operational = service.getAncestors(version, hierarchyType.getGraphMdEdge(), location).stream().map(org -> {
+            List<StacLocation> operational = service.getAncestors(version, hierarchyType.getGraphMdEdge(), location, 0, true).stream().map(org -> {
               return StacLocation.build(org.getUid(), org.getDisplayLabel().getValue());
             }).collect(Collectors.toList());
 
@@ -997,21 +1080,18 @@ public class Product extends ProductBase implements ProductIF
 
         if (ext.toUpperCase().equals("PNG"))
         {
-          String title = "Thumbnail";
-          String role = "visual";
-
-          item.addAsset("thumbnail-hd", StacItem.buildAsset("image/png", title, location, role));
+          item.addAsset("overview", StacItem.buildAsset("image/png", "Overview", location, "overview"));
 
           // Private thumbnail
           String rootPath = FilenameUtils.getPath(document.getS3location());
           String baseName = FilenameUtils.getBaseName(document.getName());
           final String thumbnail = this.isPublished() ? "https://" + bucketName + ".s3.amazonaws.com/" + rootPath + "thumbnails/" + baseName + ".png" : "s3://" + bucketName + "/" + rootPath + "thumbnails/" + baseName + ".png";
 
-          item.addAsset("thumbnail", StacItem.buildAsset("image/png", title, thumbnail, role));
+          item.addAsset("thumbnail", StacItem.buildAsset("image/png", "Thumbnail", thumbnail, "thumbnail"));
         }
         else
         {
-          String assetName = FilenameUtils.getBaseName(document.getName());
+          String assetName = FilenameUtils.getBaseName(document.getName()).replace(".", "_");
 
           String type = "image/tiff; application=geotiff;";
 
@@ -1020,10 +1100,29 @@ public class Product extends ProductBase implements ProductIF
             type = "image/tiff; application=geotiff; profile=cloud-optimized";
           }
 
-          String title = "Visual";
-          String role = "visual";
+          String title = "Data";
 
-          item.addAsset(assetName, StacItem.buildAsset(type, title, location, role));
+          List<String> roles = new LinkedList<String>();
+          roles.add("data");
+
+          if (location.contains("/" + ImageryComponent.ORTHO + "/"))
+          {
+            title = "Ortho";
+
+            if (this.isMultiSpectral(opMeta))
+            {
+              roles.add("multispectral");
+            }
+          }
+          else if (location.contains("/" + ImageryComponent.DEM + "/"))
+          {
+            title = "Elevation";
+            roles.add("elevation");
+          }
+
+          List<Band> bands = getAssetBands(location, assetName);
+
+          item.addAsset(assetName, StacItem.buildAsset(type, title, location, bands, roles.toArray(new String[roles.size()])));
         }
       }
     }
@@ -1036,6 +1135,38 @@ public class Product extends ProductBase implements ProductIF
     item.addLink(StacLink.build(url, "self", "application/json"));
 
     return item;
+  }
+
+  private List<Band> getAssetBands(final String location, String assetName)
+  {
+    List<Band> bands = new LinkedList<>();
+
+    if (location.toUpperCase().endsWith("COG.TIF"))
+    {
+      try
+      {
+        TiTillerProxy proxy = new TiTillerProxy();
+        TitilerCogStatistics stats = proxy.getCogStatistics(location);
+
+        if (stats != null)
+        {
+          stats.getBandNames().forEachRemaining(bandName -> {
+            TitilerCogBandStatistic stat = stats.getBandStatistic(bandName);
+
+            bands.add(StacItem.buildBand(bandName, StacItem.buildStatistics(stat.getMax(), stat.getMean(), stat.getMin(), stat.getStd(), stat.getValid_percent())));
+          });
+
+        }
+
+      }
+      catch (Exception e)
+      {
+        // Unable to get band information
+        logger.error("Unable to derive asset band information for stac item", e);
+      }
+    }
+
+    return bands;
   }
 
   public Optional<CollectionMetadata> getMetadata()
@@ -1117,10 +1248,15 @@ public class Product extends ProductBase implements ProductIF
   public static List<ComponentProductDTO> getProducts(ProductCriteria criteria)
   {
     LabeledPropertyGraphTypeVersionBusinessServiceIF service = ApplicationContextHolder.getBean(LabeledPropertyGraphTypeVersionBusinessServiceIF.class);
+    IDMHierarchyTypeSnapshotBusinessService hService = ApplicationContextHolder.getBean(IDMHierarchyTypeSnapshotBusinessService.class);
 
     LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(criteria.getHierarchy());
     LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
+<<<<<<< HEAD
     GraphTypeSnapshot hierarchyType = service.getGraphSnapshots(version).get(0);
+=======
+    HierarchyTypeSnapshot hierarchyType = hService.get(version).get(0);
+>>>>>>> refs/remotes/origin/master
 
     SynchronizationEdge synchronizationEdge = SynchronizationEdge.get(version);
     MdEdge siteEdge = synchronizationEdge.getGraphEdge();

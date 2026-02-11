@@ -26,7 +26,7 @@
 
       <form #ngForm="ngForm">
         <div class="form-group">
-          <label>Platform</label>
+          <label class="form-label">Platform</label>
           <select *ngIf="mode !== 'READ'" [(ngModel)]="uav.platform" name="platform" type="input" class="form-control"
             required>
             <option></option>
@@ -39,32 +39,32 @@
           </ng-container>
         </div>
         <div class="form-group">
-          <label>Serial Number</label>
+          <label class="form-label">Serial Number</label>
           <input [(ngModel)]="uav.serialNumber" name="serialNumber" type="input" class="form-control"
             placeholder="Serial Number" [disabled]="mode === 'READ'" required />
         </div>
         <div class="form-group">
-          <label>FAA Number</label>
+          <label class="form-label">FAA Number</label>
           <input [(ngModel)]="uav.faaNumber" name="faaNumber" type="input" class="form-control" placeholder="FAA Number"
             [disabled]="mode === 'READ'" required max="10" maxlength="10" />
         </div>
         <div class="form-group">
-          <label>Description</label>
+          <label class="form-label">Description</label>
           <textarea [(ngModel)]="uav.description" [disabled]="mode === 'READ'" name="description" type="input"
             class="form-control" placeholder="Description"></textarea>
         </div>
         <div class="form-group">
-          <label>Organization</label>
+          <label class="form-label">Organization</label>
           <organization-field name="organization" [(value)]="uav.organization" [disabled]="mode === 'READ'" [required]="true">
           </organization-field>
         </div>
-        <div *ngIf="isAdmin && mode === 'WRITE'" class="btn-holder" style="text-align: right;">
-          <button *ngIf="!newInstance" type="button" class="btn btn-default" (click)="handleOnCancel()">Cancel</button>
-          <button type="submit" class="btn btn-primary" (click)="handleOnSubmit()"
+        <div *ngIf="isAdmin && mode === 'WRITE'" class="btn-holder mt-2" style="text-align: right;">
+          <button *ngIf="!newInstance" type="button" class="btn btn-default p-2" (click)="handleOnCancel()">Cancel</button>
+          <button type="submit" class="btn btn-primary p-2" (click)="handleOnSubmit()"
             [disabled]="!ngForm.valid">Apply</button>
         </div>
-        <div *ngIf="isAdmin && mode === 'READ'" class="btn-holder" style="text-align: right;">
-          <button type="submit" class="btn btn-primary" (click)="handleOnEdit()">Edit</button>
+        <div *ngIf="isAdmin && mode === 'READ'" class="btn-holder mt-2" style="text-align: right;">
+          <button type="submit" class="btn btn-primary p-2" (click)="handleOnEdit()">Edit</button>
         </div>
       </form>
     </div>

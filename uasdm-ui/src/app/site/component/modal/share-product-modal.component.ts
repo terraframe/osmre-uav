@@ -17,17 +17,20 @@ import {
 	bounceInOnEnterAnimation,
 } from 'angular-animations';
 import EnvironmentUtil from '@core/utility/environment-util';
+import { NgIf, NgFor } from '@angular/common';
 
 @Component({
-	selector: 'share-product-modal',
-	templateUrl: './share-product-modal.component.html',
-	providers: [],
-	styleUrls: [],
-	animations: [
-		fadeInOnEnterAnimation(),
-		fadeOutOnLeaveAnimation(),
-		bounceInOnEnterAnimation()
-	]
+    standalone: true,
+    selector: 'share-product-modal',
+    templateUrl: './share-product-modal.component.html',
+    providers: [],
+    styleUrls: [],
+    animations: [
+        fadeInOnEnterAnimation(),
+        fadeOutOnLeaveAnimation(),
+        bounceInOnEnterAnimation()
+    ],
+    imports: [NgIf, NgFor]
 })
 export class ShareProductModalComponent {
 	product: Product;

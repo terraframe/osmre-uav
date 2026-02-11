@@ -15,32 +15,35 @@
  */
 package gov.geoplatform.uasdm.processing;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.runwaysdk.resource.ApplicationFileResource;
-import com.runwaysdk.resource.ApplicationResource;
 
 import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.bus.CollectionReport;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.processing.ProcessResult.Status;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 
 public class S3FileUpload implements Processor
 {
-  protected String s3Path;
-  
+  protected String          s3Path;
+
   protected StatusMonitorIF monitor;
-  
-  protected UasComponentIF component;
-  
-  protected Product product;
-  
-  protected Processor downstream = null;
-  
+
+  protected UasComponentIF  component;
+
+  protected Product         product;
+
+  protected List<Processor> downstream = new LinkedList<>();
+
   /**
    * 
-   * @param s3Path The s3 target upload path, relative to the collection.
+   * @param s3Path
+   *          The s3 target upload path, relative to the collection.
    * @param collection
    * @param isDirectory
    * @param monitor
@@ -52,10 +55,11 @@ public class S3FileUpload implements Processor
     this.product = product;
     this.component = component;
   }
-  
-  public Processor addDownstream(Processor downstreamProcessor)
+
+  public S3FileUpload addDownstream(Processor downstreamProcessor)
   {
-    this.downstream = downstreamProcessor;
+    this.downstream.add(downstreamProcessor);
+
     return this;
   }
 
@@ -63,12 +67,12 @@ public class S3FileUpload implements Processor
   {
     return s3Path;
   }
-  
+
   public void setS3Path(String s3Path)
   {
     this.s3Path = s3Path;
   }
-  
+
   public UasComponentIF getComponent()
   {
     return component;
@@ -90,46 +94,48 @@ public class S3FileUpload implements Processor
   }
 
   @Override
-  public boolean process(ApplicationFileResource res)
+  public ProcessResult process(ApplicationFileResource res)
   {
     if (!res.exists())
     {
       this.monitor.addError("S3 uploader expected file [" + res.getAbsolutePath() + "] to exist.");
-      return false;
+
+      return ProcessResult.fail();
     }
-    
+
     this.uploadFile(res);
 
-    if (this.component instanceof CollectionIF) {
+    if (this.component instanceof CollectionIF)
+    {
       CollectionReportFacade.updateSize((CollectionIF) this.component).doIt();
     }
-    
-    if (this.downstream != null)
+
+    if (this.downstream.size() > 0)
     {
-      return this.downstream.process(res);
+      return this.downstream.stream().map(p -> p.process(res)).reduce(new ProcessResult(Status.SUCCESS), ProcessResult::join);
     }
-    
-    return true;
+
+    return ProcessResult.success(res);
   }
-  
+
   protected String getS3Key()
   {
     if (this.s3Path.startsWith(this.component.getS3location()))
     {
       return this.s3Path;
     }
-    
+
     return this.component.getS3location(product, s3Path);
   }
-  
+
   protected void uploadFile(ApplicationFileResource res)
   {
     String key = this.getS3Key();
-    
+
     if (res.isDirectory())
     {
       RemoteFileFacade.uploadDirectory(res.getUnderlyingFile(), key, this.monitor, true);
-      
+
       if (this.product.isPublished())
       {
         // TODO : copyObject is more efficient but doesn't work on directories
@@ -139,7 +145,7 @@ public class S3FileUpload implements Processor
     else
     {
       RemoteFileFacade.uploadFile(res.getUnderlyingFile(), key, this.monitor);
-      
+
       if (this.product.isPublished())
       {
         RemoteFileFacade.copyObject(key, AppProperties.getBucketName(), key, AppProperties.getPublicBucketName());

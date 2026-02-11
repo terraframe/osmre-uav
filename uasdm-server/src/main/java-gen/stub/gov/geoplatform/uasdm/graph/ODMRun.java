@@ -16,7 +16,12 @@
 package gov.geoplatform.uasdm.graph;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
@@ -39,6 +44,36 @@ public class ODMRun extends ODMRunBase
   public ODMRun()
   {
     super();
+  }
+  
+  @Override
+  public void apply()
+  {
+    String sConfig = this.getConfig();
+    
+    if (StringUtils.isNotBlank(sConfig)) {
+      JSONObject json = new JSONObject(sConfig);
+      
+      // These attributes are ultimately just coming from the config. But they exist for easy query access for predicting runtimes
+      this.setResolution(Float.parseFloat((String) readFromConfig("resolution", json)));
+      this.setPcQuality((String) readFromConfig("pcQuality", json));
+      this.setFeatureQuality((String) readFromConfig("featureQuality", json));
+      this.setMatcherNeighbors((Integer) readFromConfig("matcherNeighbors", json));
+      this.setMinNumFeatures((Integer) readFromConfig("minNumFeatures", json));
+      this.setVideoResolution((Integer) readFromConfig("videoResolution", json));
+      this.setVideoLimit((Integer) readFromConfig("videoLimit", json));
+      this.setRadiometricCalibration((String) readFromConfig("radiometricCalibration", json));
+    }
+    
+    super.apply();
+  }
+  
+  private static Object readFromConfig(String name, JSONObject json) {
+    if (json != null && json.has(name) && !json.isNull(name)) {
+      return json.get(name);
+    }
+    
+    return null;
   }
   
   /*
@@ -122,7 +157,7 @@ public class ODMRun extends ODMRunBase
    * @param task
    * @return
    */
-  public static ODMRun createAndApplyFor(ODMProcessingTask task)
+  public static ODMRun createAndApplyFor(ODMProcessingTask task, String instanceType)
   {
     UasComponent component = (UasComponent) task.getComponentInstance();
     
@@ -130,10 +165,16 @@ public class ODMRun extends ODMRunBase
     odmRun.setWorkflowTask(task);
     odmRun.setConfig(task.getConfigurationJson());
     odmRun.setRunStart(new Date());
+    odmRun.setInstanceType(instanceType);
     odmRun.setComponent(component);
     odmRun.apply();
     
-    List<DocumentIF> documents = component.getDocuments();
+    List<DocumentIF> documents;
+    if (component instanceof Collection)
+      documents = ((Collection)component).getRaw();
+    else
+      documents = component.getDocuments();
+    
     documents.forEach(doc -> odmRun.addODMRunInputParent((Document) doc).apply());
     
     return odmRun;

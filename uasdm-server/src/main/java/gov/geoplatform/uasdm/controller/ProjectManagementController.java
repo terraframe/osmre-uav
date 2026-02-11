@@ -21,37 +21,59 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.List;
 
+<<<<<<< HEAD
 import jakarta.servlet.http.HttpServletResponse;
+=======
+import javax.validation.Valid;
+>>>>>>> refs/remotes/origin/master
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.runwaysdk.constants.ClientRequestIF;
-import com.runwaysdk.controller.MultipartFileParameter;
-import com.runwaysdk.controller.ServletMethod;
-import com.runwaysdk.mvc.Controller;
-import com.runwaysdk.mvc.Endpoint;
-import com.runwaysdk.mvc.ErrorSerialization;
-import com.runwaysdk.mvc.InputStreamResponse;
-import com.runwaysdk.mvc.RequestParamter;
-import com.runwaysdk.mvc.ResponseIF;
-import com.runwaysdk.mvc.RestBodyResponse;
-import com.runwaysdk.mvc.RestResponse;
-import com.runwaysdk.mvc.ViewResponse;
-import com.runwaysdk.request.ServletRequestIF;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.controller.body.CollectionBody;
+import gov.geoplatform.uasdm.controller.body.EntityArtifactBody;
+import gov.geoplatform.uasdm.controller.body.EntityBody;
+import gov.geoplatform.uasdm.controller.body.EntityItemBody;
+import gov.geoplatform.uasdm.controller.body.EntityProductBody;
+import gov.geoplatform.uasdm.controller.body.EntityWithParentBody;
+import gov.geoplatform.uasdm.controller.body.ExcludeItemBody;
+import gov.geoplatform.uasdm.controller.body.IdBody;
+import gov.geoplatform.uasdm.controller.body.MetadataBody;
+import gov.geoplatform.uasdm.controller.body.ParentIdBody;
+import gov.geoplatform.uasdm.controller.body.ParentIdWithTypeBody;
+import gov.geoplatform.uasdm.controller.body.RunProcessBody;
+import gov.geoplatform.uasdm.controller.body.StandaloneProductBody;
+import gov.geoplatform.uasdm.controller.body.TaskIdBody;
+import gov.geoplatform.uasdm.controller.body.UploadArtifactFileBody;
+import gov.geoplatform.uasdm.controller.body.UploadIdBody;
+import gov.geoplatform.uasdm.controller.body.UploadToFolderBody;
 import gov.geoplatform.uasdm.model.InvalidRangeException;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.remote.BasicFileMetadata;
-import gov.geoplatform.uasdm.remote.RemoteFileGetRangeResponse;
-import gov.geoplatform.uasdm.remote.RemoteFileGetResponse;
+import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.service.WorkflowService;
 import gov.geoplatform.uasdm.view.AttributeType;
@@ -61,160 +83,154 @@ import gov.geoplatform.uasdm.view.SiteItem;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.TreeComponent;
 
-@Controller(url = "project")
-public class ProjectManagementController
+@RestController
+@Validated
+@RequestMapping("/api/project")
+public class ProjectManagementController extends AbstractController
 {
-  public static final String       JSP_DIR   = "/WEB-INF/";
+  private static final Logger      logger = LoggerFactory.getLogger(ProjectManagementController.class);
 
-  public static final String       INDEX_JSP = "gov/osmre/uasdm/index.jsp";
-
-  private static final Logger      logger    = LoggerFactory.getLogger(ProjectManagementController.class);
-
+  @Autowired
   private ProjectManagementService service;
 
-  public ProjectManagementController()
+  @Autowired
+  private WorkflowService          workflowService;
+
+  @GetMapping("/configuration")
+  public ResponseEntity<String> configuration()
   {
-    this.service = new ProjectManagementService();
+    JSONObject configuration = this.service.configuration(this.getSessionId(), this.getRequest().getContextPath());
+
+    return ResponseEntity.ok(configuration.toString());
   }
 
-  @Endpoint(method = ServletMethod.GET)
-  public ResponseIF management()
+  @GetMapping("/get-default-run-config")
+  public ResponseEntity<String> getDefaultRunConfig(@RequestParam(required = false, name = "collectionId") String collectionId)
   {
-    return new ViewResponse("/index.html");
+    String config = this.service.getDefaultRunConfig(this.getSessionId(), collectionId);
+
+    return ResponseEntity.ok(config);
   }
 
-  @Endpoint(method = ServletMethod.GET, url = "configuration")
-  public ResponseIF configuration(ServletRequestIF request, ClientRequestIF cRequest, @RequestParamter(name = "id") String id)
+  @GetMapping("/get-odm-run-by-task")
+  public ResponseEntity<String> getODMRun(@RequestParam(required = false, name = "taskId") String taskId) throws IOException
   {
-    JSONObject configuration = this.service.configuration(cRequest.getSessionId(), request.getContextPath());
-
-    return new RestBodyResponse(configuration);
+    return ResponseEntity.ok(service.getODMRunByTask(this.getSessionId(), taskId).toJson().toString());
   }
 
-  @Endpoint(url = "get-default-run-config", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getDefaultRunConfig(ClientRequestIF request, @RequestParamter(name = "collectionId") String collectionId)
+  @GetMapping("/get-configuration-by-task")
+  public ResponseEntity<String> getConfigurationByTask(@RequestParam(required = false, name = "taskId") String taskId) throws IOException
   {
-    String config = this.service.getDefaultRunConfig(request.getSessionId(), collectionId);
+    ProcessConfiguration configuration = service.getConfigurationByTask(this.getSessionId(), taskId);
 
-    return new RestBodyResponse(config);
+    return ResponseEntity.ok(configuration.toJson().toString());
   }
 
-  @Endpoint(url = "get-odm-run-by-task", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getODMRun(ClientRequestIF request, @RequestParamter(name = "taskId") String taskId) throws IOException
+  @GetMapping("/get-children")
+  public ResponseEntity<String> getChildren(@RequestParam(required = false, name = "id") String id)
   {
-    return new RestBodyResponse(service.getODMRunByTask(request.getSessionId(), taskId));
+    List<TreeComponent> children = this.service.getChildren(this.getSessionId(), id);
+
+    return ResponseEntity.ok(SiteItem.serialize(children).toString());
   }
 
-  @Endpoint(url = "get-configuration-by-task", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getConfigurationByTask(ClientRequestIF request, @RequestParamter(name = "taskId") String taskId) throws IOException
+  @GetMapping("/view")
+  public ResponseEntity<String> view(@RequestParam(required = false, name = "id") String id) throws IOException
   {
-    ProcessConfiguration configuration = service.getConfigurationByTask(request.getSessionId(), taskId);
+    JSONObject response = this.service.view(this.getSessionId(), id);
 
-    return new RestBodyResponse(configuration.toJson().toString());
+    return ResponseEntity.ok(response.toString());
   }
 
-  @Endpoint(url = "get-children", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getChildren(ClientRequestIF request, @RequestParamter(name = "id") String id)
+  @GetMapping("/roots")
+  public ResponseEntity<String> getRoots(@RequestParam(required = false, name = "conditions") String conditions, @RequestParam(required = false, name = "sort") String sort)
   {
-    List<TreeComponent> children = this.service.getChildren(request.getSessionId(), id);
+    List<TreeComponent> roots = this.service.getRoots(this.getSessionId(), conditions, sort);
 
-    return new RestBodyResponse(SiteItem.serialize(children));
+    return ResponseEntity.ok(SiteItem.serialize(roots).toString());
   }
 
-  @Endpoint(url = "view", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF view(ClientRequestIF request, @RequestParamter(name = "id") String id) throws IOException
+  @GetMapping("/metadata-options")
+  public ResponseEntity<String> getMetadataOptions(@RequestParam(required = false, name = "collectionId") String collectionId, @RequestParam(required = false, name = "productId") String productId)
   {
-    JSONObject response = this.service.view(request.getSessionId(), id);
-
-    return new RestBodyResponse(response);
+    return ResponseEntity.ok(this.service.getMetadataOptions(this.getSessionId(), collectionId, productId).toString());
   }
 
-  @Endpoint(url = "roots", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getRoots(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "conditions") String conditions, @RequestParamter(name = "sort") String sort)
+  @GetMapping("/uav-metadata")
+  public ResponseEntity<String> getUAVMetadata(@RequestParam(required = false, name = "uavId") String uavId, @RequestParam(required = false, name = "sensorId") String sensorId)
   {
-    List<TreeComponent> roots = this.service.getRoots(request.getSessionId(), id, conditions, sort);
-
-    return new RestBodyResponse(SiteItem.serialize(roots));
+    return ResponseEntity.ok(this.service.getUAVMetadata(this.getSessionId(), uavId, sensorId).toString());
   }
 
-  @Endpoint(url = "metadata-options", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getMetadataOptions(ClientRequestIF request, @RequestParamter(name = "collectionId") String collectionId, @RequestParamter(name = "productId") String productId)
+  @PostMapping("/new-default-child")
+  public ResponseEntity<String> newDefaultChild(@RequestBody @Valid ParentIdBody body)
   {
-    return new RestBodyResponse(this.service.getMetadataOptions(request.getSessionId(), collectionId, productId));
+    SiteItem item = this.service.newDefaultChild(this.getSessionId(), body.getParentId());
+
+    JSONObject response = new JSONObject();
+    response.put("item", item.toJSON());
+    response.put("attributes", AttributeType.toJSON(item.getAttributes()));
+
+    return ResponseEntity.ok(response.toString());
   }
 
-  @Endpoint(url = "uav-metadata", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getUAVMetadata(ClientRequestIF request, @RequestParamter(name = "uavId") String uavId, @RequestParamter(name = "sensorId") String sensorId)
+  @PostMapping("/new-child")
+  public ResponseEntity<String> newChild(@RequestBody @Valid ParentIdWithTypeBody body)
   {
-    return new RestBodyResponse(this.service.getUAVMetadata(request.getSessionId(), uavId, sensorId));
+    SiteItem item = this.service.newChild(this.getSessionId(), body.getParentId(), body.getType());
+
+    JSONObject response = new JSONObject();
+    response.put("item", item.toJSON());
+    response.put("attributes", AttributeType.toJSON(item.getAttributes()));
+
+    return ResponseEntity.ok(response.toString());
   }
 
-  @Endpoint(url = "new-default-child", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF newDefaultChild(ClientRequestIF request, @RequestParamter(name = "parentId") String parentId)
+  @PostMapping("/apply-metadata")
+  public ResponseEntity<Void> applyMetadata(@RequestBody @Valid MetadataBody body)
   {
-    SiteItem item = this.service.newDefaultChild(request.getSessionId(), parentId);
+    this.service.applyMetadata(this.getSessionId(), body.getSelection());
 
-    RestResponse response = new RestResponse();
-    response.set("item", item.toJSON());
-    response.set("attributes", AttributeType.toJSON(item.getAttributes()));
-    return response;
+    return ResponseEntity.ok(null);
   }
 
-  @Endpoint(url = "new-child", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF newChild(ClientRequestIF request, @RequestParamter(name = "parentId") String parentId, @RequestParamter(name = "type") String childType)
+  @PostMapping("/create-collection")
+  public ResponseEntity<String> createCollection(@RequestBody @Valid CollectionBody body)
   {
-    SiteItem item = this.service.newChild(request.getSessionId(), parentId, childType);
+    String oid = this.service.createCollection(this.getSessionId(), body.getSelections());
 
-    RestResponse response = new RestResponse();
-    response.set("item", item.toJSON());
-    response.set("attributes", AttributeType.toJSON(item.getAttributes()));
-    return response;
+    JSONObject response = new JSONObject();
+    response.put("oid", oid);
+
+    return ResponseEntity.ok(response.toString());
   }
 
-  @Endpoint(url = "apply-metadata", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF applyMetadata(ClientRequestIF request, @RequestParamter(name = "selection") String selection)
+  @PostMapping("/create-standalone-product-group")
+  public ResponseEntity<String> createStandaloneProductGroup(@RequestBody @Valid StandaloneProductBody body)
   {
-    this.service.applyMetadata(request.getSessionId(), selection);
+    String oid = this.service.createStandaloneProductGroup(this.getSessionId(), body.getProductGroup());
 
-    return new RestResponse();
+    JSONObject response = new JSONObject();
+    response.put("oid", oid);
+
+    return ResponseEntity.ok(response.toString());
   }
 
-  @Endpoint(url = "create-collection", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF createCollection(ClientRequestIF request, @RequestParamter(name = "selections") String selections)
+  @PostMapping("/apply-with-parent")
+  public ResponseEntity<String> applyWithParent(@RequestBody @Valid EntityWithParentBody body)
   {
-    String oid = this.service.createCollection(request.getSessionId(), selections);
+    SiteItem item = SiteItem.deserialize(body.getEntity());
 
-    RestResponse response = new RestResponse();
-    response.set("oid", oid);
+    SiteItem result = this.service.applyWithParent(this.getSessionId(), item, body.getParentId());
 
-    return response;
+    return ResponseEntity.ok(result.toJSON().toString());
   }
 
-  @Endpoint(url = "create-standalone-product-group", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF createStandaloneProductGroup(ClientRequestIF request, @RequestParamter(name = "productGroup") String productGroupJson)
+  @GetMapping("/download-all")
+  public ResponseEntity<InputStreamResource> downloadAll(final @RequestParam(required = false, name = "id") String id, final @RequestParam(required = false, name = "key") String key)
   {
-    String oid = this.service.createStandaloneProductGroup(request.getSessionId(), productGroupJson);
 
-    RestResponse response = new RestResponse();
-    response.set("oid", oid);
-
-    return response;
-  }
-
-  @Endpoint(url = "apply-with-parent", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF applyWithParent(ClientRequestIF request, @RequestParamter(name = "entity") String entity, @RequestParamter(name = "parentId") String parentId)
-  {
-    SiteItem item = SiteItem.deserialize(new JSONObject(entity));
-
-    SiteItem result = this.service.applyWithParent(request.getSessionId(), item, parentId);
-
-    return new RestBodyResponse(result.toJSON());
-  }
-
-  @Endpoint(url = "download-all", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF downloadAll(ClientRequestIF request, final @RequestParamter(name = "id") String id, final @RequestParamter(name = "key") String key)
-  {
-    final String sessionId = request.getSessionId();
+    final String sessionId = this.getSessionId();
 
     SiteItem item = this.service.get(sessionId, id);
     Object name = item.getValue(UasComponent.NAME);
@@ -244,7 +260,10 @@ public class ProjectManagementController
       thread.setDaemon(true);
       thread.start();
 
-      return new InputStreamResponse(istream, "application/zip", "\"" + name + ".zip" + "\"");
+      return ResponseEntity.ok() //
+          .header("Content-Type", "application/zip") //
+          .header("Content-Disposition", "attachment; filename=\"" + name + ".zip\"") //
+          .body(new InputStreamResource(istream));
     }
     catch (IOException e)
     {
@@ -252,283 +271,315 @@ public class ProjectManagementController
     }
   }
 
-  @Endpoint(url = "download-odm-all", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF downloadOdmAll(ClientRequestIF request, final @RequestParamter(name = "colId") String colId)
+  @GetMapping("/download-odm-all")
+  public ResponseEntity<InputStreamResource> downloadOdmAll(final @RequestParam(required = false, name = "colId") String colId)
   {
-    final String sessionId = request.getSessionId();
+    final String sessionId = this.getSessionId();
 
-    return new RemoteFileGetResponse(this.service.downloadOdmAll(sessionId, colId));
+    RemoteFileObject file = this.service.downloadOdmAll(sessionId, colId);
+
+    return this.getRemoteFile(file);
   }
 
-  @Endpoint(url = "download-report", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF downloadReport(ClientRequestIF request, final @RequestParamter(name = "colId") String colId, final @RequestParamter(name = "productName") String productName, final @RequestParamter(name = "folder") String folder)
+  @GetMapping("/download-report")
+  public ResponseEntity<InputStreamResource> downloadReport(final @RequestParam(required = false, name = "colId") String colId, final @RequestParam(required = false, name = "productName") String productName, final @RequestParam(required = false, name = "folder") String folder)
   {
-    final String sessionId = request.getSessionId();
+    final String sessionId = this.getSessionId();
 
-    return new RemoteFileGetResponse(this.service.downloadReport(sessionId, colId, productName, folder));
+    RemoteFileObject file = this.service.downloadReport(sessionId, colId, productName, folder);
+
+    return this.getRemoteFile(file);
   }
 
-  @Endpoint(url = "run-process", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF runProcess(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "configuration") String configuration)
+  @PostMapping("/run-process")
+  public ResponseEntity<String> runProcess(@RequestBody @Valid RunProcessBody body)
   {
-    this.service.runOrtho(request.getSessionId(), id, configuration);
+    this.service.runOrtho(this.getSessionId(), body.getId(), body.getConfiguration());
 
-    return new RestResponse();
+    return ResponseEntity.ok(null);
   }
 
-  @Endpoint(url = "edit", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF edit(ClientRequestIF request, @RequestParamter(name = "id") String id)
+  @PostMapping("/edit")
+  public ResponseEntity<String> edit(@RequestBody @Valid IdBody body)
   {
-    SiteItem item = this.service.edit(request.getSessionId(), id);
+    SiteItem item = this.service.edit(this.getSessionId(), body.getId());
 
-    RestResponse response = new RestResponse();
-    response.set("item", item.toJSON());
-    response.set("attributes", AttributeType.toJSON(item.getAttributes()));
-    return response;
+    JSONObject response = new JSONObject();
+    response.put("item", item.toJSON());
+    response.put("attributes", AttributeType.toJSON(item.getAttributes()));
+
+    return ResponseEntity.ok(response.toString());
   }
 
-  @Endpoint(url = "set-exclude", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF setExclude(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "exclude") Boolean exclude)
+  @PostMapping("/set-exclude")
+  public ResponseEntity<String> setExclude(@RequestBody @Valid ExcludeItemBody body)
   {
-    SiteObject object = this.service.setExclude(request.getSessionId(), id, exclude);
+    SiteObject object = this.service.setExclude(this.getSessionId(), body.getId(), body.getExclude());
 
-    return new RestBodyResponse(object.toJSON());
+    return ResponseEntity.ok(object.toJSON().toString());
   }
 
-  @Endpoint(url = "update", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF update(ClientRequestIF request, @RequestParamter(name = "entity") String entity)
+  @PostMapping("/update")
+  public ResponseEntity<String> update(@RequestBody @Valid EntityBody body)
   {
-    SiteItem item = SiteItem.deserialize(new JSONObject(entity));
+    SiteItem item = SiteItem.deserialize(body.getEntity());
 
-    SiteItem result = this.service.update(request.getSessionId(), item);
+    SiteItem result = this.service.update(this.getSessionId(), item);
 
-    return new RestBodyResponse(result.toJSON());
+    return ResponseEntity.ok(result.toJSON().toString());
   }
 
-  @Endpoint(url = "remove", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF remove(ClientRequestIF request, @RequestParamter(name = "id") String id)
+  @PostMapping("/remove")
+  public ResponseEntity<Void> remove(@RequestBody @Valid IdBody body)
   {
-    this.service.remove(request.getSessionId(), id);
+    this.service.remove(this.getSessionId(), body.getId());
 
-    return new RestResponse();
+    return ResponseEntity.ok(null);
   }
 
-  @Endpoint(url = "removeObject", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF removeObject(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key)
+  @PostMapping("/removeObject")
+  public ResponseEntity<Void> removeObject(@RequestBody @Valid EntityItemBody body)
   {
-    this.service.removeObject(request.getSessionId(), id, key);
+    this.service.removeObject(this.getSessionId(), body.getId(), body.getKey());
 
-    return new RestResponse();
+    return ResponseEntity.ok(null);
   }
 
-  @Endpoint(url = "remove-upload-task", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF removeUploadTask(ClientRequestIF request, @RequestParamter(name = "uploadId") String uploadId)
+  @PostMapping("/remove-upload-task")
+  public ResponseEntity<Void> removeUploadTask(@RequestBody @Valid UploadIdBody body)
   {
-    this.service.removeUploadTask(request.getSessionId(), uploadId);
+    this.service.removeUploadTask(this.getSessionId(), body.getUploadId());
 
-    return new RestResponse();
+    return ResponseEntity.ok(null);
   }
 
-  @Endpoint(url = "remove-task", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF removeTask(ClientRequestIF request, @RequestParamter(name = "taskId") String taskId)
+  @PostMapping("/remove-task")
+  public ResponseEntity<Void> removeTask(@RequestBody @Valid TaskIdBody body)
   {
-    this.service.removeTask(request.getSessionId(), taskId);
+    this.service.removeTask(this.getSessionId(), body.getTaskId());
 
-    return new RestResponse();
+    return ResponseEntity.ok(null);
   }
 
-  @Endpoint(url = "tasks-count", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getTasksCount(ClientRequestIF request, @RequestParamter(name = "statuses") String statuses)
+  @GetMapping("/tasks-count")
+  public ResponseEntity<String> getTasksCount(@RequestParam(required = false, name = "statuses") String statuses)
   {
-    JSONObject response = new WorkflowService().getTasksCount(request.getSessionId(), statuses);
+    JSONObject response = this.workflowService.getTasksCount(this.getSessionId(), statuses);
 
-    return new RestBodyResponse(response);
+    return ResponseEntity.ok(response.toString());
   }
 
-  @Endpoint(url = "tasks", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getTasks(ClientRequestIF request, @RequestParamter(name = "statuses") String statuses, @RequestParamter(name = "pageNumber") Integer pageNumber, @RequestParamter(name = "pageSize") Integer pageSize, @RequestParamter(name = "token") Integer token)
+  @GetMapping("/tasks")
+  public ResponseEntity<String> getTasks(@RequestParam(required = false, name = "statuses") String statuses, @RequestParam(required = false, name = "pageNumber") Integer pageNumber, @RequestParam(required = false, name = "pageSize") Integer pageSize, @RequestParam(required = false, name = "token") Integer token)
   {
-    JSONObject response = new WorkflowService().getTasks(request.getSessionId(), statuses, pageNumber, pageSize, token);
+    JSONObject response = this.workflowService.getTasks(this.getSessionId(), statuses, pageNumber, pageSize, token);
 
-    return new RestBodyResponse(response);
+    return ResponseEntity.ok(response.toString());
   }
 
-  @Endpoint(url = "component-tasks", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getComponentTasks(ClientRequestIF request, @RequestParamter(name = "componentId") String componentId, @RequestParamter(name = "productId") String productId)
+  @GetMapping("/component-tasks")
+  public ResponseEntity<String> getComponentTasks(@RequestParam(required = false, name = "componentId") String componentId, @RequestParam(required = false, name = "productId") String productId)
   {
-    JSONArray response = new WorkflowService().getComponentTasks(request.getSessionId(), componentId, productId);
+    JSONArray response = this.workflowService.getComponentTasks(this.getSessionId(), componentId, productId);
 
-    return new RestBodyResponse(response);
+    return ResponseEntity.ok(response.toString());
   }
 
-  @Endpoint(url = "task", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getTask(ClientRequestIF request, @RequestParamter(name = "id") String id)
+  @PostMapping("/cancel-task")
+  public ResponseEntity<Void> cancelTask(@RequestBody IdBody body)
   {
-    JSONObject response = new WorkflowService().getTask(request.getSessionId(), id);
+    this.workflowService.cancel(this.getSessionId(), body.getId());
 
-    return new RestBodyResponse(response);
+    return ResponseEntity.ok(null);
   }
 
-  @Endpoint(url = "get-upload-task", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getUploadTask(ClientRequestIF request, @RequestParamter(name = "uploadId") String uploadId)
+  @GetMapping("/task")
+  public ResponseEntity<String> getTask(@RequestParam(required = false, name = "id") String id)
   {
-    JSONObject response = new WorkflowService().getUploadTask(request.getSessionId(), uploadId);
+    JSONObject response = this.workflowService.getTask(this.getSessionId(), id);
 
-    return new RestBodyResponse(response);
+    return ResponseEntity.ok(response.toString());
   }
 
-  @Endpoint(url = "get-messages", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getMessages(ClientRequestIF request, @RequestParamter(name = "pageNumber") Integer pageNumber, @RequestParamter(name = "pageSize") Integer pageSize)
+  @GetMapping("/get-upload-task")
+  public ResponseEntity<String> getUploadTask(@RequestParam(required = false, name = "uploadId") String uploadId)
   {
-    JSONObject response = new WorkflowService().getMessages(request.getSessionId(), pageNumber, pageSize);
+    JSONObject response = this.workflowService.getUploadTask(this.getSessionId(), uploadId);
 
-    return new RestBodyResponse(response);
+    return ResponseEntity.ok(response.toString());
   }
 
-  @Endpoint(url = "search", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF search(ClientRequestIF request, @RequestParamter(name = "term") String term)
+  @GetMapping("/get-messages")
+  public ResponseEntity<String> getMessages(@RequestParam(required = false, name = "pageNumber") Integer pageNumber, @RequestParam(required = false, name = "pageSize") Integer pageSize)
   {
-    List<QueryResult> list = this.service.search(request.getSessionId(), term);
+    JSONObject response = this.workflowService.getMessages(this.getSessionId(), pageNumber, pageSize);
 
-    return new RestBodyResponse(QuerySiteResult.serialize(list));
+    return ResponseEntity.ok(response.toString());
   }
 
-  @Endpoint(url = "get-totals", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getTotals(ClientRequestIF request, @RequestParamter(name = "text") String text, @RequestParamter(name = "filters") String filters)
+  @GetMapping("/search")
+  public ResponseEntity<String> search(@RequestParam(required = false, name = "term") String term)
   {
-    JSONArray result = this.service.getTotals(request.getSessionId(), text, filters);
+    List<QueryResult> list = this.service.search(this.getSessionId(), term);
 
-    return new RestBodyResponse(result);
+    return ResponseEntity.ok(QuerySiteResult.serialize(list).toString());
   }
 
-  @Endpoint(url = "get-stac-items", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getStacItems(ClientRequestIF request, @RequestParamter(name = "criteria") String criteria, @RequestParamter(name = "pageSize", required = true) Integer pageSize, @RequestParamter(name = "pageNumber", required = true) Integer pageNumber)
+  @GetMapping("/get-totals")
+  public ResponseEntity<String> getTotals(@RequestParam(required = false, name = "text") String text, @RequestParam(required = false, name = "filters") String filters)
   {
-    Page<StacItem> page = this.service.getItems(request.getSessionId(), criteria, pageSize, pageNumber);
+    JSONArray result = this.service.getTotals(this.getSessionId(), text, filters);
 
-    return new RestBodyResponse(page.toJSON());
+    return ResponseEntity.ok(result.toString());
   }
 
-  @Endpoint(url = "items", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF items(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key, @RequestParamter(name = "conditions") String conditions)
+  @GetMapping("/get-stac-items")
+  public ResponseEntity<String> getStacItems(@RequestParam(required = false, name = "criteria") String criteria, @RequestParam(name = "pageSize", required = true) Integer pageSize, @RequestParam(name = "pageNumber", required = true) Integer pageNumber)
   {
-    List<TreeComponent> children = this.service.items(request.getSessionId(), id, key, conditions);
+    Page<StacItem> page = this.service.getItems(this.getSessionId(), criteria, pageSize, pageNumber);
+
+    return ResponseEntity.ok(page.toJSON().toString());
+  }
+
+  @GetMapping("/items")
+  public ResponseEntity<String> items(@RequestParam(required = false, name = "id") String id, @RequestParam(required = false, name = "key") String key, @RequestParam(required = false, name = "conditions") String conditions)
+  {
+    List<TreeComponent> children = this.service.items(this.getSessionId(), id, key, conditions);
 
     JSONArray response = SiteItem.serialize(children);
 
-    return new RestBodyResponse(response);
+    return ResponseEntity.ok(response.toString());
   }
 
-  @Endpoint(url = "objects-presigned", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF objectsPresigned(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key, @RequestParamter(name = "pageNumber") Long pageNumber, @RequestParamter(name = "pageSize") Long pageSize)
+  @GetMapping("/objects-presigned")
+  public ResponseEntity<String> objectsPresigned(@RequestParam(required = false, name = "id") String id, @RequestParam(required = false, name = "key") String key, @RequestParam(required = false, name = "pageNumber") Long pageNumber, @RequestParam(required = false, name = "pageSize") Long pageSize)
   {
-    String response = this.service.getObjectsPresigned(request.getSessionId(), id, key, pageNumber, pageSize);
+    String response = this.service.getObjectsPresigned(this.getSessionId(), id, key, pageNumber, pageSize);
 
-    return new RestBodyResponse(response);
+    return ResponseEntity.ok(response);
   }
 
-  @Endpoint(url = "objects", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF objects(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key, @RequestParamter(name = "pageNumber") Long pageNumber, @RequestParamter(name = "pageSize") Long pageSize)
+  @GetMapping("/objects")
+  public ResponseEntity<String> objects(@RequestParam(required = false, name = "id") String id, @RequestParam(required = false, name = "key") String key, @RequestParam(required = false, name = "pageNumber") Long pageNumber, @RequestParam(required = false, name = "pageSize") Long pageSize)
   {
-    String response = this.service.getObjects(request.getSessionId(), id, key, pageNumber, pageSize);
+    String response = this.service.getObjects(this.getSessionId(), id, key, pageNumber, pageSize);
 
-    return new RestBodyResponse(response);
+    return ResponseEntity.ok(response);
   }
 
-  @Endpoint(url = "get-artifacts", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF getArtifacts(ClientRequestIF request, @RequestParamter(name = "id") String id)
+  @GetMapping("/get-artifacts")
+  public ResponseEntity<String> getArtifacts(@RequestParam(required = false, name = "id") String id)
   {
-    JSONArray response = this.service.getArtifacts(request.getSessionId(), id);
+    JSONArray response = this.service.getArtifacts(this.getSessionId(), id);
 
-    return new RestBodyResponse(response);
+    return ResponseEntity.ok(response.toString());
   }
 
-  @Endpoint(url = "remove-artifacts", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF removeArtifacts(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "productName") String productName, @RequestParamter(name = "folder") String folder)
+  @PostMapping("/remove-artifacts")
+  public ResponseEntity<String> removeArtifacts(@RequestBody @Valid EntityArtifactBody body)
   {
-    JSONArray response = this.service.removeArtifacts(request.getSessionId(), id, productName, folder);
+    JSONArray response = this.service.removeArtifacts(this.getSessionId(), body.getId(), body.getProductName(), body.getFolder());
 
-    return new RestBodyResponse(response);
+    return ResponseEntity.ok(response.toString());
   }
 
-  @Endpoint(url = "remove-product", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF removeProduct(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "productName") String productName)
+  @PostMapping("/remove-product")
+  public ResponseEntity<Void> removeProduct(@RequestBody @Valid EntityProductBody body)
   {
-    this.service.removeProduct(request.getSessionId(), id, productName);
+    this.service.removeProduct(this.getSessionId(), body.getId(), body.getProductName());
 
-    return new RestResponse();
+    return ResponseEntity.ok(null);
   }
 
-  @Endpoint(url = "set-primary-product", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF setPrimaryProduct(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "productName") String productName)
+  @PostMapping("/set-primary-product")
+  public ResponseEntity<String> setPrimaryProduct(@RequestBody @Valid EntityProductBody body)
   {
-    this.service.setPrimaryProduct(request.getSessionId(), id, productName);
+    this.service.setPrimaryProduct(this.getSessionId(), body.getId(), body.getProductName());
 
-    return new RestResponse();
+    return ResponseEntity.ok(null);
   }
 
-  @Endpoint(url = "download", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF download(ClientRequestIF request, ServletRequestIF sRequest, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key)
+  @GetMapping("/download")
+  public ResponseEntity<InputStreamResource> download(@RequestParam(required = false, name = "id") String id, @RequestParam(required = false, name = "key") String key, @RequestHeader(name = "Range", required = false) String range)
   {
     // Handle range requests
-    if (sRequest.getHeader("Range") != null)
+    if (!StringUtils.isBlank(range))
     {
-      String range = sRequest.getHeader("Range");
-
       try
       {
-        final List<Range> ranges = Range.decodeRange(range);
-
-        return new RemoteFileGetRangeResponse(this.service.download(request.getSessionId(), id, key, ranges));
+        return this.getRemoteFile(this.service.download(this.getSessionId(), id, key, range));
       }
       catch (InvalidRangeException e)
       {
-        return new ErrorCodeResponse(HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE, "Invalid range [" + e.getRange() + "]");
+        return new ResponseEntity<InputStreamResource>(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
       }
     }
 
-    return new RemoteFileGetResponse(this.service.download(request.getSessionId(), id, key, true));
+    return this.getRemoteFile(this.service.download(this.getSessionId(), id, key, true));
   }
 
-  @Endpoint(url = "downloadProductPreview", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF downloadProductPreview(ClientRequestIF request, ServletRequestIF sRequest, @RequestParamter(name = "productId") String productId, @RequestParamter(name = "artifactName") String artifactName)
+  @GetMapping("/downloadProductPreview")
+  public ResponseEntity<InputStreamResource> downloadProductPreview(@RequestParam(required = false, name = "productId") String productId, @RequestParam(required = false, name = "artifactName") String artifactName)
   {
-    return new InputStreamResponse(this.service.downloadProductPreview(request.getSessionId(), productId, artifactName), "image/png", artifactName + "_preview.png");
+    InputStream istream = this.service.downloadProductPreview(this.getSessionId(), productId, artifactName);
+
+    return ResponseEntity.ok() //
+        .header("Content-Type", "image/png") //
+        .header("Content-Disposition", "attachment; filename=\"" + artifactName + "_preview.png\"") //
+        .body(new InputStreamResource(istream));
   }
 
-  @Endpoint(url = "download-last", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF downloadLast(ClientRequestIF request, ServletRequestIF sRequest, @RequestParamter(name = "id") String id, @RequestParamter(name = "key") String key)
+  @GetMapping("/download-last")
+  public ResponseEntity<InputStreamResource> downloadLast(@RequestParam(required = false, name = "id") String id, @RequestParam(required = false, name = "key") String key)
   {
-    return new RemoteFileGetResponse(this.service.downloadLast(request.getSessionId(), id, key, true));
+    return this.getRemoteFile(this.service.downloadLast(this.getSessionId(), id, key, true));
   }
 
-  @Endpoint(url = "download-file", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF downloadFile(ClientRequestIF request, @RequestParamter(name = "url") String url)
+  @GetMapping("/download-file")
+  public ResponseEntity<InputStreamResource> downloadFile(@RequestParam(required = false, name = "url") String url)
   {
-    return new RemoteFileGetResponse(this.service.proxyRemoteFile(request.getSessionId(), url));
+    return this.getRemoteFile(this.service.proxyRemoteFile(this.getSessionId(), url));
   }
 
-  @Endpoint(url = "features", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF features(ClientRequestIF request, @RequestParamter(name = "conditions") String conditions) throws IOException
+  @GetMapping("/features")
+  public ResponseEntity<String> features(@RequestParam(required = false, name = "conditions") String conditions) throws IOException
   {
-    RestResponse response = new RestResponse();
-    response.set("features", this.service.features(request.getSessionId(), conditions));
-    response.set("bbox", this.service.bbox(request.getSessionId()));
+    JSONObject response = new JSONObject();
+    response.put("features", this.service.features(this.getSessionId(), conditions));
+    response.put("bbox", this.service.bbox(this.getSessionId()));
 
-    return response;
+    return ResponseEntity.ok(response.toString());
   }
 
-  @Endpoint(url = "upload", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF upload(ClientRequestIF request, @RequestParamter(name = "id") String id, @RequestParamter(name = "folder") String folder, @RequestParamter(name = "productName") String productName, @RequestParamter(name = "file") MultipartFileParameter file) throws IOException
+  @PostMapping("/upload-to-product")
+  public ResponseEntity<String> upload(@Valid @ModelAttribute UploadArtifactFileBody body) throws IOException
   {
+    MultipartFile file = body.getFile();
+
     try (InputStream stream = file.getInputStream())
     {
       final BasicFileMetadata metadata = new BasicFileMetadata(file.getContentType(), file.getSize());
-      final String fileName = file.getFilename();
+      final String fileName = file.getOriginalFilename();
 
-      JSONObject response = this.service.putFile(request.getSessionId(), id, folder, productName, fileName, metadata, stream);
+      JSONObject response = this.service.putFile(this.getSessionId(), body.getId(), body.getFolder(), body.getProductName(), fileName, metadata, stream);
 
-      return new RestBodyResponse(response);
+      return ResponseEntity.ok(response.toString());
+    }
+  }
+
+  @PostMapping("/upload-to-folder")
+  public ResponseEntity<String> upload(@Valid @ModelAttribute UploadToFolderBody body) throws IOException
+  {
+    MultipartFile file = body.getFile();
+
+    try (InputStream stream = file.getInputStream())
+    {
+      final BasicFileMetadata metadata = new BasicFileMetadata(file.getContentType(), file.getSize());
+      final String fileName = file.getOriginalFilename();
+
+      JSONObject response = this.service.putFile(this.getSessionId(), body.getId(), body.getFolder(), null, fileName, metadata, stream);
+
+      return ResponseEntity.ok(response.toString());
     }
   }
 }

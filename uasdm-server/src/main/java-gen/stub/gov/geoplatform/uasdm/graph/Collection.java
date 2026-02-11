@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -30,8 +30,10 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ContentType;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -67,6 +69,7 @@ import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
 import gov.geoplatform.uasdm.cog.CogPreviewParams;
 import gov.geoplatform.uasdm.cog.TiTillerProxy;
 import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
+import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentWithAttributes;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -100,6 +103,8 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
   public static final String  EMAIL            = "email";
 
+  public static final String  FORMAT           = "format";
+
   final Logger                log              = LoggerFactory.getLogger(Collection.class);
 
   public Collection()
@@ -116,12 +121,43 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public void apply(boolean regenerateMetadata)
   {
+    boolean hasPIIConcern = this.isModified(UasComponent.HASPIICONCERN) && this.hasPIIConcern();
+
+    if (hasPIIConcern)
+    {
+      this.setIsPrivate(true);
+    }
+
+    if (this.isNew())
+    {
+      this.setMetadataUploaded(false);
+    }
+    else if (this.isModified(UasComponent.ISPRIVATE) && this.isPrivate())
+    {
+      boolean isPublished = this.getProducts().stream().anyMatch(p -> p.isPublished());
+
+      if (isPublished)
+      {
+        GenericException ex = new GenericException();
+        ex.setUserMessage("A collection can not be made private if it has published products");
+        throw ex;
+      }
+    }
+
     if (this.getCollectionEndDate() == null)
     {
       this.setCollectionEndDate(this.getCollectionDate());
     }
 
     super.apply(regenerateMetadata);
+
+    if (this.hasPIIConcern())
+    {
+      this.getProducts().stream().filter(p -> !p.isLocked()).forEach(p -> {
+        p.toggleLock();
+      });
+    }
+
   }
 
   @Override
@@ -134,6 +170,42 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public void appLock()
   {
     // Balk
+  }
+
+  /**
+   * @return All raw "input" documents which may be used for processing, which
+   *         may in practice be imagery, pointclouds, etc.
+   */
+  public List<DocumentIF> getRaw()
+  {
+    return getDocuments().stream()//
+        .filter(doc -> {
+          return doc.getS3location().contains("/raw/");
+        }).filter(doc -> {
+          // Exclude the metadata xml file
+          return !doc.getS3location().endsWith(".xml");
+        }).collect(Collectors.toList());
+  }
+
+  public CollectionFormat getFormat()
+  {
+    if (StringUtils.isBlank(this.getSCollectionFormat()))
+      return null;
+
+    return CollectionFormat.valueOf(this.getSCollectionFormat());
+  }
+
+  public void setFormat(CollectionFormat format)
+  {
+    this.setSCollectionFormat(format == null ? null : format.name());
+  }
+
+  public void setFormat(String format)
+  {
+    if (format != null)
+      CollectionFormat.valueOf(format); // validate
+
+    this.setSCollectionFormat(format);
   }
 
   @Override
@@ -303,8 +375,10 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
 
   @Override
-  public RemoteFileObject download(String key, List<Range> ranges)
+  public RemoteFileObject download(String key, String range)
   {
+    List<Range> ranges = Range.decodeRange(range);
+
     long isStart = ranges.stream().filter(r -> r.getStart().equals(0L)).count();
 
     if (isStart > 0)
@@ -312,7 +386,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       CollectionReportFacade.updateDownloadCount(this).doIt();
     }
 
-    return super.download(key, ranges);
+    return super.download(key, range);
   }
 
   /**
@@ -326,22 +400,6 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public void applyWithParent(UasComponentIF parent)
   {
-    if (this.isNew())
-    {
-      this.setMetadataUploaded(false);
-    }
-    else if (this.isModified(UasComponent.ISPRIVATE) && this.isPrivate())
-    {
-      boolean isPublished = this.getProducts().stream().anyMatch(p -> p.isPublished());
-
-      if (isPublished)
-      {
-        GenericException ex = new GenericException();
-        ex.setUserMessage("A collection can not be made private if it has published products");
-        throw ex;
-      }
-    }
-
     super.applyWithParent(parent);
 
     if (this.isNew())
@@ -665,26 +723,79 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public boolean isMultiSpectral()
   {
+    var format = this.getFormat();
+    if (format != null)
+    {
+      return format.isMultispectral();
+    }
+
+    // Maintain legacy behaviour (before collection format existed)
     return this.getMetadata().map(metadata -> {
       Sensor sensor = metadata.getSensor();
 
-      if (sensor != null)
+      if (sensor == null)
       {
-        SensorType type = sensor.getSensorType();
+        log.error("Metadata missing sensor information");
 
-        if (type.getIsMultispectral())
-        {
-          return true;
-        }
+        return false;
+      }
+
+      List<CollectionFormat> formats = sensor.getCollectionFormats();
+
+      if (formats.contains(CollectionFormat.STILL_MULTISPECTRAL) || formats.contains(CollectionFormat.VIDEO_MULTISPECTRAL))
+      {
+        return true;
+      }
+
+      SensorType type = sensor.getSensorType();
+
+      if (type != null)
+      {
+        return type.getIsMultispectral() != null && type.getIsMultispectral();
+      }
+      else
+      {
+        log.error("Unable to find sensor type for sensor");
       }
 
       return false;
-    }).orElse(false);
+    }).orElseGet(() -> {
+      log.error("Unable to find metadata. Returning false for multispectral");
+
+      return false;
+    });
+  }
+
+  /**
+   * A thermal sensor (such as Workswell) can capture data as either radiometric
+   * or RGB encoded thermal (designed for viewing with the human eye).
+   * Radiometric data is used for scientific purposes, and each pixel does NOT
+   * encode an "RGB" value. It encodes a real measured "radiance" values as
+   * recorded by the sensor. The images also: MUST be tif, and MUST only have a
+   * single band.
+   * 
+   * @return Whether or not the collection includes "radiometric" data used for
+   *         scientific purposes, where the actual pixel values encode
+   *         "radiance" values, NOT RGB data.
+   */
+  @Override
+  public boolean isRadiometric()
+  {
+    var format = this.getFormat();
+    if (format != null)
+      return format.isRadiometric();
+
+    return false;
   }
 
   @Override
   public boolean isLidar()
   {
+    var format = this.getFormat();
+    if (format != null)
+      return format.isLidar();
+
+    // Maintain legacy behaviour (before collection format existed)
     return this.getMetadata().map(metadata -> {
       Sensor sensor = metadata.getSensor();
 

@@ -3,11 +3,15 @@
 ///
 
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { NgClass, NgIf } from '@angular/common';
+import { LocalizeComponent } from '../localize/localize.component';
 
 @Component({
-	selector: 'boolean-field',
-	templateUrl: './boolean-field.component.html',
-	styles: ['.modal-form .holder .check-block .chk-area {margin: 10px 0px 0 0;}']
+    standalone: true,
+    selector: 'boolean-field',
+    templateUrl: './boolean-field.component.html',
+    styles: ['.modal-form .holder .check-block .chk-area {margin: 10px 0px 0 0;}'],
+    imports: [NgClass, NgIf, LocalizeComponent]
 })
 export class BooleanFieldComponent {
 

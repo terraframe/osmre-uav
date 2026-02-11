@@ -27,7 +27,7 @@
   // A standalone window will have the parent set to itself.
   var standalone = (window.parent === window);
 
-  var loginPath = '${pageContext.request.contextPath}' + '/project/management';
+  var loginPath = '${pageContext.request.contextPath}' + '/#/login';
 
   if(standalone)
   {

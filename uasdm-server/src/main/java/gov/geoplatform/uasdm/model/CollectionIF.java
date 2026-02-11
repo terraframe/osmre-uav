@@ -23,6 +23,7 @@ import org.json.JSONObject;
 
 import gov.geoplatform.uasdm.bus.AllPrivilegeType;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
+import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
 
 public interface CollectionIF extends UasComponentIF
 {
@@ -47,6 +48,8 @@ public interface CollectionIF extends UasComponentIF
   public Set<String> getExcludes();
 
   public boolean isMultiSpectral();
+  
+  public boolean isRadiometric();
   
   boolean isLidar();
 
@@ -96,6 +99,12 @@ public interface CollectionIF extends UasComponentIF
 //
 //  public String getWeatherConditions();
 
+  public CollectionFormat getFormat();
+  
+  public void setFormat(CollectionFormat format);
+  
+  public void setFormat(String format);
+  
   public Boolean getHasAllZip();
 
   public void setHasAllZip(Boolean b);

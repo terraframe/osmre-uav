@@ -17,7 +17,7 @@ import { LocalizedValue } from '@shared/model/organization';
 
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class LPGSyncService implements GenericTableService {
 
     constructor(private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService) { }
@@ -90,7 +90,7 @@ export class LPGSyncService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .post<LPGSync>(environment.apiUrl + '/api/labeled-property-graph-synchronization/newInstance', JSON.stringify({}), { headers: headers })
+            .post<LPGSync>(environment.apiUrl + '/api/labeled-property-graph-synchronization/new-instance', JSON.stringify({}), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))

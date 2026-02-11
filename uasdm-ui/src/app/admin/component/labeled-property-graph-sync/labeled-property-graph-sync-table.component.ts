@@ -13,11 +13,15 @@ import { Subject } from 'rxjs';
 import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
 import { LPGSyncService } from '@shared/service/lpg-sync.service';
 import { LPGSync } from '@shared/model/lpg';
+import { NgIf } from '@angular/common';
+import { GenericTableComponent } from '@shared/component/generic-table/generic-table.component';
 
 @Component({
+    standalone: true,
     selector: 'labeled-property-graph-sync-table',
     templateUrl: './labeled-property-graph-sync-table.component.html',
-    styleUrls: ['./labeled-property-graph-sync-table.css']
+    styleUrls: ['./labeled-property-graph-sync-table.css'],
+    imports: [NgIf, GenericTableComponent]
 })
 export class LPGSyncTableComponent implements OnInit {
     bsModalRef: BsModalRef;
@@ -41,7 +45,8 @@ export class LPGSyncTableComponent implements OnInit {
             remove: true,
             view: true,
             create: true,
-            label: 'Synchronization Profile'
+            label: 'Synchronization Profile',
+            sort: { field: 'url', order: 1 },
         }
         this.refresh = new Subject<void>();
     }
@@ -67,7 +72,7 @@ export class LPGSyncTableComponent implements OnInit {
     onRemove(sync: LPGSync): void {
         this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
             animated: true,
-            backdrop: true,
+            backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true,
         });
         this.bsModalRef.content.message = "Are you sure you want to remove the synchronization profile for [" + sync.url + "]";

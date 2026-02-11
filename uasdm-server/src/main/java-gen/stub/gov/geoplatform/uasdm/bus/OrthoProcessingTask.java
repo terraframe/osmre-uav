@@ -31,16 +31,18 @@ import com.runwaysdk.resource.ApplicationFileResource;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.command.ReIndexStacItemCommand;
-import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.odm.ODMStatus;
+import gov.geoplatform.uasdm.processing.GeoreferenceValidator;
 import gov.geoplatform.uasdm.processing.CogTifProcessor;
 import gov.geoplatform.uasdm.processing.CogTifValidator;
 import gov.geoplatform.uasdm.processing.GdalPNGGenerator;
 import gov.geoplatform.uasdm.processing.HillshadeProcessor;
 import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
+import gov.geoplatform.uasdm.processing.GeoreferenceArchiveProcessor;
 import gov.geoplatform.uasdm.processing.PotreeConverterProcessor;
 import gov.geoplatform.uasdm.processing.StatusMonitorIF;
 import gov.geoplatform.uasdm.processing.WorkflowTaskMonitor;
@@ -74,7 +76,7 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
   public void initiate(ApplicationFileResource infile)
   {
     UasComponent component = UasComponent.get(this.getComponent());
-    
+
     Product product = (Product) component.createProductIfNotExist(this.getProductName());
 
     List<DocumentIF> documents = component.getDocuments().stream().filter(doc -> {
@@ -87,23 +89,47 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
 
     if (this.getUploadTarget().equals(ImageryComponent.ORTHO) && this.getProcessOrtho())
     {
-      if (!new CogTifValidator().isValidCog(infile))
+      if (new GeoreferenceValidator().isValid(infile))
       {
-        new CogTifProcessor(ImageryComponent.ORTHO + "/" + infile.getBaseName() + CogTifProcessor.COG_EXTENSION, product, component, monitor).process(infile);
+        new GeoreferenceArchiveProcessor(ImageryComponent.ORTHO + "/" + "gdal_orthophoto.tif", product, component, monitor) //
+            .addDownstream(new CogTifProcessor(ImageryComponent.ORTHO + "/" + "gdal_orthophoto" + CogTifProcessor.COG_EXTENSION, product, component, new WorkflowTaskMonitor(this))) //
+            .addDownstream(new GdalPNGGenerator(ImageryComponent.ORTHO + "/" + "gdal_orthophoto" + ".png", product, component, new WorkflowTaskMonitor(this))) //
+            .process(infile);
       }
+      else
+      {
+        if (!new CogTifValidator().isValidCog(infile))
+        {
+          new CogTifProcessor(ImageryComponent.ORTHO + "/" + infile.getBaseName() + CogTifProcessor.COG_EXTENSION, product, component, monitor).process(infile);
+        }
 
-      new GdalPNGGenerator(ImageryComponent.ORTHO + "/" + infile.getBaseName() + ".png", product, component, monitor).process(infile);
+        new GdalPNGGenerator(ImageryComponent.ORTHO + "/" + infile.getBaseName() + ".png", product, component, monitor).process(infile);
+      }
     }
 
     if (this.getUploadTarget().equals(ImageryComponent.DEM) && this.getProcessDem())
     {
-      if (!new CogTifValidator().isValidCog(infile))
+      if (new GeoreferenceValidator().isValid(infile))
       {
-        new CogTifProcessor(ImageryComponent.DEM + "/dsm" + CogTifProcessor.COG_EXTENSION, product, component, monitor).addDownstream(new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, component, new WorkflowTaskMonitor(this))).process(infile);
+        new GeoreferenceArchiveProcessor(ImageryComponent.DEM + "/" + "gdal_dem.tif", product, component, monitor) //
+            .addDownstream(new CogTifProcessor(ImageryComponent.DEM + "/" + "gdal_dem" + CogTifProcessor.COG_EXTENSION, product, component, new WorkflowTaskMonitor(this)) //
+                .addDownstream(new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, component, new WorkflowTaskMonitor(this)))) //
+            .process(infile);
+
       }
       else
       {
-        new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, component, new WorkflowTaskMonitor(this)).process(infile);
+        if (!new CogTifValidator().isValidCog(infile))
+        {
+          new CogTifProcessor(ImageryComponent.DEM + "/dsm" + CogTifProcessor.COG_EXTENSION, product, component, monitor) //
+              .addDownstream(new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, component, new WorkflowTaskMonitor(this))) //
+              .process(infile);
+        }
+        else
+        {
+          new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, component, new WorkflowTaskMonitor(this)) //
+              .process(infile);
+        }
       }
     }
 
@@ -126,12 +152,12 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
     {
       new ReIndexStacItemCommand(product).doIt();
     }
-    
+
     new GenerateMetadataCommand(component, product, product.getMetadata().orElseThrow()).doIt();
 
     this.appLock();
     this.setStatus(ODMStatus.COMPLETED.getLabel());
-    this.setMessage("Ortho has been processed");
+    this.setMessage("Artifact has been processed");
     this.apply();
   }
 

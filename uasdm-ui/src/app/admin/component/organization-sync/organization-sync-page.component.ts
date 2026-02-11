@@ -5,15 +5,16 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-    selector: 'organization-sync-page',
-    templateUrl: './organization-sync-page.component.html'
+  standalone: true,
+  selector: 'organization-sync-page',
+  templateUrl: './organization-sync-page.component.html'
 })
 export class OrganizationSyncPageComponent implements OnInit {
 
-    constructor() { }
+  constructor() { }
 
-    ngOnInit(): void {
-        
-    }
+  ngOnInit(): void {
+
+  }
 
 }

@@ -14,7 +14,7 @@ import { Organization, OrganizationNode } from "@shared/model/organization";
 import { environment } from 'src/environments/environment';
 import { PageResult } from "@shared/model/page";
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class OrganizationService {
 
     // eslint-disable-next-line no-useless-constructor

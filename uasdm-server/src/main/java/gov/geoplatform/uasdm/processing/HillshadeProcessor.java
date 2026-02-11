@@ -17,8 +17,6 @@ package gov.geoplatform.uasdm.processing;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -27,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.resource.ApplicationFileResource;
 import com.runwaysdk.resource.FileResource;
 
+import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
@@ -46,19 +45,23 @@ public class HillshadeProcessor extends ManagedDocument
   }
 
   @Override
-  public boolean process(ApplicationFileResource res)
+  public ProcessResult process(ApplicationFileResource res)
   {
-    File file = res.getUnderlyingFile();
+    ApplicationFileResource resource = ResourceUtil.getResource(res);
+
+    File file = resource.getUnderlyingFile();
 
     final String basename = FilenameUtils.getBaseName(file.getName());
 
     File hillshade = new File(file.getParent(), basename + "-gdal" + CogTifProcessor.COG_EXTENSION);
 
-    List<String> args = new LinkedList<>(Arrays.asList("gdaldem", "hillshade", file.getAbsolutePath(), hillshade.getAbsolutePath()));
-    args.add("-co");
-    args.add("BIGTIFF=YES");
+    var cmd = AppProperties.getCondaTool("gdaldem");
+    cmd.addAll(Arrays.asList(new String[] { "hillshade", file.getAbsolutePath(), hillshade.getAbsolutePath(), "-co", "BIGTIFF=YES" }));
 
-    boolean success = new SystemProcessExecutor(this.monitor).execute(args.toArray(new String[args.size()]));
+    boolean success = new SystemProcessExecutor(this.monitor)
+        .setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath())
+        .setCommandName("gdaldem")
+        .execute(cmd.toArray(new String[0]));
 
     if (success && hillshade.exists())
     {
@@ -70,6 +73,6 @@ public class HillshadeProcessor extends ManagedDocument
       monitor.addError("Problem occurred generating gdal transform. Hillshade file did not exist.");
     }
 
-    return false;
+    return ProcessResult.fail();
   }
 }

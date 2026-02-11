@@ -21,7 +21,7 @@
   <parent>
     <groupId>gov.osmre.uasdm</groupId>
     <artifactId>uasdm</artifactId>
-    <version>1.3.1-SNAPSHOT</version>
+    <version>1.6.1-SNAPSHOT</version>
   </parent>
   <artifactId>uasdm-server</artifactId>
   <packaging>jar</packaging>
@@ -54,9 +54,37 @@
       <url>https://maven.geo-solutions.it/</url>
     </repository>
   </repositories>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>bom</artifactId>
+        <version>2.40.10</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
+  
   <dependencies>
-	<!-- Spring! -->
+    <!-- https://mvnrepository.com/artifact/software.amazon.awssdk/aws-sdk-java -->
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>aws-sdk-java</artifactId>
+      <version>2.40.10</version>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>s3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>apache-client</artifactId>
+    </dependency>    
+    
+    
+    <!-- Spring! -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
@@ -78,7 +106,7 @@
     <dependency>
       <groupId>com.opencsv</groupId>
       <artifactId>opencsv</artifactId>
-      <version>5.7.1</version>
+      <version>5.12.0</version>
     </dependency>
   
     <dependency>
@@ -215,23 +243,12 @@
       <artifactId>commons-compress</artifactId>
       <version>1.26.1</version>
     </dependency>
-    <dependency>
-	  <groupId>com.amazonaws</groupId>
-	  <artifactId>aws-java-sdk</artifactId>
-	  <version>1.12.734</version>
-	  <exclusions>
-	    <exclusion>
-	      <groupId>com.amazonaws</groupId>
-	      <artifactId>aws-java-sdk-kinesisvideo</artifactId>
-	    </exclusion>
-	  </exclusions>
-    </dependency>
-	<!-- SOLR Dependencies -->
-	
-    <dependency>
+    
+    <!-- SOLR Dependencies -->	
+    <dependency>  
       <groupId>org.apache.solr</groupId>
       <artifactId>solr-solrj</artifactId>
-      <version>9.6.0</version>
+      <version>9.10.0</version>
       <exclusions>
       	<exclusion>
       		<groupId>org.apache.zookeeper</groupId>
@@ -251,7 +268,7 @@
     <dependency>
       <groupId>co.elastic.clients</groupId>
       <artifactId>elasticsearch-java</artifactId>
-      <version>8.12.1</version>
+      <version>8.19.6</version>
     </dependency>
 
     <dependency>
@@ -326,6 +343,13 @@
       <artifactId>jcl-over-slf4j</artifactId>
       <version>1.7.30</version>
     </dependency>
+    
+<!-- https://mvnrepository.com/artifact/me.desair.tus/tus-java-server -->
+<dependency>
+    <groupId>me.desair.tus</groupId>
+    <artifactId>tus-java-server</artifactId>
+    <version>1.0.0-2.1</version>
+</dependency>    
   </dependencies>
 
   <!-- These profiles allow for Maven execution of Runway-SDK's Java Tools, 

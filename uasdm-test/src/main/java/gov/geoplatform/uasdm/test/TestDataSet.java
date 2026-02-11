@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.runwaysdk.ClientSession;
 import com.runwaysdk.business.BusinessFacade;
@@ -138,6 +139,10 @@ abstract public class TestDataSet
   protected ArrayList<TestDocumentInfo>     managedDocuments         = new ArrayList<TestDocumentInfo>();
 
   protected ArrayList<TestUserInfo>         managedUsers             = new ArrayList<TestUserInfo>();
+  
+  protected ArrayList<TestProductInfo>      managedProducts          = new ArrayList<TestProductInfo>();
+  
+  protected ArrayList<TestProcessingRunInfo> managedProcessingRuns   = new ArrayList<TestProcessingRunInfo>();
 
   public ClientSession                      clientSession            = null;
 
@@ -317,8 +322,10 @@ abstract public class TestDataSet
       obj.apply();
     }
 
-    for (TestDocumentInfo obj : managedDocuments)
+    List<TestDocumentInfo> appliedDocs = new ArrayList<TestDocumentInfo>();
+    for (TestProductInfo obj : managedProducts)
     {
+<<<<<<< HEAD
       Document document = obj.apply();
 
       Collection collection = obj.getComponent().getServerObject();
@@ -333,6 +340,21 @@ abstract public class TestDataSet
       {
         product.addDocuments(Arrays.asList(document));
       }
+=======
+      obj.apply();
+      appliedDocs.addAll(obj.getInputDocuments());
+      appliedDocs.addAll(obj.getOutputDocuments());
+    }
+    
+    for (TestProcessingRunInfo obj : managedProcessingRuns)
+    {
+      obj.apply();
+    }
+    
+    for (TestDocumentInfo obj : managedDocuments.stream().filter(d -> !appliedDocs.contains(d)).collect(Collectors.toList()))
+    {
+      obj.apply();
+>>>>>>> refs/remotes/origin/master
     }
   }
 
@@ -367,6 +389,11 @@ abstract public class TestDataSet
   @Transaction
   protected void cleanUpClassInTrans()
   {
+    for (TestUserInfo user : this.getManagedUsers())
+    {
+      user.delete();
+    }
+    
     cleanUpTestInTrans();
   }
 
@@ -391,7 +418,22 @@ abstract public class TestDataSet
   protected void cleanUpTestInTrans()
   {
     deleteAllWorkflowTasks();
-
+    
+    for (TestDocumentInfo doc : managedDocuments)
+    {
+      doc.delete();
+    }
+    
+    for (TestProcessingRunInfo obj : managedProcessingRuns)
+    {
+      obj.delete();
+    }
+    
+    for (TestProductInfo obj : managedProducts)
+    {
+      obj.delete();
+    }
+    
     for (TestCollectionInfo obj : managedCollections)
     {
       obj.delete();
@@ -410,11 +452,6 @@ abstract public class TestDataSet
     for (TestSiteInfo obj : managedSites)
     {
       obj.delete();
-    }
-
-    for (TestUserInfo user : this.getManagedUsers())
-    {
-      user.delete();
     }
 
     for (TestSensorInfo obj : managedSensors)
@@ -436,7 +473,7 @@ abstract public class TestDataSet
     {
       obj.delete();
     }
-
+    
     new CollectionReportQuery(new QueryFactory()).getIterator().forEach(r -> r.delete());
 
     managedSitesExtras = new ArrayList<TestSiteInfo>();

@@ -9,11 +9,23 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Account, User } from '../../model/account';
 
 import { AccountService } from '../../service/account.service';
+import { NgIf, NgFor } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MustMatchDirective } from '@shared/directive/must-match.directive';
+import { LocalizeComponent } from '@shared/component/localize/localize.component';
+import { PhoneNumberValidatorDirective } from '@shared/directive/phone-number.directive';
+import { OrganizationFieldComponent } from '@shared/component/organization-field/organization-field.component';
+import { BooleanFieldComponent } from '@shared/component/boolean-field/boolean-field.component';
+import { PasswordValidatorDirective } from '@shared/directive/password-validator.directive';
+import { PasswordStrengthBarComponent } from '@shared/component/password-strength-bar/password-strength-bar.component';
+import { LocalizePipe } from '@shared/pipe/localize.pipe';
 
 @Component({
-	selector: 'account',
-	templateUrl: './account.component.html',
-	styles: ['.modal-form .check-block .chk-area { margin: 10px 0px 0 0;}']
+    standalone: true,
+    selector: 'account',
+    templateUrl: './account.component.html',
+    styles: ['.modal-form .check-block .chk-area { margin: 10px 0px 0 0;}'],
+    imports: [NgIf, FormsModule, MustMatchDirective, LocalizeComponent, PhoneNumberValidatorDirective, OrganizationFieldComponent, BooleanFieldComponent, PasswordValidatorDirective, PasswordStrengthBarComponent, NgFor, LocalizePipe]
 })
 export class AccountComponent implements OnInit {
 	account: Account;

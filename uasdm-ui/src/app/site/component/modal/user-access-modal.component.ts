@@ -9,12 +9,16 @@ import { ErrorHandler } from '@shared/component';
 
 import { SiteEntity, UserAccess } from '@site/model/management';
 import { UserAccessService } from '@site/service/user-access.service';
+import { FormsModule } from '@angular/forms';
+import { NgFor } from '@angular/common';
 
 
 @Component({
+    standalone: true,
     selector: 'user-access-modal',
     templateUrl: './user-access-modal.component.html',
-    styleUrls: []
+    styleUrls: [],
+    imports: [FormsModule, NgFor]
 })
 export class UserAccessModalComponent {
 

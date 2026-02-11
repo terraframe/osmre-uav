@@ -6,20 +6,27 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { ManagementService } from '@site/service/management.service';
-import { Page } from '../modal/upload-modal.component';
 import { MetadataOptions } from '@site/model/uav';
 import { Observable, Observer } from 'rxjs';
 import { UAVService } from '@site/service/uav.service';
 import { fadeInOnEnterAnimation, fadeOutOnLeaveAnimation } from 'angular-animations';
+import { Page } from '@site/model/management';
+import { COLLECTION_FORMATS, CollectionFormat, CollectionFormatMetadata } from '@site/model/sensor';
+import { NgIf, NgFor } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { BooleanFieldComponent } from '@shared/component/boolean-field/boolean-field.component';
+import { TypeaheadDirective } from 'ngx-bootstrap/typeahead';
 
 @Component({
-	selector: 'metadata-page',
-	templateUrl: './metadata-page.component.html',
-	styleUrls: [],
-	animations: [
-		fadeInOnEnterAnimation(),
-		fadeOutOnLeaveAnimation()
-	]
+    standalone: true,
+    selector: 'metadata-page',
+    templateUrl: './metadata-page.component.html',
+    styleUrls: [],
+    animations: [
+        fadeInOnEnterAnimation(),
+        fadeOutOnLeaveAnimation()
+    ],
+    imports: [NgIf, FormsModule, BooleanFieldComponent, NgFor, TypeaheadDirective]
 })
 export class MetadataPageComponent implements OnInit {
 	/*
@@ -28,6 +35,9 @@ export class MetadataPageComponent implements OnInit {
 	@Input() page: Page;
 
 	@Output() pageChange = new EventEmitter<Page>();
+
+	public COLLECTION_FORMATS = COLLECTION_FORMATS;
+	public collectionFormatMetadatas: CollectionFormatMetadata[] | undefined;
 
 	/* 
 	 * Datasource to get search responses
@@ -71,6 +81,10 @@ export class MetadataPageComponent implements OnInit {
 		}
 	}
 
+	getCollectionFormatLabels(): string {
+		return this.metaObject.sensor.collectionFormats.map(sensorFormat => COLLECTION_FORMATS.find(f => f.value === sensorFormat).label).join(", ");
+	}
+
 	handlePageChange(): void {
 		this.pageChange.emit(this.page);
 	}
@@ -86,11 +100,17 @@ export class MetadataPageComponent implements OnInit {
 				sensor: options.sensor
 			};
 
+			this.collectionFormatMetadatas = this.metaObject.sensor.collectionFormats.map(sensorFormat => COLLECTION_FORMATS.find(f => f.value === sensorFormat));
+
 		}).catch((err: HttpErrorResponse) => {
 			// this.error(err);
 		});
 
 		this.handlePageChange();
+	}
+
+	onCollectionFormatChange(): void {
+		
 	}
 
 	handleUavClick(event: any): void {

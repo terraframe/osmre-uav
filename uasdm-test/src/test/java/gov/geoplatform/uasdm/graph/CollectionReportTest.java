@@ -182,6 +182,7 @@ public class CollectionReportTest extends Area51DataTest
     Assert.assertEquals(Area51DataSet.COLLECTION_FISHBED.getName(), page.getResults().get(0).getCollectionName());
   }
 
+<<<<<<< HEAD
 //  @Test
 //  @Request
 //  public void testExportCSVWithSort() throws IOException, CsvException
@@ -234,6 +235,60 @@ public class CollectionReportTest extends Area51DataTest
 //    }
 //
 //  }
+=======
+  @Test
+  @Request
+  public void testExportCSVWithSort() throws IOException, CsvException
+  {
+    CollectionReport report = this.get();
+
+    JSONObject criteria = new JSONObject();
+    criteria.put("sortField", CollectionReport.COLLECTIONNAME);
+    criteria.put("sortOrder", 0);
+
+    try (InputStream istream = CollectionReport.exportCSV(criteria))
+    {
+      Assert.assertNotNull(istream);
+
+      CSVReader reader = new CSVReader(new InputStreamReader(istream));
+
+      List<String[]> lines = reader.readAll();
+
+      Assert.assertEquals(2, lines.size());
+
+      String[] line = lines.get(1);
+
+      int col = 0;
+
+      Assert.assertEquals(report.getCollectionName(), line[col++]);
+      Assert.assertEquals(report.getUserName(), line[col++]);
+      Assert.assertNotNull(line[col++]);
+      Assert.assertEquals(report.getMissionName(), line[col++]);
+      Assert.assertEquals(report.getProjectName(), line[col++]);
+      Assert.assertEquals(report.getSiteName(), line[col++]);
+      Assert.assertNotNull(line[col++]);
+      Assert.assertNotNull(line[col++]);
+      Assert.assertEquals(report.getBureauName(), line[col++]);
+      Assert.assertEquals(report.getPlatformName(), line[col++]);
+      Assert.assertEquals(report.getSensorName(), line[col++]);
+      Assert.assertEquals(report.getFaaIdNumber(), line[col++]);
+      Assert.assertEquals(report.getSerialNumber(), line[col++]);
+//      Assert.assertEquals(report.getOdmProcessing(), line[col++]);
+      Assert.assertEquals(report.getRawImagesCount().toString(), line[col++]);
+      Assert.assertEquals(report.getErosMetadataComplete().toString(), line[col++]);
+      Assert.assertEquals(report.getVideo().toString(), line[col++]);
+//      Assert.assertEquals(report.getOrthomosaic().toString(), line[col++]);
+//      Assert.assertEquals(report.getPointCloud().toString(), line[col++]);
+//      Assert.assertEquals(report.getHillshade().toString(), line[col++]);
+//      Assert.assertEquals(report.getProductsShared().toString(), line[col++]);
+      Assert.assertEquals(report.getAllStorageSize().toString(), line[col++]);
+      Assert.assertEquals(report.getDownloadCounts().toString(), line[col++]);
+      Assert.assertNotNull(line[col++]);
+      Assert.assertNotNull(line[col++]);
+    }
+
+  }
+>>>>>>> refs/remotes/origin/master
 
   @Test
   @Request

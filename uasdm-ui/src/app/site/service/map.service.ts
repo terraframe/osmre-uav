@@ -29,7 +29,7 @@ export interface TileJson {
     version: string
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class MapService {
 
     constructor(private http: HttpClient, private configuration: ConfigurationService) {
@@ -42,7 +42,7 @@ export class MapService {
         }
 
         return this.http
-            .get<{ features: GeoJSONSource, bbox: number[] }>(environment.apiUrl + '/project/features', { params: params })
+            .get<{ features: GeoJSONSource, bbox: number[] }>(environment.apiUrl + '/api/project/features', { params: params })
             .toPromise()
     }
 

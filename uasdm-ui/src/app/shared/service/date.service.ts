@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 
 import { LocalizationService } from './localization.service';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class DateService {
   overlapMessage = { 
     "type": "ERROR",  

@@ -14,7 +14,7 @@ import { environment } from 'src/environments/environment';
 
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ProductService {
 
 	constructor(private http: HttpClient, private eventService: EventService) { }
@@ -23,7 +23,7 @@ export class ProductService {
 		let params: HttpParams = new HttpParams();
 		params = params.set('criteria', JSON.stringify(criteria));
 
-		return this.http.get<CollectionProductView[]>(environment.apiUrl + '/product/get-all', { params: params }).toPromise();
+		return this.http.get<CollectionProductView[]>(environment.apiUrl + '/api/product/get-all', { params: params }).toPromise();
 	}
 
 	getDetail(id: string, pageNumber: number, pageSize: number): Promise<ProductDetail> {
@@ -35,7 +35,7 @@ export class ProductService {
 		this.eventService.start();
 
 		return this.http
-			.get<ProductDetail>(environment.apiUrl + '/product/detail', { params: params })
+			.get<ProductDetail>(environment.apiUrl + '/api/product/detail', { params: params })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -49,7 +49,7 @@ export class ProductService {
 		this.eventService.start();
 
 		return this.http
-			.get<string[]>(environment.apiUrl + '/product/mappable-items', { params: params })
+			.get<string[]>(environment.apiUrl + '/api/product/mappable-items', { params: params })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -66,7 +66,7 @@ export class ProductService {
 		this.eventService.start();
 
 		return this.http
-			.post<void>(environment.apiUrl + '/product/remove', JSON.stringify({ id: id }), { headers: headers })
+			.post<void>(environment.apiUrl + '/api/product/remove', JSON.stringify({ id: id }), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -82,7 +82,7 @@ export class ProductService {
 		this.eventService.start();
 
 		return this.http
-			.post<ProductDetail>(environment.apiUrl + '/product/toggle-publish', JSON.stringify({ id: id }), { headers: headers })
+			.post<ProductDetail>(environment.apiUrl + '/api/product/toggle-publish', JSON.stringify({ id: id }), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -98,7 +98,7 @@ export class ProductService {
 		this.eventService.start();
 
 		return this.http
-			.post<void>(environment.apiUrl + '/product/toggle-lock', JSON.stringify({ id: id }), { headers: headers })
+			.post<void>(environment.apiUrl + '/api/product/toggle-lock', JSON.stringify({ id: id }), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -119,7 +119,7 @@ export class ProductService {
 		};
 
 		return this.http
-			.post<Product>(environment.apiUrl + '/product/create', JSON.stringify(params), { headers: headers })
+			.post<Product>(environment.apiUrl + '/api/product/create', JSON.stringify(params), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))

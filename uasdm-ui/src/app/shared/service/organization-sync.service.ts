@@ -16,7 +16,7 @@ import { OrganizationSync } from '@shared/model/organization';
 
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class OrganizationSyncService implements GenericTableService {
 
     constructor(private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService) { }
@@ -62,7 +62,7 @@ export class OrganizationSyncService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .post<OrganizationSync>(environment.apiUrl + '/api/organization-synchronization/newInstance', JSON.stringify({}), { headers: headers })
+            .post<OrganizationSync>(environment.apiUrl + '/api/organization-synchronization/new-instance', JSON.stringify({}), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))

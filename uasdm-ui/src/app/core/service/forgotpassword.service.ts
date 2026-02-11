@@ -10,10 +10,11 @@ import { finalize } from 'rxjs/operators';
 
 import { EventService } from '@shared/service/event.service'
 import { environment } from 'src/environments/environment';
+import { firstValueFrom } from 'rxjs';
 
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ForgotPasswordService {
 
 	constructor(private http: HttpClient, private eventService: EventService) { }
@@ -25,12 +26,12 @@ export class ForgotPasswordService {
 
 		this.eventService.start();
 
-		return this.http
+		return firstValueFrom(this.http
 			.post<void>(environment.apiUrl + '/api/forgotpassword/initiate', username, { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
-			.toPromise();
+		);
 	}
 
 	complete(newPassword: string, token: string): Promise<void> {
@@ -40,11 +41,11 @@ export class ForgotPasswordService {
 
 		this.eventService.start();
 
-		return this.http
+		return firstValueFrom(this.http
 			.post<void>(environment.apiUrl + '/api/forgotpassword/complete', JSON.stringify({ newPassword: newPassword, token: token }), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
-			.toPromise();
+		);
 	}
 }

@@ -21,3 +21,62 @@
 .task-badge.double-digit {
   padding: 5px 5px;
 }
+
+
+.user-indicator > p {
+  margin: 0;
+  margin-right: 20px;
+  line-height: 144px;
+}
+
+.navbar.navbar-grey {
+    background-color: #D7BD0C;
+    background-color: var(--theme-primary-color);
+    /* height: 144px; */
+    border-radius: 0;
+    border: none;
+    margin-bottom: 0;
+}
+
+
+.dropdown-menu {
+  font-size: 18px;
+}
+.dropdown-menu>li>a:hover, 
+.dropdown-menu>li>a:focus {
+    background: #D7BD0C; 
+    background: var(--theme-primary-color-hover);
+    color:white;
+}
+
+.dropdown-item:hover {
+    color:white;
+}
+.dropdown-menu>.active>a, 
+.dropdown-menu>.active>a:focus, 
+.dropdown-menu>.active>a:hover {
+    background: #007276; 
+    background: var(--theme-primary-color-hover);
+    color:white;
+}
+
+.header-help {
+  font-size: 0.9rem;
+  color: #3f3f3f;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.header-help:hover {
+  color: black;
+  background: rgba(0,0,0,0.08);
+  border-radius: 25px;
+}
+
+
+
+
+
+

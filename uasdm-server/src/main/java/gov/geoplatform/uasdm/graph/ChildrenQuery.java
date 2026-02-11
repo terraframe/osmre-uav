@@ -167,7 +167,7 @@ public class ChildrenQuery
     }
 
     this.processFromClause(cObject, buckets);
-
+    
     for (int i = 0; i < buckets.size(); i++)
     {
       QueryBucket bucket = buckets.get(i);
@@ -351,8 +351,11 @@ public class ChildrenQuery
     SessionIF session = Session.getCurrentSession();
 
     if (session == null || ! session.userHasRole(RoleConstants.ADMIN)) {
+      boolean lastBucketHasCondition = buckets.size() > 0 ? buckets.get(buckets.size()-1).conditions.length() > 0 : false;
+      statement.append(lastBucketHasCondition ? " AND" : " WHERE");
+      
       // Add the filter where clause
-      statement.append(" WHERE " + privateAttribute.getColumnName() + " = :isPrivate");
+      statement.append(" " + privateAttribute.getColumnName() + " = :isPrivate");
       statement.append(" OR " + privateAttribute.getColumnName() + " IS NULL");
   
       if (session != null)

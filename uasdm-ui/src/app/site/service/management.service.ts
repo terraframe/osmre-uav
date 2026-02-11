@@ -4,7 +4,7 @@
 
 import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 
 // import 'rxjs/add/operator/toPromise';
 import { finalize, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
@@ -13,17 +13,18 @@ import { AuthService } from '@shared/service/auth.service';
 import { EventService } from '@shared/service/event.service';
 import { HttpBackendClient } from '@shared/service/http-backend-client.service';
 
-import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet, TaskGroup, Selection, CollectionArtifacts, ODMRun, ProcessConfig } from '../model/management';
+import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet, TaskGroup, Selection, CollectionArtifacts, ProcessConfig } from '../model/management';
 import { Sensor } from '../model/sensor';
 import { Platform } from '../model/platform';
 import { PageResult } from '@shared/model/page';
 import { Criteria, StacItem } from '@site/model/layer';
 import { environment } from 'src/environments/environment';
 import { MetadataResponse } from '@site/model/uav';
+import { ODMRun } from '@site/model/odmrun';
 
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ManagementService {
 
 	constructor(private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService, private authService: AuthService) { }
@@ -34,7 +35,7 @@ export class ManagementService {
 
 
 		return this.http
-			.get<SiteEntity[]>(environment.apiUrl + '/project/get-children', { params: params })
+			.get<SiteEntity[]>(environment.apiUrl + '/api/project/get-children', { params: params })
 			.toPromise()
 	}
 
@@ -56,7 +57,7 @@ export class ManagementService {
 		let method = presigned ? "objects-presigned" : "objects";
 
 		return this.http
-			.get<SiteObjectsResultSet>(environment.apiUrl + '/project/' + method, { params: params })
+			.get<SiteObjectsResultSet>(environment.apiUrl + '/api/project/' + method, { params: params })
 			.toPromise()
 	}
 
@@ -67,7 +68,7 @@ export class ManagementService {
 		this.eventService.start();
 
 		return this.http
-			.get<{ breadcrumbs: SiteEntity[], item: SiteEntity }>(environment.apiUrl + '/project/view', { params: params })
+			.get<{ breadcrumbs: SiteEntity[], item: SiteEntity }>(environment.apiUrl + '/api/project/view', { params: params })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -90,7 +91,7 @@ export class ManagementService {
 
 
 		return this.http
-			.get<SiteEntity[]>(environment.apiUrl + '/project/items', { params: params })
+			.get<SiteEntity[]>(environment.apiUrl + '/api/project/items', { params: params })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -102,7 +103,7 @@ export class ManagementService {
 		params = params.set('id', id);
 
 		return this.http
-			.get<CollectionArtifacts[]>(environment.apiUrl + '/project/get-artifacts', { params: params })
+			.get<CollectionArtifacts[]>(environment.apiUrl + '/api/project/get-artifacts', { params: params })
 			.toPromise()
 	}
 
@@ -120,7 +121,7 @@ export class ManagementService {
 		this.eventService.start();
 
 		return this.http
-			.post<CollectionArtifacts>(environment.apiUrl + '/project/remove-artifacts', JSON.stringify(params), { headers: headers })
+			.post<CollectionArtifacts>(environment.apiUrl + '/api/project/remove-artifacts', JSON.stringify(params), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -140,7 +141,7 @@ export class ManagementService {
 		this.eventService.start();
 
 		return this.http
-			.post<void>(environment.apiUrl + '/project/remove-product', JSON.stringify(params), { headers: headers })
+			.post<void>(environment.apiUrl + '/api/project/remove-product', JSON.stringify(params), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -160,7 +161,7 @@ export class ManagementService {
 		this.eventService.start();
 
 		return this.http
-			.post<void>(environment.apiUrl + '/project/set-primary-product', JSON.stringify(params), { headers: headers })
+			.post<void>(environment.apiUrl + '/api/project/set-primary-product', JSON.stringify(params), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -172,7 +173,7 @@ export class ManagementService {
 		params = params.set('collectionId', collectionId);
 
 		return this.http
-			.get<ProcessConfig>(environment.apiUrl + '/project/get-default-run-config', { params: params })
+			.get<ProcessConfig>(environment.apiUrl + '/api/project/get-default-run-config', { params: params })
 			.toPromise()
 	}
 
@@ -181,7 +182,7 @@ export class ManagementService {
 		params = params.set('artifactId', artifactId);
 
 		return this.http
-			.get<ODMRun>(environment.apiUrl + '/product/get-odm-run', { params: params })
+			.get<ODMRun>(environment.apiUrl + '/api/product/get-odm-run', { params: params })
 			.toPromise()
 	}
 
@@ -190,16 +191,16 @@ export class ManagementService {
 		params = params.set('taskId', taskId);
 
 		return this.http
-			.get<ProcessConfig>(environment.apiUrl + '/project/get-configuration-by-task', { params: params })
+			.get<ProcessConfig>(environment.apiUrl + '/api/project/get-configuration-by-task', { params: params })
 			.toPromise()
 	}
 
 	getODMRunByTask(taskId: string): Promise<ODMRun> {
 		let params: HttpParams = new HttpParams();
 		params = params.set('taskId', taskId);
- 
+
 		return this.http
-			.get<ODMRun>(environment.apiUrl + '/project/get-odm-run-by-task', { params: params })
+			.get<ODMRun>(environment.apiUrl + '/api/project/get-odm-run-by-task', { params: params })
 			.toPromise()
 	}
 
@@ -220,7 +221,7 @@ export class ManagementService {
 
 
 		return this.http
-			.get<SiteEntity[]>(environment.apiUrl + '/project/roots', { params: params })
+			.get<SiteEntity[]>(environment.apiUrl + '/api/project/roots', { params: params })
 			.toPromise()
 	}
 
@@ -233,7 +234,7 @@ export class ManagementService {
 		this.eventService.start();
 
 		return this.http
-			.post<{ item: SiteEntity, attributes: AttributeType[] }>(environment.apiUrl + '/project/edit', JSON.stringify({ id: id }), { headers: headers })
+			.post<{ item: SiteEntity, attributes: AttributeType[] }>(environment.apiUrl + '/api/project/edit', JSON.stringify({ id: id }), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -249,7 +250,7 @@ export class ManagementService {
 		this.eventService.start();
 
 		return this.http
-			.post<SiteEntity>(environment.apiUrl + '/project/set-exclude', JSON.stringify({ id: id, exclude: exclude }), { headers: headers })
+			.post<SiteEntity>(environment.apiUrl + '/api/project/set-exclude', JSON.stringify({ id: id, exclude: exclude }), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -270,7 +271,7 @@ export class ManagementService {
 		};
 
 		return this.http
-			.post<{ item: SiteEntity, attributes: AttributeType[] }>(environment.apiUrl + '/project/run-process', JSON.stringify(params), { headers: headers })
+			.post<{ item: SiteEntity, attributes: AttributeType[] }>(environment.apiUrl + '/api/project/run-process', JSON.stringify(params), { headers: headers })
 			.pipe(finalize(() => {
 				//				this.eventService.complete();
 			}))
@@ -286,7 +287,7 @@ export class ManagementService {
 		this.eventService.start();
 
 		return this.noErrorHttpClient
-			.post<SiteEntity>(environment.apiUrl + '/project/update', JSON.stringify({ entity: entity }), { headers: headers })
+			.post<SiteEntity>(environment.apiUrl + '/api/project/update', JSON.stringify({ entity: entity }), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -295,7 +296,7 @@ export class ManagementService {
 
 	newChild(parentId: string, type: string): Promise<{ item: SiteEntity, attributes: AttributeType[] }> {
 
-		let url = '/project/new-default-child';
+		let url = '/api/project/new-default-child';
 
 		let headers = new HttpHeaders({
 			'Content-Type': 'application/json'
@@ -310,7 +311,7 @@ export class ManagementService {
 		if (type) {
 			params.type = type;
 
-			url = '/project/new-child';
+			url = '/api/project/new-child';
 		}
 
 
@@ -344,7 +345,7 @@ export class ManagementService {
 		this.eventService.start();
 
 		return this.noErrorHttpClient
-			.post<SiteEntity>(environment.apiUrl + '/project/apply-with-parent', JSON.stringify(params), { headers: headers })
+			.post<SiteEntity>(environment.apiUrl + '/api/project/apply-with-parent', JSON.stringify(params), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -385,7 +386,7 @@ export class ManagementService {
 		this.eventService.start();
 
 		return this.http
-			.post<void>(environment.apiUrl + '/project/remove', JSON.stringify({ id: id }), { headers: headers })
+			.post<void>(environment.apiUrl + '/api/project/remove', JSON.stringify({ id: id }), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -401,7 +402,7 @@ export class ManagementService {
 		this.eventService.start();
 
 		return this.http
-			.post<void>(environment.apiUrl + '/project/removeObject', JSON.stringify({ id: componentId, key: key }), { headers: headers })
+			.post<void>(environment.apiUrl + '/api/project/removeObject', JSON.stringify({ id: componentId, key: key }), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -417,7 +418,7 @@ export class ManagementService {
 		this.eventService.start();
 
 		return this.http
-			.post<void>(environment.apiUrl + '/project/remove-upload-task', JSON.stringify({ uploadId: uploadId }), { headers: headers })
+			.post<void>(environment.apiUrl + '/api/project/remove-upload-task', JSON.stringify({ uploadId: uploadId }), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -433,21 +434,21 @@ export class ManagementService {
 		this.eventService.start();
 
 		return this.http
-			.post<void>(environment.apiUrl + '/project/remove-task', JSON.stringify({ taskId: taskId }), { headers: headers })
+			.post<void>(environment.apiUrl + '/api/project/remove-task', JSON.stringify({ taskId: taskId }), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
 			.toPromise()
 	}
 
-	upload(id: string, productName: string, folder: string, file: File, fileName: string = null): Promise<Document> {
+	uploadToProduct(id: string, productName: string, folder: string, file: File, fileName: string = null): Promise<Document> {
 
 		this.eventService.start();
 
 		const formData = new FormData()
 
 		if (fileName == null) {
-			formData.append('file', file);
+			formData.append('file', file, file.name);
 		} else {
 			formData.append('file', file, fileName);
 		}
@@ -458,12 +459,34 @@ export class ManagementService {
 			formData.append('productName', productName);
 		}
 
-		return this.http.post<Document>(environment.apiUrl + '/project/upload', formData)
+		return this.http.post<Document>(environment.apiUrl + '/api/project/upload-to-product', formData)
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
 			.toPromise();
 	}
+
+	uploadToFolder(id: string, folder: string, file: File, fileName: string = null): Promise<Document> {
+
+		this.eventService.start();
+
+		const formData = new FormData()
+
+		if (fileName == null) {
+			formData.append('file', file, file.name);
+		} else {
+			formData.append('file', file, fileName);
+		}
+		formData.append('id', id);
+		formData.append('folder', folder);
+
+		return this.http.post<Document>(environment.apiUrl + '/api/project/upload-to-folder', formData)
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+			.toPromise();
+	}
+
 
 	tasks(statuses: string[], pageSize: number, pageNumber: number, token: number): Promise<PageResult<TaskGroup>> {
 
@@ -477,7 +500,7 @@ export class ManagementService {
 		this.eventService.start();
 
 		return this.http
-			.get<PageResult<TaskGroup>>(environment.apiUrl + '/project/tasks', { params: params })
+			.get<PageResult<TaskGroup>>(environment.apiUrl + '/api/project/tasks', { params: params })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -496,7 +519,7 @@ export class ManagementService {
 		}
 
 		return this.http
-			.get<Task[]>(environment.apiUrl + '/project/component-tasks', { params: params })
+			.get<Task[]>(environment.apiUrl + '/api/project/component-tasks', { params: params })
 			.toPromise()
 	}
 
@@ -506,19 +529,10 @@ export class ManagementService {
 		params = params.set('id', id);
 
 		return this.http
-			.get<{ messages: Message[], task: Task }>(environment.apiUrl + '/project/task', { params: params })
+			.get<{ messages: Message[], task: Task }>(environment.apiUrl + '/api/project/task', { params: params })
 			.toPromise();
 	}
 
-	getUploadTask(uploadId: string): Promise<Task> {
-
-		let params: HttpParams = new HttpParams();
-		params = params.set('uploadId', uploadId);
-
-		return this.http
-			.get<Task>(environment.apiUrl + '/project/get-upload-task', { params: params })
-			.toPromise();
-	}
 
 
 
@@ -528,7 +542,7 @@ export class ManagementService {
 		params = params.set('pageSize', pageSize.toString());
 		params = params.set('pageNumber', pageNumber.toString());
 
-		return this.http.get<PageResult<Message>>(environment.apiUrl + '/project/get-messages', { params: params })
+		return this.http.get<PageResult<Message>>(environment.apiUrl + '/api/project/get-messages', { params: params })
 			.toPromise();
 	}
 
@@ -558,7 +572,7 @@ export class ManagementService {
 			this.eventService.start();
 		}
 
-		return this.noErrorHttpClient.get<Blob>(environment.apiUrl + '/project/download', { params: params, responseType: 'blob' as 'json' })
+		return this.noErrorHttpClient.get<Blob>(environment.apiUrl + '/api/project/download', { params: params, responseType: 'blob' as 'json' })
 			.pipe(finalize(() => {
 				if (useSpinner) {
 					this.eventService.complete();
@@ -576,7 +590,7 @@ export class ManagementService {
 			this.eventService.start();
 		}
 
-		return this.noErrorHttpClient.get<Blob>(environment.apiUrl + '/project/downloadProductPreview', { params: params, responseType: 'blob' as 'json' })
+		return this.noErrorHttpClient.get<Blob>(environment.apiUrl + '/api/project/downloadProductPreview', { params: params, responseType: 'blob' as 'json' })
 			.pipe(finalize(() => {
 				if (useSpinner) {
 					this.eventService.complete();
@@ -593,7 +607,7 @@ export class ManagementService {
 			this.eventService.start();
 		}
 
-		return this.noErrorHttpClient.get<Blob>(environment.apiUrl + '/project/download-file', { params: params, responseType: 'blob' as 'json' })
+		return this.noErrorHttpClient.get<Blob>(environment.apiUrl + '/api/project/download-file', { params: params, responseType: 'blob' as 'json' })
 			.pipe(finalize(() => {
 				if (useSpinner) {
 					this.eventService.complete();
@@ -612,7 +626,7 @@ export class ManagementService {
 			this.eventService.start();
 		}
 
-		return this.noErrorHttpClient.get<Blob>(environment.apiUrl + '/project/download-all', { params: params, responseType: 'blob' as 'json' })
+		return this.noErrorHttpClient.get<Blob>(environment.apiUrl + '/api/project/download-all', { params: params, responseType: 'blob' as 'json' })
 			.pipe(finalize(() => {
 				if (useSpinner) {
 					this.eventService.complete();
@@ -633,7 +647,7 @@ export class ManagementService {
 		params = params.set('term', term);
 
 		return this.http
-			.get<string>(environment.apiUrl + '/project/search', { params: params })
+			.get<string>(environment.apiUrl + '/api/project/search', { params: params })
 	}
 
 	searchEntites(term: string): Promise<any> {
@@ -642,7 +656,18 @@ export class ManagementService {
 		params = params.set('term', term);
 
 		return this.http
-			.get(environment.apiUrl + '/project/search', { params: params })
+			.get(environment.apiUrl + '/api/project/search', { params: params })
+			.toPromise()
+	}
+
+	estimateRuntime(collectionId: string, configJson: any): Promise<any> {
+
+		let params: HttpParams = new HttpParams();
+		params = params.set('collectionId', collectionId);
+		params = params.set('configJson', JSON.stringify(configJson));
+
+		return this.http
+			.get(environment.apiUrl + '/api/odmrun/estimateRuntime', { params: params })
 			.toPromise()
 	}
 
@@ -655,7 +680,7 @@ export class ManagementService {
 		this.eventService.start();
 
 		return this.http
-			.post<void>(environment.apiUrl + '/project/apply-metadata', JSON.stringify({ selection: selection }), { headers: headers })
+			.post<void>(environment.apiUrl + '/api/project/apply-metadata', JSON.stringify({ selection: selection }), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -671,7 +696,7 @@ export class ManagementService {
 		this.eventService.start();
 
 		return this.http
-			.post<{ oid: string }>(environment.apiUrl + '/project/create-collection', JSON.stringify({ selections: selections }), { headers: headers })
+			.post<{ oid: string }>(environment.apiUrl + '/api/project/create-collection', JSON.stringify({ selections: selections }), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -686,7 +711,7 @@ export class ManagementService {
 		this.eventService.start();
 
 		return this.http
-			.post<{ oid: string }>(environment.apiUrl + '/project/create-standalone-product-group', JSON.stringify({ "productGroup": productGroup }), { headers: headers })
+			.post<{ oid: string }>(environment.apiUrl + '/api/project/create-standalone-product-group', JSON.stringify({ "productGroup": productGroup }), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -722,7 +747,7 @@ export class ManagementService {
 		}
 
 		return this.noErrorHttpClient
-			.get<MetadataResponse>(environment.apiUrl + '/project/metadata-options', { params: params })
+			.get<MetadataResponse>(environment.apiUrl + '/api/project/metadata-options', { params: params })
 			.toPromise()
 	}
 
@@ -733,7 +758,7 @@ export class ManagementService {
 		params = params.set('sensorId', sensorId);
 
 		return this.noErrorHttpClient
-			.get<{ uav: any, sensor: any }>(environment.apiUrl + '/project/uav-metadata', { params: params })
+			.get<{ uav: any, sensor: any }>(environment.apiUrl + '/api/project/uav-metadata', { params: params })
 			.toPromise()
 	}
 
@@ -741,6 +766,9 @@ export class ManagementService {
 	evaluate(condition: Condition, entity: SiteEntity): boolean {
 		if (condition != null && condition.type === 'eq') {
 			return (entity[condition.name] === condition.value);
+		}
+		else if (condition != null && condition.type === 'eqn') {
+			return (entity[condition.name] === condition.value || entity[condition.name] == null);
 		}
 		else if (condition != null && condition.type === 'admin') {
 			return this.authService.isAdmin();
@@ -764,7 +792,7 @@ export class ManagementService {
 		params = params.set('filters', JSON.stringify(filters));
 
 		return this.http
-			.get(environment.apiUrl + '/project/get-totals', { params: params })
+			.get(environment.apiUrl + '/api/project/get-totals', { params: params })
 			.toPromise()
 	}
 
@@ -776,7 +804,53 @@ export class ManagementService {
 		params = params.set('pageNumber', pageNumber.toString());
 
 		return this.http
-			.get<PageResult<StacItem>>(environment.apiUrl + '/project/get-stac-items', { params: params })
+			.get<PageResult<StacItem>>(environment.apiUrl + '/api/project/get-stac-items', { params: params })
 			.toPromise()
 	}
+
+	getUploadTask(uploadUrl: string): Promise<Task> {
+
+		let params: HttpParams = new HttpParams();
+		params = params.set('uploadUrl', uploadUrl);
+
+		return firstValueFrom(this.noErrorHttpClient
+			.get<Task>(environment.apiUrl + '/api/upload/get-task', { params: params }));
+	}
+
+	removeUpload(uploadUrl: string): Promise<void> {
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
+
+		const params = {
+			uploadUrl: uploadUrl,
+		};
+
+		this.eventService.start();
+
+		return firstValueFrom(this.http
+			.post<void>(environment.apiUrl + '/api/upload/remove-upload', JSON.stringify(params), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			})));
+	}
+
+	cancelUploadTask(uploadId: string): Promise<void> {
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
+
+		const params = {
+			uploadId: uploadId,
+		};
+
+		this.eventService.start();
+
+		return firstValueFrom(this.http
+			.post<void>(environment.apiUrl + '/api/project/cancel-task', JSON.stringify(params), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			})));
+	}
+
 }

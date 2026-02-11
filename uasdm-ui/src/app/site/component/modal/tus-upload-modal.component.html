@@ -1,0 +1,294 @@
+<!--
+
+
+
+-->
+<form #myForm="ngForm">
+  <div class="modal-header">
+    <h5 class="modal-title text-center">Upload</h5>
+  </div>
+  <div class="modal-body container-fluid" tabindex="-1" role="dialog">
+    <div *ngIf="message != null && message.length > 0" class="row error-container">
+      <div class="col-md-1"></div>
+      <div class="col-md-10">
+        <div class="label-holder">
+          <strong style="color:#8c0000;">Error</strong>
+        </div>
+        <div class="holder">
+          <div>
+            <p class="error-message">{{message}}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-1"></div>
+    </div>
+    <ng-container *ngIf="!existingTask && metadata != null && uploadTarget !== 'raw'">
+
+      <ng-container *ngIf="uploadTarget === 'ortho'">
+        <div [@fadeInOnEnter] class="row">
+          <div class="col-md-1"></div>
+          <div class="col-md-10">
+            <div class="form-group">
+              <boolean-field [(value)]="metadata.processOrtho" label="Process upload"></boolean-field>
+            </div>
+          </div>
+        </div>
+        <div [@fadeInOnEnter] class="row">
+          <div class="col-md-1"></div>
+          <div class="col-md-10">
+            <div class="form-group">
+              <label for="orthoCorrectionModel">Ortho Correction Model</label>
+              <select [(ngModel)]="metadata.orthoCorrectionModel" name="orthoCorrectionModel" class="form-control">
+                <option></option>
+                <option value="DSM">DSM</option>
+                <option value="DTM">DTM</option>
+                <option value="unknown">Unknown</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <div [@fadeInOnEnter] *ngIf="uploadTarget === 'dem'" class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+          <div class="form-group">
+            <boolean-field [(value)]="metadata.processDem" label="Process upload"></boolean-field>
+          </div>
+        </div>
+      </div>
+
+      <ng-container *ngIf="uploadTarget === 'ptcloud'">
+        <div [@fadeInOnEnter] class="row">
+          <div class="col-md-1"></div>
+          <div class="col-md-10">
+            <div class="form-group">
+              <boolean-field [(value)]="metadata.processPtcloud" label="Enable Potree viewer for point cloud">
+              </boolean-field>
+            </div>
+          </div>
+        </div>
+        <div [@fadeInOnEnter] class="row">
+          <div class="col-md-1"></div>
+          <div class="col-md-10">
+            <div class="form-group">
+              <label for="ptEpsg">Point Cloud EPSG Number</label>
+              <input [(ngModel)]="metadata.ptEpsg" name="ptEpsg" type="number" step="1" min="0" class="form-control" />
+            </div>
+          </div>
+        </div>
+        <div [@fadeInOnEnter] class="row">
+          <div class="col-md-1"></div>
+          <div class="col-md-10">
+            <div class="form-group">
+              <label for="projectionName">Point Cloud Projection Name</label>
+              <input [(ngModel)]="metadata.projectionName" name="projectionName" type="text" class="form-control"
+                placeholder="" />
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <div [@fadeInOnEnter] class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+          <div class="form-group">
+            <label for="description">Description</label>
+            <input [(ngModel)]="metadata.description" name="description" type="input" class="form-control"
+              placeholder="Description..." />
+          </div>
+        </div>
+      </div>
+      <div [@fadeInOnEnter] class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+          <div class="form-group">
+            <label for="description">Processing Software</label>
+            <input [(ngModel)]="metadata.tool" name="tool" type="input" class="form-control"
+              placeholder="Software..." />
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+
+
+
+    <div class="row mt-2">
+      <div class="col-md-1"></div>
+      <div class="col-md-10">
+
+        <div *ngIf="existingTask">
+          <div class="card border border-warning" style="margin: 30px 0 30px 0;">
+            <div class="card-header bg-warning" style="font-size: 20px;">Partial Upload Detected</div>
+            <div class="card-body">
+              <h4>A partial upload was detected for file <b>{{existingTask.filename}}</b>. You can either cancel that
+                partial upload or attempt to continue.</h4>
+              <h4>
+                <b>To continue an upload</b>
+                please re-upload your file and we will try our best to continue where you left off.
+              </h4>
+
+            </div>
+          </div>
+        </div> <!-- End existing task panel -->
+
+
+        <div *ngIf="!existingTask">
+
+          <div class="card card-body bg-light">
+            <div *ngIf="uploadTarget === 'raw' && component && component.isRadiometric"
+              style="padding: 8px; background-color: #fff9f3; border-left: 4px solid #e4a664;">
+              <h4>Radiometric Collection</h4>
+              <span>You are uploading to a radiometric collection. These sensors capture scientific temperature or
+                reflectance data, not standard RGB imagery.
+                <ng-container *ngIf="!isVideo()">Imagery must contain a single band in .tif format — not RGB.</ng-container>
+                <ng-container *ngIf="isVideo()">Video must be encoded as a singular band — not RGB.</ng-container>
+                Radiometric calibration is automatically enabled (as CAMERA), but if your sensor supports CAMERA+SUN,
+                you may enable that during processing.</span>
+            </div>
+            <div *ngIf="uploadTarget === 'raw' && component && component.isMultispectral"
+              style="padding: 8px; background-color: #f7f3ff; border-left: 4px solid #a68be0;">
+              <h4>Multispectral Collection</h4>
+              <span>You are uploading to a multispectral collection. These sensors capture multiple narrow wavelength
+                bands, not standard RGB imagery. Radiometric calibration is automatically enabled (as CAMERA), but if
+                your sensor supports CAMERA+SUN, you may enable that during processing.</span>
+            </div>
+            <h4>All uploaded files</h4>
+            <ul>
+              <li *ngIf="uploadTarget === 'raw'">Must be compressed into a .zip or .tar.gz format.</li>
+              <li *ngIf="uploadTarget !== 'raw'">Can optionally be compressed into a .zip or .tar.gz format.</li>
+              <li>Containing spaces or special characters such as &lt;, &gt;, -, +, =, !, &#64;, #, $, %, ^, &amp;, *,
+                ?,/, \ or apostrophes are allowed or
+                apostrophes will be replaced with underscores</li>
+            </ul>
+
+            <h4>
+              Supported File Formats
+            </h4>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Formats</th>
+                </tr>
+              </thead>
+              <tbody *ngIf="uploadTarget === 'raw'">
+                <tr *ngFor="let row of supportedRawFormats">
+                  <td>{{ row.type }}</td>
+                  <td>{{ row.formats }}</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+        <div>
+
+          <div *ngIf="progress" class="card border border-warning" style="margin: 30px 0 30px 0;">
+            <div class="card-header bg-warning" style="font-size: 20px;">Upload Details</div>
+            <div class="card-body">
+              <h4>
+                Progress:
+                <b> {{ progress.percentage | number: '1.0-0' }}% </b>
+              </h4>
+            </div>
+          </div>
+
+          <div *ngIf="isSuccessful" class="card border border-success" style="margin: 30px 0 30px 0;">
+            <div class="card-header bg-success text-white mb-3" style="font-size: 20px;">
+              Upload Details
+            </div>
+            <div class="card-body">
+              <h4>
+                Status:
+                <b style="word-break:normal;">
+                  Upload successfully completed and the files are being copied to centralized cloud storage.
+                  See the <a (click)="visitTaskPage()">task page</a> for more details. Once complete the data
+                  will be available to be processed into products.
+                </b>
+              </h4>
+            </div>
+          </div> <!-- End task finished upload notification -->
+
+          <div class="mb-2 mt-2">
+            <ngx-file-drop [disabled]="isUploading" [accept]="extensions" [multiple]="false"
+              dropZoneLabel="Drop files here" (onFileDrop)="onFileSelected($event)">
+              <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                <div class="container-fluid">
+
+                  <div class="row">
+                    <div class="col-sm-12">
+                      <div class="text-center">
+                        Drag & Drop File
+                        <button type="button" class="btn btn-secondary" [disabled]="isUploading"
+                          (click)="openFileSelector()">Browse Files</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div *ngIf="selectedFile != null" class="row">
+                    <div class="col-sm-12">
+                      <div class="text-center">
+                        Selected File: <b>{{selectedFile.name}}</b>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </ng-template>
+            </ngx-file-drop>
+          </div>
+          <div class="mb-2 mt-2">
+
+            <!-- <div *ngIf="selectedFile != null" class="row">
+              <label for="staticEmail" class="col-sm-2 col-form-label">Selected File</label>
+              <div class="col-sm-10">
+                <input readonly type="text" class="form-control-plaintext" id="formFile" [value]="selectedFile.name">
+              </div>
+            </div> -->
+
+            <div class="row">
+              <div class="col-sm-12">
+                <div *ngIf="existingTask && validation" class="text-danger">
+                  Must upload the file: {{existingTask.filename}}
+                </div>
+                <div *ngIf="validation" class="text-danger">
+                  {{validation}}
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+        </div> <!-- End current upload indicator -->
+      </div>
+      <div class="col-md-1"></div>
+    </div>
+  </div>
+  <div class="modal-footer">
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="btn-holder" style="text-align: right;">
+          <button *ngIf="existingTask" type="button" [disabled]="isUploading" class="btn btn-danger"
+            (click)="removeUpload()">
+            <i class="icon-upload icon-white"></i>
+            Cancel Upload
+          </button>
+
+          <button type="button" (click)="close()" [disabled]="isUploading" class="btn btn-default" role="button"
+            aria-disabled="false">
+            <span class="ui-button-text">Close</span>
+          </button>
+
+          <button type="button btn btn-primary" [disabled]="myForm.invalid || !selectedFile || isUploading"
+            class="btn btn-primary" (click)="handleUpload()">
+            <i class="icon-upload icon-white"></i>
+            Upload
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</form>

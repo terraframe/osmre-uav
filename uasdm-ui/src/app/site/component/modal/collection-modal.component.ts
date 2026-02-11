@@ -4,13 +4,14 @@
 
 import { Component, OnInit, Input, OnDestroy, Inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Clipboard } from '@angular/cdk/clipboard';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Subject } from 'rxjs';
 
 import { ErrorHandler, BasicConfirmModalComponent } from '@shared/component';
 
-import { ProcessConfig, SiteEntity, SiteObjectsResultSet } from '@site/model/management';
+import { SiteEntity, SiteObjectsResultSet } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 import { MetadataService } from '@site/service/metadata.service';
 import { MetadataModalComponent } from './metadata-modal.component';
@@ -21,30 +22,37 @@ import {
 	slideInLeftOnEnterAnimation,
 	slideInRightOnEnterAnimation,
 } from 'angular-animations';
-import { UploadModalComponent } from './upload-modal.component';
 import { ArtifactPageComponent } from './artifact-page.component';
 import { RunProcessModalComponent } from './run-process-modal.component';
-import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import EnvironmentUtil from '@core/utility/environment-util';
 import { environment } from 'src/environments/environment';
-import { WebSockets } from '@core/utility/web-sockets';
-import { ConfigurationService } from '@core/service/configuration.service';
-import { APP_BASE_HREF } from '@angular/common';
+import { NgIf, NgFor, NgClass } from '@angular/common';
 import { CreateProductGroupModalComponent } from './create-product-group-modal.component';
 import { UserAccessModalComponent } from './user-access-modal.component';
-import { AuthService } from '@shared/service/auth.service';
+import { ImagePreviewModalComponent } from './image-preview-modal.component';
+import { TusUploadModalComponent } from './tus-upload-modal.component';
+import { COLLECTION_FORMATS } from '@site/model/sensor';
+import { RouterLink } from '@angular/router';
+import { TabsetComponent, TabDirective } from 'ngx-bootstrap/tabs';
+import { ArtifactUploadComponent } from '../artifact-upload/artifact-upload.component';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { SafeHtmlPipe } from '@shared/pipe/safe-html.pipe';
+import { IdmDatePipe } from '@shared/pipe/idmdate.pipe';
+import { WebsocketService } from '@shared/service/websocket.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
+	standalone: true,
 	selector: 'collection-modal',
 	templateUrl: './collection-modal.component.html',
-	styleUrls: [],
+	styleUrls: ['./collection-modal.component.scss'],
 	providers: [BasicConfirmModalComponent, ArtifactPageComponent],
 	animations: [
 		fadeInOnEnterAnimation(),
 		fadeOutOnLeaveAnimation(),
 		slideInLeftOnEnterAnimation(),
 		slideInRightOnEnterAnimation(),
-	]
+	],
+	imports: [NgIf, RouterLink, NgFor, TabsetComponent, TabDirective, NgClass, ArtifactUploadComponent, ArtifactPageComponent, NgxPaginationModule, SafeHtmlPipe, IdmDatePipe]
 })
 export class CollectionModalComponent implements OnInit, OnDestroy {
 	entity: SiteEntity;
@@ -81,17 +89,30 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	video: { src: string, name: string } = { src: null, name: null };
 	context: string;
 
-	notifier: WebSocketSubject<any>;
 	loading = false;
 
 	constructor(
 		private service: ManagementService,
 		private metadataService: MetadataService,
-		private authService: AuthService,
 		private modalService: BsModalService,
-		public bsModalRef: BsModalRef
+		public bsModalRef: BsModalRef,
+		private websocketService: WebsocketService,
+		private clipboard: Clipboard
 	) {
 		this.context = environment.apiUrl;
+
+		this.websocketService.getNotifier()
+			.pipe(takeUntilDestroyed())
+			.subscribe((message) => {
+				if (this.entity != null && message.type === "UPLOAD_JOB_CHANGE" && message.content.collection === this.entity.id) {
+					if (this.tabName === 'image') {
+						this.onPageChange(this.page.pageNumber);
+					}
+					else if (this.tabName === 'video') {
+						this.getData(this.entity.id, this.tabName, null, null);
+					}
+				}
+			});
 	}
 
 	ngOnInit(): void {
@@ -101,23 +122,9 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		this.page.pageNumber = 1;
 		this.page.pageSize = this.constPageSize;
 		this.page.results = [];
-
-		this.notifier = webSocket(WebSockets.buildBaseUrl() + "/websocket-notifier/notify");
-		this.notifier.subscribe(message => {
-			if (this.entity != null && message.type === "UPLOAD_JOB_CHANGE" && message.content.collection === this.entity.id) {
-				if (this.tabName === 'image') {
-					this.onPageChange(this.page.pageNumber);
-				}
-				else if (this.tabName === 'video') {
-					this.getData(this.entity.id, this.tabName, null, null);
-				}
-			}
-		});
-
 	}
 
 	ngOnDestroy(): void {
-		this.notifier.unsubscribe();
 	}
 
 
@@ -133,6 +140,12 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		this.onSelect("image");
 
 		this.processable = this.metadataService.isProcessable(entity.type);
+	}
+
+	labelForFormat(format: string) {
+		var meta = COLLECTION_FORMATS.find(m => m.value === format);
+
+		return meta == null ? format : meta.label;
 	}
 
 	createImageFromBlob(image: Blob, imageData: any) {
@@ -215,10 +228,16 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 
 		this.loading = true;
 
+		if (folder === "image" && this.entity.format && this.entity.format.startsWith('VIDEO_')) {
+			folder = "video";
+			pageNumber = null;
+			pageSize = null;
+		}
+
 		this.service.getObjects(component, folder, pageNumber, pageSize, true).then(resultSet => {
 			this.page = resultSet;
 
-			const minNumberOfFiles = this.entity.isLidar ? 0 : 1;
+			const minNumberOfFiles = (this.entity.isLidar || (this.entity.format && this.entity.format.toLowerCase().includes("video"))) ? 0 : 1;
 
 			this.canReprocessImagery = this.page.results.length > minNumberOfFiles ? true : false;
 
@@ -245,21 +264,21 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		return false;
 	}
 
-	previewImage(event: any, image: any): void {
-		//        this.bsModalRef = this.modalService.show( ImagePreviewModalComponent, {
-		//            animated: true,
-		//            backdrop: true,
-		//            ignoreBackdropClick: true,
-		//            'class': 'image-preview-modal'
-		//        } );
-		//        this.bsModalRef.content.image = image;
-		//        this.bsModalRef.content.src = event.target.src;
-	}
-
 	toggleExcludeImage(event: any, image: any): void {
 		this.service.setExclude(image.id, !image.exclude).then(result => {
 			image.exclude = result.exclude;
 		});
+	}
+
+	previewImage(document: any): void {
+		const rawImagePreviewModal = this.modalService.show(ImagePreviewModalComponent, {
+			animated: true,
+			backdrop: true,
+			ignoreBackdropClick: false,
+			'class': 'image-preview-modal modal-xl'
+		});
+
+		rawImagePreviewModal.content.initRaw(this.entity.id, document.key, document.name);
 	}
 
 	isProcessable(item: any): boolean {
@@ -287,7 +306,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: true,
-			'class': 'confirmation-modal'
+			'class': 'confirmation-modal modal-xl'
 		});
 		confirmModalRef.content.init(this.entity);
 		confirmModalRef.content.onConfirm.subscribe(configuration => {
@@ -332,7 +351,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: true,
-			'class': 'confirmation-modal'
+			'class': 'confirmation-modal modal-xl'
 		});
 		confirmModalRef.content.init(this.entity);
 	}
@@ -340,7 +359,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 
 	handleDownload(): void {
 
-		window.location.href = environment.apiUrl + '/project/download-all?id=' + this.entity.id + "&key=" + this.tabName;
+		window.location.href = environment.apiUrl + '/api/project/download-all?id=' + this.entity.id + "&key=" + this.tabName;
 
 		//      this.service.downloadAll( data.id ).then( data => {
 		//        
@@ -351,7 +370,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 
 	handleDownloadOdmAll(): void {
 
-		window.location.href = environment.apiUrl + '/project/download-odm-all?colId=' + this.entity.id;
+		window.location.href = environment.apiUrl + '/api/project/download-odm-all?colId=' + this.entity.id;
 
 		//      this.service.downloadAll( data.id ).then( data => {
 		//        
@@ -366,7 +385,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	}
 
 	handleDownloadFile(item: SiteEntity): void {
-		window.location.href = environment.apiUrl + '/project/download?id=' + this.entity.id + "&key=" + item.key;
+		window.location.href = environment.apiUrl + '/api/project/download?id=' + this.entity.id + "&key=" + item.key;
 	}
 
 	editMetadata(): void {
@@ -374,7 +393,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: true,
-			'class': 'upload-modal'
+			'class': 'upload-modal modal-xl'
 		});
 		modalRef.content.initCollection(this.entity.id, this.entity.name);
 
@@ -388,7 +407,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: true,
-			'class': 'upload-modal'
+			'class': 'upload-modal modal-xl'
 		});
 		modalRef.content.init(this.entity);
 	}
@@ -396,11 +415,11 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 
 	handleUpload(): void {
 
-		const modal = this.modalService.show(UploadModalComponent, {
+		const modal = this.modalService.show(TusUploadModalComponent, {
 			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: true,
-			'class': 'upload-modal'
+			'class': 'upload-modal modal-xl'
 		});
 		modal.content.init(this.entity, "raw");
 
@@ -415,7 +434,6 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		return str.replace(/^\w/, c => c.toUpperCase());
 	}
 
-
 	showVideo(item: SiteEntity): void {
 		this.video.name = null;
 		this.video.src = null;
@@ -424,13 +442,18 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		// Otherwise the video tag does not register that the src has changed.
 		setTimeout(() => {
 			this.video.name = item.name;
-			this.video.src = environment.apiUrl + '/project/download?id=' + item.component + "&key=" + item.key; // + "#" + Math.random();
+			this.video.src = environment.apiUrl + '/api/project/download?id=' + item.component + "&key=" + item.key; // + "#" + Math.random();
 		}, 200);
 	}
 
 	closeVideo(): void {
 		this.video.name = null;
 		this.video.src = null;
+	}
+
+	copyLocation() {
+
+		this.clipboard.copy(window.location.href);
 	}
 
 	error(err: HttpErrorResponse): void {

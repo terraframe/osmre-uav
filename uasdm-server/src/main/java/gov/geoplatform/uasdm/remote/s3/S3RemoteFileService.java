@@ -1,71 +1,34 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.remote.s3;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
+import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.HttpMethod;
-import com.amazonaws.SdkClientException;
-import com.amazonaws.event.ProgressEvent;
-import com.amazonaws.event.ProgressListener;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.AmazonS3URI;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.CompleteMultipartUploadRequest;
-import com.amazonaws.services.s3.model.CopyObjectRequest;
-import com.amazonaws.services.s3.model.CopyPartRequest;
-import com.amazonaws.services.s3.model.CopyPartResult;
-import com.amazonaws.services.s3.model.DeleteObjectRequest;
-import com.amazonaws.services.s3.model.DeleteObjectsRequest;
-import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.InitiateMultipartUploadRequest;
-import com.amazonaws.services.s3.model.InitiateMultipartUploadResult;
-import com.amazonaws.services.s3.model.ListObjectsRequest;
-import com.amazonaws.services.s3.model.ListVersionsRequest;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PartETag;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.amazonaws.services.s3.model.S3VersionSummary;
-import com.amazonaws.services.s3.model.VersionListing;
-import com.amazonaws.services.s3.transfer.MultipleFileUpload;
-import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.Upload;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.runwaysdk.RunwayException;
@@ -73,12 +36,12 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.cog.TiTillerProxy;
 import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
-import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.StatusMonitorIF;
@@ -87,6 +50,45 @@ import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.remote.RemoteFileService;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.exception.SdkClientException;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3AsyncClient;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3Uri;
+import software.amazon.awssdk.services.s3.S3Utilities;
+import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
+import software.amazon.awssdk.services.s3.model.Delete;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest.Builder;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.GetUrlRequest;
+import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
+import software.amazon.awssdk.services.s3.model.ListObjectVersionsRequest;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
+import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.paginators.ListObjectVersionsIterable;
+import software.amazon.awssdk.services.s3.paginators.ListObjectsV2Iterable;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
+import software.amazon.awssdk.transfer.s3.S3TransferManager;
+import software.amazon.awssdk.transfer.s3.model.CompletedDirectoryUpload;
+import software.amazon.awssdk.transfer.s3.model.CompletedFileDownload;
+import software.amazon.awssdk.transfer.s3.model.CompletedFileUpload;
+import software.amazon.awssdk.transfer.s3.model.DirectoryUpload;
+import software.amazon.awssdk.transfer.s3.model.DownloadFileRequest;
+import software.amazon.awssdk.transfer.s3.model.FileDownload;
+import software.amazon.awssdk.transfer.s3.model.FileUpload;
+import software.amazon.awssdk.transfer.s3.model.UploadDirectoryRequest;
+import software.amazon.awssdk.transfer.s3.model.UploadFileRequest;
 
 public class S3RemoteFileService implements RemoteFileService
 {
@@ -94,247 +96,292 @@ public class S3RemoteFileService implements RemoteFileService
 
   private Logger             logger      = LoggerFactory.getLogger(S3RemoteFileService.class);
 
+  private S3AsyncClient      asyncClient;
+
+  private S3Client           client;
+
+  private AwsBasicCredentials credentials()
+  {
+    return AwsBasicCredentials.create(AppProperties.getS3AccessKey(), AppProperties.getS3SecretKey());
+  }
+
+  private Region region()
+  {
+    return Region.of(AppProperties.getBucketRegion());
+  }
+
+  public synchronized S3AsyncClient getAsyncClient()
+  {
+    if (asyncClient == null)
+    {
+      this.asyncClient = S3AsyncClient.builder() //
+          .region(region()) //
+          .credentialsProvider(StaticCredentialsProvider.create(credentials())) //
+          .build();
+    }
+    return this.asyncClient;
+
+  }
+
+  public synchronized S3Client getClient()
+  {
+    if (client == null)
+    {
+      this.client = S3Client.builder() //
+          .region(region()) //
+          .credentialsProvider(StaticCredentialsProvider.create(credentials())) //
+          .build();
+    }
+
+    return this.client;
+  }
+
+  public S3TransferManager createTransferManager()
+  {
+    return S3TransferManager.builder() //
+        .s3Client(getAsyncClient()) //
+        .build();
+  }
+
+  public void destroy()
+  {
+    if (this.client != null)
+    {
+      this.client.close();
+    }
+
+    if (this.asyncClient != null)
+    {
+      this.asyncClient.close();
+    }
+
+    this.client = null;
+    this.asyncClient = null;
+  }
+
   @Override
-  public void download(String key, File destination) throws IOException, FileNotFoundException
+  public Long download(String key, File destination)
   {
     try
     {
-
-      AmazonS3 client = S3ClientFactory.createClient();
+      S3TransferManager transferManager = createTransferManager();
 
       String bucketName = AppProperties.getBucketName();
 
-      GetObjectRequest request = new GetObjectRequest(bucketName, key);
+      DownloadFileRequest downloadFileRequest = DownloadFileRequest.builder()//
+          .getObjectRequest(b -> b.bucket(bucketName).key(key)) //
+          .destination(destination).build();
 
-      S3Object s3Obj = client.getObject(request);
+      FileDownload downloadFile = transferManager.downloadFile(downloadFileRequest);
 
-      try (final S3ObjectInputStream istream = s3Obj.getObjectContent())
-      {
-        try (OutputStream fos = new FileOutputStream(destination))
-        {
-          IOUtils.copy(istream, fos);
-        }
-      }
+      CompletedFileDownload downloadResult = downloadFile.completionFuture().join();
+
+      logger.info("Content length [{}]", downloadResult.response().contentLength());
+
+      return downloadResult.response().contentLength();
     }
-    catch (AmazonS3Exception e)
+    catch (SdkClientException e)
     {
-      this.logger.error("Unable to find s3 object [" + key + "]", e);
-
-      throw e;
+      throw new ProgrammingErrorException(e);
     }
   }
 
   @Override
   public RemoteFileObject proxy(String url)
   {
-    AmazonS3 client = S3ClientFactory.createClient();
-    AmazonS3URI uri = new AmazonS3URI(url);
+    try
+    {
+      S3Client client = getClient();
 
-    GetObjectRequest request = new GetObjectRequest(uri.getBucket(), uri.getKey());
+      S3Utilities s3Utilities = client.utilities();
 
-    S3Object object = client.getObject(request);
+      S3Uri s3Uri = s3Utilities.parseUri(URI.create(url));
 
-    return new S3ObjectWrapper(object);
+      String bucket = s3Uri.bucket().orElseThrow(() -> {
+        GenericException ex = new GenericException();
+        ex.setUserMessage("Unable to find bucket from url [" + url + "]");
+        return ex;
+      });
+
+      String key = s3Uri.key().orElseThrow(() -> {
+        GenericException ex = new GenericException();
+        ex.setUserMessage("Unable to find key from url [" + url + "]");
+        return ex;
+      });
+
+      GetObjectRequest request = GetObjectRequest.builder().bucket(bucket).key(key).build();
+
+      ResponseInputStream<GetObjectResponse> stream = client.getObject(request);
+
+      return new S3ObjectWrapper(stream, key);
+    }
+    catch (SdkClientException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+
   }
 
   @Override
-  public URL presignUrl(String key, Date expiration, HttpMethod httpMethod)
+  public String presignUrl(String key, Duration duration)
   {
-    AmazonS3 client = S3ClientFactory.createClient();
     String bucketName = AppProperties.getBucketName();
+    AwsBasicCredentials awsCreds = AwsBasicCredentials.create(AppProperties.getS3AccessKey(), AppProperties.getS3SecretKey());
 
-    return client.generatePresignedUrl(bucketName, key, expiration, httpMethod);
+    S3Presigner.Builder builder = S3Presigner.builder() //
+        .region(region()) //
+        .credentialsProvider(StaticCredentialsProvider.create(awsCreds));
+
+    try (S3Presigner presigner = builder.build())
+    {
+      GetObjectRequest objectRequest = GetObjectRequest.builder() //
+          .bucket(bucketName) //
+          .key(key) //
+          .build();
+
+      GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder() //
+          .signatureDuration(Duration.ofHours(24)) //
+          .getObjectRequest(objectRequest) //
+          .build();
+
+      PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(presignRequest);
+      logger.trace("Presigned URL: [{}]", presignedRequest.url().toString());
+      logger.trace("HTTP method: [{}]", presignedRequest.httpRequest().method());
+
+      return presignedRequest.url().toExternalForm();
+    }
+    catch (SdkClientException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+
   }
 
   @Override
   public RemoteFileObject download(String key)
   {
-    AmazonS3 client = S3ClientFactory.createClient();
-    String bucketName = AppProperties.getBucketName();
+    String bucket = AppProperties.getBucketName();
 
-    GetObjectRequest request = new GetObjectRequest(bucketName, key);
-
-    S3Object object = client.getObject(request);
-
-    return new S3ObjectWrapper(object);
+    return getFile(key, bucket);
   }
 
-  @Override
-  public RemoteFileObject download(String key, List<Range> ranges)
+  private RemoteFileObject getFile(String key, String bucket)
   {
     try
     {
 
-      AmazonS3 client = S3ClientFactory.createClient();
-      String bucketName = AppProperties.getBucketName();
+      S3Client client = getClient();
+      GetObjectRequest request = GetObjectRequest.builder().bucket(bucket).key(key).build();
 
-      GetObjectRequest request = new GetObjectRequest(bucketName, key);
+      ResponseInputStream<GetObjectResponse> stream = client.getObject(request);
 
-      if (ranges.size() > 0)
+      return new S3ObjectWrapper(stream, key);
+    }
+    catch (SdkClientException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+  }
+
+  @Override
+  public RemoteFileObject download(String key, String range)
+  {
+    try
+    {
+      String bucket = AppProperties.getBucketName();
+
+      S3Client client = getClient();
+      Builder builder = GetObjectRequest.builder().bucket(bucket).key(key);
+
+      if (!StringUtils.isBlank(range))
       {
-        final Range range = ranges.get(0);
-
-        if (range.getEnd() != null)
-        {
-          request.setRange(range.getStart(), range.getEnd());
-        }
-        else
-        {
-          request.setRange(range.getStart());
-        }
+        builder.range(range);
       }
 
-      return new S3ObjectWrapper(client.getObject(request));
-    }
-    catch (AmazonS3Exception e)
-    {
-      this.logger.error("Unable to find s3 object [" + key + "]", e);
+      GetObjectRequest request = builder.build();
 
-      throw e;
+      ResponseInputStream<GetObjectResponse> stream = client.getObject(request);
+
+      return new S3ObjectWrapper(stream, key);
     }
+    catch (SdkClientException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+
   }
 
   @Override
   public void createFolder(String key)
   {
-    AmazonS3 client = S3ClientFactory.createClient();
+    try
+    {
+      S3Client client = getClient();
 
-    // create meta-data for your folder and set content-length to 0
-    ObjectMetadata metadata = new ObjectMetadata();
-    metadata.setContentLength(0);
+      PutObjectRequest request = PutObjectRequest.builder() //
+          .bucket(AppProperties.getBucketName()) //
+          .key(key) //
+          .contentLength(0L) //
+          .build();
 
-    // create empty content
-    InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
-
-    PutObjectRequest putObjectRequest = new PutObjectRequest(AppProperties.getBucketName(), key, emptyContent, metadata);
-
-    // send request to S3 to create folder
-    client.putObject(putObjectRequest);
+      client.putObject(request, RequestBody.fromBytes(new byte[0]));
+    }
+    catch (SdkClientException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
   }
 
   @Override
   public void copyFolder(String sourceKey, String sourceBucket, String destKey, String destBucket)
   {
-    final int maxKeys = 500;
-
     try
     {
-      AmazonS3 client = S3ClientFactory.createClient();
 
+      final int maxKeys = 500;
+
+      S3Client client = getClient();
       String bucketName = AppProperties.getBucketName();
 
-      ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName).withPrefix(sourceKey);
-      listObjectsRequest.setMaxKeys(maxKeys);
+      ListObjectsV2Request listObjectsRequest = ListObjectsV2Request.builder() //
+          .bucket(bucketName) //
+          .prefix(sourceKey) //
+          .maxKeys(maxKeys) //
+          .build();
 
-      ObjectListing objectListing = client.listObjects(listObjectsRequest);
+      ListObjectsV2Iterable listRes = client.listObjectsV2Paginator(listObjectsRequest);
+      listRes.stream().flatMap(r -> r.contents().stream()).forEach(content -> {
+        String summaryKey = content.key();
+        String targetKey = destKey + ( summaryKey.replaceFirst(sourceKey, "") );
 
-      while (true)
-      {
-        List<S3ObjectSummary> list = objectListing.getObjectSummaries();
-        Iterator<S3ObjectSummary> objIter = list.iterator();
-
-        while (objIter.hasNext())
-        {
-          S3ObjectSummary summary = objIter.next();
-
-          String summaryKey = summary.getKey();
-          String targetKey = destKey + ( summaryKey.replaceFirst(sourceKey, "") );
-
-          this.copyObject(summaryKey, sourceBucket, targetKey, destBucket);
-        }
-
-        // If the bucket contains many objects, the listObjects() call
-        // might not return all of the objects in the first listing. Check to
-        // see whether the listing was truncated.
-        if (objectListing.isTruncated())
-        {
-          objectListing = client.listNextBatchOfObjects(objectListing);
-        }
-        else
-        {
-          break;
-        }
-      }
+        this.copyObject(summaryKey, sourceBucket, targetKey, destBucket);
+      });
     }
-    catch (AmazonS3Exception e)
+    catch (SdkClientException e)
     {
-      this.logger.error("Unable to copy the s3 folder [" + sourceKey + "]", e);
-
-      throw e;
+      throw new ProgrammingErrorException("Unabled to copy folder [" + sourceBucket + "/" + sourceKey + "] to [" + destBucket + "/" + destKey + "]", e);
     }
   }
 
   @Override
   public void copyObject(String sourceKey, String sourceBucket, String destKey, String destBucket)
   {
-    AmazonS3 client = S3ClientFactory.createClient();
-
     try
     {
-      // Get the object size
-      GetObjectMetadataRequest metadataRequest = new GetObjectMetadataRequest(sourceBucket, sourceKey);
-      ObjectMetadata metadataResult = client.getObjectMetadata(metadataRequest);
-      long sizeInBytes = metadataResult.getContentLength();
+      CopyObjectRequest copyReq = CopyObjectRequest.builder() //
+          .sourceBucket(sourceBucket) //
+          .sourceKey(sourceKey) //
+          .destinationBucket(destBucket) //
+          .destinationKey(destKey) //
+          .build();
 
-      if (sizeInBytes < ( 5l * 1024l * 1024l * 1024l ))
-      {
-        CopyObjectRequest request = new CopyObjectRequest(sourceBucket, sourceKey, destBucket, destKey);
-
-        client.copyObject(request);
-      }
-      else
-      {
-        // Initiate the multipart upload.
-        InitiateMultipartUploadRequest initRequest = new InitiateMultipartUploadRequest(destBucket, destKey);
-        InitiateMultipartUploadResult initResult = client.initiateMultipartUpload(initRequest);
-
-        // Copy the object using 5 GB parts.
-        long partSize = 5L * 1024L * 1024L;
-        long bytePosition = 0;
-        int partNum = 1;
-        List<CopyPartResult> copyResponses = new ArrayList<CopyPartResult>();
-        while (bytePosition < sizeInBytes)
-        {
-          // The last part might be smaller than partSize, so check to make sure
-          // that lastByte isn't beyond the end of the object.
-          long lastByte = Math.min(bytePosition + partSize - 1, sizeInBytes - 1);
-
-          // Copy this part.
-          CopyPartRequest copyRequest = new CopyPartRequest().withSourceBucketName(sourceBucket).withSourceKey(sourceKey).withDestinationBucketName(destBucket).withDestinationKey(destKey).withUploadId(initResult.getUploadId()).withFirstByte(bytePosition).withLastByte(lastByte).withPartNumber(partNum++);
-          copyResponses.add(client.copyPart(copyRequest));
-          bytePosition += partSize;
-        }
-
-        // Complete the upload request to concatenate all uploaded parts and
-        // make the copied object available.
-        CompleteMultipartUploadRequest completeRequest = new CompleteMultipartUploadRequest(destBucket, destKey, initResult.getUploadId(), getETags(copyResponses));
-        client.completeMultipartUpload(completeRequest);
-      }
-    }
-    catch (AmazonServiceException e)
-    {
-      // The call was transmitted successfully, but Amazon S3 couldn't process
-      // it, so it returned an error response.
-      e.printStackTrace();
+      S3Client client = getClient();
+      client.copyObject(copyReq);
     }
     catch (SdkClientException e)
     {
-      // Amazon S3 couldn't be contacted for a response, or the client
-      // couldn't parse the response from Amazon S3.
-      e.printStackTrace();
+      throw new ProgrammingErrorException("Unabled to copy [" + sourceBucket + "/" + sourceKey + "] to [" + destBucket + "/" + destKey + "]", e);
     }
-  }
-
-  // This is a helper function to construct a list of ETags.
-  // https://docs.aws.amazon.com/AmazonS3/latest/userguide/CopyingObjectsMPUapi.html
-  private static List<PartETag> getETags(List<CopyPartResult> responses)
-  {
-    List<PartETag> etags = new ArrayList<PartETag>();
-    for (CopyPartResult response : responses)
-    {
-      etags.add(new PartETag(response.getPartNumber(), response.getETag()));
-    }
-    return etags;
   }
 
   @Override
@@ -346,11 +393,20 @@ public class S3RemoteFileService implements RemoteFileService
   @Override
   public void deleteObject(String key, String bucket)
   {
-    AmazonS3 client = S3ClientFactory.createClient();
+    try
+    {
+      S3Client client = getClient();
 
-    DeleteObjectRequest request = new DeleteObjectRequest(bucket, key);
-
-    client.deleteObject(request);
+      DeleteObjectRequest request = DeleteObjectRequest.builder() //
+          .bucket(bucket) //
+          .key(key) //
+          .build();
+      client.deleteObject(request);
+    }
+    catch (SdkClientException e)
+    {
+      throw new ProgrammingErrorException("Unabled to delete object [" + key + "/" + bucket + "]", e);
+    }
   }
 
   @Override
@@ -362,269 +418,116 @@ public class S3RemoteFileService implements RemoteFileService
   @Override
   public void deleteObjects(String key, String bucket)
   {
-    AmazonS3 client = S3ClientFactory.createClient();
-
-    ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucket).withPrefix(key);
-
-    ObjectListing objectListing = client.listObjects(listObjectsRequest);
-
-    while (true)
+    try
     {
-      Iterator<S3ObjectSummary> objIter = objectListing.getObjectSummaries().iterator();
 
-      while (objIter.hasNext())
-      {
-        String objectKey = objIter.next().getKey();
+      final int maxKeys = 500;
 
-        client.deleteObject(bucket, objectKey);
-      }
+      S3Client client = getClient();
 
-      // If the bucket contains many objects, the listObjects() call
-      // might not return all of the objects in the first listing. Check to
-      // see whether the listing was truncated. If so, retrieve the next page of
-      // objects and delete them.
-      if (objectListing.isTruncated())
+      String bucketName = AppProperties.getBucketName();
+
+      ListObjectVersionsRequest listObjectsRequest = ListObjectVersionsRequest.builder() //
+          .bucket(bucketName) //
+          .prefix(key) //
+          .maxKeys(maxKeys) //
+          .build();
+
+      ListObjectVersionsIterable listRes = client.listObjectVersionsPaginator(listObjectsRequest);
+
+      List<ObjectIdentifier> keys = listRes.stream() //
+          .flatMap(r -> r.versions().stream()) //
+          .map(version -> {
+            return ObjectIdentifier.builder() //
+                .versionId(version.versionId()) //
+                .key(version.key()) //
+                .build();
+          }).collect(Collectors.toList());
+
+      // Delete multiple objects in one request.
+
+      if (keys.size() > 0)
       {
-        objectListing = client.listNextBatchOfObjects(objectListing);
-      }
-      else
-      {
-        break;
+        Delete del = Delete.builder().objects(keys).build();
+
+        DeleteObjectsRequest multiObjectDeleteRequest = DeleteObjectsRequest.builder() //
+            .bucket(bucketName) //
+            .delete(del) //
+            .build();
+
+        client.deleteObjects(multiObjectDeleteRequest);
       }
     }
-
-    // Delete all object versions (required for versioned buckets).
-    VersionListing versionList = client.listVersions(new ListVersionsRequest().withBucketName(bucket).withPrefix(key));
-    while (true)
+    catch (SdkClientException e)
     {
-      Iterator<S3VersionSummary> versionIter = versionList.getVersionSummaries().iterator();
-      while (versionIter.hasNext())
-      {
-        S3VersionSummary vs = versionIter.next();
-        client.deleteVersion(bucket, vs.getKey(), vs.getVersionId());
-      }
-
-      if (versionList.isTruncated())
-      {
-        versionList = client.listNextBatchOfVersions(versionList);
-      }
-      else
-      {
-        break;
-      }
+      throw new ProgrammingErrorException("Unabled to delete objects for [" + key + "/" + bucket + "]", e);
     }
-
-    DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest(bucket).withKeys(key).withQuiet(false);
-
-    client.deleteObjects(multiObjectDeleteRequest);
   }
 
   public boolean objectExists(String key)
   {
-    AmazonS3 client = S3ClientFactory.createClient();
-
-    String bucketName = AppProperties.getBucketName();
-
-    return client.doesObjectExist(bucketName, key);
-  }
-
-  @Override
-  public String getUrl(String bucket, String key)
-  {
-    AmazonS3Client client = (AmazonS3Client) S3ClientFactory.createClient();
-
-    return client.getResourceUrl(bucket, key);
-  }
-
-  @Override
-  public int getItemCount(String key)
-  {
-    int count = 0;
-
-    AmazonS3 client = S3ClientFactory.createClient();
-
-    String bucketName = AppProperties.getBucketName();
-
-    ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName).withPrefix(key);
-
-    ObjectListing objectListing = client.listObjects(listObjectsRequest);
-
-    while (true)
+    try
     {
-      Iterator<S3ObjectSummary> objIter = objectListing.getObjectSummaries().iterator();
+      S3Client client = getClient();
+      String bucketName = AppProperties.getBucketName();
 
-      while (objIter.hasNext())
+      try
       {
-        S3ObjectSummary summary = objIter.next();
+        final HeadObjectRequest headObjectRequest = HeadObjectRequest.builder() //
+            .bucket(bucketName) //
+            .key(key) //
+            .build();
+        client.headObject(headObjectRequest);
 
-        String summaryKey = summary.getKey();
-
-        if (!summaryKey.endsWith("/") && !summaryKey.contains("thumbnails/"))
-        {
-          count++;
-        }
+        return true;
       }
-
-      // If the bucket contains many objects, the listObjects() call
-      // might not return all of the objects in the first listing. Check to
-      // see whether the listing was truncated.
-      if (objectListing.isTruncated())
+      catch (NoSuchKeyException noSuchKeyException)
       {
-        objectListing = client.listNextBatchOfObjects(objectListing);
-      }
-      else
-      {
-        break;
+        return false;
       }
     }
+    catch (SdkClientException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
 
-    return count;
   }
 
   @Override
   public SiteObjectsResultSet getSiteObjects(UasComponentIF component, String folder, List<SiteObject> objects, Long pageNumber, Long pageSize)
   {
-    final int maxKeys = 500;
-    String key = component.getS3location() + folder;
-
     try
     {
-      AmazonS3 client = S3ClientFactory.createClient();
+      final int maxKeys = 500;
+      String key = component.getS3location() + folder;
+
+      S3Client client = getClient();
 
       String bucketName = AppProperties.getBucketName();
 
-      ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName).withPrefix(key);
-      listObjectsRequest.setMaxKeys(maxKeys);
+      ListObjectsV2Request listObjectsRequest = ListObjectsV2Request.builder() //
+          .bucket(bucketName) //
+          .prefix(key) //
+          .maxKeys(maxKeys) //
+          .build();
 
-      int curIndex = 0;
+      AtomicLong curIndex = new AtomicLong(0);
 
-      long pageIndexStart = 0;
-      long pageIndexStop = 0;
+      final long skip = pageNumber != null && pageSize != null ? ( pageNumber - 1 ) * pageSize : 0;
+      final long stop = pageNumber != null && pageSize != null ? pageNumber * pageSize : 50;
 
-      if (pageNumber != null && pageSize != null)
-      {
-        pageIndexStart = ( pageNumber - 1 ) * pageSize;
-        pageIndexStop = pageNumber * pageSize;
-      }
+      ListObjectsV2Iterable iterable = client.listObjectsV2Paginator(listObjectsRequest);
+      iterable.stream().flatMap(r -> r.contents().stream()).forEach(content -> {
+        long index = curIndex.getAndIncrement();
 
-      ObjectListing objectListing = client.listObjects(listObjectsRequest);
-
-      while (true)
-      {
-        List<S3ObjectSummary> list = objectListing.getObjectSummaries();
-        Iterator<S3ObjectSummary> objIter = list.iterator();
-
-        while (objIter.hasNext())
+        if ( ( pageSize == null || ( index >= skip && index < stop ) ))
         {
-          S3ObjectSummary summary = objIter.next();
-
-          String summaryKey = summary.getKey();
-
-          if (!summaryKey.endsWith("/") && !summaryKey.contains("thumbnails/"))
-          {
-            if ( ( pageSize == null || ( curIndex >= pageIndexStart && curIndex < pageIndexStop ) ))
-            {
-              objects.add(SiteObject.create(component, key, summary));
-            }
-
-            curIndex++;
-          }
+          objects.add(SiteObject.create(component, key, content));
         }
 
-        // If the bucket contains many objects, the listObjects() call
-        // might not return all of the objects in the first listing. Check to
-        // see whether the listing was truncated.
-        if (objectListing.isTruncated())
-        {
-          objectListing = client.listNextBatchOfObjects(objectListing);
-        }
-        else
-        {
-          break;
-        }
-      }
+      });
 
-      return new SiteObjectsResultSet(Long.valueOf(curIndex), pageNumber, pageSize, objects, folder);
-    }
-    catch (AmazonS3Exception e)
-    {
-      this.logger.error("Unable to find s3 object [" + key + "]", e);
-
-      throw e;
-    }
-  }
-
-  @Override
-  public Long calculateSize(UasComponentIF component)
-  {
-    String key = component.getS3location();
-
-    try
-    {
-      AmazonS3 client = S3ClientFactory.createClient();
-
-      String bucketName = AppProperties.getBucketName();
-
-      ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(bucketName).withPrefix(key);
-
-      long size = 0;
-
-      ObjectListing objectListing = client.listObjects(listObjectsRequest);
-
-      while (true)
-      {
-        List<S3ObjectSummary> list = objectListing.getObjectSummaries();
-        Iterator<S3ObjectSummary> objIter = list.iterator();
-
-        while (objIter.hasNext())
-        {
-          S3ObjectSummary summary = objIter.next();
-
-          size += summary.getSize();
-        }
-
-        // If the bucket contains many objects, the listObjects() call
-        // might not return all of the objects in the first listing. Check to
-        // see whether the listing was truncated.
-        if (objectListing.isTruncated())
-        {
-          objectListing = client.listNextBatchOfObjects(objectListing);
-        }
-        else
-        {
-          break;
-        }
-      }
-
-      return size;
-    }
-    catch (AmazonS3Exception e)
-    {
-      this.logger.error("Unable to find s3 object [" + key + "]", e);
-
-      throw e;
-    }
-  }
-
-  @Override
-  public void putFile(String key, RemoteFileMetadata metadata, InputStream stream)
-  {
-    try
-    {
-      String bucketName = AppProperties.getBucketName();
-
-      ObjectMetadata oMetadata = new ObjectMetadata();
-      oMetadata.setContentType(metadata.getContentType());
-      oMetadata.setContentLength(metadata.getContentLength());
-
-      PutObjectRequest request = new PutObjectRequest(bucketName, key, stream, oMetadata);
-
-      AmazonS3 client = S3ClientFactory.createClient();
-      client.putObject(request);
-    }
-    catch (AmazonServiceException e)
-    {
-      throw new ProgrammingErrorException(e);
+      return new SiteObjectsResultSet(curIndex.longValue(), pageNumber, pageSize, objects, folder);
     }
     catch (SdkClientException e)
     {
@@ -633,54 +536,73 @@ public class S3RemoteFileService implements RemoteFileService
   }
 
   @Override
-  public void uploadFile(File file, String key, StatusMonitorIF monitor)
+  public Long calculateSize(UasComponentIF component)
   {
     try
     {
-      TransferManager tx = S3ClientFactory.createTransferManager();
+      String key = component.getS3location();
 
-      try
-      {
-        Upload myUpload = tx.upload(AppProperties.getBucketName(), key, file);
+      S3Client client = getClient();
+      String bucketName = AppProperties.getBucketName();
 
-        if (myUpload.isDone() == false)
-        {
-          logger.info("Source: " + file.getAbsolutePath());
-          logger.info("Destination: " + myUpload.getDescription());
+      ListObjectsV2Request listObjectsRequest = ListObjectsV2Request.builder() //
+          .bucket(bucketName) //
+          .prefix(key) //
+          .maxKeys(500) //
+          .build();
 
-          if (monitor != null)
-          {
-            monitor.setMessage(myUpload.getDescription());
-          }
-        }
+      ListObjectsV2Iterable iterable = client.listObjectsV2Paginator(listObjectsRequest);
+      return iterable.stream() //
+          .flatMap(r -> r.contents().stream()) //
+          .map(content -> content.size()) //
+          .reduce(Long.valueOf(0), (a, b) -> Long.valueOf((long) a + b));
+    }
+    catch (SdkClientException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+  }
 
-        myUpload.addProgressListener(new ProgressListener()
-        {
-          int count = 0;
+  @Override
+  public void putFile(String key, RemoteFileMetadata metadata, InputStream stream)
+  {
+    try
+    {
+      S3Client client = getClient();
+      String bucketName = AppProperties.getBucketName();
 
-          @Override
-          public void progressChanged(ProgressEvent progressEvent)
-          {
-            if (count % 2000 == 0)
-            {
-              long total = myUpload.getProgress().getTotalBytesToTransfer();
-              long current = myUpload.getProgress().getBytesTransferred();
+      PutObjectRequest putOb = PutObjectRequest.builder() //
+          .bucket(bucketName) //
+          .key(key) //
+          .contentLength(metadata.getContentLength()) //
+          .contentType(metadata.getContentType()) //
+          .build();
 
-              logger.info(current + "/" + total + "-" + ( (int) ( (double) current / total * 100 ) ) + "%");
+      client.putObject(putOb, RequestBody.fromInputStream(stream, metadata.getContentLength()));
+    }
+    catch (SdkClientException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+  }
 
-              count = 0;
-            }
+  @Override
+  public String uploadFile(File file, String key, StatusMonitorIF monitor)
+  {
+    try
+    {
+      S3TransferManager transferManager = createTransferManager();
 
-            count++;
-          }
-        });
+      UploadFileRequest uploadFileRequest = UploadFileRequest.builder() //
+          .putObjectRequest(b -> b.bucket(AppProperties.getBucketName()).key(key)) //
+          .source(file) //
+          .build();
 
-        myUpload.waitForCompletion();
-      }
-      finally
-      {
-        tx.shutdownNow();
-      }
+      FileUpload fileUpload = transferManager.uploadFile(uploadFileRequest);
+
+      CompletedFileUpload uploadResult = fileUpload.completionFuture().join();
+
+      return uploadResult.response().eTag();
     }
     catch (Exception e)
     {
@@ -690,6 +612,8 @@ public class S3RemoteFileService implements RemoteFileService
       }
 
       logger.error("Exception occured while uploading [" + key + "].", e);
+
+      throw new ProgrammingErrorException(e);
     }
   }
 
@@ -704,59 +628,34 @@ public class S3RemoteFileService implements RemoteFileService
   {
     try
     {
-      TransferManager tx = S3ClientFactory.createTransferManager();
+      S3TransferManager transferManager = createTransferManager();
 
-      try
+      UploadDirectoryRequest uploadRequest = UploadDirectoryRequest.builder() //
+          .s3Prefix(key) //
+          .bucket(AppProperties.getBucketName()) //
+          .source(directory.toPath()) //
+          .build();
+
+      DirectoryUpload upload = transferManager.uploadDirectory(uploadRequest);
+
+      CompletedDirectoryUpload result = upload.completionFuture().join();
+
+      result.failedTransfers().forEach(fail -> {
+        logger.error("Exception occured while uploading [" + key + "].", fail.toString());
+
+        logger.warn("Object [{}] failed to transfer", fail.toString());
+      });
+
+      if (result.failedTransfers().size() > 0)
       {
-        MultipleFileUpload myUpload = tx.uploadDirectory(bucket, key, directory, includeSubDirectories);
-
-        if (myUpload.isDone() == false)
-        {
-          logger.info("Source: " + directory.getAbsolutePath());
-          logger.info("Destination: " + myUpload.getDescription());
-
-          if (monitor != null)
-          {
-            monitor.setMessage(myUpload.getDescription());
-          }
-        }
-
-        myUpload.addProgressListener(new ProgressListener()
-        {
-          int count = 0;
-
-          @Override
-          public void progressChanged(ProgressEvent progressEvent)
-          {
-            if (count % 2000 == 0)
-            {
-              long total = myUpload.getProgress().getTotalBytesToTransfer();
-              long current = myUpload.getProgress().getBytesTransferred();
-
-              logger.info(current + "/" + total + "-" + ( (int) ( (double) current / total * 100 ) ) + "%");
-
-              count = 0;
-            }
-
-            count++;
-          }
-        });
-
-        myUpload.waitForCompletion();
-      }
-      finally
-      {
-        tx.shutdownNow();
+        GenericException ex = new GenericException();
+        ex.setUserMessage("Failed to transfer all files");
+        throw ex;
       }
     }
-    catch (Exception e)
+    catch (SdkClientException e)
     {
-      if (monitor != null)
-      {
-        monitor.addError(RunwayException.localizeThrowable(e, Session.getCurrentLocale()));
-      }
-
-      logger.error("Exception occured while uploading [" + key + "].", e);
+      throw new ProgrammingErrorException(e);
     }
   }
 
@@ -765,6 +664,7 @@ public class S3RemoteFileService implements RemoteFileService
   {
     try
     {
+      S3Client client = getClient();
       String bucket = item.isPublished() ? AppProperties.getPublicBucketName() : AppProperties.getBucketName();
       String key = STAC_BUCKET + "/" + item.getId() + ".json";
 
@@ -772,26 +672,16 @@ public class S3RemoteFileService implements RemoteFileService
       mapper.enable(SerializationFeature.INDENT_OUTPUT);
       byte[] bytes = mapper.writeValueAsBytes(item);
 
-      ObjectMetadata oMetadata = new ObjectMetadata();
-      oMetadata.setContentType("application/geo+json");
-      oMetadata.setContentLength(bytes.length);
+      PutObjectRequest request = PutObjectRequest.builder() //
+          .bucket(bucket) //
+          .key(key) //
+          .contentLength((long) bytes.length) //
+          .contentType("application/geo+json") //
+          .build();
 
-      try (ByteArrayInputStream istream = new ByteArrayInputStream(bytes))
-      {
-        PutObjectRequest request = new PutObjectRequest(bucket, key, istream, oMetadata);
-        AmazonS3 client = S3ClientFactory.createClient();
-        client.putObject(request);
-      }
+      client.putObject(request, RequestBody.fromBytes(bytes));
     }
-    catch (IOException e)
-    {
-      throw new ProgrammingErrorException(e);
-    }
-    catch (AmazonServiceException e)
-    {
-      throw new ProgrammingErrorException(e);
-    }
-    catch (SdkClientException e)
+    catch (SdkClientException | JsonProcessingException e)
     {
       throw new ProgrammingErrorException(e);
     }
@@ -803,11 +693,7 @@ public class S3RemoteFileService implements RemoteFileService
     String bucket = product.isPublished() ? AppProperties.getPublicBucketName() : AppProperties.getBucketName();
     String key = STAC_BUCKET + "/" + product.getOid() + ".json";
 
-    AmazonS3 client = S3ClientFactory.createClient();
-
-    DeleteObjectRequest request = new DeleteObjectRequest(bucket, key);
-
-    client.deleteObject(request);
+    this.deleteObject(key, bucket);
   }
 
   @Override
@@ -816,20 +702,19 @@ public class S3RemoteFileService implements RemoteFileService
     String bucket = product.isPublished() ? AppProperties.getPublicBucketName() : AppProperties.getBucketName();
     String key = STAC_BUCKET + "/" + product.getOid() + ".json";
 
-    try
-    {
-      AmazonS3 client = S3ClientFactory.createClient();
+    return this.getFile(key, bucket);
+  }
 
-      GetObjectRequest request = new GetObjectRequest(bucket, key);
+  @Override
+  public String getUrl(String bucket, String key)
+  {
+    S3Client client = getClient();
 
-      return new S3ObjectWrapper(client.getObject(request));
-    }
-    catch (AmazonS3Exception e)
-    {
-      this.logger.error("Unable to find s3 object [" + key + "]", e);
+    S3Utilities utilities = client.utilities();
+    GetUrlRequest request = GetUrlRequest.builder().bucket(bucket).key(key).build();
+    URL url = utilities.getUrl(request);
 
-      throw e;
-    }
+    return url.toString();
   }
 
   @Override

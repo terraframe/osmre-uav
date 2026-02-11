@@ -15,14 +15,16 @@
  */
 package gov.geoplatform.uasdm.processing.geolocation;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvValidationException;
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
 

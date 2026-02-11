@@ -10,7 +10,7 @@ import { Subject } from 'rxjs';
 
 import { ErrorHandler } from '@shared/component';
 
-import { Sensor } from '@site/model/sensor';
+import { COLLECTION_FORMATS, Sensor } from '@site/model/sensor';
 import { Platform } from '@site/model/platform';
 import { SiteEntity, Selection, projectTypes } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
@@ -23,7 +23,10 @@ import {
 	fadeInOnEnterAnimation,
 	fadeOutOnLeaveAnimation
 } from 'angular-animations';
-import { UploadModalComponent } from './upload-modal.component';
+import { NgIf, NgFor } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { BooleanFieldComponent } from '@shared/component/boolean-field/boolean-field.component';
+import { MetadataPageComponent } from '../metadata-page/metadata-page.component';
 
 export class Page {
 	index?: number;
@@ -33,13 +36,15 @@ export class Page {
 };
 
 @Component({
-	selector: 'create-collection-modal',
-	templateUrl: './create-collection-modal.component.html',
-	styleUrls: ['./upload-modal.component.css'],
-	animations: [
-		fadeInOnEnterAnimation(),
-		fadeOutOnLeaveAnimation()
-	]
+    standalone: true,
+    selector: 'create-collection-modal',
+    templateUrl: './create-collection-modal.component.html',
+    styleUrls: ['./upload-modal.component.css'],
+    animations: [
+        fadeInOnEnterAnimation(),
+        fadeOutOnLeaveAnimation()
+    ],
+    imports: [NgIf, NgFor, FormsModule, BooleanFieldComponent, MetadataPageComponent]
 })
 export class CreateCollectionModalComponent implements OnInit, OnDestroy {
 	message: string = "";
@@ -211,6 +216,8 @@ export class CreateCollectionModalComponent implements OnInit, OnDestroy {
 						return false;
 					}
 
+					if (this.hasField('collectionDate') && (page.selection.format == null || page.selection.format.length == 0))
+						return false;
 
 					return true;
 				}

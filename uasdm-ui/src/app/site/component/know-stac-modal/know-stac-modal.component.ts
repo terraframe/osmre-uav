@@ -8,12 +8,15 @@ import { StacItem, StacProperty } from '@site/model/layer';
 import { KnowStacService } from '@site/service/know-stac.service';
 import { environment } from 'src/environments/environment';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { NgIf, NgFor, NgSwitch, NgSwitchCase, NgSwitchDefault, KeyValuePipe } from '@angular/common';
 
 
 @Component({
-	selector: 'know-stac-modal',
-	templateUrl: './know-stac-modal.component.html',
-	styleUrls: []
+    selector: 'know-stac-modal',
+    templateUrl: './know-stac-modal.component.html',
+    styleUrls: [],
+    standalone: true,
+    imports: [NgIf, NgFor, NgSwitch, NgSwitchCase, NgSwitchDefault, KeyValuePipe]
 })
 export class KnowStacModalComponent implements OnInit, OnDestroy {
 

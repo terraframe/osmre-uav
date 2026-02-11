@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-FROM tomcat:8.5-jdk11-openjdk
+FROM tomcat:9-jdk11
 
 ENV CGR_VERSION=LATEST
 ENV LOG_LEVEL=error
@@ -81,6 +81,15 @@ RUN apt-get update > /dev/null && \
     echo ". ${CONDA_DIR}/etc/profile.d/conda.sh && conda activate base" >> ~/.bashrc
 
 
+# Make sure conda's shared libs (sqlite, etc.) are preferred over system libs
+ENV LD_LIBRARY_PATH=${CONDA_DIR}/lib:${LD_LIBRARY_PATH}
+
+# Ensure libmamba + sqlite in base are consistent and usable
+RUN conda install -n base -y -c conda-forge \
+      "sqlite>=3.45" \
+      conda-libmamba-solver libmamba \
+ && conda config --set solver libmamba
+
 
 # Install GDAL
 RUN conda install -c conda-forge gdal proj proj-data
@@ -95,6 +104,9 @@ RUN apt-get update && apt-get install -y jq
 COPY silvimetric_idm.sh /opt/silvimetric/silvimetric_idm.sh
 RUN chmod +x /opt/silvimetric/silvimetric_idm.sh
 COPY dask_distributed.yml /root/.config/dask/distributed.yaml
+
+# Install IDM special tooling
+COPY idm_pdal_translate_copc.sh /opt/idm/idm_pdal_translate_copc.sh
 
 #Revert the working directory
 WORKDIR /usr/local/tomcat

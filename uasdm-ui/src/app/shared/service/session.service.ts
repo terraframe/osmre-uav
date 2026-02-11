@@ -2,7 +2,7 @@
 ///
 ///
 
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 
 // import 'rxjs/add/operator/toPromise';
@@ -13,13 +13,21 @@ import { EventService } from './event.service';
 import { AuthService } from './auth.service';
 import { User } from '../model/user';
 import { environment } from 'src/environments/environment';
+import { firstValueFrom, Observer, Subject, Subscription } from 'rxjs';
 
 
 
-@Injectable()
-export class SessionService {
+@Injectable({ providedIn: 'root' })
+export class SessionService implements OnDestroy {
 
-	constructor(private eventService: EventService, private http: HttpClient, private authService: AuthService) {
+	$user: Subject<User>;
+
+	constructor(private eventService: EventService, private http: HttpClient) {
+		this.$user = new Subject();
+	}
+
+	ngOnDestroy(): void {
+		this.$user.complete();
 	}
 
 	login(username: string, password: string): Promise<User> {
@@ -30,14 +38,13 @@ export class SessionService {
 
 		this.eventService.start();
 
-		return this.http
+		return firstValueFrom(this.http
 			.post<User>(environment.apiUrl + '/api/session/login', JSON.stringify({ username: username, password: password }), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
-			}))
-			.toPromise()
+			})))
 			.then((user: User) => {
-				this.authService.setUser(user);
+				this.$user.next(user);
 
 				return user;
 			})
@@ -51,16 +58,19 @@ export class SessionService {
 
 		this.eventService.start();
 
-		return this.http
+		return firstValueFrom(this.http
 			.get<void>(environment.apiUrl + '/api/session/logout', { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
-			}))
-			.toPromise()
+			})))
 			.then(() => {
-				this.authService.setUser(null);
+				this.$user.next(null);
 
 				return;
 			})
+	}
+
+	getUser(): Subject<User> {
+		return this.$user;
 	}
 }

@@ -52,6 +52,7 @@ import com.runwaysdk.system.scheduler.JobHistoryQuery;
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.bus.LabeledPropertyGraphSynchronizationJob;
 import gov.geoplatform.uasdm.bus.LabeledPropertyGraphSynchronizationJobQuery;
+import gov.geoplatform.uasdm.service.business.IDMHierarchyTypeSnapshotBusinessService;
 import gov.geoplatform.uasdm.service.business.IDMLabeledPropertyGraphSynchronizationBusinessService;
 import net.geoprism.graph.GeoObjectTypeSnapshot;
 import net.geoprism.graph.GraphTypeSnapshot;
@@ -78,6 +79,9 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
   @Autowired
   private GeoObjectTypeSnapshotBusinessServiceIF                typeService;
 
+  @Autowired
+  private IDMHierarchyTypeSnapshotBusinessService               hierarchyService;
+
   @Request(RequestType.SESSION)
   public JsonObject roots(String sessionId, String oid, Boolean includeRoot)
   {
@@ -99,7 +103,7 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
     sql.append(" @rid,");
     sql.append(" @version,");
     sql.append(" @class,");
-    sql.append(" uuid,");
+    sql.append(" uid,");
     sql.append(" code,");
     sql.append(" oid,");
     sql.append(" lastUpdateDate,");
@@ -156,7 +160,11 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
     LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
     GeoObjectTypeSnapshot type = this.versionService.getRootType(version);
     MdVertex mdVertex = type.getGraphMdVertex();
+<<<<<<< HEAD
     GraphTypeSnapshot hierarchy = this.versionService.getGraphSnapshots(version).get(0);
+=======
+    HierarchyTypeSnapshot hierarchy = this.hierarchyService.get(version).get(0);
+>>>>>>> refs/remotes/origin/master
     MdEdge mdEdge = hierarchy.getGraphMdEdge();
 
     StringBuffer statement = new StringBuffer();
@@ -183,15 +191,15 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
 
   private JsonArray getParents(LabeledPropertyGraphTypeVersion version, MdEdge mdEdge, VertexObject child)
   {
-    return this.getAncestors(version, mdEdge, child).stream().map(o -> o.toJSON()).collect(JsonCollectors.toJsonArray());
+    return this.getAncestors(version, mdEdge, child, 1, false).stream().map(o -> o.toJSON()).collect(JsonCollectors.toJsonArray());
   }
 
-  public List<GeoObject> getAncestors(LabeledPropertyGraphTypeVersion version, MdEdge mdEdge, VertexObject child)
+  public List<GeoObject> getAncestors(LabeledPropertyGraphTypeVersion version, MdEdge mdEdge, VertexObject child, Integer depth, boolean includeRoot)
   {
     StringBuffer s = new StringBuffer();
     s.append("SELECT FROM (");
     s.append(" TRAVERSE in('" + mdEdge.getDbClassName() + "') FROM :rid");
-    s.append(") WHERE $depth >= 1");
+    s.append(") WHERE $depth >= " + depth);
 
     GraphQuery<VertexObject> squery = new GraphQuery<VertexObject>(s.toString());
     squery.setParameter("rid", child.getRID());
@@ -200,9 +208,10 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
     Collections.reverse(p);
 
     // Remove the root object
-    // TODO: Figure out a configurable way to determine if the root object
-    // should be included or not
-    p.remove(0);
+    if (!includeRoot)
+    {
+      p.remove(0);
+    }
 
     return p.stream().map(parent -> {
       MdVertexDAOIF parentVertex = (MdVertexDAOIF) parent.getMdClass();
@@ -266,7 +275,7 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
     sql.append(" @rid,");
     sql.append(" @version,");
     sql.append(" @class,");
-    sql.append(" uuid,");
+    sql.append(" uid,");
     sql.append(" code,");
     sql.append(" oid,");
     sql.append(" lastUpdateDate,");
@@ -276,10 +285,10 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
     sql.append(" createDate,");
     sql.append(" seq");
     sql.append(" FROM " + mdVertex.getDbClassName());
-    sql.append(" WHERE uuid = :uuid");
+    sql.append(" WHERE uid = :uid");
 
     GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(sql.toString(), new TreeMap<>(), VertexObjectDAO.class);
-    query.setParameter("uuid", uid);
+    query.setParameter("uid", uid);
 
     return query.getSingleResult();
   }
@@ -291,10 +300,10 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
     StringBuffer sql = new StringBuffer();
     sql.append("SELECT ST_AsGeoJSON(ST_Envelope(geometry)) AS envelope");
     sql.append(" FROM " + mdVertex.getDbClassName());
-    sql.append(" WHERE uuid = :uuid");
+    sql.append(" WHERE uid = :uid");
 
     GraphQuery<String> query = new GraphQuery<String>(sql.toString());
-    query.setParameter("uuid", uid);
+    query.setParameter("uid", uid);
 
     String result = query.getSingleResult();
 
@@ -325,7 +334,11 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
   {
     JsonArray array = new JsonArray();
 
+<<<<<<< HEAD
     GraphTypeSnapshot hierarchy = this.versionService.getGraphSnapshots(version).get(0);
+=======
+    HierarchyTypeSnapshot hierarchy = this.hierarchyService.get(version).get(0);
+>>>>>>> refs/remotes/origin/master
     MdEdgeDAOIF mdEdge = MdEdgeDAO.get(hierarchy.getGraphMdEdgeOid());
 
     // List<VertexObject> children = parent.getChildren(mdEdge,
@@ -335,7 +348,7 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
     sql.append(" @rid,");
     sql.append(" @version,");
     sql.append(" @class,");
-    sql.append(" uuid,");
+    sql.append(" uid,");
     sql.append(" code,");
     sql.append(" oid,");
     sql.append(" lastUpdateDate,");

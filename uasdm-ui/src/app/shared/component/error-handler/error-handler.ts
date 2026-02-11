@@ -53,7 +53,7 @@ export class ErrorHandler {
         return null;
       }
       
-      let bsModalRef = modalService.show(ErrorModalComponent, { backdrop: true });
+      let bsModalRef = modalService.show(ErrorModalComponent, { backdrop: true, class: 'modal-xl' });
       
       bsModalRef.content.message = ErrorHandler.getMessageFromError(err);
       

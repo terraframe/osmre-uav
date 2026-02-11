@@ -11,11 +11,19 @@ import { ManagementService } from '@site/service/management.service';
 import { SiteEntity, ProcessConfig, ProcessConfigType } from '@site/model/management';
 import { Subject } from 'rxjs';
 
+import { RuntimeEstimate, getRuntimeDisplay } from '@site/model/odmrun';
+import { NgIf, NgTemplateOutlet } from '@angular/common';
+import { BooleanFieldComponent } from '@shared/component/boolean-field/boolean-field.component';
+import { FormsModule } from '@angular/forms';
+import { CollapseDirective } from 'ngx-bootstrap/collapse';
+import { ForbiddenNameDirective } from '../../directive/forbidden-name.directive';
 
 @Component({
+    standalone: true,
     selector: 'run-process-modal',
     templateUrl: './run-process-modal.component.html',
-    styleUrls: ['./artifact-page.component.css']
+    styleUrls: ['./artifact-page.component.css', './run-process-modal.component.css'],
+    imports: [NgIf, BooleanFieldComponent, FormsModule, CollapseDirective, ForbiddenNameDirective, NgTemplateOutlet]
 })
 export class RunProcessModalComponent implements OnInit, OnDestroy {
 
@@ -41,12 +49,18 @@ export class RunProcessModalComponent implements OnInit, OnDestroy {
         generateCopc: true
     };
 
-    isAdvancedSettingsCollapsed = true;
+    isAdvancedSettingsCollapsed = false;
+
+    estimate: RuntimeEstimate;
+
+    public loadingEstimate: boolean = false;
 
     /*
      * Called on confirm
      */
     public onConfirm: Subject<ProcessConfig>;
+
+    public getRuntimeDisplay = getRuntimeDisplay;
 
     // Make the process config type usable in the HTML template
     readonly ProcessConfigType = ProcessConfigType;
@@ -55,7 +69,7 @@ export class RunProcessModalComponent implements OnInit, OnDestroy {
 
     init(entity: SiteEntity) {
         this.entity = entity;
-        this.config.radiometricCalibration = this.entity.sensor.sensorType.isMultispectral ? "CAMERA" : "NONE";
+        this.config.radiometricCalibration = (this.entity.isRadiometric || this.entity.isMultispectral) ? "CAMERA" : "NONE";
 
         this.service.getDefaultRunConfig(this.entity.id).then((config: ProcessConfig) => {
             this.config = config;
@@ -67,6 +81,17 @@ export class RunProcessModalComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.onConfirm = new Subject();
+    }
+
+    configChange(): void {
+        this.loadingEstimate = true;
+        this.service.estimateRuntime(this.entity.id, this.config).then((estimate: RuntimeEstimate) => {
+            this.estimate = estimate;
+        }).catch((err: HttpErrorResponse) => {
+            this.error(err);
+        }).finally(() => {
+            this.loadingEstimate = false;
+        });
     }
 
     isValid(): boolean {
@@ -90,6 +115,23 @@ export class RunProcessModalComponent implements OnInit, OnDestroy {
         this.onConfirm.next(this.config);
         this.bsModalRef.hide();
     }
+
+    isVideo(strict: boolean = false): boolean {
+        if (strict && this.entity && this.entity.format)
+            return this.entity.format.toLowerCase().includes('video_');
+        else
+            return !(this.entity && this.entity.format) || this.entity.format.toLowerCase().includes('video_');
+    }
+
+    isRadiometric(): boolean {
+        return !(this.entity && this.entity.format) || this.entity.format.toLowerCase().includes('radiometric');
+    }
+
+    isMultispectral(): boolean {
+        return !(this.entity && this.entity.format) || this.entity.format.toLowerCase().includes('multispectral');
+    }
+
+
 
     error(err: HttpErrorResponse): void {
         this.message = ErrorHandler.getMessageFromError(err);

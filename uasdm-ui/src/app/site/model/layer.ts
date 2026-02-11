@@ -101,6 +101,9 @@ export class ToggleableLayer {
 }
 
 export class StacLayer {
+    id: string;
+    layerName: string;
+    active: boolean;
     startDate: string = "";
 
     endDate: string = "";

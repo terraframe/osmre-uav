@@ -17,16 +17,16 @@ package gov.geoplatform.uasdm.processing;
 
 import java.io.File;
 
-import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
+import com.runwaysdk.resource.ClasspathResource;
+import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
 
-import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.SpringInstanceTestClassRunner;
 import gov.geoplatform.uasdm.TestConfig;
 import gov.geoplatform.uasdm.graph.Product;
@@ -67,6 +67,7 @@ public class CogTifProcessorTest
   // testData.tearDownInstanceData();
   // }
 
+  @SuppressWarnings("resource")
   @Test
   @Request
   public void testValidateCogDev()
@@ -75,6 +76,7 @@ public class CogTifProcessorTest
 
     CogTifValidator validator = new CogTifValidator(monitor);
 
+<<<<<<< HEAD
     Assert.assertTrue(validator.isValidCog(new FileResource(new File("/tmp/odm_orthophoto.cog.tif"))));
 
     Assert.assertFalse(validator.isValidCog(new FileResource(new File("/tmp/odm_orthophoto.tif"))));
@@ -88,6 +90,15 @@ public class CogTifProcessorTest
 //
 //    Assert.assertEquals("python3 /usr/local/tomcat/validate_cloud_optimized_geotiff.py test123", StringUtils.join(cmds, " "));
 //  }
+=======
+    try (CloseableFile f = new ClasspathResource("all/odm_orthophoto/odm_orthophoto.cog.tif").openNewFile()) {
+      Assert.assertTrue(validator.isValidCog(new FileResource(f)));
+    }
+    try (CloseableFile f = new ClasspathResource("all/odm_orthophoto/odm_orthophoto.tif").openNewFile()) {
+      Assert.assertFalse(validator.isValidCog(new FileResource(f)));
+    }
+  }
+>>>>>>> refs/remotes/origin/master
 
   @Test(expected = UnsupportedOperationException.class)
   @Request

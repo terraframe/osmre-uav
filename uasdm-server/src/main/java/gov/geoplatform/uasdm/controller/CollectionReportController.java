@@ -27,25 +27,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import gov.geoplatform.uasdm.service.CollectionReportService;
-import net.geoprism.registry.controller.RunwaySpringController;
 
 @Controller
 @Validated
-public class CollectionReportController extends RunwaySpringController
+@RequestMapping("/api/collection-report")
+public class CollectionReportController extends AbstractController
 {
-  public static final String API_PATH = "collection-report";
-  
   @Autowired
   private CollectionReportService service;
 
-  public CollectionReportController()
-  {
-  }
-
-  @GetMapping(API_PATH + "/page")
+  @GetMapping("/page")
   public ResponseEntity<String> page(@RequestParam(required = true) String criteria) throws JSONException
   {
     JSONObject page = this.service.page(getSessionId(), new JSONObject(criteria));
@@ -53,7 +48,7 @@ public class CollectionReportController extends RunwaySpringController
     return new ResponseEntity<String>(page.toString(), HttpStatus.OK);
   }
 
-  @GetMapping(API_PATH + "/export-csv")
+  @GetMapping("/export-csv")
   public ResponseEntity<InputStreamResource> exportCSV(@RequestParam(required = false) String criteria) throws JSONException
   {
     JSONObject json = criteria != null ? new JSONObject(criteria) : null;
@@ -65,7 +60,7 @@ public class CollectionReportController extends RunwaySpringController
     httpHeaders.set("Content-Type", "text/csv");
     httpHeaders.set("Content-disposition", "attachment; filename=report.csv");
     // httpHeaders.setContentLength(contentLengthOfStream);
-    
+
     return new ResponseEntity<InputStreamResource>(inputStreamResource, httpHeaders, HttpStatus.OK);
   }
 }

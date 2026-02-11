@@ -1,0 +1,52 @@
+.runtime-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 12px 16px;
+
+  background: linear-gradient(
+    90deg,
+    #eef6ff,
+    #f7fbff
+  );
+
+  border-bottom: 1px solid #dbe7f3;
+}
+
+.runtime-header__icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.runtime-header__content {
+  display: flex;
+  flex-direction: column;
+}
+
+.runtime-header__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #355d8c;
+}
+
+.runtime-header__estimate {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f3f66;
+}
+
+.runtime-header__range {
+  font-size: 13px;
+  font-weight: 400;
+  color: #5c7fa6;
+}
+
+.runtime-header__meta {
+  font-size: 12px;
+  color: #6b86a3;
+}

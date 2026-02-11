@@ -31,6 +31,7 @@ import com.runwaysdk.resource.FileResource;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class CogTifProcessor extends ManagedDocument
@@ -51,9 +52,11 @@ public class CogTifProcessor extends ManagedDocument
   }
 
   @Override
-  public boolean process(ApplicationFileResource res)
+  public ProcessResult process(ApplicationFileResource res)
   {
-    File file = res.getUnderlyingFile();
+    ApplicationFileResource resource = ResourceUtil.getResource(res);
+
+    File file = resource.getUnderlyingFile();
 
     final String basename = FilenameUtils.getBaseName(file.getName());
 
@@ -67,7 +70,8 @@ public class CogTifProcessor extends ManagedDocument
       String msg = "Error copying file. Cog generation failed for [" + this.getS3Path() + "].";
       logger.error(msg, e);
       monitor.addError(msg);
-      return false;
+      
+      return ProcessResult.fail();
     }
 
     try
@@ -76,12 +80,14 @@ public class CogTifProcessor extends ManagedDocument
       cmd.addAll(Arrays.asList(new String[] { "-r", "average", overview.getAbsolutePath(), "2", "4", "8", "16" }));
       if (!new SystemProcessExecutor(this.monitor)
           .setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath())
+          .setCommandName("gdaladdo")
           .execute(cmd.toArray(new String[0])))
       {
         String msg = "Problem occurred generating overview file. Cog generation failed for [" + this.getS3Path() + "].";
         logger.error(msg);
         monitor.addError(msg);
-        return false;
+        
+        return ProcessResult.fail();
       }
 
       File cog = new File(file.getParent(), basename + COG_EXTENSION);
@@ -92,12 +98,14 @@ public class CogTifProcessor extends ManagedDocument
         cmd2.addAll(Arrays.asList(new String[] { overview.getAbsolutePath(), cog.getAbsolutePath(), "-of", "COG", "-co", "COMPRESS=LZW", "-co", "BIGTIFF=YES" }));
         if (!new SystemProcessExecutor(this.monitor)
             .setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath())
+            .setCommandName("gdal_translate")
             .execute(cmd2.toArray(new String[0])))
         {
           String msg = "Problem occurred generating cog file. Cog generation failed for [" + this.getS3Path() + "].";
           logger.error(msg);
           monitor.addError(msg);
-          return false;
+          
+          return ProcessResult.fail();
         }
 
         if (cog.exists())
@@ -106,6 +114,11 @@ public class CogTifProcessor extends ManagedDocument
 
           if (new CogTifValidator(this.monitor).isValidCog(cogRes))
           {
+            if (this.downstream != null && this.downstream instanceof GdalPNGGenerator) {
+              ((S3FileUpload)this.downstream).setProduct(product);
+              ((S3FileUpload)this.downstream).setS3Path(ImageryComponent.ORTHO + "/" + cogRes.getBaseName() + ".png");
+            }
+            
             return super.process(cogRes);
           }
           else
@@ -129,6 +142,6 @@ public class CogTifProcessor extends ManagedDocument
       FileUtils.deleteQuietly(overview);
     }
 
-    return false;
+    return ProcessResult.fail();
   }
 }

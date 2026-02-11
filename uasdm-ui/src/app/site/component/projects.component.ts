@@ -2,21 +2,21 @@
 ///
 ///
 
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, TemplateRef, Inject } from "@angular/core";
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, TemplateRef } from "@angular/core";
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BsModalService } from "ngx-bootstrap/modal";
 import { BsModalRef } from "ngx-bootstrap/modal";
 import { v4 as uuid } from "uuid";
-import { Map, LngLatBounds, NavigationControl, MapEvent, AttributionControl, RasterSourceSpecification } from "maplibre-gl";
+import { Map, LngLatBounds, NavigationControl, AttributionControl } from "maplibre-gl";
 
 import { Observable, Subject } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
-import { webSocket, WebSocketSubject } from "rxjs/webSocket";
 
 import { BasicConfirmModalComponent } from "@shared/component/modal/basic-confirm-modal.component";
 import { NotificationModalComponent } from "@shared/component/modal/notification-modal.component";
 import { AuthService } from "@shared/service/auth.service";
 
-import { SiteEntity, Product, Task, MapLayer, ViewerSelection, SELECTION_TYPE, Filter, CollectionProductView } from "../model/management";
+import { SiteEntity, Product, Task, MapLayer, ViewerSelection, SELECTION_TYPE, Filter, CollectionProductView, UploadTask } from "../model/management";
 
 import { EntityModalComponent } from "./modal/entity-modal.component";
 import { CollectionModalComponent } from "./modal/collection-modal.component";
@@ -31,19 +31,15 @@ import {
   fadeInOnEnterAnimation,
   fadeOutOnLeaveAnimation
 } from "angular-animations";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, RouterLink } from "@angular/router";
 import { CreateCollectionModalComponent } from "./modal/create-collection-modal.component";
 import { CreateStandaloneProductModalComponent } from "./modal/create-standalone-product-group-modal.component";
-import { UIOptions } from "fine-uploader";
-import { FineUploaderBasic } from "fine-uploader/lib/core";
-import { UploadModalComponent } from "./modal/upload-modal.component";
 import { LayerColor, StacCollection, StacItem, StacLink, StacProperty, ToggleableLayer, ToggleableLayerType } from "@site/model/layer";
 
-import { BBox, bbox, bboxPolygon, centroid, envelope, featureCollection } from "@turf/turf";
+import { bbox, bboxPolygon, centroid, envelope, featureCollection } from "@turf/turf";
 import EnvironmentUtil from "@core/utility/environment-util";
 import { environment } from "src/environments/environment";
 import { ConfigurationService } from "@core/service/configuration.service";
-import { WebSockets } from "@core/utility/web-sockets";
 import { LPGSync } from "@shared/model/lpg";
 import { LPGSyncService } from "@shared/service/lpg-sync.service";
 import { FilterModalComponent } from "./modal/filter-modal.component";
@@ -53,7 +49,22 @@ import { ProductModalComponent } from "./modal/product-modal.component";
 import { KnowStacModalComponent } from "./know-stac-modal/know-stac-modal.component";
 import { KnowStacService } from "@site/service/know-stac.service";
 import { isMapboxURL, transformMapboxUrl } from "maplibregl-mapbox-request-transformer";
-
+import { UploadService } from "@site/service/upload.service";
+import { TusUploadModalComponent } from "./modal/tus-upload-modal.component";
+import { NgIf, NgFor, NgClass, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet, Location } from "@angular/common";
+import { CollapseDirective } from "ngx-bootstrap/collapse";
+import { UasdmHeaderComponent } from "../../shared/component/header/header.component";
+import { FormsModule } from "@angular/forms";
+import { TypeaheadDirective } from "ngx-bootstrap/typeahead";
+import { OrganizationFieldComponent } from "../../shared/component/organization-field/organization-field.component";
+import { TabsetComponent, TabDirective } from "ngx-bootstrap/tabs";
+import { ProductPanelComponent } from "./product-panel/product-panel.component";
+import { StacItemPanelComponent } from "./stac-item-panel/stac-item-panel.component";
+import { KnowStacPanelComponent } from "./know-stac-panel/know-stac-panel.component";
+import { ImageryPanelComponent } from "./imagery-panel/imagery-panel.component";
+import { AlertComponent } from "ngx-bootstrap/alert";
+import { LegendPanelComponent } from "./legend-panel/legend-panel.component";
+import { WebsocketService } from "@shared/service/websocket.service";
 
 const enum PANEL_TYPE {
   SITE = 0,
@@ -64,13 +75,15 @@ const enum PANEL_TYPE {
 }
 
 @Component({
+  standalone: true,
   selector: "projects",
   templateUrl: "./projects.component.html",
   styleUrls: ["./projects.css"],
   animations: [
     fadeInOnEnterAnimation(),
     fadeOutOnLeaveAnimation()
-  ]
+  ],
+  imports: [NgIf, NgFor, CollapseDirective, NgClass, UasdmHeaderComponent, FormsModule, TypeaheadDirective, OrganizationFieldComponent, TabsetComponent, TabDirective, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet, ProductPanelComponent, StacItemPanelComponent, KnowStacPanelComponent, ImageryPanelComponent, AlertComponent, RouterLink, LegendPanelComponent]
 })
 export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
@@ -174,16 +187,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   */
   private bsModalRef: BsModalRef;
 
-  notifier: WebSocketSubject<any>;
-
   tasks: Task[] = [];
 
   notifications: { text: string }[] = [];
 
-  existingTask: {
-    task: Task,
-    filename: string
-  } = null;
+  existingTask: UploadTask | null = null;
 
   /* 
    * Filter by bureau
@@ -257,7 +265,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     private metadataService: MetadataService,
     private route: ActivatedRoute,
     private cookieService: CookieService,
-    private syncService: LPGSyncService
+    private syncService: LPGSyncService,
+    private uploadService: UploadService,
+    private websocketService: WebsocketService,
+    private location: Location
   ) {
 
     this.subject = new Subject();
@@ -287,6 +298,15 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       });
     });
+
+    this.websocketService.getNotifier().pipe(takeUntilDestroyed()).subscribe((message) => {
+      if (message.type === "UPLOAD_JOB_CHANGE") {
+        this.tasks.push(message.content);
+      }
+      if (message.type === "NOTIFICATION") {
+        this.notifications.push(message.content);
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -295,89 +315,52 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.userName = this.service.getCurrentUser();
     this.organization = this.authService.getOrganization();
 
-    this.notifier = webSocket(WebSockets.buildBaseUrl() + "/websocket-notifier/notify");
-
-    this.notifier.subscribe(message => {
-      if (message.type === "UPLOAD_JOB_CHANGE") {
-        this.tasks.push(message.content);
-      }
-      if (message.type === "NOTIFICATION") {
-        this.notifications.push(message.content);
-      }
-    });
 
     const oid = this.route.snapshot.params["oid"];
     const action = this.route.snapshot.params["action"];
 
-    if (oid != null && action != null && action === "collection") {
+    if (oid != null && action != null && action === "entity") {
       this.handleViewSite(oid);
     }
 
-    let uiOptions: UIOptions = {
-      debug: false,
-      autoUpload: false,
-      multiple: false,
-      request: {
-        endpoint: EnvironmentUtil.getApiUrl() + "/file/upload",
-        forceMultipart: true
-      },
-      resume: {
-        enabled: true,
-        recordsExpireIn: 1
-      },
-      chunking: {
-        enabled: true
-      },
-      retry: {
-        enableAuto: true
-      },
-      text: {
-        defaultResponseError: "Upload failed"
-      },
-      failedUploadTextDisplay: {
-        mode: "none"
-      },
-      validation: {
-        allowedExtensions: ["zip", "tar.gz"]
-      },
-      showMessage: function (message: string) {
-        // 
-      },
-      callbacks: {
-        onUpload: function (id: any, name: any): void {
-        },
-        onProgress: function (id: any, name: any, uploadedBytes: any, totalBytes: any): void {
-        },
-        onUploadChunk: function (id: any, name: any, chunkData: any): void {
-        },
-        onUploadChunkSuccess: function (id: any, chunkData: any, responseJSON: any, xhr: any): void {
-        },
-        onComplete: function (id: any, name: any, responseJSON: any, xhrOrXdr: any): void {
-        },
-        onCancel: function (id: number, name: string) {
-        },
-        onError: function (id: number, errorReason: string, xhrOrXdr: string) {
-        }
+    this.uploadService.findAllUploads().then(resumables => {
+      if (resumables.length > 0) {
+        const resumable = resumables[0];
 
+        this.service.getUploadTask(resumable.uploadUrl).then(task => {
+          this.existingTask = {
+            task: task,
+            filename: resumable.metadata.filename,
+            resumable: resumable
+          };
+        }).catch(e => {
+
+          const message = "A partial upload was detected for the file [" + resumable.metadata.filename + "].  However, the partial upload has expired and been removed from the server.  The file will need to be re-uploaded."
+
+          const bsModalRef = this.modalService.show(NotificationModalComponent, {
+            animated: true,
+            backdrop: true,
+            ignoreBackdropClick: true,
+            class: "modal-xl"
+          });
+
+          bsModalRef.content.message = message;
+          bsModalRef.content.submitText = "OK";
+          bsModalRef.content.onConfirm.subscribe(() => {
+            resumables.forEach(r => {
+
+              const segments = r.uploadUrl.split("/");
+              const uploadId = segments[segments.length - 1];
+
+              this.service.cancelUploadTask(uploadId);
+
+              this.uploadService.clearUpload(r.urlStorageKey)
+            });
+          });
+
+        });
       }
-    };
-
-    const uploader = new FineUploaderBasic(uiOptions);
-
-    let resumables = uploader.getResumableFilesData() as any[];
-    if (resumables.length > 0) {
-      const resumable = resumables[0];
-
-      this.service.getUploadTask(resumable.uuid).then(task => {
-        this.existingTask = {
-          task: task,
-          filename: resumable.name
-        };
-      })
-    }
-
-
-
+    });
   }
 
 
@@ -388,8 +371,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.map.remove();
-
-    this.notifier.complete();
   }
 
   ngAfterViewInit() {
@@ -539,6 +520,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
+        class: "modal-xl"
       });
       this.bsModalRef.content.messageTitle = "Disclaimer";
       this.bsModalRef.content.message = this.configuration.getAppDisclaimer();
@@ -682,7 +664,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // Reload the item layers
-    this.handleCollectionChange(this.collection);
+    this.handleCollectionChange({ visible: false, collection: this.collection });
   }
 
   handleExtentChange(e: any): void {
@@ -782,7 +764,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       animated: true,
       backdrop: true,
       ignoreBackdropClick: true,
-      "class": "upload-modal"
+      "class": "upload-modal modal-xl"
     });
     this.bsModalRef.content.init(this.breadcrumbs.filter(b => b.type === SELECTION_TYPE.SITE).map(b => b.data as SiteEntity));
 
@@ -798,7 +780,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       animated: true,
       backdrop: true,
       ignoreBackdropClick: true,
-      "class": "upload-modal"
+      "class": "upload-modal modal-xl"
     });
     this.bsModalRef.content.init(this.breadcrumbs.filter(b => b.type === SELECTION_TYPE.SITE).map(b => b.data as SiteEntity));
 
@@ -817,7 +799,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
-        "class": "upload-modal"
+        "class": "upload-modal modal-xl"
       });
       this.bsModalRef.content.init(true, this.userName, this.admin, data.item, data.attributes, this.map.getCenter(), this.map.getZoom());
 
@@ -853,13 +835,13 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   handleExistingTask(): void {
 
     this.service.view(this.existingTask.task.collection).then(resp => {
-      const modal = this.modalService.show(UploadModalComponent, {
+      const modal = this.modalService.show(TusUploadModalComponent, {
         animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
-        "class": "upload-modal"
+        "class": "upload-modal modal-xl"
       });
-      modal.content.init(resp.item, this.existingTask.task.uploadTarget);
+      modal.content.init(resp.item, this.existingTask.task.uploadTarget, this.existingTask);
       modal.content.onUploadCancel.subscribe(() => {
         this.existingTask = null;
       });
@@ -879,7 +861,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
-        "class": "edit-modal"
+        "class": "edit-modal modal-xl"
       });
       this.bsModalRef.content.init(false, this.userName, this.admin, data.item, data.attributes, this.map.getCenter(), this.map.getZoom());
 
@@ -915,7 +897,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   handleDownloadAll(node: SiteEntity): void {
 
-    window.location.href = environment.apiUrl + "/project/download-all?id=" + node.component + "&key=" + node.name;
+    window.location.href = environment.apiUrl + "/api/project/download-all?id=" + node.component + "&key=" + node.name;
 
     //      this.service.downloadAll( data.id ).then( data => {
     //        
@@ -940,6 +922,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       animated: true,
       backdrop: true,
       ignoreBackdropClick: true,
+      class: "modal-xl"
     });
     this.bsModalRef.content.message = "Are you sure you want to delete [" + node.name + "]?";
     this.bsModalRef.content.subText = sText;
@@ -972,7 +955,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   handleDownload(node: SiteEntity): void {
-    window.location.href = environment.apiUrl + "/project/download?id=" + node.component + "&key=" + node.key;
+    window.location.href = environment.apiUrl + "/api/project/download?id=" + node.component + "&key=" + node.key;
 
     //this.service.download( node.data.component, node.data.key, true ).subscribe( blob => {
     //    importedSaveAs( blob, node.data.name );
@@ -980,7 +963,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleImageDownload(image: any): void {
-    window.location.href = environment.apiUrl + "/project/download?id=" + image.component + "&key=" + image.key;
+    window.location.href = environment.apiUrl + "/api/project/download?id=" + image.component + "&key=" + image.key;
 
     //this.service.download( node.data.component, node.data.key, true ).subscribe( blob => {
     //    importedSaveAs( blob, node.data.name );
@@ -1097,6 +1080,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     else if (result.type === 'LOCATION') {
       this.handleViewLocation(result.synchronizationId, result.oid);
     }
+    else if (result.center != null) {
+      // Geocoded address
+      this.map.flyTo({
+        center: result.center,
+        zoom: 18
+      })
+
+    }
   }
 
   handleViewStandaloneProduct(id: string): void {
@@ -1105,7 +1096,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
-        'class': 'product-info-modal'
+        'class': 'product-info-modal modal-xl'
       });
       this.bsModalRef.content.init(detail);
     });
@@ -1215,6 +1206,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       event.stopPropagation();
     }
 
+    if (node != null) {
+      this.location.go('/site/viewer/entity/' + node.id);
+    } else {
+      this.location.go('/site/viewer/');
+    }
+
     if (node != null && node.geometry != null && node.geometry.type === "Point") {
       //this.map.fitBounds(this.allPointsBounds, { padding: 50 });
 
@@ -1314,6 +1311,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   back(breadcrumb: ViewerSelection): void {
 
     if (breadcrumb == null) {
+      this.location.go('/site/viewer/');
+
       if (this.breadcrumbs.length > 0) {
 
         if (this.hierarchy.oid != null && this.hierarchy.oid.length > 0) {
@@ -1341,6 +1340,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     else if (breadcrumb.type === SELECTION_TYPE.SITE) {
       const node: SiteEntity = breadcrumb.data as SiteEntity;
+
+      this.location.go('/site/viewer/entity/' + node.id);
 
       if (node.geometry != null && node.geometry.type === "Point") {
         //this.map.fitBounds(this.allPointsBounds, { padding: 50 });
@@ -1400,22 +1401,24 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   showLeafModal(collection: SiteEntity, folders: SiteEntity[], breadcrumbs: SiteEntity[]): void {
+    this.location.go('/site/viewer/entity/' + collection.id);
 
     if (collection.type === "Mission") {
       this.bsModalRef = this.modalService.show(AccessibleSupportModalComponent, {
         animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
-        class: "leaf-modal modal-lg"
+        class: "leaf-modal modal-xl"
       });
       this.bsModalRef.content.init(collection, folders, breadcrumbs);
     }
     else {
+
       this.bsModalRef = this.modalService.show(CollectionModalComponent, {
         animated: true,
         backdrop: true,
         ignoreBackdropClick: true,
-        class: "leaf-modal modal-lg"
+        class: "leaf-modal modal-xl"
       });
       this.bsModalRef.content.init(collection, folders, breadcrumbs);
     }
@@ -1442,11 +1445,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.children = this.childMap[this.content];
 
       // Add a new vector source and layer
-      const config = {
-        oid: this.hierarchy.oid,
-        typeCode: type.code
-      };
-
       this.createHierarchyLayer(type, "#00ffff", 0.5, "parent");
     }
     else {
@@ -1472,7 +1470,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       tiles: [
         protocol + "//" + host + EnvironmentUtil.getApiUrl() + "/api/labeled-property-graph-synchronization/tile?x={x}&y={y}&z={z}&config=" + encodeURIComponent(JSON.stringify(config))
       ],
-      promoteId: "uuid"
+      promoteId: "uid"
     });
 
     // Add the hierarchy polygon layer
@@ -1490,7 +1488,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         "all",
         [
           "==",
-          this.current.data.properties.uuid,
+          this.current.data.properties.uid,
           ["get", attribute]
         ]
       ],
@@ -1518,7 +1516,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         "all",
         [
           "==",
-          this.current.data.properties.uuid,
+          this.current.data.properties.uid,
           ["get", attribute]
         ]
       ],
@@ -1590,7 +1588,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.current = {
           type: SELECTION_TYPE.ROOT,
-          data: { properties: { uuid: resp.parent } },
+          data: { properties: { uid: resp.parent } },
           metadata: null,
           hierarchy: this.hierarchy.oid
         };
@@ -1602,7 +1600,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
           metadata.attributes = metadata.attributes.filter(attribute => {
             return (attribute.code == 'code'
               || (!attribute.isDefault
-                && attribute.code != 'uuid'));
+                && attribute.code != 'uid'));
           });
 
           this.metadataCache[metadata.code] = metadata;
@@ -1677,7 +1675,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
             metadata.attributes = metadata.attributes.filter(attribute => {
               return (attribute.code == 'code'
                 || (!attribute.isDefault
-                  && attribute.code != 'uuid'));
+                  && attribute.code != 'uid'));
             });
 
             this.metadataCache[metadata.code] = metadata;
@@ -1747,17 +1745,30 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   handleVisibilityChange(): void {
     this.hierarchy.visible = !this.hierarchy.visible;
 
-    if (!this.hierarchy.visible) {
-      this.map.setLayoutProperty("parent-polygon", 'visibility', 'none');
-      this.map.setLayoutProperty("parent-label", 'visibility', 'none');
-      this.map.setLayoutProperty("hierarchy-polygon", 'visibility', 'none');
-      this.map.setLayoutProperty("hierarchy-label", 'visibility', 'none');
-    } else {
-      this.map.setLayoutProperty("parent-polygon", 'visibility', 'visible');
-      this.map.setLayoutProperty("parent-label", 'visibility', 'visible');
-      this.map.setLayoutProperty("hierarchy-polygon", 'visibility', 'visible');
-      this.map.setLayoutProperty("hierarchy-label", 'visibility', 'visible');
+    const changeVisibility = (type) => {
+
+      try {
+        if (!this.hierarchy.visible) {
+          this.map.setLayoutProperty(type.code + "-polygon", 'visibility', 'none');
+          this.map.setLayoutProperty(type.code + "-label", 'visibility', 'none');
+        } else {
+          this.map.setLayoutProperty(type.code + "-polygon", 'visibility', 'visible');
+          this.map.setLayoutProperty(type.code + "-label", 'visibility', 'visible');
+        }
+      }
+      catch (e) {
+        // Ignore errors
+      }
     }
+
+    this.types.forEach(type => {
+      changeVisibility(type);
+    });
+
+    if (this.current != null) {
+      changeVisibility(this.current.metadata);
+    }
+
   }
 
 
@@ -1770,6 +1781,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       animated: true,
       backdrop: true,
       ignoreBackdropClick: true,
+      class: "modal-xl"
     });
     this.bsModalRef.content.init(this.filter);
 
@@ -1866,7 +1878,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     (<any>this.map.getSource("items")).setData(featureCollection(features));
   }
 
-  handleCollectionChange(collection: StacCollection): void {
+  handleCollectionChange(event: { visible: boolean, collection: StacCollection }): void {
+
+    const { collection, visible } = event;
+
 
     if (collection != null && collection.extent.spatial != null && collection.extent.spatial.bbox.length > 0) {
 
@@ -1890,8 +1905,15 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.collection = collection;
 
+    this.map.setLayoutProperty('collection', "visibility", visible ? 'visible' : 'none');
+
     this.buildItemsLayer();
   }
+
+  handleToggleCollectionVisibility(visible: boolean): void {
+    this.map.setLayoutProperty('collection', "visibility", visible ? 'visible' : 'none');
+  }
+
 
   handleProductsChange(views: CollectionProductView[]): void {
 
@@ -2045,6 +2067,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         url += "?url=" + encodeURIComponent(link.href);
         url += "&assets=" + encodeURIComponent(item.asset);
 
+        const asset = item.assets[item.asset];
+        if (asset.roles != null && asset.roles.indexOf('multispectral') !== -1) {
+          url += "&multispectral=true";
+        }
+        else if (asset.roles != null && asset.roles.indexOf('elevation') !== -1) {
+          url += "&hillshade=true";
+        }
+
         this.addImageLayer({
           classification: "ORTHO",
           key: layer.id + '-' + item.id + '-' + item.asset,
@@ -2063,6 +2093,14 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       let url = "/stac/tilejson.json";
       url += "?url=" + encodeURIComponent(link.href);
       url += "&assets=" + encodeURIComponent(item.asset);
+
+      const asset = item.assets[item.asset];
+      if (asset.roles != null && asset.roles.indexOf('multispectral') !== -1) {
+        url += "&multispectral=true";
+      }
+      else if (asset.roles != null && asset.roles.indexOf('elevation') !== -1) {
+        url += "&hillshade=true";
+      }
 
       this.addImageLayer({
         classification: "ORTHO",
@@ -2175,11 +2213,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     ((link.item != null) ? new Promise<StacItem>(function (myResolve, myReject) {
       myResolve(link.item);
     }) : this.stacService.item(link.href)).then(item => {
-      if (item.assets.thumbnail != null) {
-        item.thumbnail = item.assets.thumbnail.href;
+      if (item.assets['thumbnail'] != null) {
+        item.thumbnail = item.assets['thumbnail'].href;
       }
-      else if (item.assets['thumbnail-hd'] != null) {
-        item.thumbnail = item.assets['thumbnail-hd'].href;
+      else if (item.assets['overview'] != null) {
+        item.thumbnail = item.assets['overview'].href;
       }
 
       link.item = item;

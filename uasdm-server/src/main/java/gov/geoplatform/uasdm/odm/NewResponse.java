@@ -15,9 +15,13 @@
  */
 package gov.geoplatform.uasdm.odm;
 
+import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
+
 public interface NewResponse extends ODMResponse
 {
 
   String getUUID();
+  
+  ODMProcessingPayload getPayload();
 
 }

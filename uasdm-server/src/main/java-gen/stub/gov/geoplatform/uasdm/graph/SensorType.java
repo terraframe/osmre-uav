@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -44,20 +44,23 @@ public class SensorType extends SensorTypeBase implements Classification
 
   public static final String MULTISPECTRAL    = "Multispectral";
 
+  public static final String RADIOMETRIC      = "Radiometric";
+
   public SensorType()
   {
     super();
-  }
-
-  public boolean isLidar()
-  {
-    return super.getIsLidar() != null && super.getIsLidar().booleanValue();
   }
 
   @Override
   public void apply()
   {
     boolean isNew = this.isNew();
+
+    if (isNew)
+    {
+      this.setIsMultispectral(false);
+      this.setIsLidar(false);
+    }
 
     super.apply();
 
@@ -135,8 +138,6 @@ public class SensorType extends SensorTypeBase implements Classification
     JSONObject object = new JSONObject();
     object.put(SensorType.OID, this.getOid());
     object.put(SensorType.NAME, this.getName());
-    object.put(SensorType.ISMULTISPECTRAL, this.getIsMultispectral());
-    object.put(SensorType.ISLIDAR, this.isLidar());
 
     if (this.getSeq() != null)
     {
@@ -163,7 +164,7 @@ public class SensorType extends SensorTypeBase implements Classification
 
   public static SensorType fromJSON(JSONObject json)
   {
-    SensorType classification = null;
+    SensorType st = null;
 
     if (json.has(SensorType.OID))
     {
@@ -171,40 +172,34 @@ public class SensorType extends SensorTypeBase implements Classification
 
       if (oid != null)
       {
-        classification = SensorType.get(oid);
+        st = SensorType.get(oid);
       }
     }
 
-    if (classification == null)
+    if (st == null)
     {
-      classification = new SensorType();
+      st = new SensorType();
     }
 
-    classification.setName(json.getString(SensorType.NAME));
-
-    if (json.has(SensorType.ISMULTISPECTRAL))
-    {
-      classification.setIsMultispectral(json.getBoolean(SensorType.ISMULTISPECTRAL));
-    }
-    else
-    {
-      classification.setIsMultispectral(Boolean.FALSE);
-    }
-
-    if (json.has(SensorType.ISLIDAR))
-    {
-      classification.setIsLidar(json.getBoolean(SensorType.ISLIDAR));
-    }
-    else
-    {
-      classification.setIsLidar(Boolean.FALSE);
-    }
+    st.setName(json.getString(SensorType.NAME));
 
     if (json.has(SensorType.SEQ))
     {
-      classification.setSeq(json.getLong(SensorType.SEQ));
+      st.setSeq(json.getLong(SensorType.SEQ));
     }
 
-    return classification;
+    return st;
+  }
+
+  /**
+   * This method exists purely to maintain backwards compatibility with older
+   * collections which had this information on the sensorType. Nowadays, this
+   * information is accessed at 'collection.getFormat().isLidar()'.
+   * 
+   * @return
+   */
+  public boolean isLidar()
+  {
+    return super.getIsLidar() != null && super.getIsLidar().booleanValue();
   }
 }

@@ -18,7 +18,9 @@ package gov.geoplatform.uasdm.mock;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import com.runwaysdk.resource.ApplicationFileResource;
 import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.resource.CloseableFile;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
@@ -62,7 +64,7 @@ public class MockODMService implements ODMServiceIF
   }
   
   @Override
-  public NewResponse taskNew(ApplicationResource images, boolean isMultispectral, ODMProcessConfiguration configuration, Collection col, AbstractWorkflowTask task)
+  public NewResponse taskNew(ArchiveFileResource images, boolean isMultispectral, ODMProcessConfiguration configuration, Collection col, AbstractWorkflowTask task)
   {
     return new MockNewResponse();
   }

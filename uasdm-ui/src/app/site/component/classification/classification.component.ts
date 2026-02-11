@@ -12,11 +12,17 @@ import { ErrorHandler } from '@shared/component';
 import { Classification, ClassificationComponentMetadata } from '@site/model/classification';
 import { ClassificationService } from '@site/service/classification.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UasdmHeaderComponent } from '@shared/component/header/header.component';
+import { NgIf, NgFor } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { BooleanFieldComponent } from '@shared/component/boolean-field/boolean-field.component';
 
 @Component({
-	selector: 'classification',
-	templateUrl: './classification.component.html',
-	styleUrls: []
+    standalone: true,
+    selector: 'classification',
+    templateUrl: './classification.component.html',
+    styleUrls: [],
+    imports: [UasdmHeaderComponent, NgIf, FormsModule, NgFor, BooleanFieldComponent]
 })
 export class ClassificationComponent implements OnInit {
 
@@ -32,8 +38,8 @@ export class ClassificationComponent implements OnInit {
 	constructor(private service: ClassificationService, private route: ActivatedRoute, private router: Router) { }
 
 	ngOnInit(): void {
-        this.route.data.subscribe(data => {
-            this.metadata = data as ClassificationComponentMetadata;
+		this.route.data.subscribe(data => {
+			this.metadata = data as ClassificationComponentMetadata;
 
 			const oid = this.route.snapshot.params['oid'];
 
@@ -49,37 +55,38 @@ export class ClassificationComponent implements OnInit {
 					this.classification = classification;
 					this.original = JSON.parse(JSON.stringify(this.classification));
 				});
-			}	
-        })
+			}
+		})
 	}
 
 	handleOnSubmit(): void {
 		this.message = null;
 
 		this.service.apply(this.metadata.baseUrl, this.classification).then(data => {
-            this.classification = data;
-            this.mode = 'READ';
+			this.classification = data;
+			this.mode = 'READ';
 
-            if (this.newInstance) {
-                this.router.navigate(['/site/' + this.metadata.baseUrl, data.oid]);
+			if (this.newInstance) {
+
+				this.router.navigate(['/site/' + this.metadata.route, data.oid]);
 				this.newInstance = false;
-                this.original = data;
-            }
+				this.original = data;
+			}
 		}).catch((err: HttpErrorResponse) => {
 			this.error(err);
 		});
 	}
 
-    handleOnCancel(): void {
-        this.message = null;
+	handleOnCancel(): void {
+		this.message = null;
 
-        this.classification = JSON.parse(JSON.stringify(this.original));    
-        this.mode = 'READ';
-    }
+		this.classification = JSON.parse(JSON.stringify(this.original));
+		this.mode = 'READ';
+	}
 
-    handleOnEdit(): void {
-        this.mode = 'WRITE';
-    }
+	handleOnEdit(): void {
+		this.mode = 'WRITE';
+	}
 
 	error(err: HttpErrorResponse): void {
 		this.message = ErrorHandler.getMessageFromError(err);

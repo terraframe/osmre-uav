@@ -13,10 +13,11 @@ import { PageResult } from '@shared/model/page';
 import { MetadataOptions, UAV } from '../model/uav';
 import { GenericTableService } from '@shared/model/generic-table';
 import { environment } from 'src/environments/environment';
+import { firstValueFrom } from 'rxjs';
 
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class UAVService implements GenericTableService {
 
     constructor(private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService) { }
@@ -26,25 +27,22 @@ export class UAVService implements GenericTableService {
         let params: HttpParams = new HttpParams();
         params = params.set('criteria', JSON.stringify(criteria));
 
-        return this.http
-            .get<PageResult<UAV>>(environment.apiUrl + '/uav/page', { params: params })
-            .toPromise();
+        return firstValueFrom(this.http
+            .get<PageResult<UAV>>(environment.apiUrl + '/api/uav/page', { params: params }));
     }
 
     get(oid: string): Promise<{ uav: UAV, bureaus: { value: string, label: string }[] }> {
 
-        let headers = new HttpHeaders({
-            'Content-Type': 'application/json'
-        });
+        let params: HttpParams = new HttpParams();
+        params = params.set('oid', oid);
 
         this.eventService.start();
 
-        return this.http
-            .post<{ uav: UAV, bureaus: { value: string, label: string }[] }>(environment.apiUrl + '/uav/get', JSON.stringify({ oid: oid }), { headers: headers })
+        return firstValueFrom(this.http
+            .get<{ uav: UAV, bureaus: { value: string, label: string }[] }>(environment.apiUrl + '/api/uav/get', { params })
             .pipe(finalize(() => {
                 this.eventService.complete();
-            }))
-            .toPromise();
+            })));
     }
 
     newInstance(): Promise<{ uav: UAV, bureaus: { value: string, label: string }[] }> {
@@ -55,12 +53,11 @@ export class UAVService implements GenericTableService {
 
         this.eventService.start();
 
-        return this.http
-            .post<{ uav: UAV, bureaus: { value: string, label: string }[] }>(environment.apiUrl + '/uav/newInstance', JSON.stringify({}), { headers: headers })
+        return firstValueFrom(this.http
+            .post<{ uav: UAV, bureaus: { value: string, label: string }[] }>(environment.apiUrl + '/api/uav/new-instance', JSON.stringify({}), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
-            }))
-            .toPromise();
+            })));
     }
 
     remove(oid: string): Promise<void> {
@@ -71,12 +68,11 @@ export class UAVService implements GenericTableService {
 
         this.eventService.start();
 
-        return this.http
-            .post<void>(environment.apiUrl + '/uav/remove', JSON.stringify({ oid: oid }), { headers: headers })
+        return firstValueFrom(this.http
+            .post<void>(environment.apiUrl + '/api/uav/remove', JSON.stringify({ oid: oid }), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
-            }))
-            .toPromise();
+            })));
     }
 
     apply(uav: UAV): Promise<UAV> {
@@ -87,12 +83,11 @@ export class UAVService implements GenericTableService {
 
         this.eventService.start();
 
-        return this.noErrorHttpClient
-            .post<UAV>(environment.apiUrl + '/uav/apply', JSON.stringify({ uav: uav }), { headers: headers })
+        return firstValueFrom(this.noErrorHttpClient
+            .post<UAV>(environment.apiUrl + '/api/uav/apply', JSON.stringify(uav), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
-            }))
-            .toPromise();
+            })));
     }
 
     search(text: string, field: string): Promise<{ oid: string, serialNumber: string, faaNumber: string }[]> {
@@ -101,9 +96,9 @@ export class UAVService implements GenericTableService {
         params = params.set('text', text);
         params = params.set('field', field);
 
-        return this.http
-            .get<{ oid: string, serialNumber: string, faaNumber: string }[]>(environment.apiUrl + '/uav/search', { params: params })
-            .toPromise();
+        return firstValueFrom(this.http
+            .get<{ oid: string, serialNumber: string, faaNumber: string }[]>(environment.apiUrl + '/api/uav/search', { params: params })
+        );
     }
 
     getMetadataOptions(oid: string): Promise<MetadataOptions> {
@@ -111,8 +106,7 @@ export class UAVService implements GenericTableService {
         let params: HttpParams = new HttpParams();
         params = params.set('oid', oid);
 
-        return this.http
-            .get<MetadataOptions>(environment.apiUrl + '/uav/get-metadata-options', { params: params })
-            .toPromise();
+        return firstValueFrom(this.http
+            .get<MetadataOptions>(environment.apiUrl + '/api/uav/get-metadata-options', { params: params }))
     }
 }

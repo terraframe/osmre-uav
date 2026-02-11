@@ -15,11 +15,21 @@ import { AccountService } from '../../service/account.service';
 
 import { ErrorHandler, ErrorModalComponent } from '@shared/component';
 import { environment } from 'src/environments/environment';
+import { NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MustMatchDirective } from '@shared/directive/must-match.directive';
+import { LocalizeComponent } from '@shared/component/localize/localize.component';
+import { PhoneNumberValidatorDirective } from '@shared/directive/phone-number.directive';
+import { PasswordValidatorDirective } from '@shared/directive/password-validator.directive';
+import { PasswordStrengthBarComponent } from '@shared/component/password-strength-bar/password-strength-bar.component';
+import { LocalizePipe } from '@shared/pipe/localize.pipe';
 
 @Component({
-	selector: 'account-invite-complete',
-	templateUrl: './account-invite-complete.component.html',
-	styles: ['.modal-form .check-block .chk-area { margin: 10px 0px 0 0;}']
+    standalone: true,
+    selector: 'account-invite-complete',
+    templateUrl: './account-invite-complete.component.html',
+    styles: ['.modal-form .check-block .chk-area { margin: 10px 0px 0 0;}'],
+    imports: [NgIf, FormsModule, MustMatchDirective, LocalizeComponent, PhoneNumberValidatorDirective, PasswordValidatorDirective, PasswordStrengthBarComponent, LocalizePipe]
 })
 export class AccountInviteCompleteComponent implements OnInit {
 	user: User;
@@ -59,7 +69,7 @@ export class AccountInviteCompleteComponent implements OnInit {
 	error(err: HttpErrorResponse): void {
 		// Handle error
 		if (err !== null) {
-			this.bsModalRef = this.modalService.show(ErrorModalComponent, { backdrop: true });
+			this.bsModalRef = this.modalService.show(ErrorModalComponent, { backdrop: true, class: 'modal-xl' });
 			this.bsModalRef.content.message = ErrorHandler.getMessageFromError(err);
 		}
 	}

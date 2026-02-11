@@ -15,7 +15,7 @@
  */
 package gov.geoplatform.uasdm.remote;
 
-import java.util.Date;
+import java.time.Instant;
 
 public interface RemoteFileMetadata
 {
@@ -26,11 +26,11 @@ public interface RemoteFileMetadata
 
   public long getContentLength();
 
-  public Long[] getContentRange();
+  public String getContentRange();
 
   public String getContentEncoding();
 
   public String getETag();
 
-  public Date getLastModified();
+  public Instant getLastModified();
 }

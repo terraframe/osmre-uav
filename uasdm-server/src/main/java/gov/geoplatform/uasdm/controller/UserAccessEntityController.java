@@ -15,52 +15,49 @@
  */
 package gov.geoplatform.uasdm.controller;
 
-import java.io.IOException;
-
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.runwaysdk.constants.ClientRequestIF;
-import com.runwaysdk.controller.ServletMethod;
-import com.runwaysdk.mvc.Controller;
-import com.runwaysdk.mvc.Endpoint;
-import com.runwaysdk.mvc.ErrorSerialization;
-import com.runwaysdk.mvc.RequestParamter;
-import com.runwaysdk.mvc.ResponseIF;
-import com.runwaysdk.mvc.RestBodyResponse;
-import com.runwaysdk.mvc.RestResponse;
+import gov.geoplatform.uasdm.controller.body.UserAccessBody;
+import gov.geoplatform.uasdm.service.request.UserAccessEntityService;
 
-import gov.geoplatform.uasdm.service.UserAccessEntityService;
-
-@Controller(url = "user-access")
-public class UserAccessEntityController
+@RestController
+@RequestMapping("/api/user-access")
+public class UserAccessEntityController extends AbstractController
 {
+  @Autowired
   private UserAccessEntityService service;
 
-  public UserAccessEntityController()
+  @GetMapping("list-users")
+  public ResponseEntity<String> listUsers(@RequestParam(name = "componentId") String componentId)
   {
-    this.service = new UserAccessEntityService();
+    JSONArray response = service.listUsers(this.getSessionId(), componentId);
+
+    return ResponseEntity.ok(response.toString());
   }
 
-  @Endpoint(url = "list-users", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF listUsers(ClientRequestIF request, @RequestParamter(name = "componentId") String componentId) throws IOException
+  @PostMapping("grant-access")
+  public ResponseEntity<String> grantAccess(@RequestBody UserAccessBody body)
   {
-    return new RestBodyResponse(service.listUsers(request.getSessionId(), componentId));
+    JSONObject response = this.service.grantAccess(this.getSessionId(), body.getComponentId(), body.getIdentifier());
+
+    return ResponseEntity.ok(response.toString());
   }
 
-  @Endpoint(url = "grant-access", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF grantAccess(ClientRequestIF request, @RequestParamter(name = "componentId") String componentId, @RequestParamter(name = "identifier") String identifier) throws IOException
+  @PostMapping("remove-access")
+  public ResponseEntity<Void> removeAccess(@RequestBody UserAccessBody body)
   {
-    JSONObject response = this.service.grantAccess(request.getSessionId(), componentId, identifier);
+    this.service.removeAccess(this.getSessionId(), body.getComponentId(), body.getIdentifier());
 
-    return new RestBodyResponse(response);
-  }
-
-  @Endpoint(url = "remove-access", method = ServletMethod.POST, error = ErrorSerialization.JSON)
-  public ResponseIF removeAccess(ClientRequestIF request, @RequestParamter(name = "componentId") String componentId, @RequestParamter(name = "identifier") String identifier) throws IOException
-  {
-    this.service.removeAccess(request.getSessionId(), componentId, identifier);
-
-    return new RestResponse();
+    return ResponseEntity.ok(null);
   }
 
 }

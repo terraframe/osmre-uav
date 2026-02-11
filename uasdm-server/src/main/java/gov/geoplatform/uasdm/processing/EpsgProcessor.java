@@ -31,7 +31,7 @@ public class EpsgProcessor implements Processor
   }
 
   @Override
-  public boolean process(ApplicationFileResource res)
+  public ProcessResult process(ApplicationFileResource res)
   {
     if (!res.isDirectory())
     {
@@ -43,14 +43,14 @@ public class EpsgProcessor implements Processor
           this.line = reader.readLine();
         }
 
-        return true;
+        return ProcessResult.success(this.line);
       }
       catch (Exception e)
       {
-        return false;
+        return ProcessResult.fail();
       }
     }
 
-    return false;
+    return ProcessResult.fail();
   }
 }

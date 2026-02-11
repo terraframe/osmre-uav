@@ -50,12 +50,12 @@ public class IDMJsonGraphVersionPublisherService extends JsonGraphVersionPublish
       if(it.hasNext()) {
         LPGGeometry geometry = it.next();
         geometry.appLock();
-        geometry.setParent(parent.getObjectValue("uuid"));
+        geometry.setParent(parent.getObjectValue("uid"));
         geometry.apply();
       }
     }
   }
-
+  
   @Override
   protected VertexObject publish(State state, MdVertex mdVertex, GeoObject geoObject, ClassificationCache classiCache)
   {
@@ -71,7 +71,7 @@ public class IDMJsonGraphVersionPublisherService extends JsonGraphVersionPublish
     geometry.setLocationOid(object.getOid());
     geometry.setLocationCode(object.getObjectValue(GeoObject.CODE));
     geometry.setLocationLabel(object.getEmbeddedValue(GeoObject.DISPLAY_LABEL, LocalizedValue.DEFAULT_LOCALE));
-    geometry.setLocationUuid(object.getObjectValue("uuid"));
+    geometry.setLocationUuid(object.getObjectValue("uid"));
     geometry.setGeometry(object.getObjectValue("geometry"));
     geometry.apply();
 

@@ -25,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,50 +34,19 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import gov.geoplatform.uasdm.service.request.IDMOrganizationService;
-import net.geoprism.registry.controller.RunwaySpringController;
 import net.geoprism.registry.model.OrganizationView;
 import net.geoprism.registry.view.Page;
 
 @RestController
 @Validated
-public class OrganizationController extends RunwaySpringController
+@RequestMapping("/api/organization")
+public class OrganizationController extends AbstractController
 {
-  public static class MoveOrganizationBody
-  {
-    @NotEmpty
-    String code;
-
-    @NotEmpty
-    String parentCode;
-
-    public String getCode()
-    {
-      return code;
-    }
-
-    public void setCode(String code)
-    {
-      this.code = code;
-    }
-
-    public String getParentCode()
-    {
-      return parentCode;
-    }
-
-    public void setParentCode(String parentCode)
-    {
-      this.parentCode = parentCode;
-    }
-  }
-
-  public static final String     API_PATH = "organization";
-
   @Autowired
   private IDMOrganizationService service;
 
   @ResponseBody
-  @GetMapping(API_PATH + "/get-all")
+  @GetMapping("/get-all")
   public ResponseEntity<String> getOrganizations() throws ParseException
   {
     OrganizationDTO[] orgs = this.service.getOrganizations(this.getSessionId(), null);
@@ -91,8 +61,8 @@ public class OrganizationController extends RunwaySpringController
   }
 
   @ResponseBody
-  @GetMapping(API_PATH + "/get")
-  public ResponseEntity<String> get(@NotEmpty @RequestParam String code) throws ParseException
+  @GetMapping("/get")
+  public ResponseEntity<String> get(@NotEmpty @RequestParam(name = "code") String code) throws ParseException
   {
     OrganizationDTO[] orgs = this.service.getOrganizations(this.getSessionId(), new String[] { code });
 
@@ -100,8 +70,8 @@ public class OrganizationController extends RunwaySpringController
   }
 
   @ResponseBody
-  @GetMapping(API_PATH + "/search")
-  public ResponseEntity<String> search(@NotEmpty @RequestParam String text) throws ParseException
+  @GetMapping("/search")
+  public ResponseEntity<String> search(@NotEmpty @RequestParam(name = "text") String text) throws ParseException
   {
     List<OrganizationDTO> orgs = this.service.search(this.getSessionId(), text);
 
@@ -114,32 +84,32 @@ public class OrganizationController extends RunwaySpringController
     return new ResponseEntity<String>(orgsJson.toString(), HttpStatus.OK);
   }
 
-  @GetMapping(API_PATH + "/get-children")
-  public ResponseEntity<String> getChildren(@RequestParam(required = false) String code, @RequestParam(required = false) Integer pageSize, @RequestParam(required = false) Integer pageNumber)
+  @GetMapping("/get-children")
+  public ResponseEntity<String> getChildren(@RequestParam(name = "code", required = false) String code, @RequestParam(name = "pageSize", required = false) Integer pageSize, @RequestParam(name = "pageNumber", required = false) Integer pageNumber)
   {
     JsonObject page = this.service.getChildren(this.getSessionId(), code, pageSize, pageNumber);
 
     return new ResponseEntity<String>(page.toString(), HttpStatus.OK);
   }
 
-  @GetMapping(API_PATH + "/get-ancestor-tree")
-  public ResponseEntity<String> getAncestorTree(@RequestParam(required = false) String rootCode, @NotEmpty @RequestParam String code, @RequestParam(required = false) Integer pageSize)
+  @GetMapping("/get-ancestor-tree")
+  public ResponseEntity<String> getAncestorTree(@RequestParam(name = "rootCode", required = false) String rootCode, @NotEmpty @RequestParam(name = "code") String code, @RequestParam(required = false, name = "pageSize") Integer pageSize)
   {
     JsonObject page = this.service.getAncestorTree(this.getSessionId(), rootCode, code, pageSize);
 
     return new ResponseEntity<String>(page.toString(), HttpStatus.OK);
   }
 
-  @GetMapping(API_PATH + "/patch")
+  @GetMapping("/patch")
   public ResponseEntity<Void> patch()
   {
     this.service.patch(this.getSessionId());
 
     return new ResponseEntity<Void>(HttpStatus.OK);
   }
-  
-  @GetMapping(API_PATH + "/page")
-  public ResponseEntity<String> page(@RequestParam(required = false) Integer pageSize, @RequestParam(required = false) Integer pageNumber)
+
+  @GetMapping("/page")
+  public ResponseEntity<String> page(@RequestParam(required = false, name = "pageSize") Integer pageSize, @RequestParam(required = false, name = "pageNumber") Integer pageNumber)
   {
     Page<OrganizationView> page = this.service.getPage(this.getSessionId(), pageSize, pageNumber);
 

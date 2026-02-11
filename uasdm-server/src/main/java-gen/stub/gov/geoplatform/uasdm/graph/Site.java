@@ -44,13 +44,12 @@ import com.runwaysdk.system.metadata.MdVertex;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.bus.DuplicateSiteException;
-import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.service.business.IDMHierarchyTypeSnapshotBusinessService;
 import gov.geoplatform.uasdm.view.AttributeOrganizationType;
 import gov.geoplatform.uasdm.view.AttributeType;
-import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.EqCondition;
 import gov.geoplatform.uasdm.view.Option;
 import net.geoprism.graph.GeoObjectTypeSnapshot;
@@ -137,13 +136,18 @@ public class Site extends SiteBase implements SiteIF
   public void assignHierarchyParents(LabeledPropertyGraphSynchronization synchronization, Map<String, Object> cache)
   {
     LabeledPropertyGraphTypeVersionBusinessServiceIF service = ApplicationContextHolder.getBean(LabeledPropertyGraphTypeVersionBusinessServiceIF.class);
+    IDMHierarchyTypeSnapshotBusinessService hService = ApplicationContextHolder.getBean(IDMHierarchyTypeSnapshotBusinessService.class);
 
     LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
     MdEdge synchronizationEdge = SynchronizationEdge.get(version).getGraphEdge();
 
     MdVertex graphMdVertex = service.getRootType(version).getGraphMdVertex();
 
+<<<<<<< HEAD
     service.getGraphSnapshots(version).forEach(hierarchy -> {
+=======
+    hService.get(version).forEach(hierarchy -> {
+>>>>>>> refs/remotes/origin/master
       // MdEdge hierarchyEdge = hierarchy.getGraphMdEdge();
 
       StringBuffer sql = new StringBuffer();

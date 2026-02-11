@@ -15,9 +15,6 @@
  */
 package gov.geoplatform.uasdm.controller;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,8 +22,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,22 +29,19 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import gov.geoplatform.uasdm.cog.CogTileException;
 import gov.geoplatform.uasdm.service.CloudOptimizedGeoTiffService;
 import gov.geoplatform.uasdm.view.TileAccessControl;
-import net.geoprism.registry.controller.RunwaySpringController;
 
 @Controller
 @Validated
-public class CloudOptimizedGeoTiffController extends RunwaySpringController
+@RequestMapping("/api/cog")
+public class CloudOptimizedGeoTiffController extends AbstractController
 {
-  private static final Logger          logger   = LoggerFactory.getLogger(CloudOptimizedGeoTiffController.class);
-
-  public static final String           API_PATH = "cog";
-
   @Autowired
   private CloudOptimizedGeoTiffService service;
 
@@ -66,8 +58,8 @@ public class CloudOptimizedGeoTiffController extends RunwaySpringController
    * @param path
    * @return
    */
-  @GetMapping(API_PATH + "/tilejson.json")
-  public ResponseEntity<String> tilejson(HttpServletRequest request, @RequestParam(required = true) String path)
+  @GetMapping("/tilejson.json")
+  public ResponseEntity<String> tilejson(HttpServletRequest request, @RequestParam(required = true, name = "path") String path)
   {
     JSONObject tilejson = this.service.tilejson(getSessionId(), request.getContextPath(), path, this.getAccessControl(request));
 
@@ -96,8 +88,8 @@ public class CloudOptimizedGeoTiffController extends RunwaySpringController
    */
   public static final String TILES_REGEX = "tiles\\/(.+\\/)?(\\d+)\\/(\\d+)\\/(\\d+)(@\\d+x)?(\\.[^?\\n\\r]+)?";
 
-  @GetMapping(API_PATH + "/tiles/**")
-  public ResponseEntity<?> tiles(HttpServletRequest request, @RequestParam(required = true) String path)
+  @GetMapping("/tiles/**")
+  public ResponseEntity<?> tiles(HttpServletRequest request, @RequestParam(required = true, name = "path") String path)
   {
     String url = request.getRequestURI();
 

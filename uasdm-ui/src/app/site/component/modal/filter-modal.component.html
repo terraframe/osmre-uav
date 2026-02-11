@@ -5,13 +5,23 @@
 -->
 
 <div>
-  <h3>Filter Sites</h3>
+  <div class="modal-header">
+	  <h5 class="modal-title mb-0">Filter Sites</h5>
+	  <button
+	    type="button"
+	    class="btn-close"
+	    aria-label="Close"
+	    (click)="bsModalRef.hide()"
+	  ></button>
+	</div>
+  
+  
   <div *ngIf="filter != null" class="modal-body" tabindex="-1" role="dialog">
     <div [@fadeInOnEnter] class="form-group">
 
       <div class="row" style="margin-right: 10px;">
         <div class="col-sm-12">
-          <label>Project Type</label>
+          <label class="form-label">Project Type</label>
           <select [(ngModel)]="filter.projectType" name="projectType" class="form-control">
             <option></option>
             <option *ngFor="let projectType of projectTypes" [value]="projectType">{{projectType}}</option>
@@ -20,13 +30,13 @@
       </div>
       <div class="row" style="margin-right: 10px;">
         <div class="col-sm-12">
-          <label>Collection Date</label>
+          <label class="form-label">Collection Date</label>
           <input type="date" [(ngModel)]="filter.collectionDate" name="collectionDate" class="form-control">
         </div>
       </div>
       <div class="row" style="margin-right: 10px;">
         <div class="col-sm-12">
-          <label>Sensor</label>
+          <label class="form-label">Sensor</label>
           <input class="form-control search-input" type="text" name="sensor" placeholder="Search for sensors..."
             autocomplete="off" [(ngModel)]="filter.sensor" [typeaheadAsync]="true" [typeahead]="sensorSource"
             [typeaheadOptionsLimit]="10" [typeaheadMinLength]="2" typeaheadOptionField="text"
@@ -35,7 +45,7 @@
       </div>
       <div class="row" style="margin-right: 10px;">
         <div class="col-sm-12">
-          <label>UAV FAA Number</label>
+          <label class="form-label">UAV FAA Number</label>
           <input class="form-control search-input" type="text" name="uav" placeholder="Search for FAA Numbers..."
             autocomplete="off" [(ngModel)]="filter.uav" [typeaheadAsync]="true" [typeahead]="uavSource"
             [typeaheadOptionsLimit]="10" [typeaheadMinLength]="2" typeaheadOptionField="text"
@@ -44,7 +54,7 @@
       </div>
       <div class="row" style="margin-right: 10px;">
         <div class="col-sm-12">
-          <label>Platform</label>
+          <label class="form-label">Platform</label>
           <input class="form-control search-input" type="text" name="platform" placeholder="Search for platforms..."
             autocomplete="off" [(ngModel)]="filter.platform" [typeaheadAsync]="true" [typeahead]="platformSource"
             [typeaheadOptionsLimit]="10" [typeaheadMinLength]="2" typeaheadOptionField="text"

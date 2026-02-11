@@ -1,102 +1,52 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.controller;
 
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.runwaysdk.constants.ClientRequestIF;
-import com.runwaysdk.controller.ServletMethod;
-import com.runwaysdk.mvc.Controller;
-import com.runwaysdk.mvc.Endpoint;
-import com.runwaysdk.mvc.ErrorSerialization;
-import com.runwaysdk.mvc.RequestParamter;
-import com.runwaysdk.mvc.ResponseIF;
-import com.runwaysdk.mvc.RestBodyResponse;
-import com.runwaysdk.mvc.RestResponse;
 
-import gov.geoplatform.uasdm.service.SensorService;
+import gov.geoplatform.uasdm.service.request.CrudService;
+import gov.geoplatform.uasdm.service.request.SensorService;
 
-@Controller(url = "sensor")
-public class SensorController
+@RestController
+@RequestMapping("/api/sensor")
+public class SensorController extends AbstractCrudController
 {
+  @Autowired
   private SensorService service;
 
-  public SensorController()
+  @Override
+  public CrudService getService()
   {
-    this.service = new SensorService();
+    return this.service;
   }
 
-  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF page(ClientRequestIF request, @RequestParamter(name = "criteria") String criteria) throws JSONException
+  @GetMapping("/search")
+  public ResponseEntity<String> search(@RequestParam(name = "text") String text)
   {
-    JSONObject page = this.service.page(request.getSessionId(), new JSONObject(criteria));
+    JSONArray response = this.service.search(this.getSessionId(), text);
 
-    return new RestBodyResponse(page);
-  }
-
-  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "get-all")
-  public ResponseIF getAll(ClientRequestIF request) throws JSONException
-  {
-    JSONArray list = this.service.getAll(request.getSessionId());
-
-    return new RestBodyResponse(list);
-  }
-
-  @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON, url = "apply")
-  public ResponseIF apply(ClientRequestIF request, @RequestParamter(name = "sensor") String sensorJSON) throws JSONException
-  {
-    JSONObject sensor = new JSONObject(sensorJSON);
-
-    JSONObject response = this.service.apply(request.getSessionId(), sensor);
-
-    return new RestBodyResponse(response);
-  }
-
-  @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON, url = "remove")
-  public ResponseIF remove(ClientRequestIF request, @RequestParamter(name = "oid") String oid) throws JSONException
-  {
-    this.service.remove(request.getSessionId(), oid);
-
-    return new RestResponse();
-  }
-
-  @Endpoint(method = ServletMethod.POST, error = ErrorSerialization.JSON, url = "newInstance")
-  public ResponseIF newInstance(ClientRequestIF request) throws JSONException
-  {
-    JSONObject response = this.service.newInstance(request.getSessionId());
-
-    return new RestBodyResponse(response);
-  }
-
-  @Endpoint(method = ServletMethod.GET, error = ErrorSerialization.JSON, url = "get")
-  public ResponseIF get(ClientRequestIF request, @RequestParamter(name = "oid") String oid) throws JSONException
-  {
-    JSONObject response = this.service.get(request.getSessionId(), oid);
-
-    return new RestBodyResponse(response);
-  }
-  
-  @Endpoint(url = "search", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF search(ClientRequestIF request, @RequestParamter(name = "text") String text)
-  {
-    JSONArray response = this.service.search(request.getSessionId(), text);
-
-    return new RestBodyResponse(response);
+    return ResponseEntity.ok(response.toString());
   }
 
 }

@@ -12,12 +12,18 @@ import { Task, TaskGroup, TaskGroupType } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 import { ODMRunModalComponent } from '../modal/odmrun-modal.component';
 import { ProcessRunModalComponent } from '../modal/process-run-modal.component';
+import { getRuntimeDisplay } from '@site/model/odmrun';
+import { NgClass, NgFor, NgIf } from '@angular/common';
+import { CollapseDirective } from 'ngx-bootstrap/collapse';
+import { IdmDatePipe } from '@shared/pipe/idmdate.pipe';
 
 
 @Component({
-	selector: 'tasks-panel',
-	templateUrl: './tasks-panel.component.html',
-	styleUrls: ['./tasks-panel.css']
+    standalone: true,
+    selector: 'tasks-panel',
+    templateUrl: './tasks-panel.component.html',
+    styleUrls: ['./tasks-panel.css'],
+    imports: [NgClass, CollapseDirective, NgFor, NgIf, IdmDatePipe]
 })
 export class TasksPanelComponent implements OnInit {
 
@@ -41,6 +47,8 @@ export class TasksPanelComponent implements OnInit {
      * List of tasks
      */
 	taskGroups: TaskGroup[] = [];
+
+	public getRuntimeDisplay = getRuntimeDisplay;
 
 	constructor(private managementService: ManagementService, private modalService: BsModalService) {
 
@@ -67,9 +75,8 @@ export class TasksPanelComponent implements OnInit {
 	viewOdmRun(task: Task): void {
 		const modal = this.modalService.show(ODMRunModalComponent, {
 			animated: true,
-			backdrop: true,
+			backdrop: true, class: 'modal-xl',
 			ignoreBackdropClick: false,
-			'class': ''
 		});
 		
 		modal.content.initOnWorkflowTask(task);
@@ -78,9 +85,8 @@ export class TasksPanelComponent implements OnInit {
 	viewConfiguration(task: Task): void {
 		const modal = this.modalService.show(ProcessRunModalComponent, {
 			animated: true,
-			backdrop: true,
+			backdrop: true, class: 'modal-xl',
 			ignoreBackdropClick: false,
-			'class': ''
 		});
 		
 		modal.content.init(task);
@@ -91,7 +97,7 @@ export class TasksPanelComponent implements OnInit {
 
 		this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
 			animated: true,
-			backdrop: true,
+			backdrop: true, class: 'modal-xl',
 			ignoreBackdropClick: true,
 		});
 		this.bsModalRef.content.message = 'Are you sure you want to delete [' + task.label + '?';

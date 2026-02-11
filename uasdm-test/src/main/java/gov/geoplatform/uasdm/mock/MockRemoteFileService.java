@@ -283,6 +283,7 @@ public class MockRemoteFileService implements RemoteFileService
   @Override
   public void copyFolder(String sourceKey, String sourceBucket, String destKey, String destBucket)
   {
+<<<<<<< HEAD
     // TODO Auto-generated method stub
   }
 
@@ -291,5 +292,8 @@ public class MockRemoteFileService implements RemoteFileService
   {
     // TODO Auto-generated method stub
     return null;
+=======
+    
+>>>>>>> refs/remotes/origin/master
   }
 }

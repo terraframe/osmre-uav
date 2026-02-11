@@ -18,6 +18,11 @@ package gov.geoplatform.uasdm;
 import org.junit.After;
 import org.junit.Before;
 
+import com.runwaysdk.session.Request;
+
+import gov.geoplatform.uasdm.graph.Mission;
+import gov.geoplatform.uasdm.graph.Project;
+import gov.geoplatform.uasdm.graph.Site;
 import gov.geoplatform.uasdm.test.Area51DataSet;
 
 public abstract class Area51DataTest implements InstanceTestClassListener
@@ -39,5 +44,22 @@ public abstract class Area51DataTest implements InstanceTestClassListener
       testData.tearDownMetadata();
     }
   }
+  
+  @Before
+  @Request
+  public void setUp()
+  {
+    testData.setUpInstanceData();
 
+    testData.logIn();
+  }
+
+  @After
+  @Request
+  public void tearDown()
+  {
+    testData.logOut();
+
+    testData.tearDownInstanceData();
+  }
 }

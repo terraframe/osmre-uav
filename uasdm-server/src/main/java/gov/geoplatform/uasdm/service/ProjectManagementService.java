@@ -35,13 +35,15 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.io.FileUtils;
+import javax.annotation.PreDestroy;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import com.runwaysdk.RunwayException;
 import com.runwaysdk.business.graph.VertexObject;
@@ -51,6 +53,7 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.cache.DataNotFoundException;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
@@ -63,7 +66,6 @@ import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
-import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.UasComponentCompositeDeleteException;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.cog.CogPreviewParams;
@@ -93,13 +95,13 @@ import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.ProductIF;
-import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.Quality;
+import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.RadiometricCalibration;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.processing.ProcessingInProgressException;
@@ -110,7 +112,6 @@ import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.ODMRunView;
 import gov.geoplatform.uasdm.view.QueryResult;
 import gov.geoplatform.uasdm.view.QuerySiteResult;
-import gov.geoplatform.uasdm.view.RequestParserIF;
 import gov.geoplatform.uasdm.view.SiteItem;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
@@ -119,9 +120,11 @@ import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
 import gov.geoplatform.uasdm.ws.UserNotificationMessage;
+import me.desair.tus.server.upload.UploadInfo;
 import net.geoprism.GeoprismUser;
 import net.geoprism.localization.LocalizationService;
 
+@Service
 public class ProjectManagementService
 {
 
@@ -164,7 +167,13 @@ public class ProjectManagementService
 
           try (OutputStream ostream = new BufferedOutputStream(new FileOutputStream(zip)))
           {
-            List<String> files = downloadAll(this.collection, ImageryComponent.RAW, ostream, predicate, false);
+            var format = this.collection.getFormat();
+            List<String> files;
+
+            if (format != null && format.isVideo())
+              files = downloadAll(this.collection, ImageryComponent.VIDEO, ostream, predicate, false);
+            else
+              files = downloadAll(this.collection, ImageryComponent.RAW, ostream, predicate, false);
 
             filenames.addAll(files);
           }
@@ -185,7 +194,7 @@ public class ProjectManagementService
         task.setProcessFilenameArray(array.toString());
         task.apply();
 
-        task.initiate(new FileResource(zip), collection.isMultiSpectral());
+        task.initiate(new ArchiveFileResource(new FileResource(zip)), collection.isMultiSpectral(), collection.isRadiometric());
 
         NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
       }
@@ -243,7 +252,7 @@ public class ProjectManagementService
             downloadAll(this.collection, ImageryComponent.RAW, ostream, predicate, false);
           }
 
-          task.initiate(new FileResource(zip));
+          task.initiate(new ArchiveFileResource(new FileResource(zip)));
 
           NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
         }
@@ -334,7 +343,7 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public List<TreeComponent> getRoots(String sessionId, String id, String conditions, String sort)
+  public List<TreeComponent> getRoots(String sessionId, String conditions, String sort)
   {
     LinkedList<TreeComponent> roots = new LinkedList<TreeComponent>();
 
@@ -343,67 +352,6 @@ public class ProjectManagementService
     for (SiteIF s : sites)
     {
       roots.add(Converter.toSiteItem(s, false));
-    }
-
-    // TODO : This code is never run. The front-end always specifys a null id.
-    // And why would we want to fetch all imagery ? That could be really
-    // expensive.
-    if (id != null)
-    {
-      // UasComponent component = ComponentFactory.getComponent(id);
-      //
-      // TreeComponent child = Converter.toSiteItem(component, false, true);
-      //
-      // List<UasComponentIF> ancestors = component.getAncestors();
-      //
-      // for (int j = 0; j < ancestors.size(); j++)
-      // {
-      // TreeComponent parent = null;
-      //
-      // if (j == ( ancestors.size() - 1 ))
-      // {
-      // /*
-      // * The last ancestor in the list should be the root tree node, which
-      // * should already be in the roots list. As such use the root list node
-      // * instead and add children to it.
-      // */
-      // UasComponent root = ancestors.get(ancestors.size() - 1);
-      //
-      // for (TreeComponent r : roots)
-      // {
-      // if (r.getId().equals(root.getOid()))
-      // {
-      // parent = r;
-      // }
-      // }
-      // }
-      // else
-      // {
-      // parent = Converter.toSiteItem(ancestors.get(j), false);
-      // }
-      //
-      // if (parent instanceof SiteItem)
-      // {
-      // /*
-      // * For each ancestor get all of its children TreeComponents
-      // */
-      // List<TreeComponent> children = this.items(parent.getId(), null);
-      //
-      // for (TreeComponent chi : children)
-      // {
-      // if (!chi.getId().equals(child.getId()))
-      // {
-      // parent.addChild(chi);
-      // }
-      // else
-      // {
-      // parent.addChild(child);
-      // }
-      // }
-      //
-      // child = parent;
-      // }
-      // }
     }
 
     return roots;
@@ -727,78 +675,25 @@ public class ProjectManagementService
     }
   }
 
-  @Request(RequestType.SESSION)
-  public void handleUploadFinish(String sessionId, RequestParserIF parser, File infile)
+  // Must run as SYSTEM. The user's session may no longer be valid
+  // (depending on how long chunk merging takes)
+  @Request
+  public void handleUploadFinish(String runAsUserOid, UploadInfo uploadInfo, InputStream istream)
   {
     try
     {
-      ImageryProcessingJob.processFiles(parser, infile);
+      ImageryProcessingJob.processFiles(runAsUserOid, uploadInfo, istream);
     }
     catch (Throwable t)
     {
       logger.error("Error occurred in 'handleUploadFinish'.", t);
     }
-    finally
-    {
-      FileUtils.deleteQuietly(infile);
-    }
   }
 
   @Request(RequestType.SESSION)
-  public void handleUploadMergeError(String sessionId, RequestParserIF parser, Throwable t)
+  public void applyMetadata(String sessionId, JSONObject selection)
   {
-    final AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
-    final String msg = "An error occurred while merging upload chunks. " + RunwayException.localizeThrowable(t, Session.getCurrentLocale());
-
-    task.lock();
-    task.setStatus(WorkflowTaskStatus.ERROR.toString());
-    task.setMessage(msg);
-    task.apply();
-
-    logger.error(msg, t);
-
-    if (Session.getCurrentSession() != null)
-    {
-      NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
-    }
-  }
-
-  @Request(RequestType.SESSION)
-  public void handleUploadMergeStart(String sessionId, RequestParserIF parser)
-  {
-    final AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(parser.getUuid());
-    final String msg = "Processing uploaded files...";
-
-    task.lock();
-    task.setStatus(WorkflowTaskStatus.PROCESSING.toString());
-    task.setMessage(msg);
-    task.apply();
-
-    if (Session.getCurrentSession() != null)
-    {
-      NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
-    }
-  }
-
-  @Request(RequestType.SESSION)
-  public void validate(String sessionId, RequestParserIF parser)
-  {
-    // Map<String, String> params = parser.getCustomParams();
-    // Boolean createCollection = Boolean.valueOf(params.get("create"));
-    //
-    // if (createCollection)
-    // {
-    // String missionId = params.get("mission");
-    // String folderName = params.get("folderName");
-    //
-    // UasComponent.validateFolderName(missionId, folderName);
-    // }
-  }
-
-  @Request(RequestType.SESSION)
-  public void applyMetadata(String sessionId, String json)
-  {
-    applyMetadata(new JSONObject(json));
+    applyMetadata(selection);
   }
 
   @Transaction
@@ -1136,11 +1031,11 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public RemoteFileObject download(String sessionId, String id, String key, List<Range> ranges)
+  public RemoteFileObject download(String sessionId, String id, String key, String range)
   {
     UasComponentIF component = ComponentFacade.getComponent(id);
 
-    return component.download(key, ranges);
+    return component.download(key, range);
   }
 
   @Request(RequestType.SESSION)
@@ -1385,7 +1280,7 @@ public class ProjectManagementService
   public JSONObject putFile(String sessionId, String id, String folder, String productName, String fileName, RemoteFileMetadata metadata, InputStream stream)
   {
     UasComponentIF component = ComponentFacade.getComponent(id);
-    ProductIF product = component.getProduct(productName).get();
+    ProductIF product = productName != null ? component.getProduct(productName).get() : null;
 
     DocumentIF doc = component.putFile(folder, fileName, product, metadata, stream);
 
@@ -1415,18 +1310,14 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public String createCollection(String sessionId, String json)
+  public String createCollection(String sessionId, JSONArray selections)
   {
-    JSONArray selections = new JSONArray(json);
-
     return Collection.createCollection(selections);
   }
 
   @Request(RequestType.SESSION)
-  public String createStandaloneProductGroup(String sessionId, String sJson)
+  public String createStandaloneProductGroup(String sessionId, JSONObject json)
   {
-    JSONObject json = new JSONObject(sJson);
-
     UasComponentIF component = ComponentFacade.getComponent(json.getString("component"));
 
     ProductIF product = createStandaloneProductGroupInTrans(json, component);
@@ -1501,6 +1392,13 @@ public class ProjectManagementService
           config.setGeoLocationFormat(FileFormat.RX1R2);
         }
 
+        if (Boolean.TRUE.equals(collection.isRadiometric()) || Boolean.TRUE.equals(collection.isMultiSpectral()))
+        {
+          config.setRadiometricCalibration(RadiometricCalibration.CAMERA);
+          // TODO : Some sensors support CAMERA+SUN, which might be preferable
+          // (even though ODM says its experimental)... Which sensors exactly?
+        }
+
         collection.getMetadata().ifPresent(metadata -> {
 
           if (Boolean.TRUE.equals(metadata.getSensor().getHighResolution()))
@@ -1545,6 +1443,11 @@ public class ProjectManagementService
     }
 
     return new ODMProcessConfiguration();
+  }
+  
+  @PreDestroy
+  public void destroy() {
+    RemoteFileFacade.destroy();
   }
 
   // public void logLoginAttempt(String sessionId, String username)

@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -53,7 +53,7 @@ import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
-import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.ApplicationFileResource;
 import com.runwaysdk.session.Session;
 import com.runwaysdk.session.SessionIF;
 import com.runwaysdk.system.SingleActor;
@@ -62,7 +62,6 @@ import com.runwaysdk.system.metadata.MdBusiness;
 import gov.geoplatform.uasdm.CollectionStatus;
 import gov.geoplatform.uasdm.CollectionStatusQuery;
 import gov.geoplatform.uasdm.GenericException;
-import gov.geoplatform.uasdm.MetadataXMLGenerator;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.DuplicateComponentException;
@@ -83,10 +82,9 @@ import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
-import gov.geoplatform.uasdm.model.Range;
-import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
+import gov.geoplatform.uasdm.processing.raw.FileUploadProcessor;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
@@ -95,6 +93,7 @@ import gov.geoplatform.uasdm.view.AdminCondition;
 import gov.geoplatform.uasdm.view.Artifact;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
+import gov.geoplatform.uasdm.view.EqOrNullCondition;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import net.geoprism.GeoprismUser;
@@ -135,12 +134,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   {
     return this.createDefaultChild();
   }
-  
+
   @Override
   public void regenerateMetadata()
   {
     List<ComponentProductDTO> derivedProducts = this.getDerivedProducts(null, null);
-    
+
     derivedProducts.forEach(view -> {
       view.getProducts().forEach(product -> {
         new GenerateMetadataCommand(view.getComponent(), (Product) product, product.getMetadata().orElseThrow()).doIt();
@@ -163,12 +162,15 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   @Override
   public String getS3location(ProductIF product, String folderOrFilename)
   {
-    if (StringUtils.isBlank(folderOrFilename)) folderOrFilename = ImageryComponent.RAW;
-    
+    if (StringUtils.isBlank(folderOrFilename))
+      folderOrFilename = ImageryComponent.RAW;
+
     String ending = "";
-    if (!folderOrFilename.contains(".")) ending = "/";
-    
-    if (product == null) {
+    if (!folderOrFilename.contains("."))
+      ending = "/";
+
+    if (product == null)
+    {
       return this.getS3location() + folderOrFilename + ending;
     }
 
@@ -292,7 +294,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       if (needsUpdate || isNameModified)
       {
         new IndexUpdateDocumentCommand(this, isNameModified).doIt();
-        
+
         List<ComponentProductDTO> derivedProducts = this.getDerivedProducts(null, null);
 
         // Re-index all of the derived products below this component
@@ -311,7 +313,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       CollectionReportFacade.update(this).doIt();
     }
   }
-  
+
   @Override
   @Transaction
   public void apply()
@@ -613,11 +615,16 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
-  public RemoteFileObject download(String key, List<Range> ranges)
+  public RemoteFileObject download(String key, String range)
   {
-    return RemoteFileFacade.download(key, ranges);
+    if (!key.startsWith(this.getS3location()))
+    {
+      return RemoteFileFacade.download(this.getS3location() + key, range);
+    }
+
+    return RemoteFileFacade.download(key, range);
   }
-  
+
   public RemoteFileObject downloadReport(String productName, String folder)
   {
     ProductIF product = this.getProduct(productName).orElseThrow(() -> {
@@ -629,11 +636,6 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     return this.download(this.getS3location(product, folder) + "report.pdf");
   }
 
-  public int getItemCount(String key)
-  {
-    return RemoteFileFacade.getItemCount(key);
-  }
-  
   public List<UasComponentIF> getAncestors()
   {
     return getAncestors(true);
@@ -661,7 +663,8 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.NAME)));
     list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.FOLDERNAME), true, new AdminCondition()));
     list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.DESCRIPTION)));
-    list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.ISPRIVATE)));
+    list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.HASPIICONCERN)));
+    list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.ISPRIVATE), false, new EqOrNullCondition(UasComponent.HASPIICONCERN, false)));
 
     return list;
   }
@@ -813,11 +816,17 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   @Override
   public AbstractWorkflowTask createWorkflowTask(String uploadId, String uploadTarget)
   {
+    return this.createWorkflowTask(GeoprismUser.getCurrentUser().getOid(), uploadId, uploadTarget);
+  }
+
+  @Override
+  public AbstractWorkflowTask createWorkflowTask(String userOid, String uploadId, String uploadTarget)
+  {
     WorkflowTask workflowTask = new WorkflowTask();
     workflowTask.setUploadId(uploadId);
     workflowTask.setUploadTarget(uploadTarget);
     workflowTask.setComponent(this.getOid());
-    workflowTask.setGeoprismUser(GeoprismUser.getCurrentUser());
+    workflowTask.setGeoprismUserId(userOid);
     workflowTask.setTaskLabel("UAV data upload for " + this.getClass().getSimpleName().toLowerCase() + " [" + this.getName() + "]");
 
     return workflowTask;
@@ -830,11 +839,14 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
-  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget, ProductIF product)
+  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationFileResource file, String uploadTarget, ProductIF product)
   {
-    if (this instanceof ImageryComponent) {
-      return Util.uploadArchive(task, archive, (ImageryComponent) this, uploadTarget, product);
-    } else {
+    if (this instanceof ImageryComponent)
+    {
+      return new FileUploadProcessor().process(task, file, (ImageryComponent) this, uploadTarget, product);
+    }
+    else
+    {
       throw new UnsupportedOperationException();
     }
   }
@@ -874,17 +886,35 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     return this.getChildren(EdgeType.COMPONENT_HAS_DOCUMENT, DocumentIF.class);
   }
 
+  /**
+   * @return product groups.
+   */
   public List<Product> getProducts()
   {
     return this.getChildren(EdgeType.COMPONENT_HAS_PRODUCT, Product.class);
   }
 
-  public Integer getNumberOfProducts()
+  public Integer getNumberOfProductGroups()
   {
     MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_PRODUCT);
 
     StringBuilder statement = new StringBuilder();
     statement.append("SELECT OUT('" + mdEdge.getDBClassName() + "').size()");
+    statement.append(" FROM :rid ");
+
+    final GraphQuery<Integer> query = new GraphQuery<Integer>(statement.toString());
+    query.setParameter("rid", this.getRID());
+
+    return query.getSingleResult();
+  }
+  
+  public Integer getNumberOfProductArtifacts()
+  {
+    String chp = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_PRODUCT).getDBClassName();
+    String phd = MdEdgeDAO.getMdEdgeDAO(EdgeType.PRODUCT_HAS_DOCUMENT).getDBClassName();
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT OUT('" + chp + "').out('" + phd + "').size()");
     statement.append(" FROM :rid ");
 
     final GraphQuery<Integer> query = new GraphQuery<Integer>(statement.toString());
@@ -977,47 +1007,43 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     return query.getResults();
   }
 
-  
   // Dumb first attempt
-  
-//  SELECT EXPAND( $c )
-//  LET $a = (
-//    TRAVERSE OUT('component_has_product')
-//    FROM (
-//      SELECT FROM (
-//        SELECT *
-//        FROM #34:0
-//      )
-//      ORDER BY name ASC
-//    )
-//  ),
-//  $b = (
-//      TRAVERSE OUT ('component_has_product')
-//      FROM (
-//        SELECT FROM (
-//          SELECT EXPAND(OUT('project_has_mission0').OUT('mission_has_collection0'))
-//          FROM #34:0
-//        )
-//        ORDER BY name ASC
-//      )
-//  ),
-//  $c = UNIONALL( $a, $b )
 
-  
-  
-  
-  
+  // SELECT EXPAND( $c )
+  // LET $a = (
+  // TRAVERSE OUT('component_has_product')
+  // FROM (
+  // SELECT FROM (
+  // SELECT *
+  // FROM #34:0
+  // )
+  // ORDER BY name ASC
+  // )
+  // ),
+  // $b = (
+  // TRAVERSE OUT ('component_has_product')
+  // FROM (
+  // SELECT FROM (
+  // SELECT EXPAND(OUT('project_has_mission0').OUT('mission_has_collection0'))
+  // FROM #34:0
+  // )
+  // ORDER BY name ASC
+  // )
+  // ),
+  // $c = UNIONALL( $a, $b )
+
   // Getting a little smarter...
-  
-//  TRAVERSE OUT ('component_has_product')
-//  FROM (
-//    SELECT EXPAND(*) FROM (
-//      SELECT unionall(*, OUT('project_has_mission0'), OUT('project_has_mission0').OUT('mission_has_collection0'))
-//        FROM #34:0
-//      )
-//    ORDER BY name ASC
-//  )
-  
+
+  // TRAVERSE OUT ('component_has_product')
+  // FROM (
+  // SELECT EXPAND(*) FROM (
+  // SELECT unionall(*, OUT('project_has_mission0'),
+  // OUT('project_has_mission0').OUT('mission_has_collection0'))
+  // FROM #34:0
+  // )
+  // ORDER BY name ASC
+  // )
+
   @Override
   public List<ComponentProductDTO> getDerivedProducts(String sortField, String sortOrder)
   {
@@ -1027,29 +1053,29 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     HashMap<String, Object> parameters = new HashMap<String, Object>();
     parameters.put("rid", this.getRID());
 
-//    String expand = "unionall(*, " + String.join(", ", this.buildProductExpandClause()) + ")";
-    
+    // String expand = "unionall(*, " + String.join(", ",
+    // this.buildProductExpandClause()) + ")";
+
     List<String> descends = new ArrayList<String>();
     List<String> clause = this.buildProductExpandClause();
-    for (int i = 0; i < clause.size(); ++i) {
+    for (int i = 0; i < clause.size(); ++i)
+    {
       List<String> d2 = new ArrayList<String>();
-      for (int j = 0; j < clause.size() - i; ++j) {
+      for (int j = 0; j < clause.size() - i; ++j)
+      {
         d2.add(clause.get(j));
       }
       descends.add(String.join(".", d2));
     }
     String expand = "unionall(*, " + String.join(",", descends) + ")";
-    
 
     final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_PRODUCT);
-    
+
     boolean hasMetadataSort = ( sortField.equals("sensor") || sortField.equals("serialNumber") || sortField.equals("faaNumber") );
-
-
 
     StringBuilder statement = new StringBuilder();
     statement.append("TRAVERSE OUT('" + mdEdge.getDBClassName() + "') FROM (");
-    
+
     if (hasMetadataSort)
     {
       String sortAttribute = "sensor.name";
@@ -1103,7 +1129,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     this.addParent((UasComponent) parent, mdEdge).apply();
   }
-  
+
   public List<UasComponentIF> getParents()
   {
     return getParents(true);
@@ -1268,8 +1294,9 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     MdAttributeDAOIF ownerAttribute = mdClass.definesAttribute(UasComponent.OWNER);
 
     SessionIF session = Session.getCurrentSession();
-    
-    if (session != null && session.userHasRole(RoleConstants.ADMIN)) return;
+
+    if (session != null && session.userHasRole(RoleConstants.ADMIN))
+      return;
 
     statement.append(" WHERE " + privateAttribute.getColumnName() + " = :isPrivate");
     statement.append(" OR " + privateAttribute.getColumnName() + " IS NULL");
@@ -1287,12 +1314,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
       parameters.put("owner", session.getUser().getOid());
     }
   }
-  
+
   public String buildRawKey()
   {
     return this.getS3location() + ImageryComponent.RAW + "/";
   }
-  
+
   public String buildVideoKey()
   {
     return this.getS3location() + ImageryComponent.VIDEO + "/";
@@ -1312,10 +1339,16 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   {
     return this.getS3location() + ImageryComponent.ORTHO + "/";
   }
-  
+
   public UasComponentIF getUasComponent()
   {
     return this;
+  }
+  
+  @Override
+  public boolean hasPIIConcern()
+  {
+    return this.getHasPIIConcern() != null && this.getHasPIIConcern();
   }
 
 }

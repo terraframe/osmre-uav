@@ -12,10 +12,11 @@ export function forbiddenNameValidator( nameRe: RegExp ): ValidatorFn {
     };
 }
 
-@Directive( {
+@Directive({
+    standalone: true,
     selector: '[forbiddenName]',
     providers: [{ provide: NG_VALIDATORS, useExisting: ForbiddenNameDirective, multi: true }]
-} )
+})
 export class ForbiddenNameDirective implements Validator {
     validate( control: AbstractControl ): { [key: string]: any } | null {
         return forbiddenNameValidator( new RegExp( /[\W<>\-+=!@#$%^&*?/\\']/gm  ) )( control );

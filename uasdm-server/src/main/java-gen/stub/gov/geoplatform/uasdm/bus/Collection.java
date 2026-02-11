@@ -32,15 +32,17 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
-import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.ApplicationFileResource;
 import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
+import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.processing.raw.FileUploadProcessor;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import net.geoprism.GeoprismUser;
@@ -116,6 +118,12 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
   @Override
   public boolean isMultiSpectral()
+  {
+    throw new UnsupportedOperationException();
+  }
+  
+  @Override
+  public boolean isRadiometric()
   {
     throw new UnsupportedOperationException();
   }
@@ -286,9 +294,9 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
 
   @Override
-  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget, ProductIF product)
+  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationFileResource file, String uploadTarget, ProductIF product)
   {
-    return Util.uploadArchive(task, archive, this, uploadTarget, product);
+    return new FileUploadProcessor().process(task, file, this, uploadTarget, product);
   }
 
   @Override
@@ -392,12 +400,12 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
 
   @Override
-  public AbstractWorkflowTask createWorkflowTask(String uploadId, String uploadTarget)
+  public AbstractWorkflowTask createWorkflowTask(String userOid, String uploadId, String uploadTarget)
   {
     WorkflowTask workflowTask = new WorkflowTask();
     workflowTask.setUploadId(uploadId);
     workflowTask.setComponent(this.getOid());
-    workflowTask.setGeoprismUser(GeoprismUser.getCurrentUser());
+    workflowTask.setGeoprismUserId(userOid);
     workflowTask.setTaskLabel("UAV data upload for collection [" + this.getName() + "]");
 
     return workflowTask;
@@ -457,6 +465,24 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     cQ.AND(cQ.getMetadataUploaded().EQ(false).OR(cQ.getMetadataUploaded().EQ((Boolean) null)));
 
     return cQ;
+  }
+
+  @Override
+  public CollectionFormat getFormat()
+  {
+    return null;
+  }
+
+  @Override
+  public void setFormat(CollectionFormat format)
+  {
+    
+  }
+
+  @Override
+  public void setFormat(String format)
+  {
+    
   }
 
 }

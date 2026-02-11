@@ -14,7 +14,7 @@
 
                 <div>
                   <!-- For display only when editing an icon-->
-                  <img *ngIf="!file" style="max-width:300px;max-height:300px;" [src]="context + 'logo/view?id=' + oid" class="thumb">
+                  <img *ngIf="!file" style="max-width:300px;max-height:300px;" [src]="context + 'api/logo/view?oid=' + oid" class="thumb">
                       
                   <!-- Actual uploaded file preview -->
                   <img *ngIf="file" style="max-width:300px;max-height:300px;" [src]="file" class="thumb">
@@ -23,7 +23,7 @@
                 <div class="drop-box-container" ng2FileDrop [ngClass]="{'drop-active': dropActive}" (fileOver)="fileOver($event)" [uploader]="uploader" (click)=fileInput.click()>
                   <div class="drop-box">
                     <div class="inner-drop-box">
-                      <i class="fa fa-cloud-upload">
+                      <i class="fa fa-cloud-arrow-up">
                         <p class="upload-text"><localize key="system.image.uploadText"></localize></p>
                       </i>
                     </div>
@@ -35,7 +35,7 @@
           
           <div class="row">             
             <div class="col-md-12">
-              <div class="btn-holder text-right" style="margin-top: 20px;">
+              <div class="btn-holder float-end" style="margin-top: 20px;">
                 <input type="button" [value]="'dataset.cancel' | localize" class="btn btn-default" (click)="cancel()" />              
                 <input type="submit" [value]="'category.icon.ok' | localize" class="btn btn-primary" (disabled)="form.invalid" />                
               </div>

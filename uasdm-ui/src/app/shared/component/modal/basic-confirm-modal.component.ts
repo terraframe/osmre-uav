@@ -6,12 +6,15 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Subject } from 'rxjs';
 import { ModalTypes } from '../../model/modal';
+import { NgIf, NgClass } from '@angular/common';
 
-@Component( {
+@Component({
+    standalone: true,
     selector: 'basic-confirm-modal',
     templateUrl: './basic-confirm-modal.component.html',
-    styleUrls: []
-} )
+    styleUrls: [],
+    imports: [NgIf, NgClass]
+})
 export class BasicConfirmModalComponent implements OnInit, OnDestroy {
     /*
      * Message

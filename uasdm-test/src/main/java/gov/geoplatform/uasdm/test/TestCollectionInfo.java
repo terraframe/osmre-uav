@@ -19,6 +19,7 @@ import java.util.Date;
 
 import gov.geoplatform.uasdm.bus.AllPrivilegeType;
 import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.CollectionMetadata;
 import gov.geoplatform.uasdm.graph.UasComponent;
 
 public class TestCollectionInfo extends TestUasComponentInfo
@@ -45,7 +46,7 @@ public class TestCollectionInfo extends TestUasComponentInfo
 
   public TestCollectionInfo(String name, Date collectionDate, TestUavInfo uav, TestSensorInfo sensor, String geoPoint, TestMissionInfo mission)
   {
-    super(name, name, name, geoPoint);
+    super(name, name, mission.getS3location() + name, geoPoint);
     this.collectionDate = collectionDate;
     this.uav = uav;
     this.sensor = sensor;
@@ -68,7 +69,11 @@ public class TestCollectionInfo extends TestUasComponentInfo
     Collection col = (Collection) component;
 
     col.setCollectionDate(this.getCollectionDate());
+<<<<<<< HEAD
 //    col.getMetadata().get().setSensor(this.getSensor().getServerObject());
+=======
+    col.setCollectionSensor(this.getSensor().getServerObject());
+>>>>>>> refs/remotes/origin/master
     col.setImageHeight(this.getImageHeight());
     col.setImageWidth(this.getImageWidth());
     col.setMetadataUploaded(this.getMetadataUploaded());
@@ -83,7 +88,13 @@ public class TestCollectionInfo extends TestUasComponentInfo
   @Override
   public void apply()
   {
-    super.apply(this.mission);
+    var col = (Collection) super.apply(this.mission);
+    
+    CollectionMetadata metadata = new CollectionMetadata();
+    metadata.setUav(col.getUav());
+    metadata.setSensor(col.getSensor());
+    metadata.setCollectionDate(this.getCollectionDate());
+    metadata.applyWithCollection(col);
   }
   
   @Override

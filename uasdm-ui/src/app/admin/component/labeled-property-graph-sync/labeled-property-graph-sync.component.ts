@@ -12,14 +12,20 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LPGSyncService } from '@shared/service/lpg-sync.service';
 import { LabeledPropertyGraphType, LabeledPropertyGraphTypeEntry, LabeledPropertyGraphTypeVersion, LPGSync } from '@shared/model/lpg';
 import { BsModalService } from 'ngx-bootstrap/modal';
-import { WebSocketSubject, webSocket } from 'rxjs/webSocket';
-import { WebSockets } from '@core/utility/web-sockets';
 import { EventService } from '@shared/service/event.service';
+import { ModalTypes } from '@shared/model/modal';
+import { UasdmHeaderComponent } from '@shared/component/header/header.component';
+import { NgIf, NgFor } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { WebsocketService } from '@shared/service/websocket.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
+    standalone: true,
     selector: 'labeled-property-graph-sync',
     templateUrl: './labeled-property-graph-sync.component.html',
-    styleUrls: []
+    styleUrls: [],
+    imports: [UasdmHeaderComponent, NgIf, FormsModule, NgFor]
 })
 export class LPGSyncComponent implements OnInit, OnDestroy {
 
@@ -37,17 +43,23 @@ export class LPGSyncComponent implements OnInit, OnDestroy {
     entries: LabeledPropertyGraphTypeEntry[] = null;
     versions: LabeledPropertyGraphTypeVersion[] = null;
 
-    notifier: WebSocketSubject<any>;
-
     constructor(
         private service: LPGSyncService,
         private eventService: EventService,
         private authService: AuthService,
         private modalService: BsModalService,
         private route: ActivatedRoute,
-        private router: Router
+        private router: Router,
+        private websocketService: WebsocketService
     ) {
         this.isAdmin = this.authService.isAdmin();
+
+        this.websocketService.getNotifier().pipe(takeUntilDestroyed()).subscribe((message) => {
+            if (message.type === "SYNCHRONIZATION_JOB_CHANGE") {
+                this.handleJobUpdate(message.content);
+            }
+        });
+
     }
 
     ngOnInit(): void {
@@ -65,12 +77,6 @@ export class LPGSyncComponent implements OnInit, OnDestroy {
                 this.sync = sync;
                 this.original = JSON.parse(JSON.stringify(this.sync));
 
-                this.notifier = webSocket(WebSockets.buildBaseUrl() + "/websocket-notifier/notify");
-                this.notifier.subscribe(message => {
-                    if (message.type === "SYNCHRONIZATION_JOB_CHANGE") {
-                        this.handleJobUpdate(message.content);
-                    }
-                });
 
                 // Check if there is a job already in progress
                 this.handleJobUpdate({ oid: sync.oid });
@@ -81,9 +87,6 @@ export class LPGSyncComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        if (this.notifier != null) {
-            this.notifier.complete();
-        }
     }
 
     handleJobUpdate(content: { oid: string }): void {
@@ -224,11 +227,11 @@ export class LPGSyncComponent implements OnInit, OnDestroy {
 
                 const bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
                     animated: true,
-                    backdrop: true,
+                    backdrop: true, class: 'modal-xl',
                     ignoreBackdropClick: true,
                 });
                 bsModalRef.content.message = "A new version of the labeled property graph has been released.  Do you want to upgrade to version [" + version.versionNumber + "]? This action cannot be undone.";
-                bsModalRef.content.type = 'DANGER';
+                bsModalRef.content.type = ModalTypes.danger;
                 bsModalRef.content.submitText = "Upgrade";
 
                 bsModalRef.content.onConfirm.subscribe(data => {
@@ -242,7 +245,7 @@ export class LPGSyncComponent implements OnInit, OnDestroy {
             else {
                 const bsModalRef = this.modalService.show(NotificationModalComponent, {
                     animated: true,
-                    backdrop: true,
+                    backdrop: true, class: 'modal-xl',
                     ignoreBackdropClick: true,
                 });
                 bsModalRef.content.messageTitle = "";

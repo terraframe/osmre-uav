@@ -9,7 +9,7 @@ import { Metadata } from '../model/metadata';
 
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class MetadataService {
 
     private cache: any = {};
@@ -61,6 +61,7 @@ export class MetadataService {
                 || fieldName === 'areaCovered'
                 || fieldName === 'weatherConditions'
                 || fieldName === 'isPrivate'
+                || fieldName === 'hasPIIConcern'
                 || fieldName === 'sensor'
                 || fieldName === 'uav');
         }

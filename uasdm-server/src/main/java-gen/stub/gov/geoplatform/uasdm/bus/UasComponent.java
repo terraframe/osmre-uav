@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.sql.ResultSet;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +35,6 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
 
 import com.runwaysdk.Pair;
-import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.dataaccess.MdAttributeConcreteDAOIF;
 import com.runwaysdk.dataaccess.MdBusinessDAOIF;
 import com.runwaysdk.dataaccess.database.Database;
@@ -44,7 +42,7 @@ import com.runwaysdk.dataaccess.metadata.MdBusinessDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
-import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.ApplicationFileResource;
 import com.runwaysdk.session.Session;
 import com.runwaysdk.system.metadata.MdBusiness;
 
@@ -360,16 +358,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
-  public RemoteFileObject download(String key, List<Range> ranges)
+  public RemoteFileObject download(String key, String range)
   {
-    return RemoteFileFacade.download(key, ranges);
+    return RemoteFileFacade.download(key, range);
   }
 
-  public int getItemCount(String key)
-  {
-    return RemoteFileFacade.getItemCount(key);
-  }
-  
+
   public List<UasComponentIF> getAncestors()
   {
     return getAncestors(true);
@@ -592,12 +586,18 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
+  public AbstractWorkflowTask createWorkflowTask(String userOid, String uuid, String uploadTarget)
+  {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
   public DocumentIF putFile(String folder, String fileName, ProductIF product, RemoteFileMetadata metadata, InputStream stream)
   {
     throw new UnsupportedOperationException();
   }
 
-  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationResource archive, String uploadTarget, ProductIF product)
+  public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationFileResource archive, String uploadTarget, ProductIF product)
   {
     throw new UnsupportedOperationException();
   }
@@ -705,6 +705,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
   @Override
   public boolean isPrivate()
+  {
+    return false;
+  }
+  
+  @Override
+  public boolean hasPIIConcern()
   {
     return false;
   }

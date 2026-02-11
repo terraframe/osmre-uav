@@ -336,7 +336,10 @@ public class MockRequestParser implements RequestParserIF
   @Override
   public String getProductName()
   {
+<<<<<<< HEAD
     // TODO Auto-generated method stub
+=======
+>>>>>>> refs/remotes/origin/master
     return null;
   }
 

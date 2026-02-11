@@ -3,16 +3,22 @@
 ///
 
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
-import { LazyLoadEvent } from 'primeng/api';
+import { LazyLoadEvent, PrimeTemplate } from 'primeng/api';
 
 import { PageResult } from '@shared/model/page';
 
 import { Subject } from 'rxjs';
 import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
+import { TableLazyLoadEvent, TableModule } from 'primeng/table';
+import { NgFor, NgClass, NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
+import { DropdownModule } from 'primeng/dropdown';
+import { RouterLink } from '@angular/router';
 @Component({
+    standalone: true,
     selector: 'generic-table',
     templateUrl: './generic-table.component.html',
-    styleUrls: ['./generic-table.css']
+    styleUrls: ['./generic-table.css'],
+    imports: [TableModule, PrimeTemplate, NgFor, NgClass, NgIf, NgSwitch, NgSwitchCase, DropdownModule, RouterLink, NgSwitchDefault]
 })
 export class GenericTableComponent implements OnInit, OnDestroy {
     page: PageResult<Object> = {
@@ -36,7 +42,7 @@ export class GenericTableComponent implements OnInit, OnDestroy {
 
     booleanOptions: any = [];
 
-    event: LazyLoadEvent = null;
+    event: TableLazyLoadEvent = null;
 
     constructor() {
         this.booleanOptions = [{ label: '', value: null }, { value: true, label: 'True' }, { value: false, label: 'False' }];
@@ -60,7 +66,7 @@ export class GenericTableComponent implements OnInit, OnDestroy {
         }
     }
 
-    onPageChange(event: LazyLoadEvent): void {
+    onPageChange(event: TableLazyLoadEvent): void {
         this.loading = true;
         this.event = event;
 
@@ -89,8 +95,8 @@ export class GenericTableComponent implements OnInit, OnDestroy {
         return col.type;
     }
 
-    handleInput(dt: any, target: EventTarget, col: GenericTableColumn, operation: string): void {
-        dt.filter(((<HTMLTextAreaElement>target)).value, col.field, operation)
+    handleInput(dt: any, event: any, col: GenericTableColumn, operation: string): void {
+        dt.filter(event.value, col.field, operation)
     }
 
 }

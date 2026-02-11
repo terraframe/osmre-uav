@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package gov.geoplatform.uasdm.processing;
 
@@ -56,18 +56,18 @@ public class COPCConverterProcessor extends ManagedDocument
   }
   
   @Override
-  public boolean process(ApplicationFileResource res)
+  public ProcessResult process(ApplicationFileResource res)
   {
-    this.product = Product.createIfNotExist(component, this.config.getProductName());
+    this.product = (Product) component.createProductIfNotExist(this.config.getProductName());
     this.s3Path = ImageryComponent.PTCLOUD + "/pointcloud.copc.laz";
     
     File out = new File(res.getUnderlyingFile().getParent(), res.getBaseName() + ".copc.laz");
 
     try
     {
-      var cmd = AppProperties.getCondaTool("pdal");
+      var cmd = AppProperties.getCopcTranslateCommand();
       
-      cmd.addAll(Arrays.asList(new String[] { "translate", "-i", res.getAbsolutePath(), "-o", out.getAbsolutePath(), "-r", "readers.las", "-w", "writers.copc", "--overwrite" }));
+      cmd.addAll(Arrays.asList(new String[] { res.getAbsolutePath(), out.getAbsolutePath() }));
       
       boolean success = new SystemProcessExecutor(this.monitor)
           .setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath())
@@ -83,6 +83,6 @@ public class COPCConverterProcessor extends ManagedDocument
       FileUtils.deleteQuietly(out);
     }
 
-    return false;
+    return ProcessResult.fail();
   }
 }

@@ -6,18 +6,17 @@ import { Validator, NG_VALIDATORS, AbstractControl } from '@angular/forms';
 import { Directive } from '@angular/core';
 
 @Directive({
-	selector: '[passwordValidator]',
-	providers: [{
-		provide: NG_VALIDATORS,
-		useExisting: PasswordValidatorDirective,
-		multi: true
-	}]
+    standalone: true,
+    selector: '[passwordValidator]',
+    providers: [{
+            provide: NG_VALIDATORS,
+            useExisting: PasswordValidatorDirective,
+            multi: true
+        }]
 })
 export class PasswordValidatorDirective implements Validator {
 
 	validate(control: AbstractControl): { [key: string]: any } | null {
-
-		console.log("Checking password strength");
 
 		if (control.value != null && control.value !== '') {
 

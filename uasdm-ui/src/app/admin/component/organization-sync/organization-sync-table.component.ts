@@ -13,11 +13,15 @@ import { Subject } from 'rxjs';
 import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
 import { OrganizationSync } from '@shared/model/organization';
 import { OrganizationSyncService } from '@shared/service/organization-sync.service';
+import { NgIf } from '@angular/common';
+import { GenericTableComponent } from '@shared/component/generic-table/generic-table.component';
 
 @Component({
+    standalone: true,
     selector: 'organization-sync-table',
     templateUrl: './organization-sync-table.component.html',
-    styleUrls: ['./organization-sync-table.css']
+    styleUrls: ['./organization-sync-table.css'],
+    imports: [NgIf, GenericTableComponent]
 })
 export class OrganizationSyncTableComponent implements OnInit {
     bsModalRef: BsModalRef;
@@ -38,7 +42,8 @@ export class OrganizationSyncTableComponent implements OnInit {
             remove: true,
             view: true,
             create: true,
-            label: 'Bureau Synchronization Profile'
+            label: 'Bureau Synchronization Profile',
+            sort: { field: 'url', order: 1 },
         }
         this.refresh = new Subject<void>();
     }
@@ -64,7 +69,7 @@ export class OrganizationSyncTableComponent implements OnInit {
     onRemove(sync: OrganizationSync): void {
         this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
             animated: true,
-            backdrop: true,
+            backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true,
         });
         this.bsModalRef.content.message = "Are you sure you want to remove the synchronization profile for [" + sync.url + "]";

@@ -20,26 +20,27 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.opencsv.CSVWriter;
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
-import com.runwaysdk.dataaccess.cache.DataNotFoundException;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
+import gov.geoplatform.uasdm.bus.ImageryUploadEvent;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.ODMRun;
-import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.Site;
 import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -66,13 +67,21 @@ public class ProcessingReportService
     public String featureQuality;
     public String radiometricCalibration;
     public String odmConfig;
+    public String instanceType;
+    public String runtime;
   }
   
-  public String[] header = new String[] {
+  public String[] headerAttrs = new String[] {
     "collectionName", "processedImageCount", "processedImageSizeMb", "taskMessage", "processingStatus", "runDate",
     "pocName", "organizationName", "s3Path", "uavSerial", "uavFAA", "sensorName", "sensorType", "featureQuality",
-    "radiometricCalibration", "odmConfig"
+    "radiometricCalibration", "odmConfig", "instanceType", "runtime"
   };
+  
+  public String[] headerLabels = new String[] {
+      "collectionName", "processedImageCount", "processedImageSizeMb", "taskMessage", "processingStatus", "runDate",
+      "pocName", "organizationName", "s3Path", "uavSerial", "uavFAA", "sensorName", "sensorType", "featureQuality",
+      "radiometricCalibration", "odmConfig", "instanceType", "runtime (seconds)"
+    };
   
   @Request(RequestType.SESSION)
   public InputStream generate(String sessionId, Date since)
@@ -80,17 +89,17 @@ public class ProcessingReportService
     StringWriter sw = new StringWriter();
     try (CSVWriter csv = new CSVWriter(sw))
     {
-      csv.writeNext(header);
+      csv.writeNext(headerLabels);
       
       for (ErrorReportRecord record : getRecords(since))
       {
-        String[] line = new String[header.length];
+        String[] line = new String[headerAttrs.length];
         
-        for (int i = 0; i < header.length; ++i)
+        for (int i = 0; i < headerAttrs.length; ++i)
         {
           try
           {
-            line[i] = (String) record.getClass().getDeclaredField(header[i]).get(record);
+            line[i] = (String) record.getClass().getDeclaredField(headerAttrs[i]).get(record);
           }
           catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e)
           {
@@ -180,15 +189,25 @@ public class ProcessingReportService
   
   private static List<ErrorReportRecord> getRecords(Date since)
   {
+    final String imageFormats = StringUtils.join(ImageryUploadEvent.formats, "|");
     final String clazz = MdVertexDAO.getMdVertexDAO(ODMRun.CLASS).getDBClassName();
     final Map<String, Object> params = new HashMap<String, Object>();
 
     // the odm output is gigantic so we have to make sure we don't select it
     StringBuilder builder = new StringBuilder();
     builder.append("SELECT"
-        + " oid,config,runStart,workflowTask,"
-        + " in().fileSize,"
-        + " component.oid,component.name,component.s3location,component.pocName,component.collectionSensor.oid,component.uav.oid FROM " + clazz);
+        + " oid,config,runStart,runEnd,workflowTask,instanceType,"
+        + " in()[name MATCHES '(?i).*\\\\.(" + imageFormats + ")$'].fileSize as fileSizes,"
+        + " component.oid,"
+        + " component.name,"
+        + " component.s3location,"
+        + " component.pocName,"
+        + " component.uav.oid,"
+        + " $meta.sensor.name AS sensorName,"
+        + " $meta.sensor.sensorType.name AS sensorType"
+        + " FROM " + clazz
+        + " LET $meta = first(component.out('collection_has_metadata'))");
+
     
     if (since != null)
     {
@@ -212,12 +231,20 @@ public class ProcessingReportService
       result.s3Path = (String) map.get("component.s3location");
       result.pocName = (String) map.get("component.pocName");
       result.odmConfig = (String) map.get("config");
-      result.runDate = dateFormat.format((Date) map.get("runStart"));
+      result.instanceType = (String) map.get("instanceType");
       
       @SuppressWarnings("unchecked")
-      List<Long> fileSizes = (List<Long>) map.get("in().fileSize");
+      List<Long> fileSizes = (List<Long>) map.get("fileSizes");
       result.processedImageCount = String.valueOf(fileSizes.size());
       result.processedImageSizeMb = String.valueOf(fileSizes.stream().map(s -> s == null ? 0L : s/1024L/1024L).reduce(0L, (a,b) -> a + b));
+      
+      Date runEnd = (Date) map.get("runEnd");
+      Date runStart = (Date) map.get("runStart");
+      if (runEnd != null && runStart != null)
+        result.runtime = String.valueOf(Duration.between(runStart.toInstant(), runEnd.toInstant()).getSeconds());
+      
+      if (runStart != null)
+        result.runDate = dateFormat.format(runStart);
       
       String collectionOid = (String) map.get("component.oid");
       if (collectionOid != null && collectionOid.length() > 0)
@@ -255,17 +282,8 @@ public class ProcessingReportService
         catch (Exception ex) {}
       }
       
-      String sensorOid = (String) map.get("component.collectionSensor.oid");
-      if (sensorOid != null && sensorOid.length() > 0)
-      {
-        try
-        {
-          Sensor sensor = Sensor.get(sensorOid);
-          result.sensorName = sensor.getName();
-          result.sensorType = sensor.getType();
-        }
-        catch (Exception ex) {}
-      }
+      result.sensorName = (String) map.get("sensorName");
+      result.sensorType = (String) map.get("sensorType");
       
       result.odmConfig = (String) map.get("config");
       ODMProcessConfiguration config = ODMProcessConfiguration.parse(result.odmConfig);

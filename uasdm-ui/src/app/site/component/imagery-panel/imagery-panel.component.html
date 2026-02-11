@@ -1,16 +1,19 @@
 <ng-container>
     <div class="row">
-        <div class="col-md-10">
-            <h4>Current Map Imagery</h4>
-        </div>
-        <div class="col-md-2">
+        <div class="col-md-12">
             <div class="btn-holder" style="float: right; text-align: right;padding: 0 10px 10px 0;">
                 <a (click)="handleClose()">
-                    <i class="fa fa-window-close"></i>
+                    <i class="fa fa-solid fa-arrow-left hover-color"></i>
                 </a>
             </div>
         </div>
     </div>
+    <div class="row" *ngIf="layers == null || layers.length == 0">
+        <div class="col-md-12" style="padding: 20px;text-align: center;color: grey; font-style: italic;">
+            <h4>No data selected</h4>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-12" style="background:#f7f7f7; padding:0; height:100%;">
             <div class="list-group">
@@ -25,7 +28,7 @@
                                     </h5>
 
                                     <span class="thumbnail">
-                                        <img style="max-height: 110px"
+                                        <img class="mx-auto d-block img-thumbnail"
                                             [src]="layer.item.thumbnail != null ? layer.item.thumbnail : (context + '/assets/thumbnail-default.png')"
                                             alt="Image">
                                     </span>
@@ -38,37 +41,44 @@
                                         {{layer.layerName}} - {{layer.asset.classification}}
                                     </h5>
 
-                                    <ul class="breadcrumb" style="margin: 5px 0 5px 0;">
-                                        <li *ngFor="let entity of layer.item.entities">
-                                            <span> {{entity.name}} </span>
-                                        </li>
-                                    </ul>
-
+                                    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                                        <ol class="breadcrumb">
+                                            <li class="breadcrumb-item" *ngFor="let entity of layer.item.entities">
+                                                <span> {{entity.name}} </span>
+                                            </li>
+                                        </ol>
+                                    </nav>
                                     <span class="thumbnail" *ngIf="thumbnails[layer.id] != null">
-                                        <img style="max-height: 110px" class="" [src]="thumbnails[layer.id] | safeHtml"
-                                            (error)="getDefaultImgURL($event)" alt="Image">
+                                        <img class="mx-auto d-block img-thumbnail"
+                                            [src]="thumbnails[layer.id] | safeHtml" (error)="getDefaultImgURL($event)"
+                                            alt="Image">
                                     </span>
                                 </ng-container>
 
                                 <div class="row">
                                     <div class="col-sm-4">
-                                        <a class="fa fa-eye" (click)="handleToggleVisibility(layer)">
+                                        <a (click)="handleToggleVisibility(layer)">
+                                            <i class="fa fa-eye"></i>
                                             {{layer.active ? 'Hide' : 'Show'}}
                                         </a>
                                     </div>
                                     <div class="col-sm-4">
-                                        <a class="fa fa-glasses" (click)="handleGotoExtent(layer)">
+                                        <a (click)="handleGotoExtent(layer)">
+                                            <i class="fa product-icon fa-globe"></i>
                                             Zoom
                                         </a>
                                     </div>
                                     <div class="col-sm-4">
-                                        <a class="fa fa-trash-alt" (click)="handleRemoveLayer(layer)">
+                                        <a (click)="handleRemoveLayer(layer)">
+                                            <i class="fa fa-trash-alt"></i>
                                             Remove
                                         </a>
                                     </div>
                                     <div class="col-sm-4">
-                                        <a class="fa fa-info-circle product-icon" (click)="handleGetInfo(layer)"
-                                            title="View more information layer.">Get Info</a>
+                                        <a (click)="handleGetInfo(layer)" title="View more information layer.">
+                                            <i class="fa fa-info-circle product-icon"></i>
+                                            Get Info
+                                        </a>
                                     </div>
 
                                 </div>

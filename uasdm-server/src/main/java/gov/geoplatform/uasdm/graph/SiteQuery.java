@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -42,7 +42,12 @@ import com.runwaysdk.system.metadata.MdEdge;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+<<<<<<< HEAD
 import net.geoprism.graph.GraphTypeSnapshot;
+=======
+import gov.geoplatform.uasdm.service.business.IDMHierarchyTypeSnapshotBusinessService;
+import net.geoprism.graph.HierarchyTypeSnapshot;
+>>>>>>> refs/remotes/origin/master
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 import net.geoprism.registry.Organization;
@@ -416,10 +421,15 @@ public class SiteQuery
         String uid = hierarchy.getString("uid");
 
         LabeledPropertyGraphTypeVersionBusinessServiceIF service = ApplicationContextHolder.getBean(LabeledPropertyGraphTypeVersionBusinessServiceIF.class);
+        IDMHierarchyTypeSnapshotBusinessService hService = ApplicationContextHolder.getBean(IDMHierarchyTypeSnapshotBusinessService.class);
 
         LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(oid);
         LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
+<<<<<<< HEAD
         GraphTypeSnapshot hierarchyType = service.getGraphSnapshots(version).get(0);
+=======
+        HierarchyTypeSnapshot hierarchyType = hService.get(version).get(0);
+>>>>>>> refs/remotes/origin/master
 
         SynchronizationEdge synchronizationEdge = SynchronizationEdge.get(version);
         MdEdge siteEdge = synchronizationEdge.getGraphEdge();

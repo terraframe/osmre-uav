@@ -13,12 +13,19 @@ import { SiteEntity, AttributeType, projectTypes } from '@site/model/management'
 import { ManagementService } from '@site/service/management.service';
 import { MetadataService } from '@site/service/metadata.service';
 import { LngLat } from 'maplibre-gl';
+import { NgIf, NgFor } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { OrganizationFieldComponent } from '@shared/component/organization-field/organization-field.component';
+import { MapAttributeComponent } from '../map-attribute/map-attribute.component';
+import { BooleanFieldComponent } from '@shared/component/boolean-field/boolean-field.component';
 
 
 @Component({
-	selector: 'entity-modal',
-	templateUrl: './entity-modal.component.html',
-	styleUrls: []
+    standalone: true,
+    selector: 'entity-modal',
+    templateUrl: './entity-modal.component.html',
+    styleUrls: [],
+    imports: [NgIf, FormsModule, NgFor, OrganizationFieldComponent, MapAttributeComponent, BooleanFieldComponent]
 })
 export class EntityModalComponent implements OnInit {
     /*

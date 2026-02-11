@@ -23,17 +23,26 @@ import {
 } from 'angular-animations';
 import { environment } from 'src/environments/environment';
 import { MetadataModalComponent } from './metadata-modal.component';
+import { NgIf, NgFor } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { TabsetComponent, TabDirective } from 'ngx-bootstrap/tabs';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { ArtifactPageComponent } from './artifact-page.component';
+import { SafeHtmlPipe } from '@shared/pipe/safe-html.pipe';
+import { IdmDatePipe } from '@shared/pipe/idmdate.pipe';
 
 @Component({
-	selector: 'product-modal',
-	templateUrl: './product-modal.component.html',
-	providers: [CollectionModalComponent],
-	styleUrls: ['./product-modal.component.css'],
-	animations: [
-		fadeInOnEnterAnimation(),
-		fadeOutOnLeaveAnimation(),
-		bounceInOnEnterAnimation()
-	]
+    standalone: true,
+    selector: 'product-modal',
+    templateUrl: './product-modal.component.html',
+    providers: [CollectionModalComponent],
+    styleUrls: ['./product-modal.component.css'],
+    animations: [
+        fadeInOnEnterAnimation(),
+        fadeOutOnLeaveAnimation(),
+        bounceInOnEnterAnimation()
+    ],
+    imports: [NgIf, NgFor, RouterLink, TabsetComponent, TabDirective, NgxPaginationModule, ArtifactPageComponent, CollectionModalComponent, SafeHtmlPipe, IdmDatePipe]
 })
 export class ProductModalComponent implements OnInit {
 	product: ProductDetail;
@@ -90,7 +99,7 @@ export class ProductModalComponent implements OnInit {
 			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: true,
-			'class': 'upload-modal'
+			'class': 'upload-modal modal-xl'
 		});
 		modalRef.content.initStandaloneProduct(this.product.id, this.product.productName);
 
@@ -187,21 +196,32 @@ export class ProductModalComponent implements OnInit {
 		}
 	}
 
+	viewOrtho(): void {
+		this.rawImagePreviewModal = this.modalService.show(ImagePreviewModalComponent, {
+			animated: true,
+			backdrop: true,
+			ignoreBackdropClick: false,
+			'class': 'image-preview-modal modal-xl'
+		});
+		this.rawImagePreviewModal.content.initProduct(this.product.id, this.product.productName);
+	}
+
 	previewImage(document: ProductDocument): void {
+		const componentId: string = this.product.entities[this.product.entities.length - 1].id;
 
 		this.rawImagePreviewModal = this.modalService.show(ImagePreviewModalComponent, {
 			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: false,
-			'class': 'image-preview-modal'
+			'class': 'image-preview-modal modal-xl'
 		});
-		this.rawImagePreviewModal.content.init(this.product.id);
+		this.rawImagePreviewModal.content.initRaw(componentId, document.key, document.name);
 	}
 
     handleDownload(): void {
       //const entity = this.product.entities[this.product.entities.length - 1];        
 
-      window.location.href = environment.apiUrl + '/product/get-odm-all?id=' + this.product.id;
+      window.location.href = environment.apiUrl + '/api/product/get-odm-all?id=' + this.product.id;
     }
 
 

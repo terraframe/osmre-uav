@@ -19,22 +19,33 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
+
 public class HttpNewResponse extends HttpODMResponse implements NewResponse
 {
 
   private Logger logger = LoggerFactory.getLogger(HttpNewResponse.class);
 
   private String uuid;
+  
+  private ODMProcessingPayload payload;
 
   public HttpNewResponse(Response httpResp)
   {
     super(httpResp);
   }
 
-  public HttpNewResponse(Response httpResp, String uuid)
+  public HttpNewResponse(Response httpResp, String uuid, ODMProcessingPayload payload)
   {
     super(httpResp);
     this.uuid = uuid;
+    this.payload = payload;
+  }
+  
+  @Override
+  public ODMProcessingPayload getPayload()
+  {
+    return this.payload;
   }
 
   @Override

@@ -10,13 +10,19 @@ import { ProductModalComponent } from '../modal/product-modal.component';
 import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
 import { environment } from 'src/environments/environment';
 import { AuthService } from '@shared/service/auth.service';
+import { UasdmHeaderComponent } from '@shared/component/header/header.component';
+import { NgIf } from '@angular/common';
+import { ProcessingReportComponent } from '../processing-report/processing-report.component';
+import { GenericTableComponent } from '@shared/component/generic-table/generic-table.component';
 
 
 
 @Component({
+    standalone: true,
     selector: 'reports',
     templateUrl: './reports.component.html',
-    styleUrls: ['./reports.css']
+    styleUrls: ['./reports.css'],
+    imports: [UasdmHeaderComponent, NgIf, ProcessingReportComponent, GenericTableComponent]
 })
 export class ReportsComponent implements OnInit {
     message: string = null;
@@ -25,7 +31,7 @@ export class ReportsComponent implements OnInit {
     config: GenericTableConfig;
     cols: GenericTableColumn[] = [
         {
-            header: 'Collection', field: 'collectionName', baseUrl: 'site/viewer/collection', urlField: 'collection', type: 'URL', sortable: true, columnType: (row: Object) => {
+            header: 'Collection', field: 'collectionName', baseUrl: 'site/viewer/entity', urlField: 'collection', type: 'URL', sortable: true, columnType: (row: Object) => {
                 if (!row['exists']) {
                     return 'TEXT';
                 }
@@ -64,7 +70,8 @@ export class ReportsComponent implements OnInit {
             remove: false,
             view: false,
             create: false,
-            label: 'row'
+            label: 'row',
+            sort: { field: 'collectionName', order: 1 },
         }
         this.admin = this.authService.isAdmin();
     }
@@ -85,7 +92,7 @@ export class ReportsComponent implements OnInit {
                             animated: true,
                             backdrop: true,
                             ignoreBackdropClick: true,
-                            'class': 'product-info-modal'
+                            'class': 'product-info-modal modal-xl'
                         });
                         bsModalRef.content.init(detail);
                     });

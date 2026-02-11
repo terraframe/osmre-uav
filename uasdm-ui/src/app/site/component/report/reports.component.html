@@ -3,22 +3,39 @@
 
 
 -->
-<div>
-	<uasdm-header></uasdm-header>
-	
-	<div style="padding-left:10px;">
-		<processing-report *ngIf="admin"></processing-report>
-	
-		<div id="app-container" class="container-fluid">
-			<h2>Report</h2>
-	
-			<div class="row">
-	            <input class="btn btn-primary pull-right" style="margin-bottom:10px;margin-right:10px;" type="submit" value="Export CSV" (click)="onExportCSV()">
-	        </div>
-	
-	        <div class="row">
-				<generic-table *ngIf="config != null" [cols]="cols" [config]="config" (click)="onClick($event)"></generic-table>		
-	        </div>
-		</div>
-	</div>
+<div class="reports-page">
+  <uasdm-header></uasdm-header>
+
+  <div class="container-fluid px-3 pt-2">
+
+    <!-- Compact processing bar -->
+    <processing-report *ngIf="admin"></processing-report>
+
+    <!-- Title + underline + action -->
+    <div class="section-header">
+      <h2 class="h6 mb-0">Collection Report</h2>
+      <div class="rule flex-grow-1 mx-2"></div>
+      <button
+        type="button"
+        class="btn btn-primary btn-sm"
+        (click)="onExportCSV()"
+        aria-label="Export report as CSV"
+      >
+        Export CSV
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div class="card card--table border-0 shadow-sm">
+      <div class="table-responsive">
+        <generic-table
+          *ngIf="config != null"
+          [cols]="cols"
+          [config]="config"
+          (click)="onClick($event)"
+        ></generic-table>
+      </div>
+    </div>
+
+  </div>
 </div>

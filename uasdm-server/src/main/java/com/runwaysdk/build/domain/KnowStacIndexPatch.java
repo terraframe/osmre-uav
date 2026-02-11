@@ -37,6 +37,15 @@ public class KnowStacIndexPatch implements Runnable
 
     IndexService.shutdown();
 
+    try
+    {
+      Thread.sleep(60 * 1000L);
+    }
+    catch (InterruptedException e)
+    {
+      e.printStackTrace();
+    }
+
     logger.error("Rebuilding the STAC index");
 
     this.getProducts().forEach(product -> {
@@ -64,7 +73,7 @@ public class KnowStacIndexPatch implements Runnable
   {
     try
     {
-      try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext("net.geoprism.spring", "net.geoprism.registry.service.request", "gov.geoplatform.uasdm.service.request", "net.geoprism.registry.service.business", "net.geoprism.registry.service.permission", "gov.geoplatform.uasdm.service.business"))
+      try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(PatchConfig.class))
       {
         ConfigurableListableBeanFactory factory = context.getBeanFactory();
         KnowStacIndexPatch obj = (KnowStacIndexPatch) factory.initializeBean(new KnowStacIndexPatch(context.getBean(KnowStacBusinessService.class)), "knowStacIndexPatch");

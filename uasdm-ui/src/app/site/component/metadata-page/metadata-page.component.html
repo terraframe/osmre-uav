@@ -7,9 +7,9 @@
     <div *ngIf="page.selection.pointOfContact != null" class="row" style="margin-top: 20px;">
         <div class="col-md-12">
 
-            <div class="panel panel-default">
-                <div class="panel-heading">Point Of Contact</div>
-                <div class="panel-body">
+            <div class="card border mb-2">
+                <div class="card-header">Point Of Contact</div>
+                <div class="card-body">
                     <div class="form-group">
                         <label for="pointOfContact.name">Name</label>
                         <input type="text" name="pointOfContact.name" [(ngModel)]="page.selection.pointOfContact.name"
@@ -31,9 +31,9 @@
     <div class="row">
         <div class="col-md-12">
 
-            <div class="panel panel-default">
-                <div class="panel-heading">Collection</div>
-                <div class="panel-body">
+            <div class="card border mb-2">
+                <div class="card-header">Collection</div>
+                <div class="card-body">
                     <div [@fadeInOnEnter] class="row">
                         <div class="col-md-8">
                             <boolean-field [(value)]="page.selection.exifIncluded" label="EXIF Included">
@@ -134,12 +134,12 @@
     <div class="row" *ngIf="page.selection.artifacts != null && page.selection.artifacts.length > 0">
         <div class="col-md-12">
 
-            <div class="panel panel-default">
-                <div class="panel-heading">Artifacts</div>
-                <div class="panel-body">
-                    <div class="panel panel-default" *ngFor="let artifact of page.selection.artifacts">
-                        <div class="panel-heading">{{artifact.folder}}</div>
-                        <div class="panel-body">
+            <div class="card border mb-2">
+                <div class="card-header">Artifacts</div>
+                <div class="card-body">
+                    <div class="card" *ngFor="let artifact of page.selection.artifacts">
+                        <div class="card-header">{{artifact.folder}}</div>
+                        <div class="card-body">
                             <ng-container *ngIf="artifact.folder === 'ptcloud'">
                                 <div class="form-group">
                                     <label for="ptEpsg">EPSG Number</label>
@@ -180,9 +180,9 @@
     <div class="row">
         <div class="col-md-12">
 
-            <div class="panel panel-default">
-                <div class="panel-heading">Platform</div>
-                <div class="panel-body">
+            <div class="card border mb-2">
+                <div class="card-header">Platform</div>
+                <div class="card-body">
                     <div class="form-group">
                         <label for="platform.name">UAV</label>
                         <div>
@@ -206,25 +206,40 @@
 
 
                     <ng-container *ngIf="uav != null">
-                        <div class="form-group">
-                            <label for="sensor.type">Name</label>
-                            {{uav.platform}}
+                        <div class="row">
+                            <label for="uav.name" class="col-sm-2 col-form-label">Name</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control-plaintext" id="uav.name"
+                                    [value]="uav.platform">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="sensor.type">Type</label>
-                            {{uav.platformType}}
+                        <div class="row">
+                            <label for="uav.type" class="col-sm-2 col-form-label">Type</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control-plaintext" id="uav.type"
+                                    [value]="uav.platformType">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="sensor.type">Serial Number</label>
-                            {{uav.serialNumber}}
+                        <div class="row">
+                            <label for="uav.serialNumber" class="col-sm-2 col-form-label">Serial Number</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control-plaintext" id="uav.serialNumber"
+                                    [value]="uav.serialNumber">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="sensor.type">FAA Id Number</label>
-                            {{uav.faaNumber}}
+                        <div class="row">
+                            <label for="uav.faaNumber" class="col-sm-2 col-form-label">FAA Id Number</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control-plaintext" id="uav.faaNumber"
+                                    [value]="uav.faaNumber">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="sensor.organization">Organization</label>
-                            {{uav.organization}}
+                        <div class="row">
+                            <label for="uav.organization" class="col-sm-2 col-form-label">Organization</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control-plaintext" id="uav.organization"
+                                    [value]="uav.organization">
+                            </div>
                         </div>
                     </ng-container>
                 </div>
@@ -235,9 +250,9 @@
     <div *ngIf="uav != null" class="row">
         <div class="col-md-12">
 
-            <div class="panel panel-default">
-                <div class="panel-heading">Sensor</div>
-                <div class="panel-body">
+            <div class="card border mb-2">
+                <div class="card-header">Sensor</div>
+                <div class="card-body">
                     <div class="form-group">
                         <label for="sensor.name">Name</label>
                         <select [(ngModel)]="page.selection.sensor" name="sensor" class="form-control"
@@ -248,47 +263,93 @@
                         </select>
                     </div>
                     <ng-container *ngIf="metaObject != null">
+                        <div class="row">
+                            <label for="sensor.type" class="col-sm-2 col-form-label">Type</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control-plaintext" id="sensor.type"
+                                    [value]="metaObject.sensor.sensorType">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="sensor.collectionFormats" class="col-sm-2 col-form-label">Allowed Collection
+                                Formats</label>
+                            <div class="col-sm-10">
+                                <label style="line-height: 5rem;">{{getCollectionFormatLabels()}}</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="sensor.wavelength" class="col-sm-2 col-form-label">Wave Length</label>
+                            <div class="col-sm-10">
+                                <ul class="list-group">
+                                    <li class="list-group-item"
+                                        style="line-height:1rem;color:rgb(33, 37,41);font-size:15px"
+                                        *ngFor="let wavelength of metaObject.sensor.wavelengths">
+                                        {{wavelength.name}}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="sensor.sensorWidth" class="col-sm-2 col-form-label">Sensor Width</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control-plaintext" id="sensor.sensorWidth"
+                                    [value]="metaObject.sensor.sensorWidth">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="sensor.sensorWidthUnits" class="col-sm-2 col-form-label">Sensor Width
+                                Units</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control-plaintext" id="sensor.sensorWidthUnits"
+                                    value="Millimeters">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="sensor.sensorHeight" class="col-sm-2 col-form-label">Sensor Height</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control-plaintext" id="sensor.sensorHeight"
+                                    [value]="metaObject.sensor.sensorHeight">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="sensor.sensorHeightUnits" class="col-sm-2 col-form-label">Sensor Height
+                                Units</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control-plaintext" id="sensor.sensorHeightUnits"
+                                    value="Millimeters">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="sensor.pixelSizeWidth" class="col-sm-2 col-form-label">Pixel Size Width</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control-plaintext" id="sensor.pixelSizeWidth"
+                                    [value]="metaObject.sensor.pixelSizeWidth">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="sensor.pixelSizeHeight" class="col-sm-2 col-form-label">Pixel Size
+                                Height</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control-plaintext" id="sensor.pixelSizeWidth"
+                                    [value]="metaObject.sensor.pixelSizeHeight">
+                            </div>
+                        </div>
 
-                        <div class="form-group">
-                            <label for="sensor.type">Type</label>
-                            {{metaObject.sensor.sensorType}}
-                        </div>
-                        <div class="form-group">
-                            <label for="sensor.wavelength">Wave Length</label>
-                            <ul>
-                                <li *ngFor="let wavelength of metaObject.sensor.wavelengths">
-                                    {{wavelength.name}}
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="form-group">
-                            <label for="sensor.sensorWidth">Sensor Width</label>
-                            {{metaObject.sensor.sensorWidth}}
-                        </div>
-                        <div class="form-group">
-                            <label for="sensor.sensorWidth">Sensor Width Units</label>
-                            Millimeters
-                        </div>
-                        <div class="form-group">
-                            <label for="sensor.sensorHeight">Sensor Height</label>
-                            {{metaObject.sensor.sensorHeight}}
-                        </div>
-                        <div class="form-group">
-                            <label for="sensor.sensorWidth">Sensor Height Units</label>
-                            Millimeters
-                        </div>
-                        <div class="form-group">
-                            <label for="sensor.pixelSizeWidth">Pixel Size Width</label>
-                            {{metaObject.sensor.pixelSizeWidth}}
-                        </div>
-                        <div class="form-group">
-                            <label for="sensor.pixelSizeHeight">Pixel Size Height</label>
-                            {{metaObject.sensor.pixelSizeHeight}}
-                        </div>
                     </ng-container>
                 </div>
             </div>
 
+            <div *ngIf="metaObject != null && page.selection.isNew" class="form-group" style="margin-top: 2rem;">
+                <div class="">
+                    <label for="collectionFormat" class="">Collection Format:</label>
+                    <select *ngIf="collectionFormatMetadatas" [(ngModel)]="page.selection.format" id="collectionFormat"
+                        name="collectionFormat" class="form-control" (change)="onCollectionFormatChange()" required>
+                        <option></option>
+                        <option *ngFor="let format of collectionFormatMetadatas" [value]="format.value">{{format.label}}
+                        </option>
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
 

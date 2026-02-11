@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.opencsv.exceptions.CsvValidationException;
+import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 
@@ -44,20 +45,16 @@ public class ODMFacadeTest
   {
     File file = FileTestUtils.createZip(this.getClass().getResource("/raw").toURI());
 
-    final FileResource resource = new FileResource(file);
+    final ArchiveFileResource resource = new ArchiveFileResource(new FileResource(file));
 
-    try (final ODMProcessingPayload result = ODMFacade.filterAndExtract(resource, new ODMProcessConfiguration("test"), null))
+    try (final ODMProcessingPayload payload = ODMFacade.filterAndExtract(resource, new ODMProcessConfiguration("test"), null))
     {
-      CloseableFile directory = result.getFile();
-      File[] files = directory.listFiles();
-
-      Assert.assertTrue(files.length > 0);
-
-      for (File child : files)
+      Assert.assertTrue(payload.getArchive().getContents().size() > 0);
+      
+      for (var child : payload.getArchive().getContents())
       {
-        final String ext = FilenameUtils.getExtension(child.getName());
-
-        Assert.assertFalse(ext.equals("mp4"));
+        if (payload.getImageNames().contains(child.getName()))
+          Assert.assertFalse(child.getNameExtension().equals("mp4"));
       }
     }
   }
@@ -67,20 +64,16 @@ public class ODMFacadeTest
   {
     File file = FileTestUtils.createTarGz(this.getClass().getResource("/raw").toURI());
 
-    final FileResource resource = new FileResource(file);
+    final ArchiveFileResource resource = new ArchiveFileResource(new FileResource(file));
 
-    try (final ODMProcessingPayload result = ODMFacade.filterAndExtract(resource, new ODMProcessConfiguration("test"), null))
+    try (final ODMProcessingPayload payload = ODMFacade.filterAndExtract(resource, new ODMProcessConfiguration("test"), null))
     {
-      CloseableFile directory = result.getFile();
-      File[] files = directory.listFiles();
-
-      Assert.assertTrue(files.length > 0);
-
-      for (File child : files)
+      Assert.assertTrue(payload.getArchive().getContents().size() > 0);
+      
+      for (var child : payload.getArchive().getContents())
       {
-        final String ext = FilenameUtils.getExtension(child.getName());
-
-        Assert.assertFalse(ext.equals("mp4"));
+        if (payload.getImageNames().contains(child.getName()))
+          Assert.assertFalse(child.getNameExtension().equals("mp4"));
       }
     }
   }

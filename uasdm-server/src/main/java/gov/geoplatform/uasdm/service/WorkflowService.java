@@ -15,10 +15,13 @@
  */
 package gov.geoplatform.uasdm.service;
 
+import java.util.Map;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.session.Request;
@@ -28,56 +31,84 @@ import gov.geoplatform.uasdm.CollectionStatus;
 import gov.geoplatform.uasdm.bus.AbstractMessage;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
-import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
+import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.MetadataMessage;
 import gov.geoplatform.uasdm.model.Page;
+import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import gov.geoplatform.uasdm.processing.ProcessingInProgressException;
-import gov.geoplatform.uasdm.view.RequestParserIF;
+import me.desair.tus.server.upload.UploadInfo;
 
+@Service
 public class WorkflowService
 {
   final Logger log = LoggerFactory.getLogger(WorkflowService.class);
 
-  @Request(RequestType.SESSION)
-  public JSONObject createUploadTask(String sessionId, RequestParserIF parser)
+  @Transaction
+  public JSONObject updateUploadTaskInTransaction(String uploadId)
   {
-    return this.createUploadTaskInTransaction(parser);
+    AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForUpload(uploadId);
+
+    if (task != null)
+    {
+      task.lock();
+      task.setStatus(WorkflowTaskStatus.UPLOADING.toString());
+      task.setMessage("Uploading to the staging environment..."); // parser.getPercent()
+      // + "%
+      // complete"
+      task.apply();
+    }
+
+    JSONObject message = new JSONObject();
+    message.put("currentTask", task.toJSON());
+
+    return message;
   }
 
   @Transaction
-  private JSONObject createUploadTaskInTransaction(RequestParserIF parser)
+  public void updateOrCreateUploadTask(String userOid, UploadInfo uploadInfo)
   {
-    AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForUpload(parser);
+    String uploadId = uploadInfo.getId().toString();
+
+    AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForUpload(uploadId);
 
     if (task == null)
     {
-      UasComponentIF uasComponent = ImageryWorkflowTaskIF.getOrCreateUasComponentFromRequestParser(parser);
-      task = uasComponent.createWorkflowTask(parser.getUuid(), parser.getUploadTarget());
-      task.setDescription(parser.getDescription());
-      task.setTool(parser.getTool());
-      task.setPtEpsg(parser.getPtEpsg());
-      task.setProjectionName(parser.getProjectionName());
-      task.setOrthoCorrectionModel(parser.getOrthoCorrectionModel());
-      task.setProductName(parser.getProductName());
+      Map<String, String> metadata = uploadInfo.getMetadata();
+      ProcessConfiguration configuration = ProcessConfiguration.parse(uploadInfo);
 
-      if (task instanceof WorkflowTask)
+      String componentId = metadata.get("componentId");
+      String uploadTarget = metadata.get("uploadTarget");
+
+      UasComponentIF uasComponent = ComponentFacade.getComponent(componentId);
+
+      task = uasComponent.createWorkflowTask(userOid, uploadId, uploadTarget);
+      task.setDescription(metadata.getOrDefault("description", null));
+      task.setTool(metadata.getOrDefault("tool", null));
+      task.setProjectionName(metadata.getOrDefault("projectionName", null));
+      task.setOrthoCorrectionModel(metadata.getOrDefault("orthoCorrectionModel", null));
+      task.setProductName(configuration.getProductName());
+
+      if (metadata.containsKey("ptEpsg"))
+      {
+        task.setPtEpsg(Integer.valueOf(metadata.get("ptEpsg")));
+      }
+
+      if (task instanceof AbstractUploadTask)
+      {
+        AbstractUploadTask uploadTask = (AbstractUploadTask) task;
+        uploadTask.setConfiguration(configuration);
+      }
+
+      if (task instanceof WorkflowTask && configuration.isODM())
       {
         WorkflowTask workflowTask = (WorkflowTask) task;
-        workflowTask.setProcessDem(parser.getProcessDem());
-        workflowTask.setProcessOrtho(parser.getProcessOrtho());
-        workflowTask.setProcessPtcloud(parser.getProcessPtcloud());
-      }
-      
-      if (uasComponent instanceof gov.geoplatform.uasdm.graph.Collection &&
-          ((gov.geoplatform.uasdm.graph.Collection) uasComponent).getStatus().equals("Processing")
-          )
-      {
-        ProcessingInProgressException ex = new ProcessingInProgressException();
-        throw ex;
+
+        workflowTask.setProcessDem(configuration.toODM().getProcessDem());
+        workflowTask.setProcessOrtho(configuration.toODM().getProcessOrtho());
+        workflowTask.setProcessPtcloud(configuration.toODM().getProcessPtcloud());
       }
     }
     else
@@ -90,60 +121,8 @@ public class WorkflowService
       task.setStatus(WorkflowTaskStatus.STARTED.toString());
     }
 
-    task.setMessage(parser.getPercent() + "% complete");
+    task.setMessage("Uploading to the staging environment...");
     task.apply();
-
-    JSONObject message = new JSONObject();
-    message.put("currentTask", task.toJSON());
-
-    return message;
-  }
-
-  @Request(RequestType.SESSION)
-  public JSONObject updateUploadTask(String sessionId, RequestParserIF parser)
-  {
-    return this.updateUploadTaskInTransaction(sessionId, parser);
-  }
-
-  @Transaction
-  public JSONObject updateUploadTaskInTransaction(String sessionId, RequestParserIF parser)
-  {
-    AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForUpload(parser);
-
-    if (task != null)
-    {
-      task.lock();
-      task.setStatus(WorkflowTaskStatus.UPLOADING.toString());
-      task.setMessage("Uploading to the staging environment..."); // parser.getPercent()
-                                                                  // + "%
-                                                                  // complete"
-      task.apply();
-    }
-
-    JSONObject message = new JSONObject();
-    message.put("currentTask", task.toJSON());
-
-    return message;
-  }
-
-  @Request(RequestType.SESSION)
-  public void errorUploadTask(String sessionId, RequestParserIF parser, String message)
-  {
-    this.errorUploadTaskInTransaction(sessionId, parser, message);
-  }
-
-  @Transaction
-  public void errorUploadTaskInTransaction(String sessionId, RequestParserIF parser, String message)
-  {
-    AbstractWorkflowTask task = ImageryWorkflowTaskIF.getWorkflowTaskForUpload(parser);
-
-    if (task != null)
-    {
-      task.lock();
-      task.setStatus(WorkflowTaskStatus.ERROR.toString());
-      task.setMessage(message);
-      task.apply();
-    }
   }
 
   @Request(RequestType.SESSION)
@@ -204,6 +183,19 @@ public class WorkflowService
     AbstractUploadTask task = AbstractUploadTask.getTaskByUploadId(uploadId);
 
     return task.toJSON();
+  }
+
+  @Request(RequestType.SESSION)
+  public void cancel(String sessionId, String uploadId)
+  {
+    AbstractUploadTask task = AbstractUploadTask.getTaskByUploadId(uploadId);
+
+    if (task != null)
+    {
+      task.appLock();
+      task.setStatus("Failed");
+      task.apply();
+    }
   }
 
 }

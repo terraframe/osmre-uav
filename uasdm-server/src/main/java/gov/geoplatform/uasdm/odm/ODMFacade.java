@@ -16,12 +16,16 @@
 package gov.geoplatform.uasdm.odm;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 import java.util.zip.ZipException;
 
@@ -34,12 +38,13 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
-import com.google.common.io.Files;
 import com.opencsv.exceptions.CsvValidationException;
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
+import com.runwaysdk.resource.ApplicationFileResource;
 import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
+import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.InvalidZipException;
@@ -50,24 +55,27 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.RadiometricCalibration;
-import gov.geoplatform.uasdm.processing.WorkswellWirisThermalPhotometricProcessor;
+import gov.geoplatform.uasdm.processing.RadiometricImageryPreProcessor;
+import gov.geoplatform.uasdm.processing.geolocation.GeoLocationFileValidator;
 import gov.geoplatform.uasdm.processing.geolocation.RX1R2GeoFileConverter;
 
 public class ODMFacade
 {
   public static class ODMProcessingPayload implements AutoCloseable
   {
-    private CloseableFile file;
+    private ArchiveFileResource archive;
 
     private Set<String>   imageNames = new HashSet<String>();
 
     private String        geoLocationFile;
 
     private String        groundControlPointFile;
+    
+    protected double colSizeMb;
 
-    public ODMProcessingPayload(CloseableFile file)
+    public ODMProcessingPayload(ArchiveFileResource archive)
     {
-      this.file = file;
+      this.archive = archive;
     }
 
     public void setGeoLocationFile(String geoLocationFile)
@@ -90,17 +98,18 @@ public class ODMFacade
       this.groundControlPointFile = groundControlPointFile;
     }
 
-    public CloseableFile getFile()
+    public ArchiveFileResource getArchive()
     {
-      return file;
+      return archive;
     }
 
-    public void addImage(String filename)
+    public void addImage(String filename, double sizeMb)
     {
       imageNames.add(filename);
+      colSizeMb += sizeMb;
     }
 
-    public int getImageCount()
+    public int getRawCount()
     {
       return imageNames.size();
     }
@@ -109,10 +118,20 @@ public class ODMFacade
     {
       return imageNames;
     }
+    
+    public void setColSizeMb(int colSizeMb)
+    {
+      this.colSizeMb = colSizeMb;
+    }
+    
+    public double getColSizeMb()
+    {
+      return colSizeMb;
+    }
 
     public void close()
     {
-      this.file.close();
+      this.archive.close();
     }
   }
 
@@ -145,7 +164,7 @@ public class ODMFacade
    * https://github.com/OpenDroneMap/NodeODM/blob/master/docs/index.adoc#post-
    * tasknewinit
    */
-  public static NewResponse taskNew(ApplicationResource images, boolean isMultispectral, ODMProcessConfiguration configuration, Collection col, AbstractWorkflowTask task)
+  public static NewResponse taskNew(ArchiveFileResource images, boolean isMultispectral, ODMProcessConfiguration configuration, Collection col, AbstractWorkflowTask task)
   {
     return service.taskNew(images, isMultispectral, configuration, col, task);
   }
@@ -170,196 +189,221 @@ public class ODMFacade
     return service.taskInfo(uuid);
   }
 
-  public static ODMProcessingPayload filterAndExtract(ApplicationResource archive, ODMProcessConfiguration configuration, Collection col) throws IOException, CsvValidationException
+  public static ODMProcessingPayload filterAndExtract(AbstractWorkflowTask task, ArchiveFileResource archive, ODMProcessConfiguration configuration, Collection col) throws IOException, CsvValidationException
   {
-    String extension = archive.getNameExtension();
+    ODMProcessingPayload payload = filterArchive(task, archive, configuration);
 
-    ODMProcessingPayload payload;
-
-    if (extension.equalsIgnoreCase("zip"))
+    if (col != null && col.isRadiometric())
     {
-      payload = filterZipArchive(archive, configuration);
-    }
-    else if (extension.equalsIgnoreCase("gz"))
-    {
-      payload = filterTarGzArchive(archive, configuration);
-    }
-    else
-    {
-      throw new ProgrammingErrorException(new UnsupportedOperationException("Unsupported archive type [" + extension + "]"));
-    }
-
-    if (col != null)
-    {
-      col.getMetadata().ifPresent(metadata -> {
-        Sensor sensor = metadata.getSensor();
-
-        if ( ( sensor.getName().toLowerCase().contains("workswell wiris pro") || sensor.getModel().toLowerCase().contains("wiris pro") ) 
-            && configuration.getRadiometricCalibration() != RadiometricCalibration.NONE)
-        {
-          new WorkswellWirisThermalPhotometricProcessor().process(new FileResource(payload.getFile()));
-        }
-      });
+      new RadiometricImageryPreProcessor().process(new FileResource(archive.extract()));
     }
 
     return payload;
   }
-
-  private static ODMProcessingPayload filterTarGzArchive(ApplicationResource archive, ODMProcessConfiguration configuration) throws IOException, CsvValidationException
+  
+  @SuppressWarnings("resource")
+  private static ODMProcessingPayload filterArchive(AbstractWorkflowTask task, ArchiveFileResource archive, ODMProcessConfiguration configuration) throws IOException, CsvValidationException
   {
-    List<String> extensions = ImageryProcessingJob.getSupportedExtensions(ImageryComponent.RAW);
-
-    CloseableFile parent = new CloseableFile(Files.createTempDir(), true);
-    final ODMProcessingPayload payload = new ODMProcessingPayload(parent);
-
-    try (GzipCompressorInputStream gzipIn = new GzipCompressorInputStream(archive.openNewStream()))
+    List<String> extensions = ImageryProcessingJob.getSupportedExtensions(ImageryComponent.RAW, false, false, false, configuration);
+    final ODMProcessingPayload payload = new ODMProcessingPayload(archive);
+    
+    Queue<ApplicationFileResource> queue = new LinkedList<>();
+    
+    queue.add(archive);
+    
+    while(!queue.isEmpty())
     {
-      try (TarArchiveInputStream tarIn = new TarArchiveInputStream(gzipIn))
+      var res = queue.poll();
+      
+      if (res.hasChildren())
       {
-        TarArchiveEntry entry;
-
-        while ( ( entry = (TarArchiveEntry) tarIn.getNextEntry() ) != null)
-        {
-          final String filename = entry.getName();
-          final String ext = FilenameUtils.getExtension(filename);
-
-          if (entry.isDirectory())
-          {
-          }
-          else if (filename.equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile())
-          {
-            File file = new File(parent, "geo.txt");
-
-            if (configuration.getGeoLocationFormat().equals(FileFormat.RX1R2))
-            {
-              try (RX1R2GeoFileConverter reader = RX1R2GeoFileConverter.open(tarIn))
-              {
-                FileUtils.copyFile(reader.getOutput(), file);
-              }
-            }
-            else
-            {
-              try (FileOutputStream fos = new FileOutputStream(file))
-              {
-                IOUtils.copy(tarIn, fos);
-              }
-            }
-
-            payload.setGeoLocationFile(IOUtils.toString(tarIn, "UTF-8"));
-          }
-          else if (filename.equalsIgnoreCase("gcp_list.txt") && configuration.isIncludeGroundControlPointFile())
-          {
-            File file = new File(parent, entry.getName());
-
-            try (FileOutputStream fos = new FileOutputStream(file))
-            {
-              IOUtils.copy(tarIn, fos);
-            }
-
-            payload.setGroundControlPointFile(IOUtils.toString(tarIn, "UTF-8"));
-          }
-          else if ( ( UasComponentIF.isValidName(filename) && extensions.contains(ext) ))
-          {
-            File file = new File(parent, entry.getName());
-
-            try (FileOutputStream fos = new FileOutputStream(file))
-            {
-              IOUtils.copy(tarIn, fos);
-            }
-
-            payload.addImage(filename);
-          }
-
-        }
+        for (var child : res.getChildrenFiles())
+          queue.add(child);
+        
+        continue;
       }
-    }
-
-    return payload;
-  }
-
-  private static ODMProcessingPayload filterZipArchive(ApplicationResource archive, ODMProcessConfiguration configuration) throws IOException, CsvValidationException
-  {
-    List<String> extensions = ImageryProcessingJob.getSupportedExtensions(ImageryComponent.RAW);
-    CloseableFile parent = new CloseableFile(Files.createTempDir(), true);
-    final ODMProcessingPayload payload = new ODMProcessingPayload(parent);
-
-    try (CloseableFile fArchive = archive.openNewFile())
-    {
-      try (ZipFile zipFile = new ZipFile(fArchive))
+      
+      if (res.getName().equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile())
       {
-        Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
-
-        while (entries.hasMoreElements())
+        // We want to set the geoLocation file here on the payload BEFORE we convert it so that the validator which uses it will use the unconverter format
+        payload.setGeoLocationFile(IOUtils.toString(res.openNewStream(), "UTF-8"));
+        
+        if (configuration.getGeoLocationFormat().equals(FileFormat.RX1R2))
         {
-          ZipArchiveEntry entry = entries.nextElement();
-          final String filename = entry.getName();
-          final String ext = FilenameUtils.getExtension(filename).toLowerCase();
-
-          if (filename.equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile())
+          try (RX1R2GeoFileConverter reader = RX1R2GeoFileConverter.open(res.openNewStream()))
           {
-            File file = new File(parent, "geo.txt");
-
-            if (configuration.getGeoLocationFormat().equals(FileFormat.RX1R2))
-            {
-              try (InputStream zis = zipFile.getInputStream(entry))
-              {
-                try (RX1R2GeoFileConverter reader = RX1R2GeoFileConverter.open(zis))
-                {
-                  FileUtils.copyFile(reader.getOutput(), file);
-                }
-              }
-            }
-            else
-            {
-              try (FileOutputStream fos = new FileOutputStream(file))
-              {
-                try (InputStream zis = zipFile.getInputStream(entry))
-                {
-                  IOUtils.copy(zis, fos);
-                }
-
-              }
-            }
-
-            payload.setGeoLocationFile(IOUtils.toString(zipFile.getInputStream(entry), "UTF-8"));
-          }
-          else if (filename.equalsIgnoreCase("gcp_list.txt") && configuration.isIncludeGroundControlPointFile())
-          {
-            File file = new File(parent, "gcp_list.txt");
-
-            try (FileOutputStream fos = new FileOutputStream(file))
-            {
-              try (InputStream zis = zipFile.getInputStream(entry))
-              {
-                IOUtils.copy(zis, fos);
-              }
-            }
-
-            payload.setGroundControlPointFile(IOUtils.toString(zipFile.getInputStream(entry), "UTF-8"));
-          }
-          else if ( ( UasComponentIF.isValidName(filename) && extensions.contains(ext) ))
-          {
-            File file = new File(parent, entry.getName());
-
-            try (FileOutputStream fos = new FileOutputStream(file))
-            {
-              try (InputStream zis = zipFile.getInputStream(entry))
-              {
-                IOUtils.copy(zis, fos);
-              }
-            }
-
-            payload.addImage(filename);
+            IOUtils.copy(new FileInputStream(reader.getOutput()), new FileOutputStream(res.getUnderlyingFile()));
           }
         }
       }
-      catch (ZipException e)
+      else if (res.getName().equalsIgnoreCase("gcp_list.txt") && configuration.isIncludeGroundControlPointFile())
       {
-        throw new InvalidZipException();
+        payload.setGroundControlPointFile(IOUtils.toString(res.openNewStream(), "UTF-8"));
+      }
+      else if ( ( UasComponentIF.isValidName(res.getName()) && extensions.contains(res.getNameExtension().toLowerCase()) ))
+      {
+        payload.addImage(res.getName(), (double)res.getUnderlyingFile().length() / (1024.0d * 1024.0d));
       }
     }
-
+    
     return payload;
   }
+
+//  private static ODMProcessingPayload filterTarGzArchive(ApplicationResource archive, ODMProcessConfiguration configuration) throws IOException, CsvValidationException
+//  {
+//    List<String> extensions = ImageryProcessingJob.getSupportedExtensions(ImageryComponent.RAW, configuration);
+//
+//    CloseableFile parent = new CloseableFile(Files.createTempDirectory(Session.getCurrentSession().getOid()).toFile(), true);
+//    final ODMProcessingPayload payload = new ODMProcessingPayload(parent);
+//
+//    try (GzipCompressorInputStream gzipIn = new GzipCompressorInputStream(archive.openNewStream()))
+//    {
+//      try (TarArchiveInputStream tarIn = new TarArchiveInputStream(gzipIn))
+//      {
+//        TarArchiveEntry entry;
+//
+//        while ( ( entry = (TarArchiveEntry) tarIn.getNextEntry() ) != null)
+//        {
+//          final String filename = entry.getName();
+//          final String ext = FilenameUtils.getExtension(filename);
+//
+//          if (entry.isDirectory())
+//          {
+//          }
+//          else if (filename.equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile())
+//          {
+//            File file = new File(parent, "geo.txt");
+//
+//            if (configuration.getGeoLocationFormat().equals(FileFormat.RX1R2))
+//            {
+//              try (RX1R2GeoFileConverter reader = RX1R2GeoFileConverter.open(tarIn))
+//              {
+//                FileUtils.copyFile(reader.getOutput(), file);
+//              }
+//            }
+//            else
+//            {
+//              try (FileOutputStream fos = new FileOutputStream(file))
+//              {
+//                IOUtils.copy(tarIn, fos);
+//              }
+//            }
+//
+//            payload.setGeoLocationFile(IOUtils.toString(tarIn, "UTF-8"));
+//          }
+//          else if (filename.equalsIgnoreCase("gcp_list.txt") && configuration.isIncludeGroundControlPointFile())
+//          {
+//            File file = new File(parent, entry.getName());
+//
+//            try (FileOutputStream fos = new FileOutputStream(file))
+//            {
+//              IOUtils.copy(tarIn, fos);
+//            }
+//
+//            payload.setGroundControlPointFile(IOUtils.toString(tarIn, "UTF-8"));
+//          }
+//          else if ( ( UasComponentIF.isValidName(filename) && extensions.contains(ext) ))
+//          {
+//            File file = new File(parent, entry.getName());
+//
+//            try (FileOutputStream fos = new FileOutputStream(file))
+//            {
+//              IOUtils.copy(tarIn, fos);
+//            }
+//
+//            payload.addImage(filename);
+//          }
+//
+//        }
+//      }
+//    }
+//
+//    return payload;
+//  }
+//
+//  private static ODMProcessingPayload filterZipArchive(ApplicationResource archive, ODMProcessConfiguration configuration) throws IOException, CsvValidationException
+//  {
+//    List<String> extensions = ImageryProcessingJob.getSupportedExtensions(ImageryComponent.RAW, configuration);
+//    CloseableFile parent = new CloseableFile(Files.createTempDir(), true);
+//    final ODMProcessingPayload payload = new ODMProcessingPayload(parent);
+//
+//    try (CloseableFile fArchive = archive.openNewFile())
+//    {
+//      try (ZipFile zipFile = new ZipFile(fArchive))
+//      {
+//        Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
+//
+//        while (entries.hasMoreElements())
+//        {
+//          ZipArchiveEntry entry = entries.nextElement();
+//          final String filename = entry.getName();
+//          final String ext = FilenameUtils.getExtension(filename).toLowerCase();
+//
+//          if (filename.equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile())
+//          {
+//            File file = new File(parent, "geo.txt");
+//
+//            if (configuration.getGeoLocationFormat().equals(FileFormat.RX1R2))
+//            {
+//              try (InputStream zis = zipFile.getInputStream(entry))
+//              {
+//                try (RX1R2GeoFileConverter reader = RX1R2GeoFileConverter.open(zis))
+//                {
+//                  FileUtils.copyFile(reader.getOutput(), file);
+//                }
+//              }
+//            }
+//            else
+//            {
+//              try (FileOutputStream fos = new FileOutputStream(file))
+//              {
+//                try (InputStream zis = zipFile.getInputStream(entry))
+//                {
+//                  IOUtils.copy(zis, fos);
+//                }
+//
+//              }
+//            }
+//
+//            payload.setGeoLocationFile(IOUtils.toString(zipFile.getInputStream(entry), "UTF-8"));
+//          }
+//          else if (filename.equalsIgnoreCase("gcp_list.txt") && configuration.isIncludeGroundControlPointFile())
+//          {
+//            File file = new File(parent, "gcp_list.txt");
+//
+//            try (FileOutputStream fos = new FileOutputStream(file))
+//            {
+//              try (InputStream zis = zipFile.getInputStream(entry))
+//              {
+//                IOUtils.copy(zis, fos);
+//              }
+//            }
+//
+//            payload.setGroundControlPointFile(IOUtils.toString(zipFile.getInputStream(entry), "UTF-8"));
+//          }
+//          else if ( ( UasComponentIF.isValidName(filename) && extensions.contains(ext) ))
+//          {
+//            File file = new File(parent, entry.getName());
+//
+//            try (FileOutputStream fos = new FileOutputStream(file))
+//            {
+//              try (InputStream zis = zipFile.getInputStream(entry))
+//              {
+//                IOUtils.copy(zis, fos);
+//              }
+//            }
+//
+//            payload.addImage(filename);
+//          }
+//        }
+//      }
+//      catch (ZipException e)
+//      {
+//        throw new InvalidZipException();
+//      }
+//    }
+//
+//    return payload;
+//  }
 
 }

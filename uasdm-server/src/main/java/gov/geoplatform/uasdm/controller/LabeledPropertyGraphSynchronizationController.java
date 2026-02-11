@@ -16,7 +16,6 @@
 package gov.geoplatform.uasdm.controller;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
 import org.json.JSONException;
@@ -30,99 +29,43 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import gov.geoplatform.uasdm.controller.body.SynchronizeLabeledPropertyGraphBody;
+import gov.geoplatform.uasdm.controller.body.UpdateRemoteVersionBody;
 import gov.geoplatform.uasdm.service.request.IDMLabeledPropertyGraphSynchronizationService;
-import net.geoprism.registry.controller.RunwaySpringController;
 import net.geoprism.registry.service.request.LabeledPropertyGraphTypeVersionServiceIF;
+<<<<<<< HEAD
 import net.geoprism.spring.core.JsonObjectDeserializer;
+=======
+>>>>>>> refs/remotes/origin/master
 
 @RestController
 @Validated
-public class LabeledPropertyGraphSynchronizationController extends RunwaySpringController
+@RequestMapping("/api/labeled-property-graph-synchronization")
+public class LabeledPropertyGraphSynchronizationController extends AbstractController
 {
-  public static final String API_PATH = "labeled-property-graph-synchronization";
-
-  public static class SyncBody
-  {
-    @NotNull
-    @JsonDeserialize(using = JsonObjectDeserializer.class)
-    JsonObject sync;
-
-    public JsonObject getSync()
-    {
-      return sync;
-    }
-
-    public void setSync(JsonObject sync)
-    {
-      this.sync = sync;
-    }
-  }
-
-  public static class UpdateRemoteVersionBody
-  {
-    @NotNull
-    String  oid;
-
-    @NotNull
-    String  versionId;
-
-    @NotNull
-    Integer versionNumber;
-
-    public String getOid()
-    {
-      return oid;
-    }
-
-    public void setOid(String oid)
-    {
-      this.oid = oid;
-    }
-
-    public String getVersionId()
-    {
-      return versionId;
-    }
-
-    public void setVersionId(String versionId)
-    {
-      this.versionId = versionId;
-    }
-
-    public Integer getVersionNumber()
-    {
-      return versionNumber;
-    }
-
-    public void setVersionNumber(Integer versionNumber)
-    {
-      this.versionNumber = versionNumber;
-    }
-  }
-
   @Autowired
   private IDMLabeledPropertyGraphSynchronizationService service;
 
   @Autowired
   private LabeledPropertyGraphTypeVersionServiceIF      vService;
 
-  @GetMapping(API_PATH + "/page")
-  public ResponseEntity<String> page(@NotEmpty @RequestParam String criteria) throws JSONException
+  @GetMapping("/page")
+  public ResponseEntity<String> page(@NotEmpty @RequestParam(name = "criteria") String criteria) throws JSONException
   {
     JsonObject page = this.service.page(getSessionId(), JsonParser.parseString(criteria).getAsJsonObject());
 
     return new ResponseEntity<String>(page.toString(), HttpStatus.OK);
   }
 
-  @GetMapping(API_PATH + "/get-all")
+  @GetMapping("/get-all")
   public ResponseEntity<String> getAll() throws JSONException
   {
     JsonArray list = this.service.getAll(getSessionId());
@@ -130,55 +73,55 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
     return new ResponseEntity<String>(list.toString(), HttpStatus.OK);
   }
 
-  @GetMapping(API_PATH + "/get-for-organization")
-  public ResponseEntity<String> getForOrganization(@NotEmpty @RequestParam String organizationCode) throws JSONException
+  @GetMapping("/get-for-organization")
+  public ResponseEntity<String> getForOrganization(@NotEmpty @RequestParam(name = "organizationCode") String organizationCode) throws JSONException
   {
     JsonArray list = this.service.getForOrganization(getSessionId(), organizationCode);
 
     return new ResponseEntity<String>(list.toString(), HttpStatus.OK);
   }
 
-  @GetMapping(API_PATH + "/get")
-  public ResponseEntity<String> get(@NotEmpty @RequestParam String oid) throws JSONException
+  @GetMapping("/get")
+  public ResponseEntity<String> get(@NotEmpty @RequestParam(name = "oid") String oid) throws JSONException
   {
     JsonObject response = this.service.get(getSessionId(), oid);
 
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
 
-  @GetMapping(API_PATH + "/roots")
-  public ResponseEntity<String> roots(@NotEmpty @RequestParam String oid, @NotEmpty @RequestParam Boolean includeRoot) throws JSONException
+  @GetMapping("/roots")
+  public ResponseEntity<String> roots(@NotEmpty @RequestParam(name = "oid") String oid, @NotEmpty @RequestParam(name = "includeRoot") Boolean includeRoot) throws JSONException
   {
     JsonObject response = this.service.roots(getSessionId(), oid, includeRoot);
 
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
 
-  @GetMapping(API_PATH + "/select")
-  public ResponseEntity<String> select(@NotEmpty @RequestParam String oid, @NotEmpty @RequestParam String parentType, @NotEmpty @RequestParam String parentId, @NotEmpty @RequestParam Boolean includeMetadata) throws JSONException
+  @GetMapping("/select")
+  public ResponseEntity<String> select(@NotEmpty @RequestParam(name = "oid") String oid, @NotEmpty @RequestParam(name = "parentType") String parentType, @NotEmpty @RequestParam(name = "parentId") String parentId, @NotEmpty @RequestParam(name = "includeMetadata") Boolean includeMetadata) throws JSONException
   {
     JsonObject response = this.service.select(getSessionId(), oid, parentType, parentId, includeMetadata);
 
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
 
-  @GetMapping(API_PATH + "/get-object")
-  public ResponseEntity<String> getObject(@NotEmpty @RequestParam String synchronizationId, @NotEmpty @RequestParam String oid) throws JSONException
+  @GetMapping("/get-object")
+  public ResponseEntity<String> getObject(@NotEmpty @RequestParam(name = "synchronizationId") String synchronizationId, @NotEmpty @RequestParam(name = "oid") String oid) throws JSONException
   {
     JsonObject response = this.service.getObject(getSessionId(), synchronizationId, oid);
 
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
 
-  @PostMapping(API_PATH + "/apply")
-  public ResponseEntity<String> apply(@Valid @RequestBody SyncBody body) throws JSONException
+  @PostMapping("/apply")
+  public ResponseEntity<String> apply(@Valid @RequestBody SynchronizeLabeledPropertyGraphBody body) throws JSONException
   {
-    JsonObject response = this.service.apply(this.getSessionId(), body.sync);
+    JsonObject response = this.service.apply(this.getSessionId(), body.getSync());
 
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
 
-  @PostMapping(API_PATH + "/remove")
+  @PostMapping("/remove")
   public ResponseEntity<Void> remove(@Valid @RequestBody OidBody body) throws JSONException
   {
     this.service.remove(this.getSessionId(), body.getOid());
@@ -186,7 +129,7 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
     return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
   }
 
-  @PostMapping(API_PATH + "/execute")
+  @PostMapping("/execute")
   public ResponseEntity<Void> execute(@Valid @RequestBody OidBody body)
   {
     this.service.execute(this.getSessionId(), body.getOid());
@@ -194,23 +137,23 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
     return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
   }
 
-  @GetMapping(API_PATH + "/get-status")
-  public ResponseEntity<String> getStatus(@NotEmpty @RequestParam String oid)
+  @GetMapping("/get-status")
+  public ResponseEntity<String> getStatus(@NotEmpty @RequestParam(name = "oid") String oid)
   {
     JsonObject response = this.service.getStatus(getSessionId(), oid);
 
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
 
-  @PostMapping(API_PATH + "/update-remote-version")
+  @PostMapping("/update-remote-version")
   public ResponseEntity<String> updateRemoteVersion(@Valid @RequestBody UpdateRemoteVersionBody body) throws JSONException
   {
-    JsonObject response = this.service.updateRemoteVersion(this.getSessionId(), body.oid, body.versionId, body.versionNumber);
+    JsonObject response = this.service.updateRemoteVersion(this.getSessionId(), body.getOid(), body.getVersionId(), body.getVersionNumber());
 
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
 
-  @PostMapping(API_PATH + "/newInstance")
+  @PostMapping("/new-instance")
   public ResponseEntity<String> newInstance() throws JSONException
   {
     JsonObject response = this.service.newInstance(this.getSessionId());
@@ -218,8 +161,8 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
     return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
   }
 
-  @GetMapping(API_PATH + "/tile")
-  public ResponseEntity<InputStreamResource> tile(@RequestParam Integer x, @RequestParam Integer y, @RequestParam Integer z, @NotEmpty @RequestParam String config) throws JSONException
+  @GetMapping("/tile")
+  public ResponseEntity<InputStreamResource> tile(@RequestParam(name = "x") Integer x, @RequestParam(name = "y") Integer y, @RequestParam(name = "z") Integer z, @NotEmpty @RequestParam(name = "config") String config) throws JSONException
   {
     JSONObject object = new JSONObject(config);
     object.put("x", x);
@@ -233,7 +176,7 @@ public class LabeledPropertyGraphSynchronizationController extends RunwaySpringC
     return new ResponseEntity<InputStreamResource>(isr, headers, HttpStatus.OK);
   }
 
-  @PostMapping(API_PATH + "/create-tiles")
+  @PostMapping("/create-tiles")
   public ResponseEntity<Void> createTiles(@Valid @RequestBody OidBody body)
   {
     this.vService.createTiles(getSessionId(), body.getOid());

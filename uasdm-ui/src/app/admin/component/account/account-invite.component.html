@@ -11,7 +11,7 @@
   
   <form #form="ngForm" (ngSubmit)="form.valid && onSubmit()">
     <div class="form-group">
-      <label>
+      <label class="form-label">
         <localize key="account.email"></localize>
       </label>
       <input type="text" [(ngModel)]="invite.email" name="email" required #aemail="ngModel" email>
@@ -20,7 +20,7 @@
       </div>
     </div>
     <div class="form-group">
-      <label>Organization</label>
+      <label class="form-label">Organization</label>
       <organization-field 
         name="organization" [(value)]="invite.organization" [disabled]="false">
       </organization-field>

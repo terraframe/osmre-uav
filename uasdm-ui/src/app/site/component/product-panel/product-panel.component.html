@@ -7,8 +7,8 @@
     <div class="row">
         <div class="col-sm-12">
             <div style="padding:10px 15px;">
-                <label>
-                    <label>Order available products</label>
+                <label class="form-label">
+                    <label class="form-label">Order available products</label>
                 </label>
                 <select [(ngModel)]="sortField" name="sortField" (change)="refresh()">
                     <option></option>
@@ -30,7 +30,7 @@
             </h4>
         </div>
 
-        <div *ngFor="let view of views" class="list-group-item">
+        <div *ngFor="let view of views" class="list-group-item" style="padding-left: 3px; padding-right: 3px;">
             <div class="card card-default" [@fadeInOnEnter] [@fadeOutOnLeave]>
                 <div class="card-body">
                     <h5 class="card-title" style="color:#a0a0a0">
@@ -42,107 +42,94 @@
                         </span>
                     </h5>
 
-                    <ul class="breadcrumb" style="margin: 5px 0 5px 0;">
-                        <li *ngFor="let entity of view.product.entities">
-                            <span> {{entity.name}} </span>
-                        </li>
-                    </ul>
+                    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                        <ol class="breadcrumb" style="margin: 5px 0 5px 0;">
+                            <li class="breadcrumb-item" *ngFor="let entity of view.product.entities">
+                                <span> {{entity.name}}</span>
+                            </li>
+                        </ol>
+                    </nav>
 
                     <div *ngIf="view.componentType === 'collection'" style="padding:10px 15px;">
-                        <label>
-                            <label>Versions</label>
+                        <label class="form-label">
+                            <label class="form-label">Versions</label>
                         </label>
                         <select [(ngModel)]="view.productId" name="productId" (change)="setVersion(view)">
-                            <option *ngFor="let product of view.products" [value]="product.id">{{product.productName}}</option>
+                            <option *ngFor="let product of view.products" [value]="product.id">{{product.productName}}
+                            </option>
                         </select>
-                    </div>       
+                    </div>
 
 
                     <div *ngIf="thumbnails[view.product.id] != null">
                         <a class="thumbnail" (click)="previewImage(view.product)">
-                            <img class="" [src]="thumbnails[view.product.id] | safeHtml"
+                            <img class="mx-auto d-block img-thumbnail" [src]="thumbnails[view.product.id] | safeHtml"
                                 (error)="getDefaultImgURL($event)" alt="Image">
                         </a>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <a class="fa product-icon"
-                                [ngClass]="{'fa-check' : view.product.orthoMapped, 'fa-globe' : !view.product.orthoMapped}"
-                                [style]="hasOrthoLayer(view.product) ? '' : 'cursor:not-allowed;'" aria-hidden="true"
-                                (click)="handleMapIt(view.product)"
-                                title="View the Orthomosaic generated from the raw data using ODM.">Aerial</a>
-                        </div>
-                        <div class="col-sm-4">
-                            <a class="fa product-icon"
-                                [ngClass]="{'fa-check' : view.product.demMapped, 'fa-industry' : !view.product.demMapped}"
-                                [style]="hasDemLayer(view.product) ? '' : 'cursor:not-allowed;'" aria-hidden="true"
-                                (click)="handleMapDem(view.product)" title="View the DEM hillshade.">Hillshade</a>
-                        </div>
-                        <div class="col-sm-4">
-                            <a class="fa fa-cube product-icon"
-                                [style]="view.product.hasPointcloud ? '' : 'cursor:not-allowed;'" aria-hidden="true"
-                                (click)="handlePointcloud(view.product)"
-                                title="View the 3D pointcloud for this product using the Potree viewer.">3D</a>
-                        </div>
+                    <div class="product-actions product-actions--compact d-flex flex-wrap align-items-center">
+					  <button class="product-action"
+					          type="button"
+					          [disabled]="!hasOrthoLayer(view.product)"
+					          (click)="handleMapIt(view.product)"
+					          title="View the Orthomosaic generated from the raw data using ODM.">
+					    <i class="fa product-icon" [ngClass]="{'fa-check': view.product.orthoMapped, 'fa-globe': !view.product.orthoMapped}"></i>
+					    <span>Aerial</span>
+					  </button>
+					
+					  <button class="product-action"
+					          type="button"
+					          [disabled]="!hasDemLayer(view.product)"
+					          (click)="handleMapDem(view.product)"
+					          title="View the DEM hillshade.">
+					    <i class="fa product-icon" [ngClass]="{'fa-check': view.product.demMapped, 'fa-industry': !view.product.demMapped}"></i>
+					    <span>Hillshade</span>
+					  </button>
+					
+					  <button class="product-action"
+					          type="button"
+					          [disabled]="!view.product.hasPointcloud"
+					          (click)="handlePointcloud(view.product)"
+					          title="View the 3D pointcloud for this product using the Potree viewer.">
+					    <i class="fa fa-cube product-icon"></i>
+					    <span>3D</span>
+					  </button>
+					
+					  <button class="product-action" type="button" (click)="handleGetInfo(view.product)">
+					    <i class="fa fa-info-circle product-icon"></i><span>Get Info</span>
+					  </button>
+					
+					  <button class="product-action" type="button" *ngIf="isAdmin" (click)="handleToggleLock(view.product)">
+					    <i class="fa product-icon" [ngClass]="{'fa-lock': view.product.locked, 'fa-lock-open': !view.product.locked}"></i>
+					    <span>{{ view.product.locked ? 'Unlock' : 'Lock' }}</span>
+					  </button>
+					
+					  <button class="product-action danger" type="button"
+					          *ngIf="view.product.removable && !view.product.locked && !view.product.published"
+					          (click)="handleDelete(view, $event)">
+					    <i class="fa fa-trash-alt product-icon"></i><span>Delete</span>
+					  </button>
+					
+					  <button class="product-action" type="button"
+					          *ngIf="!view.product.locked && !view.product.published"
+					          (click)="handleTogglePublish(view.product)">
+					    <i class="fa fa-arrow-alt-circle-up product-icon"></i><span>Publish</span>
+					  </button>
+					
+					  <button class="product-action" type="button"
+					          *ngIf="!view.product.locked && view.product.published"
+					          (click)="handleTogglePublish(view.product)">
+					    <i class="fa fa-arrow-alt-circle-down product-icon"></i><span>Unpublish</span>
+					  </button>
+					
+					  <button class="product-action" type="button" *ngIf="view.product.published"
+					          (click)="clipboardPublicStacUrl(view.product, clipboardPopover)">
+					    <i class="fa fa-link product-icon" [id]="'PublicStacUrl-' + view.product.id"
+					       [popover]="'Copied to clipboard!'" triggers="" #clipboardPopover="bs-popover" placement="top"></i>
+					    <span>Share</span>
+					  </button>
+					</div>
 
-                        <div class="col-sm-4">
-                            <a class="fa fa-info-circle product-icon" (click)="handleGetInfo(view.product)"
-                                title="View more information about this product, including raw data.">Get Info</a>
-                        </div>
-
-                        <div *ngIf="isAdmin" class="col-sm-4">
-                            <a class="fa product-icon"
-                                [ngClass]="{'fa-lock': view.product.locked, 'fa-lock-open': !view.product.locked}"
-                                (click)="handleToggleLock(view.product)" title="Lock or unlock the product">
-                                {{view.product.locked ? 'Unlock' : 'Lock'}}
-                            </a>
-                        </div>
-
-                        <div class="col-sm-4" *ngIf="view.product.removable && !view.product.locked && !view.product.published">
-                            <a class="fa fa-trash-alt product-icon" (click)="handleDelete(view, $event)"
-                                title="Deletes the product and all associated data and public map services.">Delete</a>
-                        </div>
-
-                        <div class="col-sm-4" *ngIf="!view.product.locked && !view.product.published">
-
-                            <a class="fa fa-arrow-alt-circle-up product-icon" style="--fa-border-padding: 0 0 0 5px;"
-                                (click)="handleTogglePublish(view.product)"
-                                title="Publish the product to the publish mosaic. The aerial and hillshade services will be publicly accessible.">Publish</a>
-                        </div>
-                        <div class="col-sm-4" *ngIf="!view.product.locked && view.product.published">
-
-                            <a class="fa fa-arrow-alt-circle-down product-icon" style="width:60px;"
-                                (click)="handleTogglePublish(view.product)"
-                                title="Unpublishes the layer from the public mosaic. This layer will no longer be publicly accessible.">Unpublish</a>
-
-
-                        </div>
-                        <div class="col-sm-4" *ngIf="view.product.published">
-
-                            <a class="fa" (click)="clipboardPublicStacUrl(view.product, clipboardPopover)">
-                                <span class="fa fa-link product-icon" [id]="'PublicStacUrl-' + view.product.id"
-                                    style="margin:0;" [popover]="'Copied to clipboard!'" triggers=""
-                                    #clipboardPopover="bs-popover" placement="top"></span>
-                                Share
-                            </a>
-
-                            <!-- 
-                                    <span class="btn-group" dropdown>
-                                      <a dropdownToggle type="button" class="dropdown-toggle" style="line-height: 0px !important;" aria-controls="dropdown-basic">
-                                        <span class="fa fa-link" style="margin:0;"></span>
-                                      </a>
-                                      <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu" role="menu" aria-labelledby="button-basic"
-                                        style="width:100px; min-width:100px; max-width:100px;">
-                                        <li role="menuitem"><a class="dropdown-item" href="#">Tilejson</a></li>
-                                        <li role="menuitem"><a class="dropdown-item" href="#">Direct</a></li>
-                                        <li role="menuitem"><a class="dropdown-item" href="#">STAC</a></li>
-                                      </ul>
-                                    </span>
-                                    -->
-
-                        </div>
-
-                    </div>
                 </div>
             </div>
         </div>

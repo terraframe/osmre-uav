@@ -21,27 +21,26 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.google.gson.JsonObject;
 
 import gov.geoplatform.uasdm.service.ErosService;
-import net.geoprism.registry.controller.RunwaySpringController;
 
 @Controller
 @Validated
-public class ErosController extends RunwaySpringController
+@RequestMapping("/api/eros")
+public class ErosController extends AbstractController
 {
-  public static final String API_PATH = "eros";
-  
   private ErosService service;
 
   public ErosController()
   {
     this.service = new ErosService();
   }
-  
-  @PostMapping(API_PATH + "/push")
+
+  @PostMapping("/push")
   public ResponseEntity<String> push(@RequestParam String collectionId) throws JSONException
   {
     JsonObject response = this.service.push(getSessionId(), collectionId);

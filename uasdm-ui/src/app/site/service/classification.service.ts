@@ -14,17 +14,16 @@ import { Classification } from '@site/model/classification';
 import { Injectable } from '@angular/core';
 import { GenericTableService } from '@shared/model/generic-table';
 import { environment } from 'src/environments/environment';
+import { firstValueFrom } from 'rxjs';
 
 export enum Endpoint {
-    SENSOR_TYPE = '/sensor-type',
-    PLATFORM_TYPE = '/platform-type',
-    PLATFORM_MANUFACTURER = '/platform-manufacturer',
-    WAVE_LENGTH = '/wave-length'
+    SENSOR_TYPE = '/api/sensor-type',
+    PLATFORM_TYPE = '/api/platform-type',
+    PLATFORM_MANUFACTURER = '/api/platform-manufacturer',
+    WAVE_LENGTH = '/api/wave-length'
 }
 
-
-
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ClassificationService implements GenericTableService {
 
     constructor(private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService) {
@@ -35,9 +34,8 @@ export class ClassificationService implements GenericTableService {
         let params: HttpParams = new HttpParams();
         params = params.set('criteria', JSON.stringify(criteria));
 
-        return this.http
-            .get<PageResult<Classification>>(environment.apiUrl + baseUrl + '/page', { params: params })
-            .toPromise();
+        return firstValueFrom(this.http
+            .get<PageResult<Classification>>(environment.apiUrl + baseUrl + '/page', { params: params }));
     }
 
     getAll(baseUrl: string): Promise<Classification[]> {
@@ -45,29 +43,26 @@ export class ClassificationService implements GenericTableService {
 
         this.eventService.start();
 
-        return this.http
+        return firstValueFrom(this.http
             .get<Classification[]>(environment.apiUrl + baseUrl + '/get-all', { params: params })
             .pipe(finalize(() => {
                 this.eventService.complete();
-            }))
-            .toPromise();
+            })));
     }
 
 
     get(baseUrl: string, oid: string): Promise<Classification> {
 
-        let headers = new HttpHeaders({
-            'Content-Type': 'application/json'
-        });
+        let params: HttpParams = new HttpParams();
+        params = params.set('oid', oid);
 
         this.eventService.start();
 
-        return this.http
-            .post<Classification>(environment.apiUrl + baseUrl + '/get', JSON.stringify({ oid: oid }), { headers: headers })
+        return firstValueFrom(this.http
+            .get<Classification>(environment.apiUrl + baseUrl + '/get', { params: params })
             .pipe(finalize(() => {
                 this.eventService.complete();
-            }))
-            .toPromise();
+            })));
     }
 
     newInstance(baseUrl: string): Promise<Classification> {
@@ -79,7 +74,7 @@ export class ClassificationService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .post<Classification>(environment.apiUrl + baseUrl + '/newInstance', JSON.stringify({}), { headers: headers })
+            .post<Classification>(environment.apiUrl + baseUrl + '/new-instance', JSON.stringify({}), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
@@ -111,7 +106,7 @@ export class ClassificationService implements GenericTableService {
         this.eventService.start();
 
         return this.noErrorHttpClient
-            .post<Classification>(environment.apiUrl + baseUrl + '/apply', JSON.stringify({ classification: classification }), { headers: headers })
+            .post<Classification>(environment.apiUrl + baseUrl + '/apply', JSON.stringify(classification), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))

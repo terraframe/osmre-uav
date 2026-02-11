@@ -130,7 +130,7 @@ public class SiteObjectDocumentQuery implements SiteObjectDocumentQueryIF
           query.setParameter("jpg", "%.JPG");
           query.setParameter("png", "%.PNG");
           query.setParameter("tif", "%.TIF");
-          query.setParameter("tif", "%.TIFF");
+          query.setParameter("tiff", "%.TIFF");
         }
         else
         {

@@ -5,12 +5,15 @@
 import { Component, Inject, Input } from '@angular/core';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { DOCUMENT } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
-@Component( {
+@Component({
+    standalone: true,
     selector: 'error-modal',
     templateUrl: './error-modal.component.html',
-    styleUrls: ['./error-modal.css']
-} )
+    styleUrls: ['./error-modal.css'],
+    imports: [FormsModule]
+})
 export class ErrorModalComponent {
     /*
      * Message

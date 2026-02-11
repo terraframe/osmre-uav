@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
@@ -29,6 +29,8 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.geojson.GeoJsonReader;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
+
+import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
 
 public class SiteItem implements TreeComponent
 {
@@ -48,6 +50,8 @@ public class SiteItem implements TreeComponent
 
   public static String        IS_PRIVATE          = "isPrivate";
 
+  public static String        HAS_PII_CONCERN     = "hasPIIConcern";
+
   public static String        IS_OWNER            = "isOwner";
 
   public static String        NUMBER_OF_CHILDREN  = "numberOfChildren";
@@ -66,7 +70,13 @@ public class SiteItem implements TreeComponent
 
   public static String        SENSOR              = "sensor";
 
+  public static String        FORMAT              = "format";
+
   public static String        IS_LIDAR            = "isLidar";
+
+  public static String        IS_RADIOMETRIC      = "isRadiometric";
+
+  public static String        IS_MULTISPECTRAL    = "isMultispectral";
 
   public static String        COLLECTION_DATE     = "collectionDate";
 
@@ -92,7 +102,13 @@ public class SiteItem implements TreeComponent
 
   private Boolean             metadataUploaded;
 
+  private String              format;
+
   private Boolean             isLidar;
+
+  private Boolean             isRadiometric;
+
+  private Boolean             isMultispectral;
 
   private Geometry            geometry;
 
@@ -354,6 +370,16 @@ public class SiteItem implements TreeComponent
     this.platform = platform;
   }
 
+  public String getFormat()
+  {
+    return format;
+  }
+
+  public void setFormat(CollectionFormat format)
+  {
+    this.format = format == null ? null : format.name();
+  }
+
   public Boolean getIsLidar()
   {
     return isLidar;
@@ -362,6 +388,26 @@ public class SiteItem implements TreeComponent
   public void setIsLidar(Boolean isLidar)
   {
     this.isLidar = isLidar;
+  }
+
+  public Boolean getIsRadiometric()
+  {
+    return isRadiometric;
+  }
+
+  public void setIsRadiometric(Boolean isRadiometric)
+  {
+    this.isRadiometric = isRadiometric;
+  }
+
+  public Boolean getIsMultispectral()
+  {
+    return isMultispectral;
+  }
+
+  public void setIsMultispectral(Boolean isMultispectral)
+  {
+    this.isMultispectral = isMultispectral;
   }
 
   public JSONObject toJSON()
@@ -379,7 +425,10 @@ public class SiteItem implements TreeComponent
     obj.put(OWNER_EMAIL, this.getOwnerEmail());
     obj.put(METADATA_UPLOADED, this.getMetadataUploaded());
     obj.put(PRIVILEGE_TYPE, this.getPrivilegeType());
+    obj.put(FORMAT, this.getFormat());
     obj.put(IS_LIDAR, this.getIsLidar());
+    obj.put(IS_RADIOMETRIC, this.getIsRadiometric());
+    obj.put(IS_MULTISPECTRAL, this.getIsMultispectral());
     obj.put("hasAllZip", this.hasAllZip);
 
     if (this.getType().equals("Collection"))

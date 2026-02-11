@@ -15,10 +15,11 @@ import { PageResult } from '@shared/model/page';
 import { Sensor } from '../model/sensor';
 import { GenericTableService } from '@shared/model/generic-table';
 import { environment } from 'src/environments/environment';
+import { firstValueFrom } from 'rxjs';
 
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class SensorService implements GenericTableService {
 
     constructor(private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService) { }
@@ -27,9 +28,8 @@ export class SensorService implements GenericTableService {
         let params: HttpParams = new HttpParams();
         params = params.set('criteria', JSON.stringify(criteria));
 
-        return this.http
-            .get<PageResult<Sensor>>(environment.apiUrl + '/sensor/page', { params: params })
-            .toPromise();
+        return firstValueFrom(this.http
+            .get<PageResult<Sensor>>(environment.apiUrl + '/api/sensor/page', { params: params }));
     }
 
     getAll(): Promise<{ oid: string, name: string }[]> {
@@ -37,28 +37,27 @@ export class SensorService implements GenericTableService {
 
         this.eventService.start();
 
-        return this.http
-            .get<{ oid: string, name: string }[]>(environment.apiUrl + '/sensor/get-all', { params: params })
+        return firstValueFrom(this.http
+            .get<{ oid: string, name: string }[]>(environment.apiUrl + '/api/sensor/get-all', { params: params })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
-            .toPromise();
+        );
     }
 
     get(oid: string): Promise<Sensor> {
 
-        let headers = new HttpHeaders({
-            'Content-Type': 'application/json'
-        });
+        let params: HttpParams = new HttpParams();
+        params = params.set('oid', oid);
 
         this.eventService.start();
 
-        return this.http
-            .post<Sensor>(environment.apiUrl + '/sensor/get', JSON.stringify({ oid: oid }), { headers: headers })
+        return firstValueFrom(this.http
+            .get<Sensor>(environment.apiUrl + '/api/sensor/get', { params })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
-            .toPromise();
+        );
     }
 
     newInstance(): Promise<Sensor> {
@@ -69,12 +68,12 @@ export class SensorService implements GenericTableService {
 
         this.eventService.start();
 
-        return this.http
-            .post<Sensor>(environment.apiUrl + '/sensor/newInstance', JSON.stringify({}), { headers: headers })
+        return firstValueFrom(this.http
+            .post<Sensor>(environment.apiUrl + '/api/sensor/new-instance', JSON.stringify({}), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
-            .toPromise();
+        );
     }
 
     remove(oid: string): Promise<void> {
@@ -85,12 +84,12 @@ export class SensorService implements GenericTableService {
 
         this.eventService.start();
 
-        return this.http
-            .post<void>(environment.apiUrl + '/sensor/remove', JSON.stringify({ oid: oid }), { headers: headers })
+        return firstValueFrom(this.http
+            .post<void>(environment.apiUrl + '/api/sensor/remove', JSON.stringify({ oid: oid }), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
-            .toPromise();
+        );
     }
 
     apply(sensor: Sensor): Promise<Sensor> {
@@ -101,21 +100,21 @@ export class SensorService implements GenericTableService {
 
         this.eventService.start();
 
-        return this.noErrorHttpClient
-            .post<Sensor>(environment.apiUrl + '/sensor/apply', JSON.stringify({ sensor: sensor }), { headers: headers })
+        return firstValueFrom(this.noErrorHttpClient
+            .post<Sensor>(environment.apiUrl + '/api/sensor/apply', JSON.stringify(sensor), { headers: headers })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))
-            .toPromise();
+        );
     }
 
     search(text: string): Promise<{ oid: string, name: string }[]> {
         let params: HttpParams = new HttpParams();
         params = params.append('text', text);
 
-        return this.http
-            .get<{ oid: string, name: string }[]>(environment.apiUrl + '/sensor/search', { params: params })
-            .toPromise();
+        return firstValueFrom(this.http
+            .get<{ oid: string, name: string }[]>(environment.apiUrl + '/api/sensor/search', { params: params })
+        );
     }
 
 

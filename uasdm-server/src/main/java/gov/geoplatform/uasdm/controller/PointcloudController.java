@@ -15,28 +15,45 @@
  */
 package gov.geoplatform.uasdm.controller;
 
-import java.util.Arrays;
+import java.io.IOException;
+import java.net.FileNameMap;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.runwaysdk.constants.ClientRequestIF;
-import com.runwaysdk.controller.ServletMethod;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
-import com.runwaysdk.mvc.Controller;
-import com.runwaysdk.mvc.Endpoint;
-import com.runwaysdk.mvc.ErrorSerialization;
-import com.runwaysdk.mvc.ResponseIF;
-import com.runwaysdk.mvc.ViewResponse;
-import com.runwaysdk.request.ServletRequestIF;
 
 import gov.geoplatform.uasdm.model.Range;
-import gov.geoplatform.uasdm.remote.RemoteFileGetResponse;
+import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
+import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.service.PointcloudService;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 
-@Controller(url = "pointcloud")
-public class PointcloudController
+@Controller
+@RequestMapping("/api/pointcloud")
+public class PointcloudController extends AbstractController
 {
   public static final String       JSP_DIR          = "/WEB-INF/";
 
@@ -56,23 +73,30 @@ public class PointcloudController
    * @param request
    * @param servletRequest
    * @return
+   * @throws IOException
+   * @throws URISyntaxException
    */
-  @Endpoint(url = "resource\\/.*", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF resource(ClientRequestIF request, ServletRequestIF servletRequest)
+  @GetMapping("/resource/**")
+  public ResponseEntity<Resource> resource() throws IOException, URISyntaxException
   {
-    String url = servletRequest.getRequestURI();
+    HttpServletRequest request = this.getRequest();
 
     Pattern pattern = Pattern.compile(".*pointcloud\\/resource\\/(.*)$", Pattern.CASE_INSENSITIVE);
 
-    Matcher matcher = pattern.matcher(url);
+    Matcher matcher = pattern.matcher(request.getRequestURI());
 
     if (matcher.find())
     {
       String resourcePath = matcher.group(1);
 
-      ViewResponse resp = new ViewResponse(JSP_DIR + POTREE_RESOURCES + "/" + resourcePath);
+      URL url = this.getContext().getResource(JSP_DIR + POTREE_RESOURCES + "/" + resourcePath);
+      Resource resource = new UrlResource(url.toURI());
+      Path path = Paths.get(url.toURI());
 
-      return resp;
+      FileNameMap fileNameMap = URLConnection.getFileNameMap();
+      String contentType = fileNameMap.getContentTypeFor(path.getFileName().toString());
+
+      return ResponseEntity.ok().header("Content-Type", contentType).body(resource);
     }
     else
     {
@@ -87,42 +111,25 @@ public class PointcloudController
    * @param servletRequest
    * @return
    */
-  @Endpoint(url = ".+\\/potree$", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF potreeViewer(ClientRequestIF request, ServletRequestIF servletRequest)
+  @GetMapping("/potree/{componentId}/{productName}")
+  public ModelAndView potreeViewer(@PathVariable("componentId") String componentId, @PathVariable("productName") String productName)
   {
-    String url = servletRequest.getRequestURI();
+    String resource = this.service.getPointcloudResource(this.getSessionId(), componentId, productName);
 
-    Pattern pattern = Pattern.compile(".*pointcloud\\/(.+)\\/(.+)\\/potree$", Pattern.CASE_INSENSITIVE);
+    ModelAndView mav = new ModelAndView(JSP_DIR + POTREE_JSP);
+    mav.addObject("componentId", componentId);
+    mav.addObject("productName", productName);
 
-    Matcher matcher = pattern.matcher(url);
-
-    if (matcher.find())
+    if (resource != null)
     {
-      String componentId = matcher.group(1);
-      String productName = matcher.group(2);
-
-      String resource = this.service.getPointcloudResource(request.getSessionId(), componentId, productName);
-
-      ViewResponse resp = new ViewResponse(JSP_DIR + POTREE_JSP);
-      resp.set("componentId", componentId);
-      resp.set("productName", productName);
-
-      if (resource != null)
-      {
-        resp.set("pointcloudLoadPath", resource);
-      }
-      else
-      {
-        resp.set("noData", "true");
-
-      }
-
-      return resp;
+      mav.addObject("pointcloudLoadPath", resource);
     }
     else
     {
-      throw new ProgrammingErrorException("Could not match regex against provided url.");
+      mav.addObject("noData", "true");
     }
+
+    return mav;
   }
 
   /**
@@ -133,29 +140,55 @@ public class PointcloudController
    * @param servletRequest
    * @return
    */
-  @Endpoint(url = ".+\\/data\\/.*", method = ServletMethod.GET, error = ErrorSerialization.JSON)
-  public ResponseIF data(ClientRequestIF request, ServletRequestIF servletRequest)
+  @GetMapping("/data/**")
+  public ResponseEntity<InputStreamResource> data(@RequestHeader(name = "Range", required = false) String range)
   {
-    String url = servletRequest.getRequestURI();
+    Pattern pattern = Pattern.compile(".*pointcloud\\/data\\/([^\\/]+)(?:\\/legacypotree)?\\/(.*)$", Pattern.CASE_INSENSITIVE);
 
-    Pattern pattern = Pattern.compile(".*pointcloud\\/([^\\/]+)\\/data(?:\\/legacypotree)?\\/(.*)$", Pattern.CASE_INSENSITIVE);
-
-    Matcher matcher = pattern.matcher(url);
+    Matcher matcher = pattern.matcher(this.getRequest().getRequestURI());
 
     if (matcher.find())
     {
       String componentId = matcher.group(1);
-
       String dataPath = matcher.group(2);
-      
-      final String sRange = servletRequest.getHeader("Range");
-      if (sRange != null) {
-        List<Range> range = Range.decodeRange(sRange);
-        
-        return new RemoteFileGetResponse(this.pService.download(request.getSessionId(), componentId, dataPath, range));
-      } else {
-        return new RemoteFileGetResponse(this.pService.download(request.getSessionId(), componentId, dataPath, true));
+
+      RemoteFileObject file = null;
+
+      if (!StringUtils.isBlank(range))
+      {
+        file = this.pService.download(this.getSessionId(), componentId, dataPath, range);
       }
+      else
+      {
+        file = this.pService.download(this.getSessionId(), componentId, dataPath, true);
+      }
+
+      RemoteFileMetadata metadata = file.getObjectMetadata();
+      String contentDisposition = metadata.getContentDisposition();
+
+      if (contentDisposition == null)
+      {
+        contentDisposition = "attachment; filename=\"" + file.getName() + "\"";
+      }
+
+      HttpHeaders httpHeaders = new HttpHeaders();
+      httpHeaders.set("Content-Type", metadata.getContentType());
+      httpHeaders.set("Content-Encoding", metadata.getContentEncoding());
+      httpHeaders.set("Content-Disposition", contentDisposition);
+      httpHeaders.set("Content-Length", Long.toString(metadata.getContentLength()));
+      httpHeaders.set("ETag", metadata.getETag());
+
+      if (metadata.getLastModified() != null)
+      {
+        httpHeaders.setDate("Last-Modified", Date.from(metadata.getLastModified()).getTime());
+      }
+
+      if (!StringUtils.isBlank(range))
+      {
+        httpHeaders.set("Cache-Control", "no-store");
+      }
+
+      return new ResponseEntity<InputStreamResource>(new InputStreamResource(file.getObjectContent()), httpHeaders, HttpStatus.OK);
     }
     else
     {

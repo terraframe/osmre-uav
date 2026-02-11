@@ -93,6 +93,7 @@ import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.index.elastic.ElasticSearchIndex;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.StacItem;
@@ -166,6 +167,7 @@ public class Sandbox
 //    IndexService.shutdown();
     
     
+<<<<<<< HEAD
 //    String statement = "SELECT FROM " + MdGraphClassDAO.getMdGraphClassDAO(ODMRun.CLASS).getDBClassName();
 //    statement += " WHERE saved = :saved";
 //    
@@ -183,6 +185,25 @@ public class Sandbox
 //      
 //      System.out.println("Items for version " + component.getS3location() + " - " + run.getOid() + ": " + items);      
 //    }
+=======
+    String statement = "SELECT FROM " + MdGraphClassDAO.getMdGraphClassDAO(ODMRun.CLASS).getDBClassName();
+    statement += " WHERE saved = :saved";
+    
+    GraphQuery<ODMRun> query = new GraphQuery<ODMRun>(statement);
+    query.setParameter("saved", true);
+    
+    List<ODMRun> results = query.getResults();
+    
+    System.out.println("Results size: " + results.size());
+    
+    for(ODMRun run : results) {
+      UasComponent component = run.getComponent();
+      
+      int items = RemoteFileFacade.getItemCount(component.getS3location() + ImageryComponent.ORTHO + "/" + run.getOid());
+      
+      System.out.println("Items for version " + component.getS3location() + " - " + run.getOid() + ": " + items);      
+    }
+>>>>>>> refs/remotes/origin/master
   }
 //
   public static void testTika() throws Exception

@@ -13,11 +13,15 @@ import { SensorService } from '@site/service/sensor.service';
 import { Router } from '@angular/router';
 import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
 import { Subject } from 'rxjs';
+import { NgIf } from '@angular/common';
+import { GenericTableComponent } from '@shared/component/generic-table/generic-table.component';
 
 @Component({
+    standalone: true,
     selector: 'sensors',
     templateUrl: './sensors.component.html',
-    styleUrls: ['./sensors.css']
+    styleUrls: [],
+    imports: [NgIf, GenericTableComponent]
 })
 export class SensorsComponent implements OnInit {
     bsModalRef: BsModalRef;
@@ -73,7 +77,7 @@ export class SensorsComponent implements OnInit {
     onRemove(sensor: Sensor): void {
         this.bsModalRef = this.modalService.show(BasicConfirmModalComponent, {
             animated: true,
-            backdrop: true,
+            backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true,
         });
         this.bsModalRef.content.message = "Are you sure you want to remove the sensor [" + sensor.name + "]";

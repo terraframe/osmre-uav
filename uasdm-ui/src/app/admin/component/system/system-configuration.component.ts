@@ -12,16 +12,26 @@ import { EmailComponent } from '@admin/component/email/email.component';
 import { AuthService } from '@shared/service/auth.service';
 import { Organization } from '@shared/model/organization';
 import { OrganizationService } from '@shared/service/organization.service';
-import { OrganizationHierarchyModalComponent } from '../../../shared/component/organization-field/organization-hierarchy-modal.component';
+import { OrganizationHierarchyModalComponent } from '@shared/component/organization-field/organization-hierarchy-modal.component';
 import { ConfigurationService } from '@core/service/configuration.service';
 import { PageResult } from '@shared/model/page';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorHandler } from '@shared/component';
+import { UasdmHeaderComponent } from '@shared/component/header/header.component';
+import { AccountsComponent } from '../account/accounts.component';
+import { SystemLogosComponent } from '../logo/system-logos.component';
+import { SessionEventComponent } from '../session-event/session-event.component';
+import { NgFor, NgIf } from '@angular/common';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { OrganizationSyncTableComponent } from '../organization-sync/organization-sync-table.component';
+import { LPGSyncTableComponent } from '../labeled-property-graph-sync/labeled-property-graph-sync-table.component';
 
 @Component({
+    standalone: true,
     selector: 'system-configuration',
     templateUrl: './system-configuration.component.html',
-    styleUrls: []
+    styleUrls: [],
+    imports: [UasdmHeaderComponent, AccountsComponent, SystemLogosComponent, SessionEventComponent, NgFor, NgIf, NgxPaginationModule, OrganizationSyncTableComponent, LPGSyncTableComponent]
 })
 export class SystemConfigurationComponent implements OnInit {
 
@@ -64,7 +74,7 @@ export class SystemConfigurationComponent implements OnInit {
     open(): void {
         this.bsModalRef = this.modalService.show(EmailComponent, {
             animated: true,
-            backdrop: true,
+            backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true,
         });
 
@@ -76,7 +86,7 @@ export class SystemConfigurationComponent implements OnInit {
     onManageHierarchy(): void {
         this.bsModalRef = this.modalService.show(OrganizationHierarchyModalComponent, {
             animated: true,
-            backdrop: true,
+            backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true,
         });
         this.bsModalRef.content.init(true, null, null);

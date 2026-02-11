@@ -1,26 +1,24 @@
 $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
-@import "../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
-@import '../../node_modules/@fortawesome/fontawesome-free/scss/regular.scss';
-@import '../../node_modules/@fortawesome/fontawesome-free/scss/solid.scss';
-@import '../../node_modules/@fortawesome/fontawesome-free/scss/brands.scss';
+@use "@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@use '@fortawesome/fontawesome-free/scss/regular.scss';
+@use '@fortawesome/fontawesome-free/scss/solid.scss';
+@use '@fortawesome/fontawesome-free/scss/brands.scss';
 
-@import "~bootstrap/dist/css/bootstrap.css";
+@use "bootstrap/dist/css/bootstrap.css";
 
-@import '~fine-uploader/fine-uploader/fine-uploader-new.min.css';
-@import '~maplibre-gl/dist/maplibre-gl.css';
-@import '~@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
+@use 'maplibre-gl/dist/maplibre-gl.css';
+@use './node_modules/@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
-@import '~@circlon/angular-tree-component/css/angular-tree-component.css';
-@import '@angular/cdk/overlay-prebuilt.css';
-@import './node_modules/@perfectmemory/ngx-contextmenu/src/assets/stylesheets/base.scss';
+@use '@angular/cdk/overlay-prebuilt.css';
 
-@import "~primeng/resources/themes/nova-alt/theme.css";
-@import "~primeng/resources/primeng.min.css";
-@import "~primeicons/primeicons.css";
+@use '@ali-hm/angular-tree-component/css/angular-tree-component.css';
+@use './node_modules/@perfectmemory/ngx-contextmenu/src/assets/stylesheets/base.scss';
 
-@import 'theme.css';
-@import 'main.css';
-@import 'admin-pages.css';
+@use "primeicons/primeicons.css";
+
+@use 'theme.css';
+@use 'main.css';
+@use 'admin-pages.css';
 
 body {
   overflow-y: auto;
@@ -45,11 +43,12 @@ body {
 }
 
 .base-layer-panel {
-  position: absolute;
-  top: 10px;
-  right: 10px;
   z-index: 2;
   padding: 5px;
+}
+
+.hover-color:hover {
+  color: #00bfff;
 }
 
 .geoplatform-map-button {
@@ -83,7 +82,7 @@ body {
   display: inline-block;
 }
 
-.badge{
+.badge {
   position: relative;
   margin-left: 60%;
   margin-top: -60%;
@@ -103,9 +102,6 @@ body {
   z-index: 2;
 }
 
-.dropdown-menu {
-  font-size: 18px;
-}
 
 
 .breadcrumb {
@@ -238,7 +234,7 @@ a.thumbnail.non-clickable:focus {
 }
 
 .image-preview-container {
-  text-align: right;
+  text-align: center;
 }
 
 .image-preview-container>.fa.fa-times.btn.btn-close {
@@ -263,8 +259,6 @@ a.thumbnail.non-clickable:focus {
   margin: 0;
   vertical-align: middle;
 }
-
-
 
 
 
@@ -438,7 +432,7 @@ a.active {
 
 .card .card-header {
   border-radius: 6px 6px 0 0;
-  padding: 8px;
+  padding: 15px;
 }
 
 .card .card-footer {
@@ -629,7 +623,7 @@ a.active {
 
 a.disabled {
   pointer-events: none;
-  cursor: not-allowed; 
+  cursor: not-allowed;
 }
 
 .img-disabled {
@@ -638,66 +632,6 @@ a.disabled {
 
 .card-disabled {
   background: #707070;
-}
-
-// ------ Custom X checkbox
-
-input[type="checkbox"].x-box {
-  -webkit-appearance: initial;
-  appearance: initial;
-  background: white;
-  width: 20px;
-  height: 20px;
-  border: solid 1px lightgrey;
-  position: absolute;
-  border-radius: 0;
-  margin: 5px;
-  z-index: 9;
-}
-
-input[type="checkbox"].x-box:checked {
-  // background: red;
-}
-
-input[type="checkbox"].x-box:checked:after {
-  content: "x";
-  color: #242424;
-  font-size: 40px;
-  position: absolute;
-  left: 50%;
-  top: 35%;
-  -webkit-transform: translate(-50%, -50%);
-  -moz-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-}
-
-// ------ End Custom X checkbox
-
-
-.collapse {
-  /* setup transition however you like */
-  -webkit-transition: max-height 0.5s ease;
-  -moz-transition: max-height 1s ease;
-  -o-transition: max-height 1s ease;
-  -ms-transition: max-height 1s ease;
-  transition: max-height 1s ease;
-
-  /* override display, overflow and visibility */
-  display: block !important;
-  overflow: hidden !important;
-  visibility: visible !important;
-
-  max-height: 0;
-
-  &.in {
-    /* set max-height to something high so that
-    it can fit whatever you have inside your collapsible tag.
-    Not too high though, because the animation time will be based
-    on this value, so if it's too high the animation will be 
-    very fast */
-    max-height: 4000px;
-  }
 }
 
 
@@ -801,6 +735,21 @@ ngx-file-drop button {
   padding-right: 5px;
 }
 
+input[type=button],
+input[type=submit],
+button.btn,
+.btn {
+  height: 40px
+}
+
+.btn-warning {
+  color: #fff;
+}
+
+.btn-warning:hover {
+  color: #fff;
+}
+
 
 // Tree styling
 // .node-content-wrapper,
@@ -871,5 +820,3 @@ ngx-file-drop button {
 // tree-node-expander {
 //   display: none !important;
 // }
-
-

@@ -7,8 +7,8 @@ var ngToolsWebpack = require('@ngtools/webpack');
 
 module.exports = {
   entry: {
-    'uasdm-polyfills': './src/polyfills.ts',
-    'uasdm-vendor': './src/vendor.ts',
+    // 'uasdm-polyfills': './src/polyfills.ts',
+    // 'uasdm-vendor': './src/vendor.ts',
     'uasdm-app': './src/main.ts'
   },
 
@@ -63,7 +63,6 @@ module.exports = {
 //    ),
     new ngToolsWebpack.AngularCompilerPlugin({
       tsConfigPath: './tsconfig.json',
-      entryModule: './src/app/uasdm-app.module#UasdmAppModule',
       sourceMap: true
     })    
   ]

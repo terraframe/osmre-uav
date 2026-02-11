@@ -15,28 +15,15 @@
  */
 package gov.geoplatform.uasdm.bus;
 
-import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Random;
 
-import javax.imageio.ImageIO;
-
-import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,12 +32,12 @@ import com.runwaysdk.constants.CommonProperties;
 import com.runwaysdk.query.OIterator;
 import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.resource.ApplicationFileResource;
-import com.runwaysdk.resource.ApplicationResource;
+import com.runwaysdk.resource.ArchiveFileResource;
+import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Session;
 import com.runwaysdk.system.SingleActor;
 
-import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.DevProperties;
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.Util;
@@ -69,11 +56,13 @@ import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.processing.CogTifProcessor;
 import gov.geoplatform.uasdm.processing.CogTifValidator;
+import gov.geoplatform.uasdm.processing.raw.CollectionImageSizeCalculationProcessor;
+import gov.geoplatform.uasdm.processing.raw.FileUploadProcessor;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
 import gov.geoplatform.uasdm.ws.UserNotificationMessage;
 import net.geoprism.GeoprismUser;
-import net.lingala.zip4j.ZipFile;
+import net.geoprism.configuration.GeoprismProperties;
 
 public class CollectionUploadEvent extends CollectionUploadEventBase
 {
@@ -133,10 +122,10 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 
           if (isCog && !infile.getName().endsWith(CogTifProcessor.COG_EXTENSION))
           {
-            File temp = new File(AppProperties.getTempDirectory(), Long.valueOf(new Random().nextInt()).toString());
-            temp.mkdir();
-
-            File newfile = new File(temp, infile.getBaseName() + CogTifProcessor.COG_EXTENSION);
+            CloseableFile tempParent = new CloseableFile(Files.createTempDirectory("cogrename").toFile(), true);
+            
+            // TODO : If you get a compile error here while upgrading to the latest runway, you can fix the compile error by removing  ", true, true);" and replacing it with ").deleteParentToo();"
+            CloseableFile newfile = new CloseableFile(new File(tempParent, infile.getBaseName() + CogTifProcessor.COG_EXTENSION).toURI(), true, true);
 
             FileUtils.copyFile(infile.getUnderlyingFile(), newfile);
 
@@ -148,10 +137,10 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
             task.createAction("Uploaded file ends with cog extension, but did not pass cog validation.", TaskActionType.ERROR.getType());
             task.apply();
 
-            File temp = new File(AppProperties.getTempDirectory(), Long.valueOf(new Random().nextInt()).toString());
-            temp.mkdir();
+            CloseableFile tempParent = new CloseableFile(Files.createTempDirectory("cogfailvalidate").toFile(), true);
 
-            File newfile = new File(temp, infile.getBaseName() + ".tif");
+            // TODO : If you get a compile error here while upgrading to the latest runway, you can fix the compile error by removing ", true, true);" and replacing it with ").deleteParentToo();"
+            CloseableFile newfile = new CloseableFile(new File(tempParent, infile.getBaseName() + ".tif").toURI(), true, true);
 
             FileUtils.copyFile(infile.getUnderlyingFile(), newfile);
 
@@ -159,7 +148,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
           }
         }
 
-        uploadedFiles = component.uploadArchive(task, infile, uploadTarget, product);
+        uploadedFiles = new FileUploadProcessor().process(task, infile, (ImageryComponent) component, uploadTarget, product);
       }
     }
     catch (IOException ex)
@@ -192,12 +181,11 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
       {
         if (task.getProcessDem() || task.getProcessOrtho() || task.getProcessPtcloud())
         {
-          startODMProcessing(infile, task, isMultispectral(component), configuration.toODM());
+          var archive = (ArchiveFileResource) infile;
+          
+          startODMProcessing(archive, task, isMultispectral(component), configuration.toODM());
 
-          if (component instanceof CollectionIF)
-          {
-            calculateImageSize(infile, (CollectionIF) component);
-          }
+          new CollectionImageSizeCalculationProcessor().process(archive, (ImageryComponent) component);
         }
       }
       else if (configuration.isLidar())
@@ -210,7 +198,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     }
     else if (processUpload && ! ( uploadTarget.equals(ImageryComponent.RAW) || uploadTarget.equals(ImageryComponent.VIDEO) ))
     {
-      this.startOrthoProcessing(task, infile, configuration.getProductName());
+      this.startArtifactProcessing(task, infile, configuration.getProductName());
     }
 
     if (uploadedFiles.size() > 0)
@@ -229,7 +217,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     return false;
   }
 
-  private void startODMProcessing(ApplicationResource infile, WorkflowTask uploadTask, boolean isMultispectral, ODMProcessConfiguration configuration)
+  private void startODMProcessing(ArchiveFileResource archive, WorkflowTask uploadTask, boolean isMultispectral, ODMProcessConfiguration configuration)
   {
     UasComponentIF component = uploadTask.getComponentInstance();
 
@@ -255,7 +243,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     task.setConfiguration(configuration);
     task.apply();
 
-    task.initiate(infile, isMultispectral);
+    task.initiate(archive, isMultispectral, ((CollectionIF)component).isRadiometric());
   }
 
   private void startLidarProcessing(ApplicationFileResource infile, WorkflowTask uploadTask, LidarProcessConfiguration configuration)
@@ -277,86 +265,8 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     
     task.initiate(infile);
   }
-  
-  private void calculateImageSize(ApplicationFileResource resource, CollectionIF collection)
-  {
-    String name = FilenameUtils.getBaseName(resource.getName());
 
-    File parentFolder = null;
-    try
-    {
-      parentFolder = new File(FileUtils.getTempDirectory(), name);
-      parentFolder.mkdirs();
-
-      if (FilenameUtils.getExtension(name).equalsIgnoreCase("zip"))
-      {
-        try (ZipFile zipFile = new ZipFile(resource.getUnderlyingFile()))
-        {
-          zipFile.extractAll(parentFolder.getAbsolutePath());
-        }
-      }
-      else
-      {
-        // Untar the archive
-        try (BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(resource.getUnderlyingFile())); TarArchiveInputStream tar = new TarArchiveInputStream(new GzipCompressorInputStream(inputStream)))
-        {
-          ArchiveEntry entry;
-
-          while ( ( entry = tar.getNextEntry() ) != null)
-          {
-            Path extractTo = parentFolder.toPath().resolve(entry.getName());
-
-            if (entry.isDirectory())
-            {
-              Files.createDirectories(extractTo);
-            }
-            else
-            {
-              Files.copy(tar, extractTo);
-            }
-          }
-        }
-      }
-
-      File[] files = parentFolder.listFiles(new FilenameFilter()
-      {
-        @Override
-        public boolean accept(File dir, String name)
-        {
-          String ext = FilenameUtils.getExtension(name).toLowerCase();
-
-          return ArrayUtils.contains(ImageryUploadEvent.formats, ext);
-        }
-      });
-
-      if (files.length > 0)
-      {
-        File file = files[0];
-        BufferedImage bimg = ImageIO.read(file);
-
-        int width = bimg.getWidth();
-        int height = bimg.getHeight();
-
-        collection.appLock();
-        collection.setImageHeight(height);
-        collection.setImageWidth(width);
-        collection.apply();
-      }
-    }
-    catch (Throwable e)
-    {
-      logger.error("Error occurred while calculating the image size.", e);
-    }
-    finally
-    {
-      if (parentFolder != null)
-      {
-        FileUtils.deleteQuietly(parentFolder);
-      }
-    }
-  }
-
-  public void startOrthoProcessing(WorkflowTask uploadTask, ApplicationFileResource infile, String productName)
+  public void startArtifactProcessing(WorkflowTask uploadTask, ApplicationFileResource infile, String productName)
   {
     UasComponentIF component = uploadTask.getComponentInstance();
 

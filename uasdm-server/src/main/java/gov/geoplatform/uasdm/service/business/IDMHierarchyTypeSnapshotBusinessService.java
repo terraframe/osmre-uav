@@ -15,6 +15,9 @@
  */
 package gov.geoplatform.uasdm.service.business;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -22,10 +25,13 @@ import com.google.gson.JsonObject;
 import com.runwaysdk.business.rbac.Operation;
 import com.runwaysdk.business.rbac.RoleDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.query.OIterator;
+import com.runwaysdk.query.QueryFactory;
 import com.runwaysdk.system.metadata.MdEdge;
 
 import net.geoprism.graph.GeoObjectTypeSnapshot;
 import net.geoprism.graph.HierarchyTypeSnapshot;
+import net.geoprism.graph.HierarchyTypeSnapshotQuery;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 import net.geoprism.rbac.RoleConstants;
 import net.geoprism.registry.service.business.HierarchyTypeSnapshotBusinessService;
@@ -54,5 +60,16 @@ public class IDMHierarchyTypeSnapshotBusinessService extends HierarchyTypeSnapsh
     builderRole.grantPermission(Operation.READ_ALL, component.getOid());
 
     return snapshot;
+  }
+
+  public List<HierarchyTypeSnapshot> get(LabeledPropertyGraphTypeVersion version)
+  {
+    HierarchyTypeSnapshotQuery query = new HierarchyTypeSnapshotQuery(new QueryFactory());
+    query.WHERE(query.getVersion().EQ(version));
+
+    try (OIterator<? extends HierarchyTypeSnapshot> it = query.getIterator())
+    {
+      return new LinkedList<HierarchyTypeSnapshot>(it.getAll());
+    }
   }
 }

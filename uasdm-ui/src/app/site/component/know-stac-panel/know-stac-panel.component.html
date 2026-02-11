@@ -1,137 +1,169 @@
 <ng-container>
-    <div class="row">
-        <div class="col-md-12 text-center">
-            <h4>
-                Search GeoPlatform for Products in Map Extent
-            </h4>
-        </div>
-    </div>
+    <div class="sidebar d-flex flex-column p-2" style="height: calc(100vh - 60px)">
 
-    <div class="row">
-        <div class="col-md-1">
-        </div>
-        <div class="col-md-10 center-block">
-            <div class="btn-holder" style="text-align: right;padding: 0 10px 10px 0;">
-                <button type="button" (click)="handleClose()" class="btn btn-default" role="button"
-                    aria-disabled="false" style="padding: 4px 18px;">
-                    <span class="ui-button-text">Close</span>
-                </button>
+        <div class="flex-shrink-1">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
 
-                <button type="button" (click)="handleClear()" class="btn btn-default" role="button"
-                    aria-disabled="false" style="padding: 4px 18px; margin-left: 5px;">
-                    <span class="ui-button-text">Clear</span>
-                </button>
-
-                <button type="button btn btn-primary" class="btn btn-primary" (click)="handleSearch()">
-                    <i class="icon-upload icon-white"></i>
-                    Search
-                </button>
-            </div>
-        </div>
-        <div class="col-md-1">
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-12" style="background:#f7f7f7; padding:0; height:100%;">
-            <div class="list-group" *ngIf="collection != null">
-                <ng-container *ngIf="collection.links.length === 1">
-                    <div class="list-group-item">
-                        No Results
-                    </div>
-                </ng-container>
-                <ng-container *ngFor="let result of collection.links">
-                    <div class="list-group-item" *ngIf="result.rel === 'item'">
-                        <div class="card card-default">
-                            <div class="card-body">
-                                <h5 class="card-title" style="color:#a0a0a0">
-                                    {{result.title}}
-                                </h5>
-                                <ng-container *ngIf="result.item != null && result.open">
-
-                                    <div class="card-left" style="width:calc(100% - 13em); padding:0px;">
-                                        <span class="thumbnail">
-                                            <img style="max-height: 110px"
-                                                [src]="result.item.thumbnail != null ? result.item.thumbnail : (context + '/assets/thumbnail-default.png')"
-                                                alt="Image">
-                                        </span>
-                                    </div>
-                                    <div class="card-right" style="width: 13em;">
-                                        <ul style="list-style: none;padding: 0;">
-                                            <li style="padding: 3px 0 3px 0; min-width:6em;">
-                                                Asset
-                                                <select [(ngModel)]="result.item.asset"
-                                                    [name]="result.item.id + '-asset'" [disabled]="result.item.enabled">
-                                                    <ng-container *ngFor="let asset of result.item.assets | keyvalue">
-                                                        <option
-                                                            *ngIf="asset.value.type === 'image/tiff; application=geotiff; profile=cloud-optimized'"
-                                                            [value]="asset.key">
-                                                            {{asset.key}}
-                                                        </option>
-                                                    </ng-container>
-                                                </select>
-                                            </li>
-                                            <li style="padding: 3px 0 3px 0; min-width:6em;">
-                                                <boolean-field [value]="result.item.enabled"
-                                                    (valueChange)="handleToggleItem(result.item)"
-                                                    [disabled]="result.item.asset == null || result.item.asset == ''"
-                                                    label="Enabled">
-                                                </boolean-field>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <ng-container *ngIf="properties != null">
-                                        <table class="list-table table table-bordered table-striped">
-                                            <tbody>
-                                                <ng-container *ngFor="let field of properties">
-                                                    <tr *ngIf="result.item.properties[field.name] != null">
-                                                        <td class="label-column"> {{ field.label }} </td>
-                                                        <td>
-                                                            <ng-container [ngSwitch]="field.type">
-                                                                <ng-container *ngSwitchCase="'LOCATION'">
-                                                                    <ul class="list-group">
-                                                                        <li *ngFor="let location of result.item.properties[field.name]"
-                                                                            class="list-group-item">
-                                                                            {{location.label}}
-                                                                        </li>
-                                                                    </ul>
-                                                                </ng-container>
-                                                                <ng-container *ngSwitchCase="'ORGANIZATION'">
-                                                                    <ul class="list-group">
-                                                                        <li *ngFor="let organization of result.item.properties[field.name]"
-                                                                            class="list-group-item">
-                                                                            {{organization.label}}
-                                                                        </li>
-                                                                    </ul>
-                                                                </ng-container>
-                                                                <ng-container *ngSwitchDefault>
-                                                                    {{ result.item.properties[field.name] }}
-                                                                </ng-container>
-                                                            </ng-container>
-                                                        </td>
-                                                    </tr>
-                                                </ng-container>
-                                            </tbody>
-                                        </table>
-                                    </ng-container>
-                                </ng-container>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <a href="#" class="card-link" (click)="handleCardToggle(result)">
-                                            {{result.open ? 'Hide Details' : 'View Details'}}
-                                        </a>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <a href="#" class="card-link" (click)="handleGotoExtent(result)">View Extent</a>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="btn-holder" style="float: right; text-align: right;padding: 0 10px 10px 0;">
+                            <a (click)="handleClose()">
+                                <i class="fa fa-solid fa-arrow-left hover-color"></i>
+                            </a>
                         </div>
                     </div>
-                </ng-container>
+                </div>
+                <div class="row" style="border-bottom: 1px solid lightgrey;">
+                    <div class="col-md-12 text-center">
+                        <h4>
+                            Search GeoPlatform for Products
+                        </h4>
+                    </div>
+                </div>
             </div>
         </div>
+
+
+        <div class="sidebar-content flex-fill overflow-auto bg-white">
+            <div class="container-fluid">
+
+                <div class="row" style="text-align: center;">
+                    <div class="col-md-12" style="background:#f7f7f7; padding:0;">
+                        <div class="list-group" *ngIf="collection != null">
+                            <ng-container *ngIf="collection.links.length === 1">
+                                <div class="list-group-item">
+                                    No Results
+                                </div>
+                            </ng-container>
+                            <ng-container *ngFor="let result of collection.links">
+                                <div class="list-group-item" *ngIf="result.rel === 'item'">
+                                    <div class="card card-default">
+                                        <div class="card-body">
+                                            <h5 class="card-title" style="color:#a0a0a0">
+                                                {{result.title}}
+                                            </h5>
+                                            <ng-container *ngIf="result.item != null && result.open">
+
+                                                <div class="card-left" style="width:calc(100% - 13em); padding:0px;">
+                                                    <figure class="figure ">
+                                                        <img class="thumb figure-img img-fluid rounded"
+                                                            style="max-height: 110px"
+                                                            [src]="result.item.thumbnail != null ? result.item.thumbnail : (context + '/assets/thumbnail-default.png')"
+                                                            title="Thumbnail" alt="Image">
+                                                    </figure>
+                                                </div>
+                                                <div class="card-right" style="width: 13em;">
+                                                    <ul style="list-style: none;padding: 0;">
+                                                        <li style="padding: 3px 0 3px 0; min-width:6em;">
+                                                            Asset
+                                                            <select [(ngModel)]="result.item.asset"
+                                                                [name]="result.item.id + '-asset'"
+                                                                [disabled]="result.item.enabled">
+                                                                <ng-container
+                                                                    *ngFor="let asset of result.item.assets | keyvalue">
+                                                                    <option
+                                                                        *ngIf="asset.value.type === 'image/tiff; application=geotiff; profile=cloud-optimized'"
+                                                                        [value]="asset.key">
+                                                                        {{asset.key}}
+                                                                    </option>
+                                                                </ng-container>
+                                                            </select>
+                                                        </li>
+                                                        <li style="padding: 3px 0 3px 0; min-width:6em;">
+                                                            <boolean-field [value]="result.item.enabled"
+                                                                (valueChange)="handleToggleItem(result.item)"
+                                                                [disabled]="result.item.asset == null || result.item.asset == ''"
+                                                                label="Add to map">
+                                                            </boolean-field>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <ng-container *ngIf="properties != null">
+                                                    <table class="list-table table table-bordered table-striped">
+                                                        <tbody>
+                                                            <ng-container *ngFor="let field of properties">
+                                                                <tr *ngIf="result.item.properties[field.name] != null">
+                                                                    <td class="label-column"> {{ field.label }} </td>
+                                                                    <td>
+                                                                        <ng-container [ngSwitch]="field.type">
+                                                                            <ng-container *ngSwitchCase="'LOCATION'">
+                                                                                <ul class="list-group">
+                                                                                    <li *ngFor="let location of result.item.properties[field.name]"
+                                                                                        class="list-group-item">
+                                                                                        {{location.label}}
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </ng-container>
+                                                                            <ng-container
+                                                                                *ngSwitchCase="'ORGANIZATION'">
+                                                                                <ul class="list-group">
+                                                                                    <li *ngFor="let organization of result.item.properties[field.name]"
+                                                                                        class="list-group-item">
+                                                                                        {{organization.label}}
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </ng-container>
+                                                                            <ng-container *ngSwitchDefault>
+                                                                                {{ result.item.properties[field.name] }}
+                                                                            </ng-container>
+                                                                        </ng-container>
+                                                                    </td>
+                                                                </tr>
+                                                            </ng-container>
+                                                        </tbody>
+                                                    </table>
+                                                </ng-container>
+                                            </ng-container>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <a class="card-link" (click)="handleCardToggle($event, result)">
+                                                        {{result.open ? 'Hide Details' : 'View Details'}}
+                                                    </a>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <a class="card-link" (click)="handleGotoExtent($event, result)">View
+                                                        Extent</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-shrink-1" *ngIf="collection != null && collection.links.length > 1">
+            <div class="container-fluid">
+                <div class="row pt-2">
+                    <div class="col-md-12">
+                        <boolean-field [(value)]="visible" (valueChange)="handleToggleVisibility()" label="Show collection extent on map"></boolean-field>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="flex-shrink-1 sidebar-footer">
+            <div class="container-fluid mt-2">
+                <div class="row">
+                    <div class="col-md-12 p-2" style="text-align: center; border-top: 1px solid lightgrey;">
+
+                        <button type="button" (click)="handleClear()" class="btn btn-default" role="button"
+                            aria-disabled="false" style="padding: 4px 18px; margin-left: 5px;">
+                            <span class="ui-button-text">Clear results</span>
+                        </button>
+
+                        <button type="button btn btn-primary" class="btn btn-primary" (click)="handleSearch()">
+                            <i class="icon-upload icon-white"></i>
+                            Search map extent
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </div>
 </ng-container>

@@ -18,7 +18,7 @@ import { environment } from 'src/environments/environment';
 
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class PlatformService implements GenericTableService {
 
     constructor(private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService) { }
@@ -66,7 +66,7 @@ export class PlatformService implements GenericTableService {
         this.eventService.start();
 
         return this.http
-            .get<Platform>(environment.apiUrl + '/api/platform/newInstance', { params: params })
+            .get<Platform>(environment.apiUrl + '/api/platform/new-instance', { params: params })
             .pipe(finalize(() => {
                 this.eventService.complete();
             }))

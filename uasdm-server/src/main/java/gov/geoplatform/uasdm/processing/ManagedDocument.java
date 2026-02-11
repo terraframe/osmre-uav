@@ -132,7 +132,7 @@ public class ManagedDocument extends S3FileUpload
 
   @Override
   @Transaction
-  public boolean process(ApplicationFileResource res)
+  public ProcessResult process(ApplicationFileResource res)
   {
     if (!res.isDirectory())
     {

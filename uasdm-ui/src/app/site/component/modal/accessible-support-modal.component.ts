@@ -6,18 +6,30 @@ import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { BsModalService } from 'ngx-bootstrap/modal';
-import { NgxFileDropEntry, FileSystemFileEntry, FileSystemDirectoryEntry } from 'ngx-file-drop';
+import { NgxFileDropEntry, FileSystemFileEntry, FileSystemDirectoryEntry, NgxFileDropModule } from 'ngx-file-drop';
 
 import { ErrorHandler, BasicConfirmModalComponent } from '@shared/component';
 
 import { SiteEntity, SiteObjectsResultSet } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 import { environment } from 'src/environments/environment';
+import { NgIf, NgFor } from '@angular/common';
+import { TabsetComponent, TabDirective } from 'ngx-bootstrap/tabs';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @Component({
+    standalone: true,
     selector: 'accessible-support-modal',
     templateUrl: './accessible-support-modal.component.html',
     styleUrls: [],
+    imports: [
+        NgIf,
+        NgFor,
+        TabsetComponent,
+        TabDirective,
+        NgxFileDropModule,
+        NgxPaginationModule,
+    ],
 })
 export class AccessibleSupportModalComponent implements OnInit {
 
@@ -85,11 +97,11 @@ export class AccessibleSupportModalComponent implements OnInit {
     }
 
     handleDownload(): void {
-        window.location.href = environment.apiUrl + '/project/download-all?id=' + this.folder.component + "&key=" + this.folder.name;
+        window.location.href = environment.apiUrl + '/api/project/download-all?id=' + this.folder.component + "&key=" + this.folder.name;
     }
 
     handleDownloadFile(item: SiteEntity): void {
-        window.location.href = environment.apiUrl + '/project/download?id=' + this.folder.component + "&key=" + item.key;
+        window.location.href = environment.apiUrl + '/api/project/download?id=' + this.folder.component + "&key=" + item.key;
     }
 
     dropped(files: NgxFileDropEntry[]): void {
@@ -102,7 +114,7 @@ export class AccessibleSupportModalComponent implements OnInit {
 
                 fileEntry.file((file: File) => {
 
-                    this.service.upload(this.folder.component, null, this.folder.name, file).then(() => {
+                    this.service.uploadToFolder(this.folder.component, this.folder.name, file).then(() => {
                         // Refresh the table
                         this.refresh();
                     });
@@ -119,7 +131,7 @@ export class AccessibleSupportModalComponent implements OnInit {
     handleDelete(item: SiteEntity): void {
         let modalRef: BsModalRef = this.modalService.show(BasicConfirmModalComponent, {
             animated: true,
-            backdrop: true,
+            backdrop: true, class: 'modal-xl',
             ignoreBackdropClick: true,
         });
         modalRef.content.message = 'Are you sure you want to delete the file [' + item.name + ']?';

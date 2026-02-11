@@ -80,7 +80,9 @@ public interface ProductIF extends ComponentIF
   public RemoteFileObject downloadAllZip();
 
   public boolean hasAllZip();
-  
+
   public Optional<CollectionMetadata> getMetadata();
+
+  public Object getRID();
 
 }

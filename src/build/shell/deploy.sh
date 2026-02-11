@@ -23,7 +23,7 @@
 : ----------------------------------
 :
 # Configure the build based on Jenkins parameters
-sed -i -e 's/ec2-52-33-51-128.us-west-2.compute.amazonaws.com/ip-172-31-2-248.us-west-2.compute.internal/g' $WORKSPACE/geoprism-platform/ansible/inventory/uasdm/$environment.ini
+sed -i -e 's/ec2-52-33-51-128.us-west-2.compute.amazonaws.com/ip-172-31-37-211.us-west-2.compute.internal/g' $WORKSPACE/geoprism-platform/ansible/inventory/uasdm/$environment.ini
 
 export MAVEN_OPTS="-Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true -Dmaven.resolver.transport=wagon"
 export ANSIBLE_HOST_KEY_CHECKING=false

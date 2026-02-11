@@ -17,6 +17,9 @@ package gov.geoplatform.uasdm.processing;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -28,7 +31,6 @@ import com.runwaysdk.resource.FileResource;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.graph.Product;
-import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class PotreeConverterProcessor implements Processor
@@ -39,7 +41,7 @@ public class PotreeConverterProcessor implements Processor
 
   protected StatusMonitorIF monitor;
 
-  protected UasComponentIF component;
+  protected UasComponentIF  component;
 
   protected Product         product;
 
@@ -52,9 +54,11 @@ public class PotreeConverterProcessor implements Processor
   }
 
   @Override
-  public boolean process(ApplicationFileResource res)
+  public ProcessResult process(ApplicationFileResource bez)
   {
-    File file = res.getUnderlyingFile();
+    ApplicationFileResource resource = ResourceUtil.getResource(bez);
+
+    File file = resource.getUnderlyingFile();
 
     final String basename = FilenameUtils.getBaseName(file.getName());
 
@@ -63,7 +67,7 @@ public class PotreeConverterProcessor implements Processor
     try
     {
       // Copy the underlying file to a filename with the proper
-      File input = File.createTempFile("laz", "." + res.getNameExtension());
+      File input = File.createTempFile("laz", "." + resource.getNameExtension());
 
       try
       {
@@ -77,11 +81,16 @@ public class PotreeConverterProcessor implements Processor
 
           if (files != null)
           {
-            // Upload all of the generated files
-            for (File outfile : files)
-            {
-              new ManagedDocument(this.s3Path + "/" + outfile.getName(), product, component, this.monitor).process(new FileResource(outfile));
-            }
+            List<ProcessResult> results = Arrays.stream(files) //
+                .map(outfile -> {
+                  try (FileResource res = new FileResource(outfile))
+                  {
+                    return new ManagedDocument(this.s3Path + "/" + outfile.getName(), product, component, this.monitor).process(res);
+                  }
+                }) //
+                .collect(Collectors.toList());
+
+            return ProcessResult.success(results);
           }
         }
         else
@@ -102,6 +111,6 @@ public class PotreeConverterProcessor implements Processor
       monitor.addError("Problem occurred running Potree Converter.");
     }
 
-    return false;
+    return ProcessResult.fail();
   }
 }
