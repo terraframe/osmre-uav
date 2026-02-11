@@ -1,0 +1,87 @@
+<!--
+
+    Copyright 2020 The Department of Interior
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdVertex name="gov.geoplatform.uasdm.graph.ProcessingRun" label="ProcessingRun" generateController="false">
+        <attributes>
+          <text name="output" label="output"></text>
+          <text name="config" label="config"></text>
+          <text name="processingType" label="processingType"></text>
+          <text name="autoscaleResourceId" label="autoscaleResourceId"></text>
+          <dateTime name="runStart"></dateTime>
+          <dateTime name="runEnd"></dateTime>
+          <reference name="workflowTask" label="Workflow Task" type="gov.geoplatform.uasdm.bus.AbstractWorkflowTask"></reference>
+          <graphReference name="component" label="Component" type="gov.geoplatform.uasdm.graph.UasComponent"></graphReference>
+        </attributes>
+      </mdVertex>
+      
+      <mdEdge name="gov.geoplatform.uasdm.graph.ProcessingRunInput" label="ODM Input Document" parent="gov.geoplatform.uasdm.graph.Document" child="gov.geoplatform.uasdm.graph.ProcessingRun"></mdEdge>
+      <mdEdge name="gov.geoplatform.uasdm.graph.ProcessingRunOutput" label="ODM Output Document" parent="gov.geoplatform.uasdm.graph.ProcessingRun" child="gov.geoplatform.uasdm.graph.Document"></mdEdge>
+      
+      <mdBusiness name="gov.geoplatform.uasdm.processing.FargateProcessingTask" label="ODM Processing" extends="gov.geoplatform.uasdm.bus.WorkflowTask">
+        <attributes>
+          <text name="processingType" label="processingType"></text>
+          <text name="taskDefinitionArn" label="taskDefinitionArn"></text>
+          <text name="taskArn" label="taskArn"></text>
+          <text name="processFilenameArray" label="processFilenameArray"></text>
+          <text name="configurationJson" label="configurationJson"></text>
+        </attributes>
+      </mdBusiness>
+      
+      <!-- TODO : Upload task? Like with ODM? -->
+    </create>
+    <update></update>
+    <permissions>
+      <role roleName="geoprism.admin.Administrator">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.graph.ProcessingRun">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.ProcessingRunInput">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.ProcessingRunOutput">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+        </grant>
+      </role>
+      <role roleName="geoprism.admin.DashboardBuilder">
+        <grant>
+          <mdBusinessPermission type="gov.geoplatform.uasdm.graph.ProcessingRun">
+            <operation name="ALL" />
+          </mdBusinessPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.ProcessingRunInput">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.ProcessingRunOutput">
+            <operation name="ALL" />
+          </mdRelationshipPermission>
+        </grant>
+      </role>
+    </permissions>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.graph.ProcessingRunInput" type="com.runwaysdk.system.metadata.MdEdge"></object>
+      <object key="gov.geoplatform.uasdm.graph.ProcessingRunOutput" type="com.runwaysdk.system.metadata.MdEdge"></object>
+      <object key="gov.geoplatform.uasdm.graph.ProcessingRun" type="com.runwaysdk.system.metadata.MdVertex"></object>
+      <object key="gov.geoplatform.uasdm.processing.FargateProcessingTask" type="com.runwaysdk.system.metadata.MdBusiness"></object>
+    </delete>
+  </undoIt>
+</version>

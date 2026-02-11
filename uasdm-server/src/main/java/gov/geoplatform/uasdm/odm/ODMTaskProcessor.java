@@ -47,7 +47,7 @@ import net.lingala.zip4j.exception.ZipException;
 public class ODMTaskProcessor
 {
   public static enum TaskStatus {
-    ERROR, ACTIVE, UPLOAD
+    ERROR, ACTIVE, UPLOAD, FINALIZING, COMPLETED
   }
 
   public static class TaskResult
@@ -83,7 +83,7 @@ public class ODMTaskProcessor
     }
   }
 
-  private static Logger logger = LoggerFactory.getLogger(ODMStatusServer.class);
+  private static Logger logger = LoggerFactory.getLogger(ProcessingTaskStatusServer.class);
 
   // ODMProcessingTaskIF
   // AbstractWorkflowTask

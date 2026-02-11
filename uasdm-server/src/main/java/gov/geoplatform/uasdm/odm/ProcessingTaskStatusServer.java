@@ -17,13 +17,15 @@ package gov.geoplatform.uasdm.odm;
 
 import com.runwaysdk.session.Request;
 
-public class ODMStatusServer
+import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
+
+public class ProcessingTaskStatusServer
 {
   private static TaskService service = new PollingTaskService();
   
   public synchronized static void setService(TaskService service)
   {
-    ODMStatusServer.service = service;
+    ProcessingTaskStatusServer.service = service;
   }
 
   @Request
@@ -43,7 +45,7 @@ public class ODMStatusServer
    * 
    * @param task
    */
-  public static void addTask(ODMProcessingTaskIF task)
+  public static void addTask(ImageryWorkflowTaskIF task)
   {
     service.addTask(task);
   }

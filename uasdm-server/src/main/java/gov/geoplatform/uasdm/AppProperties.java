@@ -210,67 +210,32 @@ public class AppProperties
   }
 
   /*
-   * Eros Synchronization related properties
+   * FargateAutoscaler Synchronization related properties
    */
 
-  public static String getErosECSAccessKey()
+  public static String getFargateAutoscalerECSAccessKey()
   {
-    return Singleton.getProps().getString("eros.ecs.accessKey");
+    return Singleton.getProps().getString("autoscale.ecs.accessKey");
   }
 
-  public static String getErosECSSecretKey()
+  public static String getFargateAutoscalerECSSecretKey()
   {
-    return Singleton.getProps().getString("eros.ecs.secretKey");
+    return Singleton.getProps().getString("autoscale.ecs.secretKey");
   }
 
-  public static String getErosFtpServerUrl()
+  public static String getFargateAutoscalerCluster()
   {
-    return Singleton.getProps().getString("eros.ftp.serverUrl");
+    return Singleton.getProps().getString("autoscale.ecs.cluster");
   }
 
-  public static String getErosFtpUsername()
+  public static String getFargateAutoscalerContainerName()
   {
-    return Singleton.getProps().getString("eros.ftp.username");
+    return Singleton.getProps().getString("autoscale.ecs.containerName");
   }
 
-  public static String getErosFtpPassword()
+  public static String getFargateAutoscalerSubnets()
   {
-    return Singleton.getProps().getString("eros.ftp.password");
-  }
-
-  public static String getErosFtpPassive()
-  {
-    return Singleton.getProps().getString("eros.ftp.passive");
-  }
-
-  public static String getErosFtpPort()
-  {
-    return Singleton.getProps().getString("eros.ftp.port");
-  }
-
-  public static String getErosFtpTargetPath()
-  {
-    return Singleton.getProps().getString("eros.ftp.targetPath");
-  }
-
-  public static String getErosCluster()
-  {
-    return Singleton.getProps().getString("eros.ecs.cluster");
-  }
-
-  public static String getErosTask()
-  {
-    return Singleton.getProps().getString("eros.ecs.task");
-  }
-
-  public static String getErosContainerName()
-  {
-    return Singleton.getProps().getString("eros.ecs.containerName");
-  }
-
-  public static String getErosSubnets()
-  {
-    return Singleton.getProps().getString("eros.ecs.subnets");
+    return Singleton.getProps().getString("autoscale.ecs.subnets");
   }
 
   public static String getAppDisclaimer()

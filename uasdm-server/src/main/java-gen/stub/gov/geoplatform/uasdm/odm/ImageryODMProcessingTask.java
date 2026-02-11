@@ -146,7 +146,7 @@ public class ImageryODMProcessingTask extends ImageryODMProcessingTaskBase imple
 
         NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
-        ODMStatusServer.addTask(this);
+        ProcessingTaskStatusServer.addTask(this);
       }
     }
     catch (Throwable t)

@@ -22,11 +22,11 @@ public class ODMContextListener implements ServletContextListener
 {
   @Override
   public void contextInitialized(ServletContextEvent sce) {
-    ODMStatusServer.startup();
+    ProcessingTaskStatusServer.startup();
   } 
   
   @Override
   public void contextDestroyed(ServletContextEvent sce) { 
-    ODMStatusServer.shutdown();
+    ProcessingTaskStatusServer.shutdown();
   } 
 }

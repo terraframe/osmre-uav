@@ -15,9 +15,11 @@
  */
 package gov.geoplatform.uasdm.odm;
 
+import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
+
 public interface TaskService
 {
-  public void addTask(ODMProcessingTaskIF task);
+  public void addTask(ImageryWorkflowTaskIF task);
 
   public void startup();
 

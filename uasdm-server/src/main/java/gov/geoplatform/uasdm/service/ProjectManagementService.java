@@ -43,6 +43,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.runwaysdk.RunwayException;
@@ -105,6 +106,7 @@ import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.RadiometricCalibration;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.processing.ProcessingInProgressException;
+import gov.geoplatform.uasdm.processing.fargate.FargateProvisioner;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
@@ -127,6 +129,9 @@ import net.geoprism.localization.LocalizationService;
 @Service
 public class ProjectManagementService
 {
+  final Logger logger = LoggerFactory.getLogger(ProjectManagementService.class);
+  
+  @Autowired private FargateProvisioner fargateProvisioner;
 
   private class RerunODMProcessThread extends Thread
   {
@@ -213,71 +218,6 @@ public class ProjectManagementService
       }
     }
   }
-
-  private class RerunLidarProcessThread extends Thread
-  {
-    private LidarProcessingTask task;
-
-    private CollectionIF        collection;
-
-    private Set<String>         excludes;
-
-    public RerunLidarProcessThread(LidarProcessingTask task, CollectionIF collection, Set<String> excludes)
-    {
-      super("Rerun ortho thread for collection [" + collection.getName() + "]");
-
-      this.task = task;
-      this.collection = collection;
-      this.excludes = excludes;
-    }
-
-    @Override
-    @Request
-    public void run()
-    {
-      try
-      {
-        logger.info("Initiating download from S3 of all raw data for collection [" + collection.getName() + "].");
-
-        try (CloseableFile zip = new CloseableFile(File.createTempFile("raw-" + this.collection.getOid(), ".zip")))
-        {
-          /*
-           * Predicate for filtering out files from the zip file to send for
-           * LIDAR processing
-           */
-          Predicate<SiteObject> predicate = ( excludes == null || excludes.size() == 0 ) ? null : new ExcludeSiteObjectPredicate(this.excludes);
-
-          try (OutputStream ostream = new BufferedOutputStream(new FileOutputStream(zip)))
-          {
-            downloadAll(this.collection, ImageryComponent.RAW, ostream, predicate, false);
-          }
-
-          task.initiate(new ArchiveFileResource(new FileResource(zip)));
-
-          NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
-        }
-        catch (IOException e)
-        {
-          throw new ProgrammingErrorException(e);
-        }
-      }
-      catch (Throwable t)
-      {
-        logger.error("Exception while re-processing the point cloud", t);
-
-        task.appLock();
-        task.setStatus(ODMStatus.FAILED.getLabel());
-        task.setMessage(RunwayException.localizeThrowable(t, CommonProperties.getDefaultLocale()));
-        task.apply();
-
-        NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
-
-        throw t;
-      }
-    }
-  }
-
-  final Logger logger = LoggerFactory.getLogger(ProjectManagementService.class);
 
   @Request(RequestType.SESSION)
   public List<TreeComponent> getChildren(String sessionId, String parentid)
@@ -517,21 +457,7 @@ public class ProjectManagementService
     }
     else if (configuration.isLidar())
     {
-      LidarProcessingTask task = new LidarProcessingTask();
-      task.setUploadId(id);
-      task.setComponent(collection.getOid());
-      task.setGeoprismUser(GeoprismUser.getCurrentUser());
-      task.setStatus(ODMStatus.RUNNING.getLabel());
-      task.setTaskLabel("Lidar processing for collection [" + collection.getName() + "]");
-      task.setMessage("The point clouds uploaded to ['" + collection.getName() + "'] are submitted for processing. Check back later for updates.");
-      task.setConfiguration(configuration.toLidar());
-      task.apply();
-
-      NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
-
-      RerunLidarProcessThread t = new RerunLidarProcessThread(task, collection, collection.getExcludes());
-      t.setDaemon(true);
-      t.start();
+      fargateProvisioner.provision(id, collection, configuration);
     }
   }
 
@@ -543,7 +469,7 @@ public class ProjectManagementService
     this.downloadAll(component, key, out, null, incrementDownloadCount);
   }
 
-  private List<String> downloadAll(UasComponentIF component, String key, OutputStream out, Predicate<SiteObject> predicate, boolean incrementDownloadCount)
+  public List<String> downloadAll(UasComponentIF component, String key, OutputStream out, Predicate<SiteObject> predicate, boolean incrementDownloadCount)
   {
     List<SiteObject> items = component.getSiteObjects(key, null, null).getObjects();
 

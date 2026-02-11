@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.odm;
 
@@ -28,19 +28,21 @@ import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery;
+import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.odm.ODMTaskProcessor.TaskResult;
 import gov.geoplatform.uasdm.odm.ODMTaskProcessor.TaskStatus;
+import gov.geoplatform.uasdm.processing.FargateProcessingTask;
 
 public class PollingTaskService implements TaskService
 {
-  private static Logger logger = LoggerFactory.getLogger(PollingTaskService.class);
+  private static Logger               logger                     = LoggerFactory.getLogger(PollingTaskService.class);
 
-  private final Integer ODM_STATUS_UPDATE_INTERVAL = 5000; // in
-                                                           // miliseconds
+  private final Integer               ODM_STATUS_UPDATE_INTERVAL = 5000;                                             // in
+                                                                                                                     // miliseconds
 
-  private ODMStatusThread statusThread;
+  private ODMStatusThread             statusThread;
 
-  private List<S3ResultsUploadThread> uploadThreads = new ArrayList<S3ResultsUploadThread>();
+  private List<S3ResultsUploadThread> uploadThreads              = new ArrayList<S3ResultsUploadThread>();
 
   public synchronized void startup()
   {
@@ -80,7 +82,7 @@ public class PollingTaskService implements TaskService
    * 
    * @param task
    */
-  public void addTask(ODMProcessingTaskIF task)
+  public void addTask(ImageryWorkflowTaskIF task)
   {
     statusThread.addTask(task);
   }
@@ -96,12 +98,9 @@ public class PollingTaskService implements TaskService
       {
         AbstractWorkflowTask task = it.next();
 
-        // Heads up: Imagery
-        if (task instanceof ODMProcessingTaskIF)
+        if (task instanceof ImageryWorkflowTaskIF)
         {
-          ODMProcessingTaskIF processingTask = (ODMProcessingTaskIF) task;
-
-          statusThread.addTask(processingTask);
+          statusThread.addTask((ImageryWorkflowTaskIF) task);
         }
         else if (task instanceof ODMUploadTask)
         {
@@ -128,19 +127,19 @@ public class PollingTaskService implements TaskService
     /**
      * A list of tasks that require status updates.
      */
-    private List<ODMProcessingTaskIF> activeTasks = new ArrayList<ODMProcessingTaskIF>();
+    private List<ImageryWorkflowTaskIF> activeTasks  = new ArrayList<ImageryWorkflowTaskIF>();
 
     /**
      * A way to add additional tasks that require status updates to our list.
      */
-    private List<ODMProcessingTaskIF> pendingTasks = new ArrayList<ODMProcessingTaskIF>();
+    private List<ImageryWorkflowTaskIF> pendingTasks = new ArrayList<ImageryWorkflowTaskIF>();
 
     protected ODMStatusThread(String name)
     {
       super(name);
     }
 
-    protected void addTask(ODMProcessingTaskIF task)
+    protected void addTask(ImageryWorkflowTaskIF task)
     {
       synchronized (pendingTasks)
       {
@@ -155,7 +154,8 @@ public class PollingTaskService implements TaskService
       {
         try
         {
-          // We want to make sure that we are sleeping OUTSIDE of any request because we don't want to hold onto a DB connection
+          // We want to make sure that we are sleeping OUTSIDE of any request
+          // because we don't want to hold onto a DB connection
           Thread.sleep(ODM_STATUS_UPDATE_INTERVAL);
 
           runInRequest();
@@ -186,7 +186,7 @@ public class PollingTaskService implements TaskService
         pendingTasks.clear();
       }
 
-      Iterator<ODMProcessingTaskIF> it = activeTasks.iterator();
+      Iterator<ImageryWorkflowTaskIF> it = activeTasks.iterator();
 
       while (it.hasNext())
       {
@@ -196,22 +196,33 @@ public class PollingTaskService implements TaskService
           throw new InterruptedException();
         }
 
-        ODMProcessingTaskIF task = it.next();
+        ImageryWorkflowTaskIF task = it.next();
 
-        TaskResult result = new ODMTaskProcessor().handleProcessingTask(task);
-
-        if (!result.getStatus().equals(TaskStatus.ACTIVE))
+        if (task instanceof ODMProcessingTaskIF)
         {
-          it.remove();
+          TaskResult result = new ODMTaskProcessor().handleProcessingTask((ODMProcessingTaskIF) task);
+
+          if (!result.getStatus().equals(TaskStatus.ACTIVE))
+          {
+            it.remove();
+          }
+
+          if (result.getStatus().equals(TaskStatus.UPLOAD))
+          {
+            ODMUploadTaskIF uploadTask = result.getDownstreamTask();
+
+            S3ResultsUploadThread thread = new S3ResultsUploadThread("S3Uploader for " + uploadTask.getOdmUUID(), uploadTask);
+            uploadThreads.add(thread);
+            thread.start();
+          }
         }
-
-        if (result.getStatus().equals(TaskStatus.UPLOAD))
+        else if (task instanceof FargateProcessingTask)
         {
-          ODMUploadTaskIF uploadTask = result.getDownstreamTask();
-
-          S3ResultsUploadThread thread = new S3ResultsUploadThread("S3Uploader for " + uploadTask.getOdmUUID(), uploadTask);
-          uploadThreads.add(thread);
-          thread.start();
+          ((FargateProcessingTask)task).checkStatus();
+        }
+        else
+        {
+          throw new UnsupportedOperationException();
         }
       }
     }
