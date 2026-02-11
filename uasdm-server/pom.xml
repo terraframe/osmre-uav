@@ -135,14 +135,23 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!-- Source: https://mvnrepository.com/artifact/org.keycloak/keycloak-jakarta-servlet-filter-adapter -->
     <dependency>
       <groupId>org.keycloak</groupId>
-      <artifactId>keycloak-servlet-filter-adapter</artifactId>
+      <artifactId>keycloak-jakarta-servlet-filter-adapter</artifactId>
       <version>25.0.3</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>jakarta.websocket</groupId>
       <artifactId>jakarta.websocket-api</artifactId>
+      <version>2.2.0</version>
+    </dependency>
+    <!--
+    https://mvnrepository.com/artifact/jakarta.websocket/jakarta.websocket-client-api -->
+    <dependency>
+      <groupId>jakarta.websocket</groupId>
+      <artifactId>jakarta.websocket-client-api</artifactId>
       <version>2.2.0</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
@@ -348,7 +357,7 @@
 <dependency>
     <groupId>me.desair.tus</groupId>
     <artifactId>tus-java-server</artifactId>
-    <version>1.0.0-2.1</version>
+    <version>1.0.0-3.0</version>
 </dependency>    
   </dependencies>
 

@@ -33,11 +33,7 @@
   </modules>
 
   <properties>
-<<<<<<< HEAD
-    <geoprism.version>1.1.12-SNAPSHOT</geoprism.version>
-=======
-    <geoprism.version>1.2.4</geoprism.version>
->>>>>>> refs/remotes/origin/master
+    <geoprism.version>2.0.1</geoprism.version>
   
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>17</maven.compiler.source>

@@ -89,18 +89,12 @@ import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
 import gov.geoplatform.uasdm.service.IndexService;
-<<<<<<< HEAD
-=======
 import gov.geoplatform.uasdm.service.business.IDMHierarchyTypeSnapshotBusinessService;
->>>>>>> refs/remotes/origin/master
 import gov.geoplatform.uasdm.service.request.IDMLabeledPropertyGraphSynchronizationService;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.ProductCriteria;
 import gov.geoplatform.uasdm.view.SiteObject;
-<<<<<<< HEAD
 import net.geoprism.graph.GraphTypeSnapshot;
-=======
->>>>>>> refs/remotes/origin/master
 import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphSynchronizationQuery;
@@ -1252,11 +1246,7 @@ public class Product extends ProductBase implements ProductIF
 
     LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(criteria.getHierarchy());
     LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
-<<<<<<< HEAD
-    GraphTypeSnapshot hierarchyType = service.getGraphSnapshots(version).get(0);
-=======
     HierarchyTypeSnapshot hierarchyType = hService.get(version).get(0);
->>>>>>> refs/remotes/origin/master
 
     SynchronizationEdge synchronizationEdge = SynchronizationEdge.get(version);
     MdEdge siteEdge = synchronizationEdge.getGraphEdge();

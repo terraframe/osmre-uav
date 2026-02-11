@@ -55,11 +55,6 @@ import net.geoprism.account.GeoprismUserView;
 import net.geoprism.rbac.RoleView;
 import net.geoprism.registry.service.request.OrganizationServiceIF;
 import net.geoprism.registry.service.request.RoleServiceIF;
-<<<<<<< HEAD
-import net.geoprism.spring.core.JsonArrayDeserializer;
-import net.geoprism.spring.core.JsonObjectDeserializer;
-=======
->>>>>>> refs/remotes/origin/master
 
 @RestController
 @Validated

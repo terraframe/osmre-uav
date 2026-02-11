@@ -17,11 +17,6 @@ package gov.geoplatform.uasdm.controller;
 
 import java.io.InputStream;
 
-<<<<<<< HEAD
-import jakarta.servlet.http.HttpServletRequest;
-
-=======
->>>>>>> refs/remotes/origin/master
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;

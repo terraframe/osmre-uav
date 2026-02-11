@@ -41,10 +41,6 @@ import gov.geoplatform.uasdm.controller.body.SynchronizeLabeledPropertyGraphBody
 import gov.geoplatform.uasdm.controller.body.UpdateRemoteVersionBody;
 import gov.geoplatform.uasdm.service.request.IDMLabeledPropertyGraphSynchronizationService;
 import net.geoprism.registry.service.request.LabeledPropertyGraphTypeVersionServiceIF;
-<<<<<<< HEAD
-import net.geoprism.spring.core.JsonObjectDeserializer;
-=======
->>>>>>> refs/remotes/origin/master
 
 @RestController
 @Validated

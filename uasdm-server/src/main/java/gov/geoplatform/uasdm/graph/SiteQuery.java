@@ -42,12 +42,8 @@ import com.runwaysdk.system.metadata.MdEdge;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-<<<<<<< HEAD
-import net.geoprism.graph.GraphTypeSnapshot;
-=======
 import gov.geoplatform.uasdm.service.business.IDMHierarchyTypeSnapshotBusinessService;
 import net.geoprism.graph.HierarchyTypeSnapshot;
->>>>>>> refs/remotes/origin/master
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 import net.geoprism.registry.Organization;
@@ -425,11 +421,7 @@ public class SiteQuery
 
         LabeledPropertyGraphSynchronization synchronization = LabeledPropertyGraphSynchronization.get(oid);
         LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
-<<<<<<< HEAD
-        GraphTypeSnapshot hierarchyType = service.getGraphSnapshots(version).get(0);
-=======
         HierarchyTypeSnapshot hierarchyType = hService.get(version).get(0);
->>>>>>> refs/remotes/origin/master
 
         SynchronizationEdge synchronizationEdge = SynchronizationEdge.get(version);
         MdEdge siteEdge = synchronizationEdge.getGraphEdge();

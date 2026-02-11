@@ -94,19 +94,11 @@
 			<version>1.10.15</version>
             <configuration>
               <container>
-<<<<<<< HEAD
                 <containerId>tomcat11x</containerId>
-=======
-                <containerId>tomcat9x</containerId>
->>>>>>> refs/remotes/origin/master
                 <artifactInstaller>
                   <groupId>org.apache.tomcat</groupId>
                   <artifactId>tomcat</artifactId>
-<<<<<<< HEAD
                   <version>11.0.0</version>
-=======
-                  <version>9.0.104</version>
->>>>>>> refs/remotes/origin/master
                 </artifactInstaller>
                 <timeout>4800000</timeout>
               </container>

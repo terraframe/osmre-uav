@@ -143,11 +143,7 @@ public class Site extends SiteBase implements SiteIF
 
     MdVertex graphMdVertex = service.getRootType(version).getGraphMdVertex();
 
-<<<<<<< HEAD
-    service.getGraphSnapshots(version).forEach(hierarchy -> {
-=======
     hService.get(version).forEach(hierarchy -> {
->>>>>>> refs/remotes/origin/master
       // MdEdge hierarchyEdge = hierarchy.getGraphMdEdge();
 
       StringBuffer sql = new StringBuffer();

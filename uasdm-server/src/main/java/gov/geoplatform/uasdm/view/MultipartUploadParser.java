@@ -23,15 +23,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import jakarta.servlet.ServletContext;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload2.core.FileItem;
+import org.apache.commons.fileupload2.core.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.controller.MultipartFileParameter;
 import com.runwaysdk.controller.ParameterValue;
+
+import jakarta.servlet.ServletContext;
 
 public class MultipartUploadParser
 {

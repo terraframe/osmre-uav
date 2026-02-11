@@ -17,15 +17,14 @@ package gov.geoplatform.uasdm;
 
 import java.util.List;
 
-import jakarta.servlet.Filter;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -34,13 +33,10 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
 import gov.geoplatform.uasdm.controller.SessionFilter;
+import jakarta.servlet.Filter;
 import me.desair.tus.server.TusFileUploadService;
-import me.desair.tus.server.upload.UUIDUploadIdFactory;
+import me.desair.tus.server.upload.UuidUploadIdFactory;
 import net.geoprism.EncodingFilter;
-<<<<<<< HEAD
-import net.geoprism.registry.service.SessionFilter;
-=======
->>>>>>> refs/remotes/origin/master
 import net.geoprism.spring.web.JsonExceptionHandler;
 
 @Configuration
@@ -64,10 +60,10 @@ import net.geoprism.spring.web.JsonExceptionHandler;
 public class SpringAppConfig implements WebMvcConfigurer
 {
   @Bean(name = "multipartResolver")
-  public CommonsMultipartResolver multipartResolver()
+  public MultipartResolver multipartResolver()
   {
-    CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-    multipartResolver.setMaxUploadSize(-1);
+    MultipartResolver multipartResolver = new StandardServletMultipartResolver();
+//    multipartResolver.setMaxUploadSize(-1);
     return multipartResolver;
   }
   
@@ -149,7 +145,7 @@ public class SpringAppConfig implements WebMvcConfigurer
     return new TusFileUploadService() //
         .withUploadExpirationPeriod(expirationPeriod) //
         .withStoragePath(storagePath) //
-        .withUploadURI("/.*api/tus-upload") //
-        .withUploadIdFactory(new UUIDUploadIdFactory());
+        .withUploadUri("/.*api/tus-upload") //
+        .withUploadIdFactory(new UuidUploadIdFactory());
   }
 }

@@ -160,11 +160,7 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
     LabeledPropertyGraphTypeVersion version = synchronization.getVersion();
     GeoObjectTypeSnapshot type = this.versionService.getRootType(version);
     MdVertex mdVertex = type.getGraphMdVertex();
-<<<<<<< HEAD
-    GraphTypeSnapshot hierarchy = this.versionService.getGraphSnapshots(version).get(0);
-=======
     HierarchyTypeSnapshot hierarchy = this.hierarchyService.get(version).get(0);
->>>>>>> refs/remotes/origin/master
     MdEdge mdEdge = hierarchy.getGraphMdEdge();
 
     StringBuffer statement = new StringBuffer();
@@ -334,11 +330,7 @@ public class IDMLabeledPropertyGraphSynchronizationService extends LabeledProper
   {
     JsonArray array = new JsonArray();
 
-<<<<<<< HEAD
-    GraphTypeSnapshot hierarchy = this.versionService.getGraphSnapshots(version).get(0);
-=======
     HierarchyTypeSnapshot hierarchy = this.hierarchyService.get(version).get(0);
->>>>>>> refs/remotes/origin/master
     MdEdgeDAOIF mdEdge = MdEdgeDAO.get(hierarchy.getGraphMdEdgeOid());
 
     // List<VertexObject> children = parent.getChildren(mdEdge,

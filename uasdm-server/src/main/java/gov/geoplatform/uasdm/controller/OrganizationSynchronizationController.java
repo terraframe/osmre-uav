@@ -36,11 +36,6 @@ import com.google.gson.JsonParser;
 
 import gov.geoplatform.uasdm.controller.body.SynchronizeOrganizationBody;
 import gov.geoplatform.uasdm.service.OrganizationSynchronizationService;
-<<<<<<< HEAD
-import net.geoprism.registry.controller.RunwaySpringController;
-import net.geoprism.spring.core.JsonObjectDeserializer;
-=======
->>>>>>> refs/remotes/origin/master
 
 @RestController
 @Validated
