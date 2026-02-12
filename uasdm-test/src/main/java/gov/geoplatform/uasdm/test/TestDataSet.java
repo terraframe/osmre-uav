@@ -16,7 +16,6 @@
 package gov.geoplatform.uasdm.test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,17 +62,13 @@ import gov.geoplatform.uasdm.UserInfoQuery;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery;
 import gov.geoplatform.uasdm.bus.CollectionReportQuery;
-import gov.geoplatform.uasdm.graph.Collection;
-import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.Platform;
-import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.mock.MockIndex;
 import gov.geoplatform.uasdm.mock.MockODMService;
 import gov.geoplatform.uasdm.mock.MockRemoteFileService;
-import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.odm.ODMFacade;
 import gov.geoplatform.uasdm.odm.ODMStatusServer;
 import gov.geoplatform.uasdm.odm.OnceTaskService;
@@ -325,22 +320,6 @@ abstract public class TestDataSet
     List<TestDocumentInfo> appliedDocs = new ArrayList<TestDocumentInfo>();
     for (TestProductInfo obj : managedProducts)
     {
-<<<<<<< HEAD
-      Document document = obj.apply();
-
-      Collection collection = obj.getComponent().getServerObject();
-
-      Product product = Product.createIfNotExist(collection, "test123");
-
-      if (obj.getKey().startsWith(ImageryComponent.RAW))
-      {
-        product.addDocumentGeneratedProductParent(document).apply();
-      }
-      else
-      {
-        product.addDocuments(Arrays.asList(document));
-      }
-=======
       obj.apply();
       appliedDocs.addAll(obj.getInputDocuments());
       appliedDocs.addAll(obj.getOutputDocuments());
@@ -354,7 +333,6 @@ abstract public class TestDataSet
     for (TestDocumentInfo obj : managedDocuments.stream().filter(d -> !appliedDocs.contains(d)).collect(Collectors.toList()))
     {
       obj.apply();
->>>>>>> refs/remotes/origin/master
     }
   }
 

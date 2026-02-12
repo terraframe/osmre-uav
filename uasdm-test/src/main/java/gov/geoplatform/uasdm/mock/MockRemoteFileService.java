@@ -1,38 +1,34 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.mock;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.net.URL;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.amazonaws.HttpMethod;
-
 import gov.geoplatform.uasdm.cog.TiTillerProxy.BBoxView;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
-import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.StatusMonitorIF;
@@ -53,7 +49,7 @@ public class MockRemoteFileService implements RemoteFileService
   {
     private RemoteFileActionType type;
 
-    private Object[] parameters;
+    private Object[]             parameters;
 
     public RemoteFileAction(RemoteFileActionType type, Object... parameters)
     {
@@ -78,15 +74,18 @@ public class MockRemoteFileService implements RemoteFileService
   }
 
   private List<RemoteFileAction> actions = new LinkedList<RemoteFileAction>();
-  
-  public void clear() {
+
+  public void clear()
+  {
     this.actions.clear();
   }
 
   @Override
-  public void download(String key, File destination) throws IOException, FileNotFoundException
+  public Long download(String key, File destination)
   {
     this.actions.add(new RemoteFileAction(RemoteFileActionType.DOWNLOAD, key, destination));
+
+    return 0L;
   }
 
   @Override
@@ -106,9 +105,9 @@ public class MockRemoteFileService implements RemoteFileService
   }
 
   @Override
-  public RemoteFileObject download(String key, List<Range> ranges)
+  public RemoteFileObject download(String key, String range)
   {
-    this.actions.add(new RemoteFileAction(RemoteFileActionType.DOWNLOAD, key, ranges));
+    this.actions.add(new RemoteFileAction(RemoteFileActionType.DOWNLOAD, key, range));
 
     return this.getMockFile(key);
   }
@@ -132,18 +131,10 @@ public class MockRemoteFileService implements RemoteFileService
   }
 
   @Override
-  public int getItemCount(String key)
-  {
-    this.actions.add(new RemoteFileAction(RemoteFileActionType.COUNT, key));
-    
-    return 0;
-  }
-
-  @Override
   public SiteObjectsResultSet getSiteObjects(UasComponentIF component, String folder, List<SiteObject> objects, Long pageNumber, Long pageSize)
   {
     this.actions.add(new RemoteFileAction(RemoteFileActionType.GET_ITEMS, component, folder, objects, pageNumber, pageSize));
-    
+
     if (folder.contains("odm_all"))
     {
       SiteObject object = new SiteObject();
@@ -158,9 +149,11 @@ public class MockRemoteFileService implements RemoteFileService
   }
 
   @Override
-  public void uploadFile(File file, String key, StatusMonitorIF monitor)
+  public String uploadFile(File file, String key, StatusMonitorIF monitor)
   {
     this.actions.add(new RemoteFileAction(RemoteFileActionType.UPLOAD, file, key, monitor));
+
+    return key;
   }
 
   @Override
@@ -273,9 +266,9 @@ public class MockRemoteFileService implements RemoteFileService
 
     return new MockRemoteFileObject();
   }
-  
+
   @Override
-  public URL presignUrl(String key, Date expiration, HttpMethod httpMethod)
+  public String presignUrl(String key, Duration duration)
   {
     return null;
   }
@@ -283,17 +276,17 @@ public class MockRemoteFileService implements RemoteFileService
   @Override
   public void copyFolder(String sourceKey, String sourceBucket, String destKey, String destBucket)
   {
-<<<<<<< HEAD
-    // TODO Auto-generated method stub
+  }
+
+  @Override
+  public void destroy()
+  {
   }
 
   @Override
   public String getUrl(String bucket, String key)
   {
-    // TODO Auto-generated method stub
-    return null;
-=======
-    
->>>>>>> refs/remotes/origin/master
+    return key;
   }
+
 }

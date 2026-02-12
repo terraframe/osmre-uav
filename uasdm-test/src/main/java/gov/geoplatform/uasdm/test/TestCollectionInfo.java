@@ -69,11 +69,7 @@ public class TestCollectionInfo extends TestUasComponentInfo
     Collection col = (Collection) component;
 
     col.setCollectionDate(this.getCollectionDate());
-<<<<<<< HEAD
-//    col.getMetadata().get().setSensor(this.getSensor().getServerObject());
-=======
     col.setCollectionSensor(this.getSensor().getServerObject());
->>>>>>> refs/remotes/origin/master
     col.setImageHeight(this.getImageHeight());
     col.setImageWidth(this.getImageWidth());
     col.setMetadataUploaded(this.getMetadataUploaded());

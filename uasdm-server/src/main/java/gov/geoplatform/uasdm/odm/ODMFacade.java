@@ -15,27 +15,15 @@
  */
 package gov.geoplatform.uasdm.odm;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
-import java.util.zip.ZipException;
 
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipFile;
-import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
 import com.opencsv.exceptions.CsvValidationException;
@@ -44,19 +32,14 @@ import com.runwaysdk.resource.ApplicationResource;
 import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
-import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.ImageryProcessingJob;
-import gov.geoplatform.uasdm.InvalidZipException;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.graph.Collection;
-import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
-import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.RadiometricCalibration;
 import gov.geoplatform.uasdm.processing.RadiometricImageryPreProcessor;
-import gov.geoplatform.uasdm.processing.geolocation.GeoLocationFileValidator;
 import gov.geoplatform.uasdm.processing.geolocation.RX1R2GeoFileConverter;
 
 public class ODMFacade
@@ -189,9 +172,9 @@ public class ODMFacade
     return service.taskInfo(uuid);
   }
 
-  public static ODMProcessingPayload filterAndExtract(AbstractWorkflowTask task, ArchiveFileResource archive, ODMProcessConfiguration configuration, Collection col) throws IOException, CsvValidationException
+  public static ODMProcessingPayload filterAndExtract(ArchiveFileResource archive, ODMProcessConfiguration configuration, Collection col) throws IOException, CsvValidationException
   {
-    ODMProcessingPayload payload = filterArchive(task, archive, configuration);
+    ODMProcessingPayload payload = filterArchive(archive, configuration);
 
     if (col != null && col.isRadiometric())
     {
@@ -202,7 +185,7 @@ public class ODMFacade
   }
   
   @SuppressWarnings("resource")
-  private static ODMProcessingPayload filterArchive(AbstractWorkflowTask task, ArchiveFileResource archive, ODMProcessConfiguration configuration) throws IOException, CsvValidationException
+  private static ODMProcessingPayload filterArchive(ArchiveFileResource archive, ODMProcessConfiguration configuration) throws IOException, CsvValidationException
   {
     List<String> extensions = ImageryProcessingJob.getSupportedExtensions(ImageryComponent.RAW, false, false, false, configuration);
     final ODMProcessingPayload payload = new ODMProcessingPayload(archive);

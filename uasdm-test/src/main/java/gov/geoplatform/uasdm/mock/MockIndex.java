@@ -188,10 +188,6 @@ public class MockIndex implements Index
   @Override
   public void deleteStacIndex()
   {
-<<<<<<< HEAD
     this.actions.add(new IndexAction(IndexActionType.DELETE_STAC_INDEX));
-=======
-    
->>>>>>> refs/remotes/origin/master
   }
 }

@@ -104,55 +104,29 @@ public class UasComponentTest extends Area51DataTest
   public void testGetArtifacts()
   {
     JSONArray artifacts = collection.getArtifacts();
-<<<<<<< HEAD
-    JSONObject artifact = artifacts.getJSONObject(0);
     
+    JSONObject artifact = artifacts.getJSONObject(0);
+
     Assert.assertTrue(artifact.has(ImageryComponent.DEM));
     Assert.assertTrue(artifact.has(ImageryComponent.ORTHO));
     Assert.assertTrue(artifact.has(ImageryComponent.PTCLOUD));
-=======
-    
-    JSONObject artifact = artifacts.getJSONObject(0);
->>>>>>> refs/remotes/origin/master
 
-<<<<<<< HEAD
-    Assert.assertEquals(0, artifact.getJSONObject(ImageryComponent.DEM).getJSONArray("items").length());
-    Assert.assertEquals(0, artifact.getJSONObject(ImageryComponent.PTCLOUD).getJSONArray("items").length());
-=======
-    Assert.assertTrue(artifact.has(ImageryComponent.DEM));
-    Assert.assertTrue(artifact.has(ImageryComponent.ORTHO));
-    Assert.assertTrue(artifact.has(ImageryComponent.PTCLOUD));
->>>>>>> refs/remotes/origin/master
-
-<<<<<<< HEAD
-    JSONArray result = artifact.getJSONObject(ImageryComponent.ORTHO).getJSONArray("items");
-    Assert.assertEquals(1, result.length());
-=======
     Assert.assertEquals(0, artifact.getJSONObject(ImageryComponent.DEM).getJSONArray("items").length());
     Assert.assertEquals(0, artifact.getJSONObject(ImageryComponent.PTCLOUD).getJSONArray("items").length());
 
     JSONArray orthoItems = artifact.getJSONObject(ImageryComponent.ORTHO).getJSONArray("items");
     Assert.assertEquals(1, orthoItems.length());
->>>>>>> refs/remotes/origin/master
 
-<<<<<<< HEAD
-    Assert.assertEquals(target.getOid(), artifact.getString("id"));
-=======
     JSONObject ortho = orthoItems.getJSONObject(0);
 
     Assert.assertEquals(target.getOid(), ortho.getString("id"));
->>>>>>> refs/remotes/origin/master
   }
 
   @Test
   @Request
   public void testRemoveArtifacts()
   {
-<<<<<<< HEAD
-    collection.removeArtifacts(product, ImageryComponent.ORTHO, true);
-=======
     collection.removeArtifacts(testData.PRODUCT.getServerObject(), ImageryComponent.ORTHO, true);
->>>>>>> refs/remotes/origin/master
 
     Assert.assertNull(Document.get(target.getOid()));
     Assert.assertNull(Document.get(image.getOid()));
@@ -308,41 +282,21 @@ public class UasComponentTest extends Area51DataTest
     Assert.assertEquals(1, results.size());
 
     ComponentProductDTO result = results.get(0);
-<<<<<<< HEAD
-    ProductIF product = result.getProducts().iterator().next();
-=======
->>>>>>> refs/remotes/origin/master
 
-<<<<<<< HEAD
-    Assert.assertEquals(this.product.getOid(), product.getOid());
-=======
     Assert.assertEquals(testData.PRODUCT.getServerObject().getOid(), result.getPrimary().getOid());
->>>>>>> refs/remotes/origin/master
   }
 
   @Test
   @Request
   public void testGetDerivedProducts_Project() throws IOException
   {
-<<<<<<< HEAD
-    List<ComponentProductDTO> results = mission.getDerivedProducts(null, null);
-=======
     List<ComponentProductDTO> results = project.getDerivedProducts(null, null);
->>>>>>> refs/remotes/origin/master
 
     Assert.assertEquals(1, results.size());
 
     ComponentProductDTO result = results.get(0);
-<<<<<<< HEAD
-    ProductIF product = result.getProducts().iterator().next();
-=======
->>>>>>> refs/remotes/origin/master
 
-<<<<<<< HEAD
-    Assert.assertEquals(this.product.getOid(), product.getOid());
-=======
     Assert.assertEquals(testData.PRODUCT.getServerObject().getOid(), result.getPrimary().getOid());
->>>>>>> refs/remotes/origin/master
   }
 
   @Test
@@ -354,16 +308,8 @@ public class UasComponentTest extends Area51DataTest
     Assert.assertEquals(1, results.size());
 
     ComponentProductDTO result = results.get(0);
-<<<<<<< HEAD
-    ProductIF product = result.getProducts().iterator().next();
-=======
->>>>>>> refs/remotes/origin/master
 
-<<<<<<< HEAD
-    Assert.assertEquals(this.product.getOid(), product.getOid());
-=======
     Assert.assertEquals(testData.PRODUCT.getServerObject().getOid(), result.getPrimary().getOid());
->>>>>>> refs/remotes/origin/master
   }
 
   @Test
