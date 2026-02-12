@@ -17,15 +17,17 @@ package gov.geoplatform.uasdm.cog.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class TitilerCogInfo
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class TiTilerStacAssetInfo
 {
-  private List<Double>                  bounds;
+  private List<Double>                      bounds;
 
-  private Integer                       minzoom;
+  private Integer                           minzoom;
 
-  private Integer                       maxzoom;
+  private Integer                           maxzoom;
 
   @JsonProperty("band_metadata")
   private List<TiTillerBandMetadata>    bandMetadata;
@@ -33,28 +35,31 @@ public class TitilerCogInfo
   @JsonProperty("band_descriptions")
   private List<TiTillerBandDescription> bandDescriptions;
 
-  private String                        dtype;
+  private String                            dtype;
 
   @JsonProperty("nodata_type")
-  private String                        nodataType;
+  private String                            nodataType;
 
-  private List<String>                  colorinterp;
+  private List<String>                      colorinterp;
 
-  private String                        driver;
+  private String                            driver;
 
-  private List<Float>                   scales;
+  private List<Float>                       scales;
 
-  private List<Float>                   offsets;
+  private List<Float>                       offsets;
 
-  private Integer                       count;
+  private Integer                           count;
 
-  private Integer                       width;
+  private Integer                           width;
 
-  private Integer                       height;
+  private Integer                           height;
 
-  private List<Integer>                 overviews;
+  private List<Integer>                     overviews;
 
-  private Object                        nodata_value;
+  public TiTilerStacAssetInfo()
+  {
+
+  }
 
   public List<Double> getBounds()
   {
@@ -204,16 +209,6 @@ public class TitilerCogInfo
   public void setOverviews(List<Integer> overviews)
   {
     this.overviews = overviews;
-  }
-
-  public Object getNodata_value()
-  {
-    return nodata_value;
-  }
-
-  public void setNodata_value(Object nodata_value)
-  {
-    this.nodata_value = nodata_value;
   }
 
 }

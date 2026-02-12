@@ -13,21 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gov.geoplatform.uasdm.remote;
+package gov.geoplatform.uasdm.cog.model;
 
-public class KnowStacNoopResponse implements KnowStacResponseIF
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder({ "name", "description" })
+public class TiTillerBandDescription
 {
+  public String name;
 
-  @Override
-  public boolean hasError()
+  public String description;
+
+  public String getName()
   {
-    return false;
+    return name;
   }
 
-  @Override
-  public String getError()
+  public void setName(String name)
   {
-    return "";
+    this.name = name;
   }
 
+  public String getDescription()
+  {
+    return description;
+  }
+
+  public void setDescription(String description)
+  {
+    this.description = description;
+  }
 }

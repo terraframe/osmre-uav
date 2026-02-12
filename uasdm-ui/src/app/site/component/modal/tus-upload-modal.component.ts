@@ -25,7 +25,6 @@ import { NgxFileDropEntry, NgxFileDropModule } from 'ngx-file-drop';
 import { FormsModule } from '@angular/forms';
 import { NgIf, NgFor, DecimalPipe } from '@angular/common';
 import { BooleanFieldComponent } from '@shared/component/boolean-field/boolean-field.component';
-import { RouterLink } from '@angular/router';
 
 type SupportedRow = { type: string; formats: string };
 
@@ -40,7 +39,7 @@ type SupportedRow = { type: string; formats: string };
         fadeInOnEnterAnimation(),
         fadeOutOnLeaveAnimation()
     ],
-    imports: [FormsModule, NgIf, BooleanFieldComponent, NgFor, RouterLink, NgxFileDropModule, DecimalPipe]
+    imports: [FormsModule, NgIf, BooleanFieldComponent, NgFor, NgxFileDropModule, DecimalPipe]
 })
 export class TusUploadModalComponent implements OnInit, OnDestroy {
 

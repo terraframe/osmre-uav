@@ -31,7 +31,7 @@ export class ReportsComponent implements OnInit {
     config: GenericTableConfig;
     cols: GenericTableColumn[] = [
         {
-            header: 'Collection', field: 'collectionName', baseUrl: 'site/viewer/collection', urlField: 'collection', type: 'URL', sortable: true, columnType: (row: Object) => {
+            header: 'Collection', field: 'collectionName', baseUrl: 'site/viewer/entity', urlField: 'collection', type: 'URL', sortable: true, columnType: (row: Object) => {
                 if (!row['exists']) {
                     return 'TEXT';
                 }

@@ -39,7 +39,7 @@ public class StacTiTilerService
   {
     try
     {
-      StacTiTillerProxy proxy = new StacTiTillerProxy(url, assets);
+      StacTiTillerProxy proxy = new StacTiTillerProxy(url, assets, false, false);
 
       InputStream tiles = proxy.tiles(matrixSetId, z, x, y, scale, format, queryParams);
 
@@ -56,15 +56,15 @@ public class StacTiTilerService
       // handling aspects because they will log the exception.
       // And since this service throws so dang many errors I'm worried it will
       // flood the logs.
-      
+
       return ResponseEntity.internalServerError().body(new JSONRunwayExceptionDTO(cte).getJSON());
     }
   }
 
   @Request(RequestType.SESSION)
-  public JSONObject tilejson(String sessionId, String contextPath, String url, String assets)
+  public JSONObject tilejson(String sessionId, String contextPath, String url, String assets, Boolean multispectral, Boolean hillshade)
   {
-    StacTiTillerProxy proxy = new StacTiTillerProxy(url, assets);
+    StacTiTillerProxy proxy = new StacTiTillerProxy(url, assets, multispectral, hillshade);
 
     return proxy.tilejson(contextPath);
   }

@@ -101,7 +101,6 @@ export class CreateStandaloneProductModalComponent implements OnInit, OnDestroy 
 	}
 
 	close(): void {
-		console.log("close");
 		this.bsModalRef.hide();
 	}
 

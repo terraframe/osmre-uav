@@ -15,6 +15,8 @@
  */
 package gov.geoplatform.uasdm.cog.model;
 
+import java.util.Iterator;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,11 +26,11 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 public class TitilerCogStatistics
 {
   private ObjectNode json;
-  
+
   public TitilerCogStatistics(String json)
   {
     ObjectMapper objectMapper = new ObjectMapper();
-    
+
     try
     {
       this.json = (ObjectNode) objectMapper.readTree(json);
@@ -38,22 +40,28 @@ public class TitilerCogStatistics
       throw new ProgrammingErrorException(e);
     }
   }
-  
+
   public TitilerCogBandStatistic getBandStatistic(String band)
   {
     ObjectMapper objectMapper = new ObjectMapper();
-    
+
     JsonNode bandJson = json.get(band);
-    
+
     return objectMapper.convertValue(bandJson, TitilerCogBandStatistic.class);
   }
-  
+
   public TitilerCogBandStatistic getBandStatistic()
   {
     ObjectMapper objectMapper = new ObjectMapper();
-    
-    JsonNode bandJson = json.get(json.fieldNames().next());
-    
+
+    Iterator<String> fieldNames = json.fieldNames();
+    JsonNode bandJson = json.get(fieldNames.next());
+
     return objectMapper.convertValue(bandJson, TitilerCogBandStatistic.class);
+  }
+
+  public Iterator<String> getBandNames()
+  {
+    return this.json.fieldNames();
   }
 }

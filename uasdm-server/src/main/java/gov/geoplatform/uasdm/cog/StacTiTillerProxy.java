@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package gov.geoplatform.uasdm.cog;
 
@@ -24,41 +24,53 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.util.MultiValueMap;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.GenericException;
-import gov.geoplatform.uasdm.cog.model.TitilerCogBandStatistic;
-import gov.geoplatform.uasdm.cog.model.TitilerCogInfo;
-import gov.geoplatform.uasdm.cog.model.TitilerCogStatistics;
-import gov.geoplatform.uasdm.graph.Collection;
-import gov.geoplatform.uasdm.graph.Product;
-import gov.geoplatform.uasdm.graph.UasComponent;
-import gov.geoplatform.uasdm.model.CollectionIF;
-import gov.geoplatform.uasdm.model.DocumentIF;
-import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
-import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
+import gov.geoplatform.uasdm.cog.model.TiTilerStacAssetInfo;
+import gov.geoplatform.uasdm.cog.model.TiTilerStacBandStatistic;
+import gov.geoplatform.uasdm.cog.model.TiTilerStacInfo;
+import gov.geoplatform.uasdm.cog.model.TiTilerStacStatistics;
+import gov.geoplatform.uasdm.cog.model.TiTillerBandMetadata;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Uri;
 import software.amazon.awssdk.services.s3.S3Utilities;
 
 public class StacTiTillerProxy extends TiTillerProxy
 {
+  private static final String URL    = "url";
 
-  private String url;
+  private static final String ASSETS = "assets";
 
-  private String assets;
+  private String              url;
+
+  private String              assets;
+
+  private Boolean             multispectral;
+
+  private Boolean             hillshade;
 
   public StacTiTillerProxy(String url, String assets)
   {
+    this(url, assets, false, false);
+  }
+
+  public StacTiTillerProxy(String url, String assets, Boolean multispectral, Boolean hillshade)
+  {
     this.url = url;
     this.assets = assets;
+    this.multispectral = multispectral;
+    this.hillshade = hillshade;
   }
 
   public InputStream tiles(String matrixSetId, Integer z, Integer x, Integer y, Integer scale, String format, MultiValueMap<String, String> queryParams)
@@ -67,7 +79,7 @@ public class StacTiTillerProxy extends TiTillerProxy
     parameters.put("url", Arrays.asList(this.url));
     parameters.put("assets", Arrays.asList(this.assets));
 
-    passThroughParams(queryParams, parameters, new String[] { "asset_bidx", "rescale", "resampling", "color_formula", "colormap_name", "colormap", "return_mask" });
+    passThroughParams(queryParams, parameters, new String[] { "algorithm", "buffer", "asset_bidx", "rescale", "resampling", "color_formula", "colormap_name", "colormap", "return_mask" });
 
     try
     {
@@ -90,28 +102,25 @@ public class StacTiTillerProxy extends TiTillerProxy
         .region(Region.of(AppProperties.getBucketRegion())) //
         .build();
     S3Uri s3Uri = s3Utilities.parseUri(URI.create(this.url));
-    
+
     // Update the download count
     // We know that the filename of the stac json is the product id. So parse
     // out that id, fetch the product, and increment the count
     String key = s3Uri.key().orElseThrow(() -> {
       GenericException ex = new GenericException();
       ex.setUserMessage("Unabled to parse key from url: " + this.url);
-      
+
       return ex;
     });
 
-    String productId = key.substring(S3RemoteFileService.STAC_BUCKET.length() + 1, key.length() - 5);
-    Product product = Product.get(productId);
-    if (product != null)
+    if (this.multispectral)
     {
-      UasComponent component = product.getComponent();
-      if (component instanceof Collection)
-      {
-        CollectionReportFacade.updateDownloadCount((CollectionIF) component).doIt();
-
-        addMultispectralRGBParamsForStac(product, (Collection) component, parameters);
-      }
+      this.calculateAndRescaleMultiBands(parameters);
+    }
+    else if (this.hillshade)
+    {
+      parameters.put("algorithm", Arrays.asList("hillshade"));
+      parameters.put("colormap_name", Arrays.asList("terrain"));
     }
 
     parameters.put("url", Arrays.asList(this.url));
@@ -147,43 +156,108 @@ public class StacTiTillerProxy extends TiTillerProxy
     }
   }
 
-  protected void addMultispectralRGBParamsForStac(Product product, Collection collection, Map<String, List<String>> parameters)
+  protected void calculateAndRescaleSingleBand(Map<String, List<String>> parameters)
   {
-    if ( ( collection ).isMultiSpectral() && assets.length() > 0 && assets.contains("odm_orthophoto"))
-    {
-      DocumentIF document = product.getMappableOrtho().get();
+    this.getStacInfo().ifPresent(info -> {
+      TiTilerStacAssetInfo asset = info.getAsset(this.assets);
 
-      TitilerCogInfo info = this.getCogInfo(document);
-      if (info != null)
-      {
-        int redIdx = info.getColorinterp().indexOf("red");
-        int greenIdx = info.getColorinterp().indexOf("green");
-        int blueIdx = info.getColorinterp().indexOf("blue");
+      final TiTillerBandMetadata metadata = asset.getBandMetadata().get(0);
 
-        if (redIdx != -1 && greenIdx != -1 && blueIdx != -1)
+      this.getStacStatistics().ifPresent(stats -> {
+
+        // parameters.put("asset_bidx", Arrays.asList(this.assets + "|" +
+        // String.valueOf(1)));
+
+        List<TiTilerStacBandStatistic> bands = Arrays.asList( //
+            stats.getAssetBand(this.assets + "_" + metadata.getName()) //
+        );
+
+        Optional<Double> max = bands.stream().filter(b -> b != null).map(b -> b.getMax()).reduce((a, b) -> Math.max(a, b));
+        Optional<Double> min = bands.stream().filter(b -> b != null).map(b -> b.getMin()).reduce((a, b) -> Math.min(a, b));
+
+        if (min.isPresent() && max.isPresent())
         {
-          redIdx++;
-          greenIdx++;
-          blueIdx++;
-
-          parameters.put("asset_bidx", Arrays.asList(assets + "|" + String.valueOf(redIdx) + "," + String.valueOf(greenIdx) + "," + String.valueOf(blueIdx)));
-
-          TitilerCogStatistics stats = this.getCogStatistics(document);
-          TitilerCogBandStatistic redStat = stats.getBandStatistic(String.valueOf(redIdx));
-          TitilerCogBandStatistic greenStat = stats.getBandStatistic(String.valueOf(greenIdx));
-          TitilerCogBandStatistic blueStat = stats.getBandStatistic(String.valueOf(blueIdx));
-
-          Double min = Math.min(redStat.getMin(), Math.min(greenStat.getMin(), blueStat.getMin()));
-          Double max = Math.max(redStat.getMax(), Math.max(greenStat.getMax(), blueStat.getMax()));
-
-          // min = (min < 0) ? 0 : min; // TODO : No idea how the min value
-          // could be negative. But it's happening on my sample data and it
-          // doesn't render properly if it is.
-
-          parameters.put("rescale", Arrays.asList(String.valueOf(min) + "," + String.valueOf(max)));
+          parameters.put("rescale", Arrays.asList(String.valueOf(min.get()) + "," + String.valueOf(max.get())));
         }
+      });
+    });
+  }
+
+  protected void calculateAndRescaleMultiBands(Map<String, List<String>> parameters)
+  {
+    this.getStacInfo().ifPresent(info -> {
+      TiTilerStacAssetInfo asset = info.getAsset(this.assets);
+
+      AtomicInteger redIdx = new AtomicInteger(asset.getColorinterp().indexOf("red"));
+      AtomicInteger greenIdx = new AtomicInteger(asset.getColorinterp().indexOf("green"));
+      AtomicInteger blueIdx = new AtomicInteger(asset.getColorinterp().indexOf("blue"));
+
+      if (redIdx.intValue() != -1 && greenIdx.intValue() != -1 && blueIdx.intValue() != -1)
+      {
+        final TiTillerBandMetadata redMetadata = asset.getBandMetadata().get(redIdx.get());
+        final TiTillerBandMetadata greenMetadata = asset.getBandMetadata().get(greenIdx.get());
+        final TiTillerBandMetadata blueMetadata = asset.getBandMetadata().get(blueIdx.get());
+
+        this.getStacStatistics().ifPresent(stats -> {
+
+          parameters.put("asset_bidx", Arrays.asList(this.assets + "|" + String.valueOf(redIdx.intValue() + 1) + "," + String.valueOf(greenIdx.intValue() + 1) + "," + String.valueOf(blueIdx.intValue() + 1)));
+
+          List<TiTilerStacBandStatistic> bands = Arrays.asList( //
+              stats.getAssetBand(this.assets + "_" + redMetadata.getName()), //
+              stats.getAssetBand(this.assets + "_" + greenMetadata.getName()), //
+              stats.getAssetBand(this.assets + "_" + blueMetadata.getName()));
+
+          Optional<Double> max = bands.stream().filter(b -> b != null).map(b -> b.getMax()).reduce((a, b) -> Math.max(a, b));
+          Optional<Double> min = bands.stream().filter(b -> b != null).map(b -> b.getMin()).reduce((a, b) -> Math.min(a, b));
+
+          if (min.isPresent() && max.isPresent())
+          {
+            parameters.put("rescale", Arrays.asList(String.valueOf(min.get()) + "," + String.valueOf(max.get())));
+          }
+        });
       }
+    });
+  }
+
+  public Optional<TiTilerStacInfo> getStacInfo()
+  {
+    try
+    {
+      Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
+      parameters.put(URL, Arrays.asList(url));
+      parameters.put(ASSETS, Arrays.asList(this.assets));
+
+      InputStream stream = authenticatedInvokeURL(new URI(AppProperties.getTitilerUrl()), "/stac/info", parameters);
+
+      ObjectMapper mapper = new ObjectMapper();
+
+      return Optional.ofNullable(mapper.readValue(stream, TiTilerStacInfo.class));
+    }
+    catch (URISyntaxException | IOException e)
+    {
+      throw new ProgrammingErrorException(e);
     }
   }
 
+  public Optional<TiTilerStacStatistics> getStacStatistics()
+  {
+    try
+    {
+      Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
+      parameters.put(URL, Arrays.asList(url));
+      parameters.put(ASSETS, Arrays.asList(this.assets));
+
+      try (InputStream stream = authenticatedInvokeURL(new URI(AppProperties.getTitilerUrl()), "/stac/statistics", parameters))
+      {
+        ObjectMapper mapper = new ObjectMapper();
+
+        return Optional.ofNullable(mapper.readValue(stream, TiTilerStacStatistics.class));
+      }
+    }
+    catch (URISyntaxException | IOException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+
+  }
 }

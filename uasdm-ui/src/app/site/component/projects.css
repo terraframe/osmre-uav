@@ -3,15 +3,15 @@
  */
 
 h3.object-label {
-	margin: 10px;
+  margin: 10px;
 }
 
 .sidebar {
-	flex-basis: 25%
+  flex-basis: 25%
 }
 
 .main {
-	flex-basis: 75%
+  flex-basis: 75%
 }
 
 
@@ -27,4 +27,16 @@ button.advanced-filter .fa {
   font-size: 0.75rem;
   line-height: 1;
   margin-right: 0.2rem;
+}
+
+.fa-stack:hover .fa {
+  color: #00bfff;
+}
+
+.inverse {
+  color: #fff;
+}
+
+.inverse:hover {
+  color: #00bfff;
 }

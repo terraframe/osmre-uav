@@ -13,41 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gov.geoplatform.uasdm.model;
+package gov.geoplatform.uasdm.cog.model;
 
-public class StacOrganization
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
+@JsonPropertyOrder({ "name", "metadata" })
+public class TiTillerBandMetadata
 {
-  private String label;
+  public String              name;
 
-  private String code;
+  public Map<String, String> metadata;
 
-  public String getLabel()
+  public String getName()
   {
-    return label;
+    return name;
   }
 
-  public void setLabel(String label)
+  public void setName(String name)
   {
-    this.label = label;
+    this.name = name;
   }
 
-  public String getCode()
+  public Map<String, String> getMetadata()
   {
-    return code;
+    return metadata;
   }
 
-  public void setCode(String code)
+  public void setMetadata(Map<String, String> metadata)
   {
-    this.code = code;
-  }
-
-  public static StacOrganization build(String code, String label)
-  {
-    StacOrganization location = new StacOrganization();
-    location.setCode(code);
-    location.setLabel(label);
-
-    return location;
+    this.metadata = metadata;
   }
 
 }

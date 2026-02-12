@@ -4,13 +4,14 @@
 
 import { Component, OnInit, Input, OnDestroy, Inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Clipboard } from '@angular/cdk/clipboard';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Subject } from 'rxjs';
 
 import { ErrorHandler, BasicConfirmModalComponent } from '@shared/component';
 
-import { ProcessConfig, SiteEntity, SiteObjectsResultSet } from '@site/model/management';
+import { SiteEntity, SiteObjectsResultSet } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 import { MetadataService } from '@site/service/metadata.service';
 import { MetadataModalComponent } from './metadata-modal.component';
@@ -27,7 +28,6 @@ import { environment } from 'src/environments/environment';
 import { NgIf, NgFor, NgClass } from '@angular/common';
 import { CreateProductGroupModalComponent } from './create-product-group-modal.component';
 import { UserAccessModalComponent } from './user-access-modal.component';
-import { AuthService } from '@shared/service/auth.service';
 import { ImagePreviewModalComponent } from './image-preview-modal.component';
 import { TusUploadModalComponent } from './tus-upload-modal.component';
 import { COLLECTION_FORMATS } from '@site/model/sensor';
@@ -96,7 +96,8 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		private metadataService: MetadataService,
 		private modalService: BsModalService,
 		public bsModalRef: BsModalRef,
-		private websocketService: WebsocketService
+		private websocketService: WebsocketService,
+		private clipboard: Clipboard
 	) {
 		this.context = environment.apiUrl;
 
@@ -448,6 +449,11 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	closeVideo(): void {
 		this.video.name = null;
 		this.video.src = null;
+	}
+
+	copyLocation() {
+
+		this.clipboard.copy(window.location.href);
 	}
 
 	error(err: HttpErrorResponse): void {

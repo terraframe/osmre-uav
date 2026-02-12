@@ -174,8 +174,8 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 			// Assign the default asset for all stac items
 			this.page.resultSet.forEach(item => {
 				if (item.asset == null) {
-					if (item.assets['odm_orthophoto.cog'] != null) {
-						item.asset = 'odm_orthophoto.cog';
+					if (item.assets['odm_orthophoto_cog'] != null) {
+						item.asset = 'odm_orthophoto_cog';
 					}
 					else {
 						const keys = Object.keys(item.assets);
