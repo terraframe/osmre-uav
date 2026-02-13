@@ -19,7 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.apache.commons.io.FilenameUtils;
 import org.json.JSONArray;

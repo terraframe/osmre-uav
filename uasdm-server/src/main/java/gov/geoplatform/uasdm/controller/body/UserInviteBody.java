@@ -15,7 +15,7 @@
  */
 package gov.geoplatform.uasdm.controller.body;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.gson.JsonArray;

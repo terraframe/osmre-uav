@@ -15,7 +15,7 @@
  */
 package gov.geoplatform.uasdm.controller.body;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.lang.Nullable;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -27,7 +27,7 @@ import net.geoprism.spring.core.JsonObjectDeserializer;
 
 public class UserBody
 {
-  @NotEmpty
+  @NotBlank
   @JsonDeserialize(using = JsonObjectDeserializer.class)
   private JsonObject account;
 

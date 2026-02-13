@@ -15,11 +15,11 @@
  */
 package gov.geoplatform.uasdm.controller.body;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 
 public class IdBody
 {
-  @NotEmpty
+  @NotBlank
   private String id;
 
   public String getId()

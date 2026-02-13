@@ -17,7 +17,7 @@ package gov.geoplatform.uasdm.controller;
 
 import java.util.Date;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -37,7 +37,7 @@ public abstract class AbstractController
 {
   public static class OidBody
   {
-    @NotEmpty
+    @NotBlank
     private String oid;
 
     public String getOid()

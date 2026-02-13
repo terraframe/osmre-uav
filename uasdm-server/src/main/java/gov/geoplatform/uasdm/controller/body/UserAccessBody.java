@@ -15,14 +15,14 @@
  */
 package gov.geoplatform.uasdm.controller.body;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 
 public class UserAccessBody
 {
-  @NotEmpty
+  @NotBlank
   private String componentId;
 
-  @NotEmpty
+  @NotBlank
   private String identifier;
 
   public String getComponentId()
