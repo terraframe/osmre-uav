@@ -2,6 +2,7 @@ package gov.geoplatform.uasdm.processing;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.ProcessingRun;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.odm.EmptyFileSetException;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.odm.ODMTaskProcessor.TaskResult;
@@ -261,6 +263,8 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
         documents = ((Collection) component).getRaw();
     else
         documents = component.getDocuments();
+    
+    documents = documents.stream().filter(d -> !d.getExclude()).collect(Collectors.toList());
 
     long totalBytes = 0L;
     for (var doc : documents) {
@@ -297,7 +301,8 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
       ContainerOverride containerOverride = ContainerOverride.builder()
           .name(AppProperties.getFargateAutoscalerContainerName())
           .environment(
-              KeyValuePair.builder().name("EXCLUDES").value(String.join(",", excludes)).build(), // TODO : Support for in dockerfile
+              KeyValuePair.builder().name("EXCLUDES").value(String.join(",", excludes)).build(),
+              KeyValuePair.builder().name("JOB_ID").value(this.getOid()).build(),
               KeyValuePair.builder().name("S3_COMPONENT").value(component.getS3location()).build(),
               KeyValuePair.builder().name("AWS_REGION").value(region.id()).build(),
               KeyValuePair.builder().name("AWS_ACCESS_KEY_ID").value(AppProperties.getS3AccessKey()).build(),

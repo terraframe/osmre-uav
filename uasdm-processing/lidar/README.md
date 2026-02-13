@@ -6,7 +6,7 @@ Standalone container, compatible with IDM's reusable fargate autoscaling, which 
 
 ## How to Run?
 
-1. First, run 'aws configure' and give it credentials to access IDM's aws workspace
+1. First, set AWS credentials to access IDM's aws workspace
 
 export AWS_ACCESS_KEY_ID=$UASDM_S3_KEY
 export AWS_SECRET_ACCESS_KEY=$UASDM_S3_SECRET
@@ -17,16 +17,8 @@ sudo docker build -t uasdm-lidar .
 
 sudo -E docker run --rm \
   -e AWS_REGION=us-west-2 \
-  -e S3_INPUT_URI="s3://osmre-uas-dev/lidar/lidar/lidar/lidar/raw/autzen.copc.laz" \
-  -e S3_OUTPUT_URI="s3://osmre-uas-dev/lidartesting/" \
+  -e S3_COMPONENT="s3://osmre-uas-dev/lidar/lidar/lidar/lidar" \
+  -e JOB_ID="9f3c2e6b-7a4d-4c91-b8f2-6e5d1a0c3f77" \
   -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
   uasdm-lidar
-
-
-
-docker run --rm \
-  --entrypoint /usr/bin/env \
-  -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
-  -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
-  uasdm-lidar | grep -E '^AWS_'
 
