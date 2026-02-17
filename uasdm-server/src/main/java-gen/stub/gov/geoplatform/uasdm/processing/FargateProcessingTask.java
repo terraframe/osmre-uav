@@ -1,30 +1,38 @@
 package gov.geoplatform.uasdm.processing;
 
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 import com.runwaysdk.RunwayException;
+import com.runwaysdk.resource.CloseableFile;
+import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.ProcessingRun;
+import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.ProductIF;
+import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.EmptyFileSetException;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.odm.ODMTaskProcessor.TaskResult;
 import gov.geoplatform.uasdm.odm.ODMTaskProcessor.TaskStatus;
 import gov.geoplatform.uasdm.odm.ProcessingTaskStatusServer;
-import gov.geoplatform.uasdm.odm.UnreachableHostException;
-import gov.geoplatform.uasdm.service.ODMRunService;
+import gov.geoplatform.uasdm.remote.RemoteFileFacade;
+import gov.geoplatform.uasdm.remote.RemoteFileObject;
+import gov.geoplatform.uasdm.view.SiteObject;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
@@ -44,6 +52,8 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
 {
   @SuppressWarnings("unused")
   private static final long serialVersionUID = -377855652;
+  
+  public static final String JOBS = "jobs";
   
   private static final Logger logger = LoggerFactory.getLogger(FargateProcessingTask.class);
   
@@ -180,10 +190,10 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
       }
 
       var task = resp.tasks().get(0);
-      String lastStatus = task.lastStatus(); // PROVISIONING, PENDING, ACTIVATING, RUNNING, STOPPED, etc.
+      String lastStatus = task.lastStatus().toUpperCase(); // PROVISIONING, PENDING, ACTIVATING, RUNNING, STOPPED, etc.
 
       // Still running (or not yet started)
-      if (!"STOPPED".equalsIgnoreCase(lastStatus))
+      if (!List.of("STOPPED", "DELETED", "DEPROVISIONING", "STOPPING", "DEACTIVATING").contains(lastStatus))
       {
         this.appLock();
         this.setStatus(ODMStatus.RUNNING.getLabel());
@@ -361,6 +371,81 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
       resp.addProperty("taskArn", taskArn);
 
       return resp;
+    }
+  }
+
+  public TaskResult poll()
+  {
+    TaskResult result = checkStatus();
+    
+    final String jobKey = JOBS + "/" + this.getOid();
+    
+    if (result.getStatus().equals(TaskStatus.FINALIZING))
+    {
+      final StatusMonitorIF monitor = new WorkflowTaskMonitor(this);
+      final UasComponentIF component = getComponentInstance();
+      final ProcessConfiguration config = this.getConfiguration();
+      final Product product = (Product) component.createProductIfNotExist(config.getProductName());
+      
+      List<SiteObject> items = RemoteFileFacade.getSiteObjects(component, jobKey, new LinkedList<SiteObject>(), null, null).getObjects();
+      
+      handleArtifact(".*\\.copc\\.laz", ImageryComponent.PTCLOUD + "/pointcloud.copc.laz", config.toLidar().isGenerateCopc(), items, product, component, monitor);
+      handleArtifact("m_Classification_veg_density.cog.tif", ImageryComponent.ORTHO + "/m_Classification_veg_density.cog.tif", config.toLidar().isGenerateTreeCanopyCover(), items, product, component, monitor);
+      handleArtifact("m_Z_diff.cog.tif", ImageryComponent.ORTHO + "/m_Z_diff.cog.tif", config.toLidar().isGenerateTreeStructure(), items, product, component, monitor);
+      handleArtifact("m_Z_max.cog.tif", ImageryComponent.ORTHO + "/m_Z_max.cog.tif", config.toLidar().isGenerateGSM(), items, product, component, monitor);
+      handleArtifact("m_Z_min.cog.tif", ImageryComponent.ORTHO + "/m_Z_min.cog.tif", config.toLidar().isGenerateTerrainModel(), items, product, component, monitor);
+      
+      // Designate a primary product if it makes sense
+      designatePrimaryProduct(component, config);
+
+      this.appLock();
+      this.setStatus(ODMStatus.COMPLETED.getLabel());
+      this.setMessage("Lidar processing is complete");
+      this.apply();
+      
+      RemoteFileFacade.deleteObjects(jobKey);
+    } else if (result.getStatus().equals(TaskStatus.ERROR)) {
+      this.appLock();
+      this.setStatus(ODMStatus.FAILED.getLabel());
+      this.setMessage("Lidar processing encountered errors. View messages for more information.");
+      this.apply();
+      
+      RemoteFileFacade.deleteObjects(jobKey);
+    }
+    
+    return result;
+  }
+  
+  private void handleArtifact(String regex, String s3Path, boolean required, List<SiteObject> items, Product product, UasComponentIF component, StatusMonitorIF monitor) {
+    for (var item : items) {
+      if (item.getName().matches(regex)) {
+        manageRemote(s3Path, item, product, component, monitor);
+        return;
+      }
+    }
+    
+    if (required) {
+      this.createAction("Processing job did not generated expected file [" + s3Path + "]", TaskActionType.ERROR);
+    }
+  }
+  
+  private void designatePrimaryProduct(UasComponentIF component, ProcessConfiguration config) {
+    if (component.getPrimaryProduct().isEmpty()) {
+      for (ProductIF product : component.getProducts()) {
+        if (!product.getProductName().equals(config.getProductName()) && product.getProductName().contains(config.getProductName())) {
+          ((Product)product).setPrimary(true);
+          ((Product)product).apply();
+          break;
+        }
+      }
+    }
+  }
+  
+  private void manageRemote(String s3Path, SiteObject item, Product product, UasComponentIF component, StatusMonitorIF monitor) {
+    RemoteFileObject remote = RemoteFileFacade.download(item.getKey());
+    
+    try(CloseableFile downloaded = remote.openNewFile()) {
+      new ManagedDocument(s3Path, product, component, monitor).process(new FileResource(downloaded));
     }
   }
 }

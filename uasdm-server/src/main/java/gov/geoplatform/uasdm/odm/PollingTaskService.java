@@ -218,7 +218,11 @@ public class PollingTaskService implements TaskService
         }
         else if (task instanceof FargateProcessingTask)
         {
-          ((FargateProcessingTask)task).checkStatus();
+          TaskResult result = ((FargateProcessingTask)task).poll();
+          
+          if (!result.getStatus().equals(TaskStatus.ACTIVE)) {
+            it.remove();
+          }
         }
         else
         {
