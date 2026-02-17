@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.cog;
 
@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.util.MultiValueMap;
@@ -36,15 +37,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.cog.model.TiTilerStacAssetInfo;
 import gov.geoplatform.uasdm.cog.model.TiTilerStacBandStatistic;
 import gov.geoplatform.uasdm.cog.model.TiTilerStacInfo;
 import gov.geoplatform.uasdm.cog.model.TiTilerStacStatistics;
 import gov.geoplatform.uasdm.cog.model.TiTillerBandMetadata;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.S3Uri;
-import software.amazon.awssdk.services.s3.S3Utilities;
 
 public class StacTiTillerProxy extends TiTillerProxy
 {
@@ -58,18 +55,21 @@ public class StacTiTillerProxy extends TiTillerProxy
 
   private Boolean             multispectral;
 
+  private Boolean             thermal;
+
   private Boolean             hillshade;
 
   public StacTiTillerProxy(String url, String assets)
   {
-    this(url, assets, false, false);
+    this(url, assets, false, false, false);
   }
 
-  public StacTiTillerProxy(String url, String assets, Boolean multispectral, Boolean hillshade)
+  public StacTiTillerProxy(String url, String assets, Boolean multispectral, Boolean thermal, Boolean hillshade)
   {
     this.url = url;
     this.assets = assets;
     this.multispectral = multispectral;
+    this.thermal = thermal;
     this.hillshade = hillshade;
   }
 
@@ -98,24 +98,13 @@ public class StacTiTillerProxy extends TiTillerProxy
   {
     Map<String, List<String>> parameters = new LinkedHashMap<String, List<String>>();
 
-    S3Utilities s3Utilities = S3Utilities.builder() //
-        .region(Region.of(AppProperties.getBucketRegion())) //
-        .build();
-    S3Uri s3Uri = s3Utilities.parseUri(URI.create(this.url));
-
-    // Update the download count
-    // We know that the filename of the stac json is the product id. So parse
-    // out that id, fetch the product, and increment the count
-    String key = s3Uri.key().orElseThrow(() -> {
-      GenericException ex = new GenericException();
-      ex.setUserMessage("Unabled to parse key from url: " + this.url);
-
-      return ex;
-    });
-
     if (this.multispectral)
     {
       this.calculateAndRescaleMultiBands(parameters);
+    }
+    else if (this.thermal)
+    {
+      this.calculateAndRescaleSingleBand("red", parameters);
     }
     else if (this.hillshade)
     {
@@ -156,30 +145,40 @@ public class StacTiTillerProxy extends TiTillerProxy
     }
   }
 
-  protected void calculateAndRescaleSingleBand(Map<String, List<String>> parameters)
+  protected void calculateAndRescaleSingleBand(String band, Map<String, List<String>> parameters)
   {
     this.getStacInfo().ifPresent(info -> {
       TiTilerStacAssetInfo asset = info.getAsset(this.assets);
 
-      final TiTillerBandMetadata metadata = asset.getBandMetadata().get(0);
+      int index = StringUtils.isBlank(band) ? 0 : asset.getColorinterp().indexOf(band);
 
-      this.getStacStatistics().ifPresent(stats -> {
+      if (index != -1)
+      {
+        final TiTillerBandMetadata metadata = asset.getBandMetadata().get(index);
 
-        // parameters.put("asset_bidx", Arrays.asList(this.assets + "|" +
-        // String.valueOf(1)));
+        this.getStacStatistics().ifPresent(stats -> {
 
-        List<TiTilerStacBandStatistic> bands = Arrays.asList( //
-            stats.getAssetBand(this.assets + "_" + metadata.getName()) //
-        );
+          parameters.put("asset_bidx", Arrays.asList(this.assets + "|" + String.valueOf( ( index + 1 ))));
 
-        Optional<Double> max = bands.stream().filter(b -> b != null).map(b -> b.getMax()).reduce((a, b) -> Math.max(a, b));
-        Optional<Double> min = bands.stream().filter(b -> b != null).map(b -> b.getMin()).reduce((a, b) -> Math.min(a, b));
+          List<TiTilerStacBandStatistic> bands = Arrays.asList( //
+              stats.getAssetBand(this.assets + "_" + metadata.getName()) //
+          );
 
-        if (min.isPresent() && max.isPresent())
-        {
-          parameters.put("rescale", Arrays.asList(String.valueOf(min.get()) + "," + String.valueOf(max.get())));
-        }
-      });
+          Optional<Double> max = bands.stream().filter(b -> b != null).map(b -> b.getMax()).reduce((a, b) -> Math.max(a, b));
+          Optional<Double> min = bands.stream().filter(b -> b != null).map(b -> b.getMin()).reduce((a, b) -> Math.min(a, b));
+
+          if (min.isPresent() && max.isPresent())
+          {
+            Double minValue = min.get();
+            Double maxValue = max.get();
+
+            if (!minValue.equals(maxValue))
+            {
+              parameters.put("rescale", Arrays.asList(String.valueOf(minValue) + "," + String.valueOf(maxValue)));
+            }
+          }
+        });
+      }
     });
   }
 
@@ -212,7 +211,13 @@ public class StacTiTillerProxy extends TiTillerProxy
 
           if (min.isPresent() && max.isPresent())
           {
-            parameters.put("rescale", Arrays.asList(String.valueOf(min.get()) + "," + String.valueOf(max.get())));
+            Double minValue = min.get();
+            Double maxValue = max.get();
+
+            if (!minValue.equals(maxValue))
+            {
+              parameters.put("rescale", Arrays.asList(String.valueOf(minValue) + "," + String.valueOf(maxValue)));
+            }
           }
         });
       }

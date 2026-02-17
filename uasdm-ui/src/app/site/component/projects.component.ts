@@ -2071,6 +2071,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         if (asset.roles != null && asset.roles.indexOf('multispectral') !== -1) {
           url += "&multispectral=true";
         }
+        else if (asset.roles != null && asset.roles.indexOf('thermal') !== -1) {
+          url += "&thermal=true";
+        }  
         else if (asset.roles != null && asset.roles.indexOf('elevation') !== -1) {
           url += "&hillshade=true";
         }
@@ -2100,6 +2103,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       else if (asset.roles != null && asset.roles.indexOf('elevation') !== -1) {
         url += "&hillshade=true";
+      }
+      else if (asset.roles != null && asset.roles.indexOf('thermal') !== -1) {
+        url += "&thermal=true";
       }
 
       this.addImageLayer({

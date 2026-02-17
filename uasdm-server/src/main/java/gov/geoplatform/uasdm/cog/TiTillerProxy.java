@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.cog;
 
@@ -422,7 +422,38 @@ public class TiTillerProxy
 
             if (min.isPresent() && max.isPresent())
             {
-              parameters.put("rescale", Arrays.asList(String.valueOf(min.get()) + "," + String.valueOf(max.get())));
+              Double minValue = min.get();
+              Double maxValue = max.get();
+
+              if (!minValue.equals(maxValue))
+              {
+                parameters.put("rescale", Arrays.asList(String.valueOf(minValue) + "," + String.valueOf(maxValue)));
+              }
+            }
+          }
+        }
+      }
+      else if (m != null && m.isThermal() && document.getS3location().matches(Product.MAPPABLE_ORTHO_REGEX))
+      {
+        TitilerCogInfo info = this.getCogInfo(document);
+        TitilerCogStatistics stats = this.getCogStatistics(document);
+
+        if (info != null && stats != null)
+        {
+          int index = info.getColorinterp().indexOf("red");
+
+          if (index != -1)
+          {
+            TiTillerBandMetadata metadata = info.getBandMetadata().get(index);
+            TitilerCogBandStatistic bandStats = stats.getBandStatistic(metadata.getName());
+
+            Double minValue = bandStats.getMin();
+            Double maxValue = bandStats.getMax();
+
+            if (minValue != null && maxValue != null && !minValue.equals(maxValue))
+            {
+              parameters.put("bidx", Arrays.asList(new String[] { String.valueOf( ( index + 1 )) }));
+              parameters.put("rescale", Arrays.asList(String.valueOf(minValue) + "," + String.valueOf(maxValue)));
             }
           }
         }
