@@ -100,11 +100,11 @@ public class StacTiTillerProxy extends TiTillerProxy
 
     if (this.multispectral)
     {
-      this.calculateAndRescaleMultiBands(parameters);
+      this.calculateAndRescaleBands(parameters, "red", "green", "blue");
     }
     else if (this.thermal)
     {
-      this.calculateAndRescaleSingleBand("red", parameters);
+      this.calculateAndRescaleBands(parameters, "red");
     }
     else if (this.hillshade)
     {
@@ -145,24 +145,22 @@ public class StacTiTillerProxy extends TiTillerProxy
     }
   }
 
-  protected void calculateAndRescaleSingleBand(String band, Map<String, List<String>> parameters)
+  protected void calculateAndRescaleBands(Map<String, List<String>> parameters, String... colors)
   {
     this.getStacInfo().ifPresent(info -> {
-      TiTilerStacAssetInfo asset = info.getAsset(this.assets);
+      this.getStacStatistics().ifPresent(stats -> {
 
-      int index = StringUtils.isBlank(band) ? 0 : asset.getColorinterp().indexOf(band);
+        TiTilerStacAssetInfo asset = info.getAsset(this.assets);
 
-      if (index != -1)
-      {
-        final TiTillerBandMetadata metadata = asset.getBandMetadata().get(index);
+        List<Integer> indices = Arrays.asList(colors).stream().map(band -> asset.getColorinterp().indexOf(band)).filter(index -> index != -1).toList();
 
-        this.getStacStatistics().ifPresent(stats -> {
-
-          parameters.put("asset_bidx", Arrays.asList(this.assets + "|" + String.valueOf( ( index + 1 ))));
-
-          List<TiTilerStacBandStatistic> bands = Arrays.asList( //
-              stats.getAssetBand(this.assets + "_" + metadata.getName()) //
-          );
+        if (indices.size() > 0)
+        {
+          List<TiTilerStacBandStatistic> bands = indices.stream() //
+              .map(index -> asset.getBandMetadata().get(index)) //
+              .map(metadata -> stats.getAssetBand(this.assets + "_" + metadata.getName())) //
+              .filter(b -> b != null) //
+              .toList();
 
           Optional<Double> max = bands.stream().filter(b -> b != null).map(b -> b.getMax()).reduce((a, b) -> Math.max(a, b));
           Optional<Double> min = bands.stream().filter(b -> b != null).map(b -> b.getMin()).reduce((a, b) -> Math.min(a, b));
@@ -174,53 +172,13 @@ public class StacTiTillerProxy extends TiTillerProxy
 
             if (!minValue.equals(maxValue))
             {
+              parameters.put("asset_bidx", Arrays.asList(this.assets + "|" + String.join(",", indices.stream().map(i -> Integer.toString( ( i + 1 ))).toList())));
+
               parameters.put("rescale", Arrays.asList(String.valueOf(minValue) + "," + String.valueOf(maxValue)));
             }
           }
-        });
-      }
-    });
-  }
-
-  protected void calculateAndRescaleMultiBands(Map<String, List<String>> parameters)
-  {
-    this.getStacInfo().ifPresent(info -> {
-      TiTilerStacAssetInfo asset = info.getAsset(this.assets);
-
-      AtomicInteger redIdx = new AtomicInteger(asset.getColorinterp().indexOf("red"));
-      AtomicInteger greenIdx = new AtomicInteger(asset.getColorinterp().indexOf("green"));
-      AtomicInteger blueIdx = new AtomicInteger(asset.getColorinterp().indexOf("blue"));
-
-      if (redIdx.intValue() != -1 && greenIdx.intValue() != -1 && blueIdx.intValue() != -1)
-      {
-        final TiTillerBandMetadata redMetadata = asset.getBandMetadata().get(redIdx.get());
-        final TiTillerBandMetadata greenMetadata = asset.getBandMetadata().get(greenIdx.get());
-        final TiTillerBandMetadata blueMetadata = asset.getBandMetadata().get(blueIdx.get());
-
-        this.getStacStatistics().ifPresent(stats -> {
-
-          parameters.put("asset_bidx", Arrays.asList(this.assets + "|" + String.valueOf(redIdx.intValue() + 1) + "," + String.valueOf(greenIdx.intValue() + 1) + "," + String.valueOf(blueIdx.intValue() + 1)));
-
-          List<TiTilerStacBandStatistic> bands = Arrays.asList( //
-              stats.getAssetBand(this.assets + "_" + redMetadata.getName()), //
-              stats.getAssetBand(this.assets + "_" + greenMetadata.getName()), //
-              stats.getAssetBand(this.assets + "_" + blueMetadata.getName()));
-
-          Optional<Double> max = bands.stream().filter(b -> b != null).map(b -> b.getMax()).reduce((a, b) -> Math.max(a, b));
-          Optional<Double> min = bands.stream().filter(b -> b != null).map(b -> b.getMin()).reduce((a, b) -> Math.min(a, b));
-
-          if (min.isPresent() && max.isPresent())
-          {
-            Double minValue = min.get();
-            Double maxValue = max.get();
-
-            if (!minValue.equals(maxValue))
-            {
-              parameters.put("rescale", Arrays.asList(String.valueOf(minValue) + "," + String.valueOf(maxValue)));
-            }
-          }
-        });
-      }
+        }
+      });
     });
   }
 
