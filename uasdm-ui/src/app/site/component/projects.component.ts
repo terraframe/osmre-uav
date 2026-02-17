@@ -31,7 +31,7 @@ import {
   fadeInOnEnterAnimation,
   fadeOutOnLeaveAnimation
 } from "angular-animations";
-import { ActivatedRoute, RouterLink } from "@angular/router";
+import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import { CreateCollectionModalComponent } from "./modal/create-collection-modal.component";
 import { CreateStandaloneProductModalComponent } from "./modal/create-standalone-product-group-modal.component";
 import { LayerColor, StacCollection, StacItem, StacLink, StacProperty, ToggleableLayer, ToggleableLayerType } from "@site/model/layer";
@@ -268,7 +268,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     private syncService: LPGSyncService,
     private uploadService: UploadService,
     private websocketService: WebsocketService,
-    private location: Location
+    private location: Location,
+    private router: Router
   ) {
 
     this.subject = new Subject();
@@ -1207,9 +1208,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     if (node != null) {
-      this.location.go('/site/viewer/entity/' + node.id);
+      this.location.replaceState('/site/viewer/entity/' + node.id);
     } else {
-      this.location.go('/site/viewer/');
+      this.location.replaceState('/site/viewer/');
     }
 
     if (node != null && node.geometry != null && node.geometry.type === "Point") {
@@ -1311,7 +1312,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   back(breadcrumb: ViewerSelection): void {
 
     if (breadcrumb == null) {
-      this.location.go('/site/viewer/');
+      this.location.replaceState('/site/viewer/');
 
       if (this.breadcrumbs.length > 0) {
 
@@ -1341,7 +1342,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     else if (breadcrumb.type === SELECTION_TYPE.SITE) {
       const node: SiteEntity = breadcrumb.data as SiteEntity;
 
-      this.location.go('/site/viewer/entity/' + node.id);
+      this.location.replaceState('/site/viewer/entity/' + node.id);
 
       if (node.geometry != null && node.geometry.type === "Point") {
         //this.map.fitBounds(this.allPointsBounds, { padding: 50 });
@@ -1401,7 +1402,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   showLeafModal(collection: SiteEntity, folders: SiteEntity[], breadcrumbs: SiteEntity[]): void {
-    this.location.go('/site/viewer/entity/' + collection.id);
+    this.location.replaceState('/site/viewer/entity/' + collection.id);
 
     if (collection.type === "Mission") {
       this.bsModalRef = this.modalService.show(AccessibleSupportModalComponent, {

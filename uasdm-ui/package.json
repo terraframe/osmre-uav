@@ -37,7 +37,7 @@
 		"bootstrap": "^5.2.3",
 		"file-saver": "2.0.2",
 		"google-libphonenumber": "^3.2.43",
-		"maplibre-gl": "^2.4.0",
+		"maplibre-gl": "^5.18.0",
 		"maplibregl-mapbox-request-transformer": "^0.0.2",
 		"ng2-file-upload": "8.0.0",
 		"ngx-bootstrap": "^19.0.2",
