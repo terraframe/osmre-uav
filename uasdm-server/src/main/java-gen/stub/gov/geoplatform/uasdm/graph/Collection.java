@@ -189,24 +189,30 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
   public CollectionFormat getFormat()
   {
+    var metadata = this.getMetadata().orElse(null);
+    
+    if (metadata != null && metadata.getFormat() != null)
+      return metadata.getFormat();
+
+    // Legacy behaviour here. At some point we should remove this attribute.
     if (StringUtils.isBlank(this.getSCollectionFormat()))
       return null;
 
     return CollectionFormat.valueOf(this.getSCollectionFormat());
   }
 
-  public void setFormat(CollectionFormat format)
-  {
-    this.setSCollectionFormat(format == null ? null : format.name());
-  }
-
-  public void setFormat(String format)
-  {
-    if (format != null)
-      CollectionFormat.valueOf(format); // validate
-
-    this.setSCollectionFormat(format);
-  }
+//  public void setFormat(CollectionFormat format)
+//  {
+//    this.setSCollectionFormat(format == null ? null : format.name());
+//  }
+//
+//  public void setFormat(String format)
+//  {
+//    if (format != null)
+//      CollectionFormat.valueOf(format); // validate
+//
+//    this.setSCollectionFormat(format);
+//  }
 
   @Override
   public UasComponent createDefaultChild()
@@ -723,14 +729,13 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public boolean isMultiSpectral()
   {
-    var format = this.getFormat();
-    if (format != null)
-    {
-      return format.isMultispectral();
-    }
+    var metadata = this.getMetadata().orElse(null);
+    
+    if (metadata != null && metadata.getFormat() != null)
+      return metadata.getFormat().isMultispectral();
 
     // Maintain legacy behaviour (before collection format existed)
-    return this.getMetadata().map(metadata -> {
+    if (metadata != null) {
       Sensor sensor = metadata.getSensor();
 
       if (sensor == null)
@@ -759,11 +764,10 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
       }
 
       return false;
-    }).orElseGet(() -> {
-      log.error("Unable to find metadata. Returning false for multispectral");
-
-      return false;
-    });
+    }
+    
+    log.error("Unable to find metadata. Returning false for multispectral");
+    return false;
   }
 
   /**
@@ -781,9 +785,10 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public boolean isRadiometric()
   {
-    var format = this.getFormat();
-    if (format != null)
-      return format.isRadiometric();
+    var metadata = this.getMetadata().orElse(null);
+    
+    if (metadata != null && metadata.getFormat() != null)
+      return metadata.getFormat().isRadiometric();
 
     return false;
   }
@@ -791,12 +796,13 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public boolean isLidar()
   {
-    var format = this.getFormat();
-    if (format != null)
-      return format.isLidar();
+    var metadata = this.getMetadata().orElse(null);
+    
+    if (metadata != null && metadata.getFormat() != null)
+      return metadata.getFormat().isLidar();
 
     // Maintain legacy behaviour (before collection format existed)
-    return this.getMetadata().map(metadata -> {
+    if (metadata != null) {
       Sensor sensor = metadata.getSensor();
 
       if (sensor != null)
@@ -805,9 +811,9 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
         return type.isLidar();
       }
-
-      return false;
-    }).orElse(false);
+    }
+    
+    return false;
   }
 
   @Override

@@ -66,7 +66,7 @@ export class CreateStandaloneProductModalComponent implements OnInit, OnDestroy 
 
 	public productGroupName: string;
 
-	public metadata: any = {};
+	public metadata: any = { isNew: true };
 
 	parents: SiteEntity[];
 
@@ -117,6 +117,9 @@ export class CreateStandaloneProductModalComponent implements OnInit, OnDestroy 
 		if ((this.metadata.collectionDate == null || this.metadata.collectionDate.length === 0)) {
 			return false;
 		}
+
+		if ((this.metadata.format == null || this.metadata.format.length == 0))
+			return false;
 
 		return true;
 	}

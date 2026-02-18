@@ -18,6 +18,8 @@ package gov.geoplatform.uasdm.graph;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 
@@ -42,6 +44,27 @@ public class CollectionMetadata extends CollectionMetadataBase implements Compon
     this.apply();
 
     ( (VertexObject) collection ).addChild(this, EdgeType.COLLECTION_HAS_METADATA).apply();
+  }
+  
+  public CollectionFormat getFormat()
+  {
+    if (StringUtils.isBlank(this.getSCollectionFormat()))
+      return null;
+
+    return CollectionFormat.valueOf(this.getSCollectionFormat());
+  }
+
+  public void setFormat(CollectionFormat format)
+  {
+    this.setSCollectionFormat(format == null ? null : format.name());
+  }
+
+  public void setFormat(String format)
+  {
+    if (format != null)
+      CollectionFormat.valueOf(format); // validate
+
+    this.setSCollectionFormat(format);
   }
 
   public List<Product> getProducts()

@@ -105,7 +105,7 @@ public class UploadValidationProcessor
     {
       WorkflowTask collectionWorkflowTask = (WorkflowTask) task;
 
-      var uasc = collectionWorkflowTask.getComponentInstance();
+      UasComponentIF uasc = collectionWorkflowTask.getComponentInstance();
       
       if (uasc instanceof CollectionIF)
       {

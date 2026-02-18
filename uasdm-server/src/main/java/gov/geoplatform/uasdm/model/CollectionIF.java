@@ -101,10 +101,6 @@ public interface CollectionIF extends UasComponentIF
 
   public CollectionFormat getFormat();
   
-  public void setFormat(CollectionFormat format);
-  
-  public void setFormat(String format);
-  
   public Boolean getHasAllZip();
 
   public void setHasAllZip(Boolean b);

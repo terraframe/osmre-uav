@@ -37,6 +37,7 @@ import gov.geoplatform.uasdm.graph.CollectionMetadata;
 import gov.geoplatform.uasdm.graph.Mission;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.Project;
+import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import net.geoprism.GeoprismUser;
 
@@ -138,9 +139,6 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
                 child.setValue(Collection.POCEMAIL, poc.getString(Collection.EMAIL));
               }
             }
-            
-            if (selection.has(Collection.FORMAT))
-              ((CollectionIF)child).setFormat(selection.getString(Collection.FORMAT));
           }
 
           child.applyWithParent(component);
@@ -171,6 +169,8 @@ public interface ImageryWorkflowTaskIF extends AbstractWorkflowTaskIF
   public static CollectionMetadata createMetadata(JSONObject json, UasComponentIF component, Product product, VertexObject vertexHasMetadata, String vertexHasMetadataEdge)
   {
     CollectionMetadata metadata = new CollectionMetadata();
+    
+    metadata.setFormat(json.getString(Collection.FORMAT));
 
     if (json.has(CollectionMetadata.EXIFINCLUDED))
     {

@@ -473,16 +473,4 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     return null;
   }
 
-  @Override
-  public void setFormat(CollectionFormat format)
-  {
-    
-  }
-
-  @Override
-  public void setFormat(String format)
-  {
-    
-  }
-
 }
