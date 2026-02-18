@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -154,13 +154,14 @@ public class ProductTest extends Area51DataTest
     Assert.assertNull(Product.get(product.getOid()));
     Assert.assertNull(Document.get(target.getOid()));
 
-    Thread.sleep(1000); // The QueuedCollectionReportProcessor should come along and clean this up for us.
+    Thread.sleep(1000); // The QueuedCollectionReportProcessor should come along
+                        // and clean this up for us.
     CollectionReport report = CollectionReport.getForCollection(collection).get(0);
 
     Assert.assertEquals(Integer.valueOf(0), report.getNumberOfProducts());
-    
-//    Assert.assertFalse(report.getProductsShared());
-//    Assert.assertNull(report.getProduct());
+
+    // Assert.assertFalse(report.getProductsShared());
+    // Assert.assertNull(report.getProduct());
 
     product = null;
   }
@@ -170,11 +171,11 @@ public class ProductTest extends Area51DataTest
   public void testCollectionReport()
   {
     CollectionReport report = CollectionReport.getForCollection(collection).get(0);
-    
+
     Assert.assertTrue(report.getNumberOfProducts() > 0);
 
-//    Assert.assertFalse(report.getProductsShared());
-//    Assert.assertNotNull(report.getProduct());
+    // Assert.assertFalse(report.getProductsShared());
+    // Assert.assertNotNull(report.getProduct());
   }
 
   @Test
@@ -342,7 +343,7 @@ public class ProductTest extends Area51DataTest
     Assert.assertEquals(collection.getName(), properties.getTitle());
     Assert.assertEquals(collection.getName(), properties.getCollection());
     Assert.assertEquals(collection.getDescription(), properties.getDescription());
-    Assert.assertEquals(product.getLastUpdateDate(), properties.getUpdated());
+    Assert.assertEquals(product.getLastUpdateDate(), properties.getDatetime());
     Assert.assertEquals(sensor.getName(), properties.getSensor());
     Assert.assertEquals(uav.getPlatform().getName(), properties.getPlatform());
     Assert.assertEquals(uav.getFaaNumber(), properties.getFaaNumber());

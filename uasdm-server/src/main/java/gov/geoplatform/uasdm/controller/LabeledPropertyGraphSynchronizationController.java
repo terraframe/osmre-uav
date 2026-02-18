@@ -15,9 +15,9 @@
  */
 package gov.geoplatform.uasdm.controller;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +54,7 @@ public class LabeledPropertyGraphSynchronizationController extends AbstractContr
   private LabeledPropertyGraphTypeVersionServiceIF      vService;
 
   @GetMapping("/page")
-  public ResponseEntity<String> page(@NotEmpty @RequestParam(name = "criteria") String criteria) throws JSONException
+  public ResponseEntity<String> page(@NotBlank @RequestParam(name = "criteria") String criteria) throws JSONException
   {
     JsonObject page = this.service.page(getSessionId(), JsonParser.parseString(criteria).getAsJsonObject());
 
@@ -70,7 +70,7 @@ public class LabeledPropertyGraphSynchronizationController extends AbstractContr
   }
 
   @GetMapping("/get-for-organization")
-  public ResponseEntity<String> getForOrganization(@NotEmpty @RequestParam(name = "organizationCode") String organizationCode) throws JSONException
+  public ResponseEntity<String> getForOrganization(@NotBlank @RequestParam(name = "organizationCode") String organizationCode) throws JSONException
   {
     JsonArray list = this.service.getForOrganization(getSessionId(), organizationCode);
 
@@ -78,7 +78,7 @@ public class LabeledPropertyGraphSynchronizationController extends AbstractContr
   }
 
   @GetMapping("/get")
-  public ResponseEntity<String> get(@NotEmpty @RequestParam(name = "oid") String oid) throws JSONException
+  public ResponseEntity<String> get(@NotBlank @RequestParam(name = "oid") String oid) throws JSONException
   {
     JsonObject response = this.service.get(getSessionId(), oid);
 
@@ -86,7 +86,7 @@ public class LabeledPropertyGraphSynchronizationController extends AbstractContr
   }
 
   @GetMapping("/roots")
-  public ResponseEntity<String> roots(@NotEmpty @RequestParam(name = "oid") String oid, @NotEmpty @RequestParam(name = "includeRoot") Boolean includeRoot) throws JSONException
+  public ResponseEntity<String> roots(@NotBlank @RequestParam(name = "oid") String oid, @NotBlank @RequestParam(name = "includeRoot") Boolean includeRoot) throws JSONException
   {
     JsonObject response = this.service.roots(getSessionId(), oid, includeRoot);
 
@@ -94,7 +94,7 @@ public class LabeledPropertyGraphSynchronizationController extends AbstractContr
   }
 
   @GetMapping("/select")
-  public ResponseEntity<String> select(@NotEmpty @RequestParam(name = "oid") String oid, @NotEmpty @RequestParam(name = "parentType") String parentType, @NotEmpty @RequestParam(name = "parentId") String parentId, @NotEmpty @RequestParam(name = "includeMetadata") Boolean includeMetadata) throws JSONException
+  public ResponseEntity<String> select(@NotBlank @RequestParam(name = "oid") String oid, @NotBlank @RequestParam(name = "parentType") String parentType, @NotBlank @RequestParam(name = "parentId") String parentId, @NotBlank @RequestParam(name = "includeMetadata") Boolean includeMetadata) throws JSONException
   {
     JsonObject response = this.service.select(getSessionId(), oid, parentType, parentId, includeMetadata);
 
@@ -102,7 +102,7 @@ public class LabeledPropertyGraphSynchronizationController extends AbstractContr
   }
 
   @GetMapping("/get-object")
-  public ResponseEntity<String> getObject(@NotEmpty @RequestParam(name = "synchronizationId") String synchronizationId, @NotEmpty @RequestParam(name = "oid") String oid) throws JSONException
+  public ResponseEntity<String> getObject(@NotBlank @RequestParam(name = "synchronizationId") String synchronizationId, @NotBlank @RequestParam(name = "oid") String oid) throws JSONException
   {
     JsonObject response = this.service.getObject(getSessionId(), synchronizationId, oid);
 
@@ -134,7 +134,7 @@ public class LabeledPropertyGraphSynchronizationController extends AbstractContr
   }
 
   @GetMapping("/get-status")
-  public ResponseEntity<String> getStatus(@NotEmpty @RequestParam(name = "oid") String oid)
+  public ResponseEntity<String> getStatus(@NotBlank @RequestParam(name = "oid") String oid)
   {
     JsonObject response = this.service.getStatus(getSessionId(), oid);
 
@@ -158,7 +158,7 @@ public class LabeledPropertyGraphSynchronizationController extends AbstractContr
   }
 
   @GetMapping("/tile")
-  public ResponseEntity<InputStreamResource> tile(@RequestParam(name = "x") Integer x, @RequestParam(name = "y") Integer y, @RequestParam(name = "z") Integer z, @NotEmpty @RequestParam(name = "config") String config) throws JSONException
+  public ResponseEntity<InputStreamResource> tile(@RequestParam(name = "x") Integer x, @RequestParam(name = "y") Integer y, @RequestParam(name = "z") Integer z, @NotBlank @RequestParam(name = "config") String config) throws JSONException
   {
     JSONObject object = new JSONObject(config);
     object.put("x", x);

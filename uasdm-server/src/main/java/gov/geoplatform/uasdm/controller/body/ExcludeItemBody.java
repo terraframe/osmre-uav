@@ -15,9 +15,9 @@
  */
 package gov.geoplatform.uasdm.controller.body;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
-import org.hibernate.validator.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 public class ExcludeItemBody
 {

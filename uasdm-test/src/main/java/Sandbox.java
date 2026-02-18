@@ -178,11 +178,11 @@ public class Sandbox
     System.out.println("Results size: " + results.size());
     
     for(ODMRun run : results) {
-      UasComponent component = run.getComponent();
+//      UasComponent component = run.getComponent();
       
-      int items = RemoteFileFacade.getItemCount(component.getS3location() + ImageryComponent.ORTHO + "/" + run.getOid());
-      
-      System.out.println("Items for version " + component.getS3location() + " - " + run.getOid() + ": " + items);      
+//      int items = RemoteFileFacade.getItemCount(component.getS3location() + ImageryComponent.ORTHO + "/" + run.getOid());
+//      
+//      System.out.println("Items for version " + component.getS3location() + " - " + run.getOid() + ": " + items);      
     }
   }
 //

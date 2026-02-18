@@ -15,11 +15,11 @@
  */
 package gov.geoplatform.uasdm.controller.body;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 
 public class PlatformBody
 {
-  @NotEmpty
+  @NotBlank
   String platform;
 
   public String getPlatform()

@@ -15,14 +15,14 @@
  */
 package gov.geoplatform.uasdm.controller.body;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 
 public class LoginBody
 {
-  @NotEmpty
+  @NotBlank
   String username;
 
-  @NotEmpty
+  @NotBlank
   String password;
 
   public String getUsername()

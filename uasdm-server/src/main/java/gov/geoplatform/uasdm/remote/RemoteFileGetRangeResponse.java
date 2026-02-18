@@ -20,8 +20,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 

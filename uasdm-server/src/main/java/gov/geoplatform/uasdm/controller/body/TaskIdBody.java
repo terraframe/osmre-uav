@@ -15,7 +15,7 @@
  */
 package gov.geoplatform.uasdm.controller.body;
 
-import org.hibernate.validator.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 public class TaskIdBody
 {

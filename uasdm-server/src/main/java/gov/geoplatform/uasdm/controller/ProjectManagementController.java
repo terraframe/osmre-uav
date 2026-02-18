@@ -21,7 +21,7 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.List;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -66,7 +66,6 @@ import gov.geoplatform.uasdm.controller.body.UploadToFolderBody;
 import gov.geoplatform.uasdm.model.InvalidRangeException;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
-import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.remote.BasicFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;

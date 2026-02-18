@@ -55,6 +55,7 @@ import gov.geoplatform.uasdm.bus.LabeledPropertyGraphSynchronizationJobQuery;
 import gov.geoplatform.uasdm.service.business.IDMHierarchyTypeSnapshotBusinessService;
 import gov.geoplatform.uasdm.service.business.IDMLabeledPropertyGraphSynchronizationBusinessService;
 import net.geoprism.graph.GeoObjectTypeSnapshot;
+import net.geoprism.graph.GraphTypeSnapshot;
 import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphType;

@@ -23,10 +23,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -167,7 +167,7 @@ public class UASDMAccountController extends AbstractController
   }
 
   @GetMapping("/page")
-  public ResponseEntity<String> page(@NotEmpty @RequestParam(name = "criteria") String criteria) throws JSONException
+  public ResponseEntity<String> page(@NotBlank @RequestParam(name = "criteria") String criteria) throws JSONException
   {
     JSONObject response = this.service.page(this.getClientRequest().getSessionId(), new JSONObject(criteria));
 

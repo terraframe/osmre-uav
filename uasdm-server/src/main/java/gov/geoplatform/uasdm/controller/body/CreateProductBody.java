@@ -15,14 +15,14 @@
  */
 package gov.geoplatform.uasdm.controller.body;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 
 public class CreateProductBody
 {
-  @NotEmpty
+  @NotBlank
   private String collectionId;
 
-  @NotEmpty
+  @NotBlank
   private String productName;
 
   public String getCollectionId()

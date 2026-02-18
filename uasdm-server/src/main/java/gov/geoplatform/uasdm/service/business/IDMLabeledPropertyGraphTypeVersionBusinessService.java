@@ -1,27 +1,28 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.service.business;
 
-import gov.geoplatform.uasdm.LPGGeometry;
-import net.geoprism.registry.service.business.GeoObjectTypeSnapshotBusinessServiceIF;
+import org.commongeoregistry.adapter.constants.DefaultAttribute;
 import org.commongeoregistry.adapter.dataaccess.LocalizedValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.runwaysdk.ComponentIF;
 import com.runwaysdk.business.rbac.Operation;
@@ -33,18 +34,28 @@ import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.query.QueryFactory;
+import com.runwaysdk.session.Session;
 import com.runwaysdk.system.metadata.MdGraphClassQuery;
 import com.runwaysdk.system.metadata.MdVertex;
 
+import gov.geoplatform.uasdm.LPGGeometry;
 import gov.geoplatform.uasdm.graph.Site;
 import gov.geoplatform.uasdm.graph.SynchronizationEdge;
 import gov.geoplatform.uasdm.service.IndexService;
+import net.geoprism.graph.GeoObjectTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphType;
 import net.geoprism.graph.LabeledPropertyGraphTypeEntry;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
 import net.geoprism.rbac.RoleConstants;
 import net.geoprism.registry.RegistryConstants;
 import net.geoprism.registry.conversion.LocalizedValueConverter;
+import net.geoprism.registry.model.ClassificationType;
+import net.geoprism.registry.service.business.BusinessEdgeTypeSnapshotBusinessServiceIF;
+import net.geoprism.registry.service.business.BusinessTypeSnapshotBusinessServiceIF;
+import net.geoprism.registry.service.business.ClassificationBusinessServiceIF;
+import net.geoprism.registry.service.business.ClassificationTypeBusinessServiceIF;
+import net.geoprism.registry.service.business.GeoObjectTypeSnapshotBusinessServiceIF;
+import net.geoprism.registry.service.business.GraphTypeSnapshotBusinessServiceIF;
 import net.geoprism.registry.service.business.LabeledPropertyGraphTypeVersionBusinessService;
 import net.geoprism.registry.service.business.LabeledPropertyGraphTypeVersionBusinessServiceIF;
 
@@ -57,10 +68,28 @@ public class IDMLabeledPropertyGraphTypeVersionBusinessService extends LabeledPr
   public static final String                               SPLIT  = "__";
 
   @Autowired
+  private GeoObjectTypeSnapshotBusinessServiceIF           objectService;
+
+  @Autowired
+  private BusinessTypeSnapshotBusinessServiceIF            businessService;
+
+  @Autowired
+  private BusinessEdgeTypeSnapshotBusinessServiceIF        bEdgeTypeService;
+
+  @Autowired
+  private GraphTypeSnapshotBusinessServiceIF               graphService;
+
+  @Autowired
+  private ClassificationBusinessServiceIF                  classificationService;
+
+  @Autowired
+  private ClassificationTypeBusinessServiceIF              typeService;
+
+  @Autowired
   private LabeledPropertyGraphTypeVersionBusinessServiceIF versionService;
 
   @Autowired
-  private GeoObjectTypeSnapshotBusinessServiceIF gTypeService;
+  private GeoObjectTypeSnapshotBusinessServiceIF           gTypeService;
 
   @Override
   @Transaction
@@ -74,9 +103,9 @@ public class IDMLabeledPropertyGraphTypeVersionBusinessService extends LabeledPr
     }
 
     LPGGeometry.delete(version);
-    
+
     super.delete(version);
-    
+
     IndexService.deleteDocuments(version);
   }
 
@@ -94,7 +123,75 @@ public class IDMLabeledPropertyGraphTypeVersionBusinessService extends LabeledPr
   @Transaction
   public LabeledPropertyGraphTypeVersion create(LabeledPropertyGraphTypeEntry entry, JsonObject json)
   {
-    LabeledPropertyGraphTypeVersion version = super.create(entry, json);
+    // Handle classification definitions
+    JsonArray classifications = json.has("classifications") ? json.get("classifications").getAsJsonArray() : new JsonArray();
+
+    for (JsonElement element : classifications)
+    {
+      JsonObject classificationObject = element.getAsJsonObject();
+      JsonObject classificationType = classificationObject.get("type").getAsJsonObject();
+
+      String code = classificationType.get(DefaultAttribute.CODE.getName()).getAsString();
+
+      // If a type doesn't exist create it
+      if (this.typeService.getByCode(code, false) == null)
+      {
+        classificationType.remove(LabeledPropertyGraphTypeVersion.OID);
+
+        ClassificationType type = this.typeService.apply(classificationType);
+
+        // Refresh permissions in case new definitions were defined during the
+        // synchronization process
+        Session session = (Session) Session.getCurrentSession();
+
+        if (session != null)
+        {
+          session.reloadPermissions();
+        }
+
+        this.classificationService.importJsonTree(type, null, classificationObject.get("tree").getAsJsonObject());
+      }
+
+    }
+
+    LabeledPropertyGraphType graphType = entry.getGraphType();
+
+    LabeledPropertyGraphTypeVersion version = new LabeledPropertyGraphTypeVersion();
+    version.setEntry(entry);
+    version.setGraphType(graphType);
+    version.setForDate(entry.getForDate());
+    version.setVersionNumber(json.get(LabeledPropertyGraphTypeVersion.VERSIONNUMBER).getAsInt());
+    version.apply();
+
+    GeoObjectTypeSnapshot rootSnapshot = this.objectService.createRoot(version);
+
+    JsonArray types = json.has("types") ? json.get("types").getAsJsonArray() : new JsonArray();
+
+    for (JsonElement element : types)
+    {
+      this.objectService.create(version, element.getAsJsonObject());
+    }
+
+    JsonArray businessTypes = json.has("businessTypes") ? json.get("businessTypes").getAsJsonArray() : new JsonArray();
+
+    for (JsonElement element : businessTypes)
+    {
+      this.businessService.create(version, element.getAsJsonObject());
+    }
+
+    JsonArray graphTypes = json.has("graphTypes") ? json.get("graphTypes").getAsJsonArray() : new JsonArray();
+
+    for (JsonElement element : graphTypes)
+    {
+      this.graphService.create(version, element.getAsJsonObject(), rootSnapshot);
+    }
+
+    JsonArray businessEdges = json.has("businessEdges") ? json.get("businessEdges").getAsJsonArray() : new JsonArray();
+
+    for (JsonElement element : businessEdges)
+    {
+      this.bEdgeTypeService.create(version, element.getAsJsonObject());
+    }
 
     if (SynchronizationEdge.get(version) == null)
     {
@@ -126,8 +223,6 @@ public class IDMLabeledPropertyGraphTypeVersionBusinessService extends LabeledPr
     }
 
     // Create tables for every geo object type
-
-
 
     return version;
   }
