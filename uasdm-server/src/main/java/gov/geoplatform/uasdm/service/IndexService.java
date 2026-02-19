@@ -16,21 +16,13 @@
 package gov.geoplatform.uasdm.service;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.tika.exception.TikaException;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.parser.AutoDetectParser;
-import org.apache.tika.sax.BodyContentHandler;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.xml.sax.SAXException;
 
 import com.runwaysdk.business.graph.VertexObject;
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.index.Index;
@@ -175,28 +167,6 @@ public class IndexService
     }
 
     return new Page<StacItem>();
-  }
-
-  public static String getContent(File metadata)
-  {
-    try
-    {
-      BodyContentHandler handler = new BodyContentHandler();
-      AutoDetectParser parser = new AutoDetectParser();
-
-      try (FileInputStream istream = new FileInputStream(metadata))
-      {
-        parser.parse(istream, handler, new Metadata());
-      }
-
-      String results = handler.toString();
-
-      return results;
-    }
-    catch (SAXException | TikaException | IOException e)
-    {
-      throw new ProgrammingErrorException(e);
-    }
   }
 
   public static void createDocument(LabeledPropertyGraphSynchronization synchronization, VertexObject object)

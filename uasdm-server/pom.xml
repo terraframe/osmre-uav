@@ -295,37 +295,7 @@
       <artifactId>jackson-databind</artifactId>
       <version>2.18.1</version>
     </dependency>    
-    <!-- TIKA dependencies-->
-    <dependency>
-      <groupId>org.apache.tika</groupId>
-      <artifactId>tika-parsers</artifactId>
-      <version>2.6.0</version>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.tika</groupId>
-      <artifactId>tika-parsers-standard-package</artifactId>
-      <version>2.9.2</version>
-      <exclusions>
-        <exclusion>
-          <groupId>xerces</groupId>
-          <artifactId>xercesImpl</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>    
-    <!-- https://mvnrepository.com/artifact/org.apache.tika/tika-core -->
-    <dependency>
-      <groupId>org.apache.tika</groupId>
-      <artifactId>tika-core</artifactId>
-      <version>2.6.0</version>
-    </dependency>
-    <!-- We think this was used for Tika but not exactly sure how. it was commented out because it was setting off security flags as it gets out of date and we're not even sure how to test it.
-    <dependency>
-      <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-rt-rs-client</artifactId>
-      <version>3.3.6</version>
-    </dependency>
-    -->
+    
     <!-- https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
@@ -353,12 +323,12 @@
       <version>1.7.30</version>
     </dependency>
     
-<!-- https://mvnrepository.com/artifact/me.desair.tus/tus-java-server -->
-<dependency>
-    <groupId>me.desair.tus</groupId>
-    <artifactId>tus-java-server</artifactId>
-    <version>1.0.0-3.0</version>
-</dependency>    
+    <!-- https://mvnrepository.com/artifact/me.desair.tus/tus-java-server -->
+    <dependency>
+      <groupId>me.desair.tus</groupId>
+      <artifactId>tus-java-server</artifactId>
+      <version>1.0.0-3.0</version>
+    </dependency>    
   </dependencies>
 
   <!-- These profiles allow for Maven execution of Runway-SDK's Java Tools, 
