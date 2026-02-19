@@ -49,7 +49,7 @@ import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.Mission;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
-import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
+import gov.geoplatform.uasdm.graph.CollectionFormat;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
@@ -105,7 +105,7 @@ public class UploadValidationProcessor
     {
       WorkflowTask collectionWorkflowTask = (WorkflowTask) task;
 
-      var uasc = collectionWorkflowTask.getComponentInstance();
+      UasComponentIF uasc = collectionWorkflowTask.getComponentInstance();
       
       if (uasc instanceof CollectionIF)
       {

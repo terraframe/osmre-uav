@@ -36,8 +36,8 @@ import com.runwaysdk.resource.ApplicationFileResource;
 import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.graph.CollectionFormat;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
-import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
@@ -471,18 +471,6 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   public CollectionFormat getFormat()
   {
     return null;
-  }
-
-  @Override
-  public void setFormat(CollectionFormat format)
-  {
-    
-  }
-
-  @Override
-  public void setFormat(String format)
-  {
-    
   }
 
 }

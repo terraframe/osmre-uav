@@ -2,7 +2,7 @@
 ///
 ///
 
-import { Injectable, OnDestroy } from '@angular/core';
+import { inject, Injectable, OnDestroy } from '@angular/core';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 
 // import 'rxjs/add/operator/toPromise';
@@ -10,24 +10,23 @@ import { finalize } from 'rxjs/operators';
 
 import { EventService } from './event.service';
 
-import { AuthService } from './auth.service';
 import { User } from '../model/user';
 import { environment } from 'src/environments/environment';
-import { firstValueFrom, Observer, Subject, Subscription } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { SessionActions } from 'src/app/state/session.state';
 
 
 
 @Injectable({ providedIn: 'root' })
 export class SessionService implements OnDestroy {
 
-	$user: Subject<User>;
+	private store = inject(Store);
 
 	constructor(private eventService: EventService, private http: HttpClient) {
-		this.$user = new Subject();
 	}
 
 	ngOnDestroy(): void {
-		this.$user.complete();
 	}
 
 	login(username: string, password: string): Promise<User> {
@@ -44,7 +43,7 @@ export class SessionService implements OnDestroy {
 				this.eventService.complete();
 			})))
 			.then((user: User) => {
-				this.$user.next(user);
+				this.store.dispatch(SessionActions.setUser({ user }));
 
 				return user;
 			})
@@ -64,13 +63,9 @@ export class SessionService implements OnDestroy {
 				this.eventService.complete();
 			})))
 			.then(() => {
-				this.$user.next(null);
+				this.store.dispatch(SessionActions.removeUser());
 
 				return;
 			})
-	}
-
-	getUser(): Subject<User> {
-		return this.$user;
 	}
 }

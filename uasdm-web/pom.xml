@@ -29,7 +29,6 @@
   <name>UASDM Web</name>
 
   <properties>
-    <geoserver.version>2.14.2-custom</geoserver.version>
     <local.host>$${pageContext.request.contextPath}</local.host>
   </properties>
 
@@ -61,28 +60,16 @@
         </exclusion>
       </exclusions>
     </dependency>
-<!--
     <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>geoserver</artifactId>
-      <version>${geoserver.version}</version>
-      <type>war</type>
-      <scope>provided</scope>
-    </dependency>
--->    
-    <dependency>
-      <groupId>javax.servlet.jsp</groupId>
-      <artifactId>jsp-api</artifactId>
-      <version>2.1</version>
-      <scope>provided</scope> <!-- This dependency is NOT transitive because scope=provided -->
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/javax.servlet/jstl -->
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jstl</artifactId>
-      <version>1.2</version>
-    </dependency>
-
+	    <groupId>jakarta.servlet.jsp.jstl</groupId>
+	    <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+	    <version>3.0.2</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.glassfish.web</groupId>
+	    <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+	    <version>3.0.1</version>
+	</dependency>
   </dependencies>
 
   <profiles>
@@ -103,15 +90,15 @@
         <plugins>
           <plugin>
             <groupId>org.codehaus.cargo</groupId>
-            <artifactId>cargo-maven2-plugin</artifactId>
-            <version>1.7.11</version>
+			<artifactId>cargo-maven3-plugin</artifactId>
+			<version>1.10.15</version>
             <configuration>
               <container>
-                <containerId>tomcat9x</containerId>
+                <containerId>tomcat11x</containerId>
                 <artifactInstaller>
                   <groupId>org.apache.tomcat</groupId>
                   <artifactId>tomcat</artifactId>
-                  <version>9.0.104</version>
+                  <version>11.0.0</version>
                 </artifactInstaller>
                 <timeout>4800000</timeout>
               </container>
@@ -153,16 +140,6 @@
                     <context>ROOT</context>
                   </properties>
                 </deployable>
-<!--
-                <deployable>
-                  <groupId>org.geoserver</groupId>
-                  <artifactId>geoserver</artifactId>
-                  <type>war</type>
-                  <properties>
-                    <context>geoserver</context>
-                  </properties>
-                </deployable>
--->                
               </deployables>
             </configuration>
             <executions>
@@ -231,7 +208,7 @@
       </plugin>      
       <!-- Weave Aspects -->
       <plugin>
-        <groupId>dev.aspectj</groupId>
+        <groupId>org.codehaus.mojo</groupId>
         <artifactId>aspectj-maven-plugin</artifactId>
         <version>${aspectj.plugin.version}</version>
         <dependencies>
@@ -262,12 +239,13 @@
           <fork>true</fork>
           <meminitial>512m</meminitial>
           <maxmem>1024m</maxmem>
+          <parameters>true</parameters>
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>3.3.2</version>
+        <version>3.4.0</version>
         <configuration>
           <warSourceExcludes>**/prism.jsp,**/admin.jsp,**/index.jsp</warSourceExcludes>
           <packagingExcludes>

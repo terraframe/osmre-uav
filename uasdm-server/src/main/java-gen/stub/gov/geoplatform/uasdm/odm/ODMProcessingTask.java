@@ -113,7 +113,7 @@ public class ODMProcessingTask extends ODMProcessingTaskBase implements ODMProce
     {
       obj.put("odmRunId", run.getOid());
     }
-    else if (StringUtils.isNotEmpty( ( this.getOdmOutput() )))
+    else if (StringUtils.isNotBlank( ( this.getOdmOutput() )))
     {
       obj.put("odmOutput", this.getOdmOutput());
     }

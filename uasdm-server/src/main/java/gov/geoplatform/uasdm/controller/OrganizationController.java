@@ -19,7 +19,7 @@ import java.text.ParseException;
 import java.util.List;
 
 import org.commongeoregistry.adapter.metadata.OrganizationDTO;
-import org.hibernate.validator.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,7 +62,7 @@ public class OrganizationController extends AbstractController
 
   @ResponseBody
   @GetMapping("/get")
-  public ResponseEntity<String> get(@NotEmpty @RequestParam(name = "code") String code) throws ParseException
+  public ResponseEntity<String> get(@NotBlank @RequestParam(name = "code") String code) throws ParseException
   {
     OrganizationDTO[] orgs = this.service.getOrganizations(this.getSessionId(), new String[] { code });
 
@@ -71,7 +71,7 @@ public class OrganizationController extends AbstractController
 
   @ResponseBody
   @GetMapping("/search")
-  public ResponseEntity<String> search(@NotEmpty @RequestParam(name = "text") String text) throws ParseException
+  public ResponseEntity<String> search(@NotBlank @RequestParam(name = "text") String text) throws ParseException
   {
     List<OrganizationDTO> orgs = this.service.search(this.getSessionId(), text);
 
@@ -93,7 +93,7 @@ public class OrganizationController extends AbstractController
   }
 
   @GetMapping("/get-ancestor-tree")
-  public ResponseEntity<String> getAncestorTree(@RequestParam(name = "rootCode", required = false) String rootCode, @NotEmpty @RequestParam(name = "code") String code, @RequestParam(required = false, name = "pageSize") Integer pageSize)
+  public ResponseEntity<String> getAncestorTree(@RequestParam(name = "rootCode", required = false) String rootCode, @NotBlank @RequestParam(name = "code") String code, @RequestParam(required = false, name = "pageSize") Integer pageSize)
   {
     JsonObject page = this.service.getAncestorTree(this.getSessionId(), rootCode, code, pageSize);
 

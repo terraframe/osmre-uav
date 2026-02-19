@@ -22,8 +22,8 @@ import java.util.Set;
 import org.json.JSONObject;
 
 import gov.geoplatform.uasdm.bus.AllPrivilegeType;
+import gov.geoplatform.uasdm.graph.CollectionFormat;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
-import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
 
 public interface CollectionIF extends UasComponentIF
 {
@@ -100,10 +100,6 @@ public interface CollectionIF extends UasComponentIF
 //  public String getWeatherConditions();
 
   public CollectionFormat getFormat();
-  
-  public void setFormat(CollectionFormat format);
-  
-  public void setFormat(String format);
   
   public Boolean getHasAllZip();
 

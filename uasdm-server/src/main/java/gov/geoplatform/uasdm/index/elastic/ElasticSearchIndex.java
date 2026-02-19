@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.index.elastic;
 
@@ -316,8 +316,6 @@ public class ElasticSearchIndex implements Index
 
   public void updateOrCreateMetadataDocument(List<UasComponentIF> ancestors, UasComponentIF component, String key, String name, File metadata)
   {
-    String content = IndexService.getContent(metadata);
-
     Hit<ElasticDocument> existing = this.find(component, key);
 
     try
@@ -327,7 +325,6 @@ public class ElasticSearchIndex implements Index
       ElasticDocument document = new ElasticDocument();
       document.setKey(key);
       document.setFilename(name);
-      document.setContent(content);
       document.populate(component.getSolrIdField(), component.getOid());
       document.populate(component.getSolrNameField(), component.getName());
       document.setIsPrivate(component.isPrivate());
@@ -353,7 +350,12 @@ public class ElasticSearchIndex implements Index
     {
       ElasticsearchClient client = createClient();
 
-      SearchResponse<ElasticDocument> search = client.search(s -> s.index(COMPONENT_INDEX_NAME).query(q -> q.bool(b -> b.must(m -> m.term(t -> t.field("key").value(v -> v.stringValue(key)))).must(m -> m.term(t -> t.field(component.getSolrIdField()).value(v -> v.stringValue(component.getOid())))))), ElasticDocument.class);
+      SearchResponse<ElasticDocument> search = client.search(s -> s.index(COMPONENT_INDEX_NAME) //
+          .query(q -> q //
+              .bool(b -> b //
+                  .must(m -> m.term(t -> t.field("key").value(v -> v.stringValue(key)))) //
+                  .must(m -> m.term(t -> t.field(component.getSolrIdField()).value(v -> v.stringValue(component.getOid())))))),
+          ElasticDocument.class);
 
       for (Hit<ElasticDocument> hit : search.hits().hits())
       {
@@ -375,7 +377,8 @@ public class ElasticSearchIndex implements Index
     {
       ElasticsearchClient client = createClient();
 
-      SearchResponse<ElasticDocument> search = client.search(s -> s.index(COMPONENT_INDEX_NAME).query(q -> q.match(m -> m.field("oid").query(component.getOid()))), ElasticDocument.class);
+      SearchResponse<ElasticDocument> search = client.search(s -> s.index(COMPONENT_INDEX_NAME) //
+          .query(q -> q.match(m -> m.field("oid").query(component.getOid()))), ElasticDocument.class);
 
       for (Hit<ElasticDocument> hit : search.hits().hits())
       {
@@ -570,7 +573,7 @@ public class ElasticSearchIndex implements Index
     if (item.isPublished())
     {
       KnowStacBusinessService service = ApplicationContextHolder.getBean(KnowStacBusinessService.class);
-//      service.remove(item.getId());
+      // service.remove(item.getId());
       service.put(item);
     }
 
@@ -582,7 +585,9 @@ public class ElasticSearchIndex implements Index
     try
     {
       ElasticsearchClient client = createClient();
-      client.deleteByQuery(new DeleteByQueryRequest.Builder().index(STAC_INDEX_NAME).query(q -> q.match(m -> m.field("id").query(product.getOid()))).build());
+
+      client.deleteByQuery(new DeleteByQueryRequest.Builder().index(STAC_INDEX_NAME) //
+          .query(q -> q.match(m -> m.field("id").query(product.getOid()))).build());
     }
     catch (ElasticsearchException e)
     {
@@ -634,7 +639,7 @@ public class ElasticSearchIndex implements Index
             {
               if (filter.has("startDate") || filter.has("endDate"))
               {
-                m.range(d -> d.date( r -> {
+                m.range(d -> d.date(r -> {
                   r.field("properties.datetime");
 
                   if (filter.has("startDate"))

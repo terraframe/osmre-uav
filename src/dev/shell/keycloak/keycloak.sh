@@ -23,7 +23,7 @@ fi
 
 set -e
 
-WORKSPACE=$UASDM/uasdm
+WORKSPACE=$UASDM/home/jsmethie/git/osmre-uav
 
 SSL=$WORKSPACE/uasdm-web/src/test/resources
 RESOURCES=$WORKSPACE/src/dev/shell/keycloak

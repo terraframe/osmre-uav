@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-FROM tomcat:9-jdk11
+FROM tomcat:11.0-jdk17
 
 ENV CGR_VERSION=LATEST
 ENV LOG_LEVEL=error

@@ -24,6 +24,10 @@ import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
 
+import { sessionReducer } from './state/session.state';
+import { provideStore } from '@ngrx/store';
+
+
 export const appConfig: ApplicationConfig = {
   providers: [
     {
@@ -53,6 +57,9 @@ export const appConfig: ApplicationConfig = {
           darkModeSelector: false || 'none'
         }
       }
+    }),
+    provideStore({
+      session: sessionReducer
     }),
     // legacy providers
     importProvidersFrom([

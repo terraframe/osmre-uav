@@ -2,21 +2,30 @@
 ///
 ///
 
-import { Injectable, OnDestroy } from "@angular/core";
+import { inject, Injectable, OnDestroy } from "@angular/core";
 import { WebSockets } from "@core/utility/web-sockets";
 import { webSocket, WebSocketSubject } from "rxjs/webSocket";
-import { SessionService } from "./session.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { Observable } from "rxjs";
+import { User } from "@shared/model/user";
+import { Store } from "@ngrx/store";
+import { getUser } from "src/app/state/session.state";
 
 @Injectable({ providedIn: 'root' })
 export class WebsocketService implements OnDestroy {
+
+    private store = inject(Store);
+    user$: Observable<User | null> = this.store.select(getUser);
+
     notifier: WebSocketSubject<any>;
 
-    constructor(private sessionService: SessionService) {
+
+    constructor() {
 
         this.connect();
 
-        this.sessionService.getUser().pipe(takeUntilDestroyed()).subscribe((user) => {
+        // If the user changes then make sure the websockets are destroyed and reconnected
+        this.user$.pipe(takeUntilDestroyed()).subscribe((user) => {
             if (this.notifier != null) {
                 this.notifier.complete();
             }

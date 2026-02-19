@@ -54,6 +54,12 @@
       <param-name>contextConfigLocation</param-name>
       <param-value>gov.geoplatform.uasdm.SpringAppConfig</param-value>
     </init-param>
+    <multipart-config>
+      <location>/tmp</location>
+      <max-file-size>-1</max-file-size>
+      <max-request-size>-1</max-request-size>
+      <file-size-threshold>0</file-size-threshold>
+    </multipart-config>    
   </servlet>
    <servlet-mapping>
     <servlet-name>SpringDispatcher</servlet-name>

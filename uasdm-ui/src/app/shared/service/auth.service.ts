@@ -2,22 +2,25 @@
 ///
 ///
 
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 
 import { CookieService } from 'ngx-cookie-service';
 import { User } from '../model/user';
 import { LocalizedValue } from '@shared/model/organization';
 import { SessionService } from './session.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Store } from '@ngrx/store';
+import { getUser, SessionActions } from 'src/app/state/session.state';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-	private user: User = {
-		loggedIn: false,
-		userName: '',
-		externalProfile: false,
-		roles: []
-	};
+
+	private store = inject(Store);
+
+	user$: Observable<User | null> = this.store.select(getUser);
+
+	user: User | null;
 
 	constructor(private service: CookieService, private sessionService: SessionService) {
 
@@ -26,14 +29,21 @@ export class AuthService {
 
 			let cookieDataJSON: any = JSON.parse(cookieData);
 
-			this.user.userName = cookieDataJSON.userName;
-			this.user.roles = cookieDataJSON.roles;
-			this.user.externalProfile = cookieDataJSON.externalProfile;
-			this.user.loggedIn = true;
-			this.user.organization = cookieDataJSON.organization;
+
+			this.store.dispatch(SessionActions.setUser({
+				user: {
+					userName: cookieDataJSON.userName,
+					roles: cookieDataJSON.roles,
+					externalProfile: cookieDataJSON.externalProfile,
+					loggedIn: true,
+					organization: cookieDataJSON.organization
+				}
+			}));
+
+
 		}
 
-		this.sessionService.getUser().pipe(takeUntilDestroyed()).subscribe((user) => {
+		this.user$.pipe(takeUntilDestroyed()).subscribe((user) => {
 			this.user = user;
 		});
 
@@ -44,13 +54,7 @@ export class AuthService {
 	}
 
 	removeUser(): void {
-		this.user = {
-			loggedIn: false,
-			userName: '',
-			externalProfile: false,
-			roles: [],
-			organization: null
-		};
+		this.store.dispatch(SessionActions.removeUser());
 	}
 
 	getUserName(): string {

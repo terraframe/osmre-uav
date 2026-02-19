@@ -15,7 +15,7 @@
  */
 package gov.geoplatform.uasdm.service;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;

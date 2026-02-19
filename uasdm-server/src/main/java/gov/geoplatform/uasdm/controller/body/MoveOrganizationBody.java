@@ -15,14 +15,14 @@
  */
 package gov.geoplatform.uasdm.controller.body;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 
 public class MoveOrganizationBody
 {
-  @NotEmpty
+  @NotBlank
   String code;
 
-  @NotEmpty
+  @NotBlank
   String parentCode;
 
   public String getCode()

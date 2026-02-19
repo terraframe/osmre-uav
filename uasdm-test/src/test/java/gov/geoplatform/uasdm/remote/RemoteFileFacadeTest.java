@@ -1,32 +1,29 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.remote;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -45,7 +42,6 @@ import gov.geoplatform.uasdm.mock.MockRemoteFileService;
 import gov.geoplatform.uasdm.mock.MockRemoteFileService.RemoteFileAction;
 import gov.geoplatform.uasdm.mock.MockRemoteFileService.RemoteFileActionType;
 import gov.geoplatform.uasdm.model.ImageryComponent;
-import gov.geoplatform.uasdm.model.Range;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.processing.InMemoryMonitor;
 import gov.geoplatform.uasdm.test.Area51DataSet;
@@ -55,11 +51,11 @@ import gov.geoplatform.uasdm.view.SiteObject;
 @RunWith(SpringInstanceTestClassRunner.class)
 public class RemoteFileFacadeTest extends Area51DataTest
 {
-  private Product product;
+  private Product               product;
 
-  private Collection collection;
+  private Collection            collection;
 
-  private Document target;
+  private Document              target;
 
   private MockRemoteFileService service;
 
@@ -156,8 +152,8 @@ public class RemoteFileFacadeTest extends Area51DataTest
   @Request
   public void testDownloadRange()
   {
-    List<Range> ranges = Arrays.asList(new Range(0L, 1000L, 10000L));
-    RemoteFileFacade.download("test.JPG", ranges);
+    String range = "0-1000,10000";
+    RemoteFileFacade.download("test.JPG", range);
 
     List<RemoteFileAction> actions = service.getActions();
 
@@ -171,7 +167,7 @@ public class RemoteFileFacadeTest extends Area51DataTest
 
     Assert.assertEquals(2, parameters.length);
     Assert.assertEquals("test.JPG", parameters[0]);
-    Assert.assertEquals(ranges, parameters[1]);
+    Assert.assertEquals(range, parameters[1]);
   }
 
   @Test
@@ -312,28 +308,6 @@ public class RemoteFileFacadeTest extends Area51DataTest
     Assert.assertEquals(2, parameters.length);
     Assert.assertEquals(key, parameters[0]);
     Assert.assertEquals(bucket, parameters[1]);
-  }
-
-  @Test
-  @Request
-  public void testGetItemCount()
-  {
-    String key = "source/test.JPG";
-
-    RemoteFileFacade.getItemCount(key);
-
-    List<RemoteFileAction> actions = service.getActions();
-
-    Assert.assertEquals(1, actions.size());
-
-    RemoteFileAction action = actions.get(0);
-
-    Assert.assertEquals(RemoteFileActionType.COUNT, action.getType());
-
-    Object[] parameters = action.getParameters();
-
-    Assert.assertEquals(1, parameters.length);
-    Assert.assertEquals(key, parameters[0]);
   }
 
   @Test
@@ -521,9 +495,9 @@ public class RemoteFileFacadeTest extends Area51DataTest
   public void testPutStacItem()
   {
     StacItem item = product.toStacItem();
-    
+
     this.service.clear();
-    
+
     RemoteFileFacade.putStacItem(item);
 
     List<RemoteFileAction> actions = service.getActions();
