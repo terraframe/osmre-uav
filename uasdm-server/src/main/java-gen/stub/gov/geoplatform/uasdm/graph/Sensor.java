@@ -53,36 +53,6 @@ public class Sensor extends SensorBase implements JSONSerializable
   
   public static final String COLLECTIONFORMATS = "collectionFormats";
   
-  public static enum CollectionFormat {
-    STILL_IMAGERY_RGB,
-    STILL_THERMAL_RGB,
-    STILL_RADIOMETRIC,
-    STILL_MULTISPECTRAL,
-    VIDEO_RGB,
-    VIDEO_THERMAL_RGB,
-    VIDEO_RADIOMETRIC,
-    VIDEO_MULTISPECTRAL,
-    LIDAR;
-    
-    public boolean isMultispectral() {
-      return name().toLowerCase().contains("multispectral");
-    }
-    public boolean isRadiometric() {
-      return name().toLowerCase().contains("radiometric");
-    }
-    public boolean isLidar() {
-      return name().toLowerCase().contains("lidar");
-    }
-    public boolean isRGB() {
-      return name().toLowerCase().contains("rgb");
-    }
-    public boolean isVideo() {
-      return name().toLowerCase().contains("video");
-    }
-    public boolean isStill() {
-      return name().toLowerCase().contains("still");
-    }
-  }
   public static List<CollectionFormat> DEFAULT_FORMATS = Arrays.asList(new CollectionFormat[] { CollectionFormat.STILL_IMAGERY_RGB, CollectionFormat.VIDEO_RGB, CollectionFormat.STILL_THERMAL_RGB, CollectionFormat.VIDEO_THERMAL_RGB });
 
   public Sensor()

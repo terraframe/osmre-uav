@@ -69,7 +69,6 @@ import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
 import gov.geoplatform.uasdm.cog.CogPreviewParams;
 import gov.geoplatform.uasdm.cog.TiTillerProxy;
 import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
-import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentWithAttributes;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -729,45 +728,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public boolean isMultiSpectral()
   {
-    var metadata = this.getMetadata().orElse(null);
-    
-    if (metadata != null && metadata.getFormat() != null)
-      return metadata.getFormat().isMultispectral();
-
-    // Maintain legacy behaviour (before collection format existed)
-    if (metadata != null) {
-      Sensor sensor = metadata.getSensor();
-
-      if (sensor == null)
-      {
-        log.error("Metadata missing sensor information");
-
-        return false;
-      }
-
-      List<CollectionFormat> formats = sensor.getCollectionFormats();
-
-      if (formats.contains(CollectionFormat.STILL_MULTISPECTRAL) || formats.contains(CollectionFormat.VIDEO_MULTISPECTRAL))
-      {
-        return true;
-      }
-
-      SensorType type = sensor.getSensorType();
-
-      if (type != null)
-      {
-        return type.getIsMultispectral() != null && type.getIsMultispectral();
-      }
-      else
-      {
-        log.error("Unable to find sensor type for sensor");
-      }
-
-      return false;
-    }
-    
-    log.error("Unable to find metadata. Returning false for multispectral");
-    return false;
+    return this.getMetadata().map(metadata -> metadata.isMultiSpectral()).orElse(false);
   }
 
   /**
@@ -785,35 +746,13 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public boolean isRadiometric()
   {
-    var metadata = this.getMetadata().orElse(null);
-    
-    if (metadata != null && metadata.getFormat() != null)
-      return metadata.getFormat().isRadiometric();
-
-    return false;
+    return this.getMetadata().map(metadata -> metadata.isThermal()).orElse(false);
   }
 
   @Override
   public boolean isLidar()
   {
-    var metadata = this.getMetadata().orElse(null);
-    
-    if (metadata != null && metadata.getFormat() != null)
-      return metadata.getFormat().isLidar();
-
-    // Maintain legacy behaviour (before collection format existed)
-    if (metadata != null) {
-      Sensor sensor = metadata.getSensor();
-
-      if (sensor != null)
-      {
-        SensorType type = sensor.getSensorType();
-
-        return type.isLidar();
-      }
-    }
-    
-    return false;
+    return this.getMetadata().map(metadata -> metadata.isLidar()).orElse(false);
   }
 
   @Override
