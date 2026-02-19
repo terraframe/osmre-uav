@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = 802232386)
+@com.runwaysdk.business.ClassSignature(hash = 797103732)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -41,6 +26,7 @@ public abstract class CollectionMetadataBase extends com.runwaysdk.business.grap
   public final static java.lang.String PERCENTSIDELAP = "percentSideLap";
   public final static java.lang.String POCEMAIL = "pocEmail";
   public final static java.lang.String POCNAME = "pocName";
+  public final static java.lang.String SCOLLECTIONFORMAT = "sCollectionFormat";
   public final static java.lang.String SENSOR = "sensor";
   public final static java.lang.String SEQ = "seq";
   public final static java.lang.String SOUTHBOUND = "southBound";
@@ -48,7 +34,7 @@ public abstract class CollectionMetadataBase extends com.runwaysdk.business.grap
   public final static java.lang.String WEATHERCONDITIONS = "weatherConditions";
   public final static java.lang.String WESTBOUND = "westBound";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 802232386;
+  private static final long serialVersionUID = 797103732;
   
   public CollectionMetadataBase()
   {
@@ -288,6 +274,22 @@ public abstract class CollectionMetadataBase extends com.runwaysdk.business.grap
   public void setPocName(String value)
   {
     this.setValue(POCNAME, value);
+  }
+  
+  public String getSCollectionFormat()
+  {
+    return (String) this.getObjectValue(SCOLLECTIONFORMAT);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getSCollectionFormatMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.CollectionMetadata.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(SCOLLECTIONFORMAT);
+  }
+  
+  public void setSCollectionFormat(String value)
+  {
+    this.setValue(SCOLLECTIONFORMAT, value);
   }
   
   public gov.geoplatform.uasdm.graph.Sensor getSensor()

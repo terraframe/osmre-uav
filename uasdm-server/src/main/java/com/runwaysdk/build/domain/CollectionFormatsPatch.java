@@ -24,8 +24,8 @@ import org.slf4j.LoggerFactory;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 import com.runwaysdk.session.Request;
 
+import gov.geoplatform.uasdm.graph.CollectionFormat;
 import gov.geoplatform.uasdm.graph.Sensor;
-import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
 
 public class CollectionFormatsPatch implements Runnable
 {

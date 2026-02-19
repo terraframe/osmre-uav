@@ -30,7 +30,7 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.geojson.GeoJsonReader;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
 
-import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
+import gov.geoplatform.uasdm.graph.CollectionFormat;
 
 public class SiteItem implements TreeComponent
 {

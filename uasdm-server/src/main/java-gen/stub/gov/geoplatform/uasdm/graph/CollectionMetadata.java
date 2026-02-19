@@ -18,10 +18,11 @@ package gov.geoplatform.uasdm.graph;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.runwaysdk.business.graph.VertexObject;
 import com.runwaysdk.dataaccess.transaction.Transaction;
 
-import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentWithAttributes;
 import gov.geoplatform.uasdm.model.EdgeType;
@@ -42,6 +43,27 @@ public class CollectionMetadata extends CollectionMetadataBase implements Compon
     this.apply();
 
     ( (VertexObject) collection ).addChild(this, EdgeType.COLLECTION_HAS_METADATA).apply();
+  }
+  
+  public CollectionFormat getFormat()
+  {
+    if (StringUtils.isBlank(this.getSCollectionFormat()))
+      return null;
+
+    return CollectionFormat.valueOf(this.getSCollectionFormat());
+  }
+
+  public void setFormat(CollectionFormat format)
+  {
+    this.setSCollectionFormat(format == null ? null : format.name());
+  }
+
+  public void setFormat(String format)
+  {
+    if (format != null)
+      CollectionFormat.valueOf(format); // validate
+
+    this.setSCollectionFormat(format);
   }
 
   public List<Product> getProducts()
@@ -89,6 +111,11 @@ public class CollectionMetadata extends CollectionMetadataBase implements Compon
 
   public boolean isMultiSpectral()
   {
+    CollectionFormat format = this.getFormat();
+    if (format != null)
+      return format.isMultispectral();
+    
+    // Legacy behaviour support (before collection format existed)
     Sensor sensor = this.getSensor();
     if (sensor == null)
       return false;
@@ -99,6 +126,11 @@ public class CollectionMetadata extends CollectionMetadataBase implements Compon
 
   public boolean isThermal()
   {
+    CollectionFormat format = this.getFormat();
+    if (format != null)
+      return format.isRadiometric();
+    
+    // Legacy behaviour support (before collection format existed)
     Sensor sensor = this.getSensor();
     if (sensor == null)
       return false;
@@ -109,6 +141,11 @@ public class CollectionMetadata extends CollectionMetadataBase implements Compon
 
   public boolean isLidar()
   {
+    CollectionFormat format = this.getFormat();
+    if (format != null)
+      return format.isLidar();
+    
+    // Legacy behaviour support (before collection format existed)
     Sensor sensor = this.getSensor();
     if (sensor == null)
       return false;

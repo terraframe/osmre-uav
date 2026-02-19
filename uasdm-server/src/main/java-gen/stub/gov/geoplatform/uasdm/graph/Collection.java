@@ -69,7 +69,6 @@ import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
 import gov.geoplatform.uasdm.cog.CogPreviewParams;
 import gov.geoplatform.uasdm.cog.TiTillerProxy;
 import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
-import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentWithAttributes;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -189,24 +188,30 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
 
   public CollectionFormat getFormat()
   {
+    var metadata = this.getMetadata().orElse(null);
+    
+    if (metadata != null && metadata.getFormat() != null)
+      return metadata.getFormat();
+
+    // Legacy behaviour here. At some point we should remove this attribute.
     if (StringUtils.isBlank(this.getSCollectionFormat()))
       return null;
 
     return CollectionFormat.valueOf(this.getSCollectionFormat());
   }
 
-  public void setFormat(CollectionFormat format)
-  {
-    this.setSCollectionFormat(format == null ? null : format.name());
-  }
-
-  public void setFormat(String format)
-  {
-    if (format != null)
-      CollectionFormat.valueOf(format); // validate
-
-    this.setSCollectionFormat(format);
-  }
+//  public void setFormat(CollectionFormat format)
+//  {
+//    this.setSCollectionFormat(format == null ? null : format.name());
+//  }
+//
+//  public void setFormat(String format)
+//  {
+//    if (format != null)
+//      CollectionFormat.valueOf(format); // validate
+//
+//    this.setSCollectionFormat(format);
+//  }
 
   @Override
   public UasComponent createDefaultChild()
@@ -723,47 +728,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public boolean isMultiSpectral()
   {
-    var format = this.getFormat();
-    if (format != null)
-    {
-      return format.isMultispectral();
-    }
-
-    // Maintain legacy behaviour (before collection format existed)
-    return this.getMetadata().map(metadata -> {
-      Sensor sensor = metadata.getSensor();
-
-      if (sensor == null)
-      {
-        log.error("Metadata missing sensor information");
-
-        return false;
-      }
-
-      List<CollectionFormat> formats = sensor.getCollectionFormats();
-
-      if (formats.contains(CollectionFormat.STILL_MULTISPECTRAL) || formats.contains(CollectionFormat.VIDEO_MULTISPECTRAL))
-      {
-        return true;
-      }
-
-      SensorType type = sensor.getSensorType();
-
-      if (type != null)
-      {
-        return type.getIsMultispectral() != null && type.getIsMultispectral();
-      }
-      else
-      {
-        log.error("Unable to find sensor type for sensor");
-      }
-
-      return false;
-    }).orElseGet(() -> {
-      log.error("Unable to find metadata. Returning false for multispectral");
-
-      return false;
-    });
+    return this.getMetadata().map(metadata -> metadata.isMultiSpectral()).orElse(false);
   }
 
   /**
@@ -781,33 +746,13 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public boolean isRadiometric()
   {
-    var format = this.getFormat();
-    if (format != null)
-      return format.isRadiometric();
-
-    return false;
+    return this.getMetadata().map(metadata -> metadata.isThermal()).orElse(false);
   }
 
   @Override
   public boolean isLidar()
   {
-    var format = this.getFormat();
-    if (format != null)
-      return format.isLidar();
-
-    // Maintain legacy behaviour (before collection format existed)
-    return this.getMetadata().map(metadata -> {
-      Sensor sensor = metadata.getSensor();
-
-      if (sensor != null)
-      {
-        SensorType type = sensor.getSensorType();
-
-        return type.isLidar();
-      }
-
-      return false;
-    }).orElse(false);
+    return this.getMetadata().map(metadata -> metadata.isLidar()).orElse(false);
   }
 
   @Override
