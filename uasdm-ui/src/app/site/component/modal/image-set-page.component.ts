@@ -90,7 +90,7 @@ export class ImageSetPageComponent implements OnInit, OnDestroy {
 			class: 'modal-xl',
 			ignoreBackdropClick: true,
 		});
-		modal.content.message = 'Do you want to delete the raw set [' + set.name + ']? This action cannot be undone.';
+		modal.content.message = 'Do you want to delete the image set [' + set.name + ']? This action cannot be undone.';
 		modal.content.type = ModalTypes.danger;
 		modal.content.submitText = 'Delete';
 

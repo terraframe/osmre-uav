@@ -11,7 +11,7 @@
             <h4>
                 <span *ngIf="loading">
                     <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
-                    Loading Raw Sets
+                    Loading Image Sets
                 </span>
                 <p *ngIf="!loading">No data found</p>
             </h4>
@@ -48,53 +48,26 @@
 
 
                         <div *ngIf="thumbnails[set.documentId] != null">
-                            <a class="thumbnail" (click)="previewImage(set.document)">
+                            <a class="thumbnail" (click)="previewImage(set)">
                                 <img class="mx-auto d-block img-thumbnail"
                                     [src]="thumbnails[set.documentId] | safeHtml" (error)="getDefaultImgURL($event)"
                                     alt="Image">
                             </a>
                         </div>
-                        <div class="raw-set-actions raw-set-actions--compact d-flex flex-wrap align-items-center">
-                            <button class="raw-set-action" type="button" (click)="handleMapIt(set)"
+                        <div class="image-set-actions image-set-actions--compact d-flex flex-wrap align-items-center">
+                            <button class="image-set-action" type="button" (click)="handleMapIt(set)"
                                 title="View the centroids of the raw images on the map">
-                                <i class="fa raw-set-icon"
+                                <i class="fa image-set-icon"
                                     [ngClass]="{'fa-check': set.mapped, 'fa-globe': !set.mapped}"></i>
                                 <span>View Centroids</span>
                             </button>
 
 
-                            <button class="raw-set-action" type="button" *ngIf="isAdmin"
-                                (click)="handleToggleLock(set)">
-                                <i class="fa raw-set-icon"
-                                    [ngClass]="{'fa-lock': set.locked, 'fa-lock-open': !set.locked}"></i>
-                                <span>{{ set.locked ? 'Unlock' : 'Lock' }}</span>
-                            </button>
-
-                            <button class="raw-set-action danger" type="button"
+                            <button class="image-set-action danger" type="button"
                                 *ngIf="!set.locked && !set.published"
                                 (click)="handleDelete(view, set, $event)">
-                                <i class="fa fa-trash-alt raw-set-icon"></i><span>Delete</span>
+                                <i class="fa fa-trash-alt image-set-icon"></i><span>Delete</span>
                             </button>
-
-                            <button class="raw-set-action" type="button"
-                                *ngIf="!set.locked && !set.published"
-                                (click)="handleTogglePublish(set)">
-                                <i class="fa fa-arrow-alt-circle-up raw-set-icon"></i><span>Publish</span>
-                            </button>
-
-                            <button class="raw-set-action" type="button"
-                                *ngIf="!set.locked && set.published"
-                                (click)="handleTogglePublish(set)">
-                                <i class="fa fa-arrow-alt-circle-down raw-set-icon"></i><span>Unpublish</span>
-                            </button>
-
-                            <!-- <button class="raw-set-action" type="button" *ngIf="set.published"
-                                (click)="clipboardPublicStacUrl(set, clipboardPopover)">
-                                <i class="fa fa-link raw-set-icon" [id]="'PublicStacUrl-' + set.id"
-                                    [popover]="'Copied to clipboard!'" triggers="" #clipboardPopover="bs-popover"
-                                    placement="top"></i>
-                                <span>Share</span>
-                            </button> -->
                         </div>
 
                     </div>

@@ -67,6 +67,7 @@ import { AlertComponent } from "ngx-bootstrap/alert";
 import { LegendPanelComponent } from "./legend-panel/legend-panel.component";
 import { WebsocketService } from "@shared/service/websocket.service";
 import { ImageSetPanelComponent } from "./image-set-panel/image-set-panel.component";
+import { ImagePreviewModalComponent } from "./modal/image-preview-modal.component";
 
 const enum PANEL_TYPE {
   SITE = 0,
@@ -252,8 +253,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   collection: StacCollection = null;
 
-  views: CollectionProductView[] = [];
-  rawViews: CollectionImageSetView[] = [];
+  productViews: CollectionProductView[] = [];
+
+  imageViews: CollectionImageSetView[] = [];
 
   properties: StacProperty[] = null;
 
@@ -488,7 +490,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
       // Items
-      features = this.map.queryRenderedFeatures(e.point, { layers: ["items"] });
+      features = this.map.queryRenderedFeatures(e.point, { layers: ["items", "image-set"] });
 
       if (features.length > 0) {
         const id = features[0].properties.id;
@@ -496,6 +498,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if (type === ToggleableLayerType.PRODUCT) {
           this.handleGetProductInfo(id);
+        }
+        else if (type === ToggleableLayerType.IMAGE_SET) {
+          const component = features[0].properties.component;
+          const key = features[0].properties.key;
+
+          this.previewImage(component, key);
         }
         else if (type === ToggleableLayerType.KNOWSTAC && this.collection != null) {
           const link = this.collection.links.find(l => l.id === id);
@@ -505,6 +513,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         }
       }
+
+
     });
 
 
@@ -1913,8 +1923,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       })
     }
 
-    if (this.views != null) {
-      this.views.forEach(view => {
+    if (this.productViews != null) {
+      this.productViews.forEach(view => {
 
         view.products.filter(p => p.boundingBox != null).forEach(product => {
           let bbox = product.boundingBox;
@@ -1968,9 +1978,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
 
-  handleProductsChange(views: CollectionProductView[]): void {
+  handleProductsChange(productViews: CollectionProductView[]): void {
 
-    this.views = views;
+    this.productViews = productViews;
 
     this.buildItemsLayer();
   }
@@ -2126,7 +2136,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         else if (asset.roles != null && asset.roles.indexOf('thermal') !== -1) {
           url += "&thermal=true";
-        }  
+        }
         else if (asset.roles != null && asset.roles.indexOf('elevation') !== -1) {
           url += "&hillshade=true";
         }
@@ -2309,9 +2319,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   // Raw Sets
-  handleImageSetsChange(rawViews: CollectionImageSetView[]): void {
+  handleImageSetsChange(imageViews: CollectionImageSetView[]): void {
 
-    this.rawViews = rawViews;
+    this.imageViews = imageViews;
 
     this.buildItemsLayer();
   }
@@ -2323,21 +2333,21 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleImageSetAsset(set: ImageSet, mapIt: boolean): void {
-    const id = set.id;
 
     if (mapIt) {
+      const component: string = set.components[set.components.length - 1].id;
 
       // Create the map layer from the StacItem
-      const index = this.mapLayers.findIndex(l => l.id === id);
+      const index = this.mapLayers.findIndex(l => l.id === 'image-set');
 
       const features = set.documents.filter(d => d.point != null).map(d => {
-        return turf.feature(d.point, { label: d.name, type: 'set-image' });
+        return turf.feature(d.point, { label: d.name, component, key: d.key, type: ToggleableLayerType.IMAGE_SET });
       });
 
       // The layer may already exist
       if (index === -1) {
         const layer: ToggleableLayer = {
-          id: id,
+          id: 'image-set',
           type: ToggleableLayerType.IMAGE_SET,
           layerName: set.name,
           active: true,
@@ -2362,11 +2372,27 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     else {
-      const index = this.mapLayers.findIndex(l => l.id === id);
+      const index = this.mapLayers.findIndex(l => l.id === 'image-set');
 
       if (index !== -1) {
         this.handleRemoveToggleableLayer(this.mapLayers[index])
       }
     }
   }
+
+  previewImage(component: string, key: string): void {
+
+    if (component != null && key != null) {
+
+      const bsModalRef = this.modalService.show(ImagePreviewModalComponent, {
+        animated: true,
+        backdrop: true,
+        ignoreBackdropClick: false,
+        'class': 'image-preview-modal modal-xl'
+      });
+
+      bsModalRef.content.initRaw(component, key);
+    }
+  }
+
 }

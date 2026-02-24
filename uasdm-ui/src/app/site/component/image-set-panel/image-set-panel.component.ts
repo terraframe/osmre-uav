@@ -56,7 +56,7 @@ export class ImageSetPanelComponent implements OnDestroy {
 
 
     /* 
-     * List of rawSets for the current node
+     * List of imageSets for the current node
      */
     @Input() views: CollectionImageSetView[] = [];
 
@@ -141,13 +141,6 @@ export class ImageSetPanelComponent implements OnDestroy {
 
                 this.loading = false;
 
-                views.forEach(view => {
-                    // view.rawSet = view.sets[0];
-                    // view.rawSetId = view.rawSet.id;
-
-                    // this.getThumbnail(view.rawSet);
-                });
-
                 this.onViewsChange.emit(views);
             }
         });
@@ -201,8 +194,8 @@ export class ImageSetPanelComponent implements OnDestroy {
         event.target.src = this.context + 'assets/thumbnail-default.png';
     }
 
-    handleMapIt(rawSet: ImageSet): void {
-        this.toggleMapSet.emit(rawSet);
+    handleMapIt(imageSet: ImageSet): void {
+        this.toggleMapSet.emit(imageSet);
     }
 
 
@@ -222,10 +215,10 @@ export class ImageSetPanelComponent implements OnDestroy {
         bsModalRef.content.submitText = 'Delete';
 
         bsModalRef.content.onConfirm.subscribe(data => {
-            const rawSetId = set.id;
+            const imageSetId = set.id;
 
-            this.pService.remove(rawSetId).then(response => {
-                view.sets = view.sets.filter((n: ImageSet) => n.id !== rawSetId);
+            this.pService.remove(imageSetId).then(response => {
+                view.sets = view.sets.filter((n: ImageSet) => n.id !== imageSetId);
 
                 this.onViewsChange.emit(
                     this.views.filter((n: CollectionImageSetView) => n.componentId !== view.componentId)
@@ -234,43 +227,43 @@ export class ImageSetPanelComponent implements OnDestroy {
         });
     }
 
-    previewImage(document: ProductDocument): void {
+    previewImage(imageSet: ImageSet): void {
 
-        if (document.key != null) {
+        if (imageSet.document.key != null) {
 
-            // const component: string = rawSet.entities[rawSet.entities.length - 1].id;
+            const component: string = imageSet.components[imageSet.components.length - 1].id;
 
-            // const bsModalRef = this.modalService.show(ImagePreviewModalComponent, {
-            //     animated: true,
-            //     backdrop: true,
-            //     ignoreBackdropClick: false,
-            //     'class': 'image-preview-modal modal-xl'
-            // });
+            const bsModalRef = this.modalService.show(ImagePreviewModalComponent, {
+                animated: true,
+                backdrop: true,
+                ignoreBackdropClick: false,
+                'class': 'image-preview-modal modal-xl'
+            });
 
-            // bsModalRef.content.initImageSet(document.id, rawSet.rawSetName);
+            bsModalRef.content.initRaw(component, imageSet.document.key);
         }
     }
 
 
-    handleTogglePublish(rawSet: ImageSet): void {
-        this.pService.togglePublish(rawSet.id).then(p => {
-            const mapIt: boolean = rawSet.mapped;
+    handleTogglePublish(imageSet: ImageSet): void {
+        this.pService.togglePublish(imageSet.id).then(p => {
+            const mapIt: boolean = imageSet.mapped;
 
             if (mapIt) {
-                this.toggleMapSet.emit(rawSet);
+                this.toggleMapSet.emit(imageSet);
             }
 
-            rawSet.published = p.published;
+            imageSet.published = p.published;
 
             if (mapIt) {
-                this.toggleMapSet.emit(rawSet);
+                this.toggleMapSet.emit(imageSet);
             }
         });
     }
 
-    handleToggleLock(rawSet: ImageSet): void {
-        this.pService.toggleLock(rawSet.id).then(() => {
-            rawSet.locked = !rawSet.locked;
+    handleToggleLock(imageSet: ImageSet): void {
+        this.pService.toggleLock(imageSet.id).then(() => {
+            imageSet.locked = !imageSet.locked;
         });
     }
 

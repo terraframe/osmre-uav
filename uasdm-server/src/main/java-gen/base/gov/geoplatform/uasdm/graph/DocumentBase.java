@@ -288,6 +288,22 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
     return super.getParents("gov.geoplatform.uasdm.graph.ComponentHasDocument", gov.geoplatform.uasdm.graph.UasComponent.class);
   }
   
+  public com.runwaysdk.business.graph.EdgeObject addImageSetHasDocumentParent(gov.geoplatform.uasdm.graph.ImageSet imageSet)
+  {
+    return super.addParent(imageSet, "gov.geoplatform.uasdm.graph.ImageSetHasDocument");
+  }
+  
+  public void removeImageSetHasDocumentParent(gov.geoplatform.uasdm.graph.ImageSet imageSet)
+  {
+    super.removeParent(imageSet, "gov.geoplatform.uasdm.graph.ImageSetHasDocument");
+  }
+  
+  @SuppressWarnings("unchecked")
+  public java.util.List<gov.geoplatform.uasdm.graph.ImageSet> getImageSetHasDocumentParentImageSets()
+  {
+    return super.getParents("gov.geoplatform.uasdm.graph.ImageSetHasDocument", gov.geoplatform.uasdm.graph.ImageSet.class);
+  }
+  
   public com.runwaysdk.business.graph.EdgeObject addODMRunOutputParent(gov.geoplatform.uasdm.graph.ODMRun oDMRun)
   {
     return super.addParent(oDMRun, "gov.geoplatform.uasdm.graph.ODMRunOutput");
@@ -318,22 +334,6 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
   public java.util.List<gov.geoplatform.uasdm.graph.Product> getProductHasDocumentParentProducts()
   {
     return super.getParents("gov.geoplatform.uasdm.graph.ProductHasDocument", gov.geoplatform.uasdm.graph.Product.class);
-  }
-  
-  public com.runwaysdk.business.graph.EdgeObject addImageSetHasDocumentParent(gov.geoplatform.uasdm.graph.ImageSet rawSet)
-  {
-    return super.addParent(rawSet, "gov.geoplatform.uasdm.graph.ImageSetHasDocument");
-  }
-  
-  public void removeImageSetHasDocumentParent(gov.geoplatform.uasdm.graph.ImageSet rawSet)
-  {
-    super.removeParent(rawSet, "gov.geoplatform.uasdm.graph.ImageSetHasDocument");
-  }
-  
-  @SuppressWarnings("unchecked")
-  public java.util.List<gov.geoplatform.uasdm.graph.ImageSet> getImageSetHasDocumentParentImageSets()
-  {
-    return super.getParents("gov.geoplatform.uasdm.graph.ImageSetHasDocument", gov.geoplatform.uasdm.graph.ImageSet.class);
   }
   
   public static Document get(String oid)

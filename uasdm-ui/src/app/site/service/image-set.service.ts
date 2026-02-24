@@ -15,7 +15,7 @@ import { firstValueFrom } from 'rxjs';
 
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ImageSetService {
 
 	constructor(private http: HttpClient, private eventService: EventService) { }
@@ -33,24 +33,6 @@ export class ImageSetService {
 
 		return firstValueFrom(this.http.get<ImageSet[]>(environment.apiUrl + '/api/image-set/list', { params: params }));
 	}
-
-
-
-	// getDetail(id: string, pageNumber: number, pageSize: number): Promise<ProductDetail> {
-	// 	let params: HttpParams = new HttpParams();
-	// 	params = params.set('id', id);
-	// 	params = params.set('pageNumber', pageNumber.toString());
-	// 	params = params.set('pageSize', pageSize.toString());
-
-	// 	this.eventService.start();
-
-	// 	return this.http
-	// 		.get<ProductDetail>(environment.apiUrl + '/api/image-set/detail', { params: params })
-	// 		.pipe(finalize(() => {
-	// 			this.eventService.complete();
-	// 		}))
-	// 		);
-	// }
 
 	remove(id: string): Promise<void> {
 

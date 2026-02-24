@@ -337,13 +337,13 @@
                   </tab>
                   <tab heading="Products" (selectTab)="activeTab = 'Products'">
                     <product-panel *ngIf="activeTab === 'Products'" [selection]="current" [organization]="organization"
-                      [filter]="filter" [views]="views" (onViewsChange)="handleProductsChange($event)"
+                      [filter]="filter" [views]="productViews" (onViewsChange)="handleProductsChange($event)"
                       (toggleMapOrtho)="handleMapOrtho($event)" (toggleMapDem)="handleMapDem($event)">
                     </product-panel>
                   </tab>
-                  <tab heading="Raw Sets" (selectTab)="activeTab = 'IMAGE_SETS'">
+                  <tab heading="Image Sets" (selectTab)="activeTab = 'IMAGE_SETS'">
                     <image-set-panel *ngIf="activeTab === 'IMAGE_SETS'" [selection]="current" [organization]="organization"
-                      [filter]="filter" [views]="rawViews">
+                      [filter]="filter" [views]="imageViews">
                     </image-set-panel>
                   </tab>
 
@@ -356,13 +356,13 @@
                   </tab>
                   <tab heading="Products" (selectTab)="activeTab = 'Products'">
                     <product-panel *ngIf="activeTab === 'Products'" [selection]="current" [organization]="organization"
-                      [filter]="filter" [views]="views" (onViewsChange)="handleProductsChange($event)"
+                      [filter]="filter" [views]="productViews" (onViewsChange)="handleProductsChange($event)"
                       (toggleMapOrtho)="handleMapOrtho($event)" (toggleMapDem)="handleMapDem($event)">
                     </product-panel>
                   </tab>
-                  <tab heading="Raw Sets" (selectTab)="activeTab = 'IMAGE_SETS'">
+                  <tab heading="Image Sets" (selectTab)="activeTab = 'IMAGE_SETS'">
                     <image-set-panel *ngIf="activeTab === 'IMAGE_SETS'" [selection]="current" [organization]="organization"
-                      [filter]="filter" [views]="rawViews"
+                      [filter]="filter" [views]="imageViews"
                       (onViewsChange)="handleImageSetsChange($event)"
                       (toggleMapSet)="handleMapSet($event)">
                     </image-set-panel>  
@@ -580,7 +580,7 @@
           </div>
 
           <article class="legend-map-button">
-            <legend-panel [collection]="collection" [views]="views"></legend-panel>
+            <legend-panel [collection]="collection" [views]="productViews"></legend-panel>
           </article>
 
           <div id="mousemove-panel" class="maplibregl-ctrl-bottom-right"

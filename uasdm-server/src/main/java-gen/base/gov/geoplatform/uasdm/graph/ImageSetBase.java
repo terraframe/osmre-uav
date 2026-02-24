@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = -714689047)
+@com.runwaysdk.business.ClassSignature(hash = 2061190678)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -20,7 +20,7 @@ public abstract class ImageSetBase extends com.runwaysdk.business.graph.VertexOb
   public final static java.lang.String PUBLISHED = "published";
   public final static java.lang.String SEQ = "seq";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = -714689047;
+  private static final long serialVersionUID = 2061190678;
   
   public ImageSetBase()
   {
@@ -172,20 +172,20 @@ public abstract class ImageSetBase extends com.runwaysdk.business.graph.VertexOb
     return CLASS;
   }
   
-  public com.runwaysdk.business.graph.EdgeObject addImageSettHasDocumentChild(gov.geoplatform.uasdm.graph.Document document)
+  public com.runwaysdk.business.graph.EdgeObject addImageSetHasDocumentChild(gov.geoplatform.uasdm.graph.Document document)
   {
-    return super.addChild(document, "gov.geoplatform.uasdm.graph.ImageSettHasDocument");
+    return super.addChild(document, "gov.geoplatform.uasdm.graph.ImageSetHasDocument");
   }
   
-  public void removeImageSettHasDocumentChild(gov.geoplatform.uasdm.graph.Document document)
+  public void removeImageSetHasDocumentChild(gov.geoplatform.uasdm.graph.Document document)
   {
-    super.removeChild(document, "gov.geoplatform.uasdm.graph.ImageSettHasDocument");
+    super.removeChild(document, "gov.geoplatform.uasdm.graph.ImageSetHasDocument");
   }
   
   @SuppressWarnings("unchecked")
-  public java.util.List<gov.geoplatform.uasdm.graph.Document> getImageSettHasDocumentChildDocuments()
+  public java.util.List<gov.geoplatform.uasdm.graph.Document> getImageSetHasDocumentChildDocuments()
   {
-    return super.getChildren("gov.geoplatform.uasdm.graph.ImageSettHasDocument",gov.geoplatform.uasdm.graph.Document.class);
+    return super.getChildren("gov.geoplatform.uasdm.graph.ImageSetHasDocument",gov.geoplatform.uasdm.graph.Document.class);
   }
   
   public com.runwaysdk.business.graph.EdgeObject addComponentHasImageSetParent(gov.geoplatform.uasdm.graph.UasComponent uasComponent)
