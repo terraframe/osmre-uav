@@ -4,7 +4,7 @@ package gov.geoplatform.uasdm.processing;
  * This is not a task as defined in IDM. This is a task definition as defined in Fargate.
  */
 public enum FargateTaskDefinition {
-  SMALL("arn:aws:ecs:us-east-1:813324710591:task-definition/uasdm-processing-small:1", 1, 3_072);
+  SMALL("arn:aws:ecs:us-east-1:813324710591:task-definition/uasdm-processing-small:2", 1, 3_072);
   
   String arn; int vcpu; int mib;
   

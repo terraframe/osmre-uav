@@ -18,14 +18,15 @@ package gov.geoplatform.uasdm.processing;
 import java.util.List;
 
 import com.runwaysdk.resource.ApplicationFileResource;
+import com.runwaysdk.resource.ArchiveFileResource;
 
 import gov.geoplatform.uasdm.GenericException;
 
 public abstract class ResourceUtil
 {
-  public static ApplicationFileResource getResource(ApplicationFileResource res)
+  public static ApplicationFileResource unpackResource(ApplicationFileResource res)
   {
-    boolean isArchive = res.getName().endsWith(".zip") || res.getName().endsWith(".tar.gz");
+    boolean isArchive = res instanceof ArchiveFileResource || res.getNameExtension().equalsIgnoreCase("zip") || res.getNameExtension().equalsIgnoreCase("tar.gz");
 
     if (isArchive)
     {

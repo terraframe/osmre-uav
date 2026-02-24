@@ -183,6 +183,7 @@ export class TasksComponent implements OnInit {
       else if (task.type === 'gov.geoplatform.uasdm.odm.ODMProcessingTask'
         || task.type === 'gov.geoplatform.uasdm.bus.OrthoProcessingTask'
         || task.type === 'gov.geoplatform.uasdm.lidar.LidarProcessingTask'
+        || task.type === 'gov.geoplatform.uasdm.processing.FargateProcessingTask'
       ) {
 
         let taskGroupTypeIndex = collection.groups.findIndex(value => { return value.type === 'PROCESS' });
@@ -194,7 +195,7 @@ export class TasksComponent implements OnInit {
           collection.groups[taskGroupTypeIndex].tasks.push(task);
         }
       }
-      else if (task.type === 'gov.geoplatform.uasdm.odm.ODMUploadTask') {
+      else if (task.type === 'gov.geoplatform.uasdm.odm.ODMUploadTask' || task.type === 'gov.geoplatform.uasdm.processing.FargateStoreTask') {
 
         let taskGroupTypeIndex = collection.groups.findIndex(value => { return value.type === 'STORE' });
 

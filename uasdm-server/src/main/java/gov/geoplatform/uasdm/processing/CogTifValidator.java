@@ -43,7 +43,7 @@ public class CogTifValidator
 
   public boolean isValidCog(ApplicationFileResource res)
   {
-    ApplicationFileResource resource = ResourceUtil.getResource(res);
+    ApplicationFileResource resource = ResourceUtil.unpackResource(res);
 
     try
     {

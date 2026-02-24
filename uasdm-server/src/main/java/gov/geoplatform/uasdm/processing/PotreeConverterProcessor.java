@@ -56,7 +56,7 @@ public class PotreeConverterProcessor implements Processor
   @Override
   public ProcessResult process(ApplicationFileResource bez)
   {
-    ApplicationFileResource resource = ResourceUtil.getResource(bez);
+    ApplicationFileResource resource = ResourceUtil.unpackResource(bez);
 
     File file = resource.getUnderlyingFile();
 

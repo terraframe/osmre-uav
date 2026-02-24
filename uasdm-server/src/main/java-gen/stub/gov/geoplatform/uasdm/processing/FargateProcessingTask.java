@@ -1,38 +1,28 @@
 package gov.geoplatform.uasdm.processing;
 
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 import com.runwaysdk.RunwayException;
-import com.runwaysdk.resource.CloseableFile;
-import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.ProcessingRun;
-import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.DocumentIF;
-import gov.geoplatform.uasdm.model.ImageryComponent;
-import gov.geoplatform.uasdm.model.ProcessConfiguration;
-import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.EmptyFileSetException;
-import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.odm.ODMTaskProcessor.TaskResult;
 import gov.geoplatform.uasdm.odm.ODMTaskProcessor.TaskStatus;
 import gov.geoplatform.uasdm.odm.ProcessingTaskStatusServer;
-import gov.geoplatform.uasdm.remote.RemoteFileFacade;
-import gov.geoplatform.uasdm.remote.RemoteFileObject;
-import gov.geoplatform.uasdm.view.SiteObject;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
@@ -73,7 +63,7 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
       if (!"success".equals(ecsResp.get("status").getAsString()))
       {
         this.appLock();
-        this.setStatus(ODMStatus.FAILED.getLabel());
+        this.setStatus(ProcessingTaskStatus.FAILED.getLabel());
         this.setMessage(ecsResp.has("message") ? ecsResp.get("message").getAsString() : "ECS RunTask failed.");
         this.apply();
         return;
@@ -83,8 +73,9 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
       ProcessingRun.createAndApplyFor(this, taskArn, taskDef);
 
       this.appLock();
-      this.setStatus(ODMStatus.RUNNING.getLabel());
+      this.setStatus(ProcessingTaskStatus.RUNNING.getLabel());
       this.setTaskArn(ecsResp.get("taskArn").getAsString());
+      this.setTaskDefinitionArn(taskDef.getArn());
       
       // TODO : Runtime estimate?
 //      JSONObject estimate = new ODMRunService().estimateRuntimeInRequest(this.getImageryComponentOid(), this.getConfigurationJson());
@@ -99,7 +90,7 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
     catch (EmptyFileSetException e)
     {
       this.appLock();
-      this.setStatus(ODMStatus.COMPLETED.getLabel());
+      this.setStatus(ProcessingTaskStatus.COMPLETED.getLabel());
       this.setMessage("No image files to be processed.");
       this.apply();
     }
@@ -108,7 +99,7 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
       logger.error("Error occurred while initiating ODM Processing.", t);
 
       this.appLock();
-      this.setStatus(ODMStatus.FAILED.getLabel());
+      this.setStatus(ProcessingTaskStatus.FAILED.getLabel());
       this.setMessage(RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
       this.apply();
     }
@@ -120,13 +111,12 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
 
     // If something already marked it terminal, don't keep thrashing.
     String current = this.getStatus();
-    if (ODMStatus.COMPLETED.getLabel().equals(current))
+    if (ProcessingTaskStatus.COMPLETED.getLabel().equals(current))
     {
-      result.setStatus(TaskStatus.FINALIZING);
-      // Optional: Finalize?
+      result.setStatus(TaskStatus.COMPLETED);
       return result;
     }
-    else if (ODMStatus.FAILED.getLabel().equals(current))
+    else if (ProcessingTaskStatus.FAILED.getLabel().equals(current))
     {
       result.setStatus(TaskStatus.ERROR);
       return result;
@@ -136,7 +126,7 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
     if (taskArn == null || taskArn.isBlank())
     {
       this.appLock();
-      this.setStatus(ODMStatus.FAILED.getLabel());
+      this.setStatus(ProcessingTaskStatus.FAILED.getLabel());
       this.setMessage("Missing ECS task ARN (resourceId). Cannot check status.");
       this.apply();
 
@@ -169,7 +159,7 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
         var f = resp.failures().get(0);
 
         this.appLock();
-        this.setStatus(ODMStatus.FAILED.getLabel());
+        this.setStatus(ProcessingTaskStatus.FAILED.getLabel());
         this.setMessage("ECS DescribeTasks failure: " + (f.arn() == null ? "" : f.arn())
             + " : " + f.reason() + (f.detail() == null ? "" : (". " + f.detail())));
         this.apply();
@@ -181,7 +171,7 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
       if (resp.tasks() == null || resp.tasks().isEmpty())
       {
         this.appLock();
-        this.setStatus(ODMStatus.FAILED.getLabel());
+        this.setStatus(ProcessingTaskStatus.FAILED.getLabel());
         this.setMessage("ECS DescribeTasks returned no tasks for ARN: " + taskArn);
         this.apply();
 
@@ -196,7 +186,7 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
       if (!List.of("STOPPED", "DELETED", "DEPROVISIONING", "STOPPING", "DEACTIVATING").contains(lastStatus))
       {
         this.appLock();
-        this.setStatus(ODMStatus.RUNNING.getLabel());
+        this.setStatus(ProcessingTaskStatus.RUNNING.getLabel());
         this.setMessage("Processing is running on ECS (" + lastStatus + ").");
         this.apply();
 
@@ -224,20 +214,15 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
       this.appLock();
       if (success)
       {
-        this.setStatus(ODMStatus.COMPLETED.getLabel());
-        this.setMessage("Processing completed successfully. Finalizing...");
+        this.setStatus(ProcessingTaskStatus.COMPLETED.getLabel());
+        this.setMessage("Processing completed successfully.");
         this.apply();
 
-        result.setStatus(TaskStatus.FINALIZING);
-
-        // TODO: attach downstream upload task, if your pipeline needs it.
-        // Example placeholders (replace with your real way of creating/uploading):
-        // ODMUploadTaskIF uploadTask = new ODMUploadTask(...);
-        // result.setDownstreamTask(uploadTask);
+        result.setStatus(TaskStatus.COMPLETED);
       }
       else
       {
-        this.setStatus(ODMStatus.FAILED.getLabel());
+        this.setStatus(ProcessingTaskStatus.FAILED.getLabel());
 
         String msg = "Processing failed on ECS.";
         if (exitCode != null) msg += " Exit code: " + exitCode + ".";
@@ -248,6 +233,8 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
 
         result.setStatus(TaskStatus.ERROR);
       }
+      
+      result.setExitCode(exitCode);
 
       return result;
     }
@@ -256,7 +243,7 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
       logger.error("Error occurred while checking Fargate status.", t);
 
       this.appLock();
-      this.setStatus(ODMStatus.FAILED.getLabel());
+      this.setStatus(ProcessingTaskStatus.FAILED.getLabel());
       this.setMessage(RunwayException.localizeThrowable(t, Session.getCurrentLocale()));
       this.apply();
 
@@ -265,28 +252,38 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
     }
   }
   
-  private FargateTaskDefinition taskForRequest() {
-    UasComponent component = (UasComponent) getComponentInstance();
-
+  public static DocumentIF selectLazForProcessing(UasComponentIF component) {
     List<DocumentIF> documents;
     if (component instanceof Collection)
         documents = ((Collection) component).getRaw();
     else
         documents = component.getDocuments();
     
-    documents = documents.stream().filter(d -> !d.getExclude()).collect(Collectors.toList());
-
-    long totalBytes = 0L;
-    for (var doc : documents) {
-        totalBytes += doc.getFileSize();
+    documents = documents.stream()
+        .filter(d -> !Boolean.TRUE.equals(d.getExclude()))
+        .filter(d -> FilenameUtils.getExtension(d.getName()).equalsIgnoreCase("laz"))
+        .collect(Collectors.toList());
+    
+    if (documents.size() > 1) {
+      throw new RuntimeException("Expected a single laz file, but there were " + documents.size());
+    } else if (documents.size() == 0) {
+      throw new EmptyFileSetException();
     }
+    
+    return documents.get(0);
+  }
+  
+  protected FargateTaskDefinition taskForRequest() {
+    var laz = selectLazForProcessing(this.getComponentInstance());
+
+    long totalBytes = laz.getFileSize();
+//    long totalBytes = 0L;
+//    for (var doc : documents) {
+//        totalBytes += doc.getFileSize();
+//    }
 
     long colSizeMb = totalBytes / (1024L * 1024L);
     int sizeMb = (int) Math.min(colSizeMb, Integer.MAX_VALUE); // Guards against an overflow
-    int rawCount = documents.size();
-    
-    if (rawCount <= 0)
-      throw new EmptyFileSetException();
     
     // TODO : Different task sizes
     return FargateTaskDefinition.SMALL;
@@ -313,7 +310,7 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
           .environment(
               KeyValuePair.builder().name("EXCLUDES").value(String.join(",", excludes)).build(),
               KeyValuePair.builder().name("JOB_ID").value(this.getOid()).build(),
-              KeyValuePair.builder().name("S3_COMPONENT").value(component.getS3location()).build(),
+              KeyValuePair.builder().name("S3_COMPONENT").value("s3://" + AppProperties.getBucketName() + "/" + component.getS3location()).build(),
               KeyValuePair.builder().name("AWS_REGION").value(region.id()).build(),
               KeyValuePair.builder().name("AWS_ACCESS_KEY_ID").value(AppProperties.getS3AccessKey()).build(),
               KeyValuePair.builder().name("AWS_SECRET_ACCESS_KEY").value(AppProperties.getS3SecretKey()).build()
@@ -376,76 +373,23 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
 
   public TaskResult poll()
   {
-    TaskResult result = checkStatus();
+    TaskResult status = checkStatus();
     
-    final String jobKey = JOBS + "/" + this.getOid();
+    boolean jobFinished = status.getStatus().equals(TaskStatus.COMPLETED) || status.getStatus().equals(TaskStatus.ERROR);
     
-    if (result.getStatus().equals(TaskStatus.FINALIZING))
-    {
-      final StatusMonitorIF monitor = new WorkflowTaskMonitor(this);
-      final UasComponentIF component = getComponentInstance();
-      final ProcessConfiguration config = this.getConfiguration();
-      final Product product = (Product) component.createProductIfNotExist(config.getProductName());
-      
-      List<SiteObject> items = RemoteFileFacade.getSiteObjects(component, jobKey, new LinkedList<SiteObject>(), null, null).getObjects();
-      
-      handleArtifact(".*\\.copc\\.laz", ImageryComponent.PTCLOUD + "/pointcloud.copc.laz", config.toLidar().isGenerateCopc(), items, product, component, monitor);
-      handleArtifact("m_Classification_veg_density.cog.tif", ImageryComponent.ORTHO + "/m_Classification_veg_density.cog.tif", config.toLidar().isGenerateTreeCanopyCover(), items, product, component, monitor);
-      handleArtifact("m_Z_diff.cog.tif", ImageryComponent.ORTHO + "/m_Z_diff.cog.tif", config.toLidar().isGenerateTreeStructure(), items, product, component, monitor);
-      handleArtifact("m_Z_max.cog.tif", ImageryComponent.ORTHO + "/m_Z_max.cog.tif", config.toLidar().isGenerateGSM(), items, product, component, monitor);
-      handleArtifact("m_Z_min.cog.tif", ImageryComponent.ORTHO + "/m_Z_min.cog.tif", config.toLidar().isGenerateTerrainModel(), items, product, component, monitor);
-      
-      // Designate a primary product if it makes sense
-      designatePrimaryProduct(component, config);
-
-      this.appLock();
-      this.setStatus(ODMStatus.COMPLETED.getLabel());
-      this.setMessage("Lidar processing is complete");
-      this.apply();
-      
-      RemoteFileFacade.deleteObjects(jobKey);
-    } else if (result.getStatus().equals(TaskStatus.ERROR)) {
-      this.appLock();
-      this.setStatus(ODMStatus.FAILED.getLabel());
-      this.setMessage("Lidar processing encountered errors. View messages for more information.");
-      this.apply();
-      
-      RemoteFileFacade.deleteObjects(jobKey);
+    if (jobFinished) {
+      storeResults(status);
     }
     
-    return result;
+    return status;
   }
   
-  private void handleArtifact(String regex, String s3Path, boolean required, List<SiteObject> items, Product product, UasComponentIF component, StatusMonitorIF monitor) {
-    for (var item : items) {
-      if (item.getName().matches(regex)) {
-        manageRemote(s3Path, item, product, component, monitor);
-        return;
-      }
-    }
-    
-    if (required) {
-      this.createAction("Processing job did not generated expected file [" + s3Path + "]", TaskActionType.ERROR);
-    }
-  }
-  
-  private void designatePrimaryProduct(UasComponentIF component, ProcessConfiguration config) {
-    if (component.getPrimaryProduct().isEmpty()) {
-      for (ProductIF product : component.getProducts()) {
-        if (!product.getProductName().equals(config.getProductName()) && product.getProductName().contains(config.getProductName())) {
-          ((Product)product).setPrimary(true);
-          ((Product)product).apply();
-          break;
-        }
-      }
-    }
-  }
-  
-  private void manageRemote(String s3Path, SiteObject item, Product product, UasComponentIF component, StatusMonitorIF monitor) {
-    RemoteFileObject remote = RemoteFileFacade.download(item.getKey());
-    
-    try(CloseableFile downloaded = remote.openNewFile()) {
-      new ManagedDocument(s3Path, product, component, monitor).process(new FileResource(downloaded));
-    }
+  protected void storeResults(TaskResult status) {
+    var store = new FargateStoreTask();
+    store.setTaskArn(this.getTaskArn());
+    store.setTaskDefinitionArn(this.getTaskDefinitionArn());
+    store.setProcessingType(this.getProcessingType());
+    store.apply();
+    store.finalize(status);
   }
 }

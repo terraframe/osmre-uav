@@ -44,7 +44,13 @@
         </attributes>
       </mdBusiness>
       
-      <!-- TODO : Upload task? Like with ODM? -->
+      <mdBusiness name="gov.geoplatform.uasdm.processing.FargateStoreTask" label="Fargate Store" extends="gov.geoplatform.uasdm.bus.WorkflowTask">
+        <attributes>
+          <text name="processingType" label="processingType"></text>
+          <text name="taskDefinitionArn" label="taskDefinitionArn"></text>
+          <text name="taskArn" label="taskArn"></text>
+        </attributes>
+      </mdBusiness>
     </create>
     <update></update>
     <permissions>

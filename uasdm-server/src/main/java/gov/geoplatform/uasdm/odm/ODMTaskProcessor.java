@@ -47,12 +47,14 @@ import net.lingala.zip4j.exception.ZipException;
 public class ODMTaskProcessor
 {
   public static enum TaskStatus {
-    ERROR, ACTIVE, UPLOAD, FINALIZING, COMPLETED
+    ERROR, ACTIVE, UPLOAD, COMPLETED
   }
 
   public static class TaskResult
   {
     private TaskStatus status;
+    
+    private Integer exitCode = null;
 
     private ODMUploadTaskIF downstreamTask;
 
@@ -60,6 +62,14 @@ public class ODMTaskProcessor
     {
       this.status = TaskStatus.ACTIVE;
       this.downstreamTask = null;
+    }
+    
+    public Integer getExitCode() {
+      return exitCode;
+    }
+    
+    public void setExitCode(int code) {
+      this.exitCode = code;
     }
 
     public TaskStatus getStatus()

@@ -49,6 +49,7 @@ import net.geoprism.spring.web.JsonExceptionHandler;
     "net.geoprism.rbac", //
     "net.geoprism.registry.spring", //
     "net.geoprism.spring", //
+    "gov.geoplatform.uasdm.processing.fargate",
     "gov.geoplatform.uasdm.controller", //
     "gov.geoplatform.uasdm.service", //
     "gov.geoplatform.uasdm.service.business", //

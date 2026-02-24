@@ -213,6 +213,16 @@ public class AppProperties
    * FargateAutoscaler Synchronization related properties
    */
 
+  public static String getFargateAutoscalerLogGroup()
+  {
+    return Singleton.getProps().getString("autoscale.ecs.logGroup", "/ecs/uasdm-processing");
+  }
+  
+  public static String getFargateAutoscalerLogStreamPrefix()
+  {
+    return Singleton.getProps().getString("autoscale.ecs.logGroup", "ecs");
+  }
+  
   public static String getFargateAutoscalerECSAccessKey()
   {
     return Singleton.getProps().getString("autoscale.ecs.accessKey");
