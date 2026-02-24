@@ -19,12 +19,15 @@ import { ConfigurationService } from '@core/service/configuration.service';
 import { UserImportComponent } from './user-import.component';
 import { AuthService } from '@shared/service/auth.service';
 import { environment } from 'src/environments/environment';
+import { NgIf } from '@angular/common';
+import { GenericTableComponent } from '@shared/component/generic-table/generic-table.component';
 
 @Component({
-	standalone: false,
-  selector: 'accounts',
-	templateUrl: './accounts.component.html',
-	styleUrls: ['./accounts.css']
+    standalone: true,
+    selector: 'accounts',
+    templateUrl: './accounts.component.html',
+    styleUrls: ['./accounts.css'],
+    imports: [NgIf, GenericTableComponent]
 })
 export class AccountsComponent implements OnInit {
 
@@ -61,7 +64,8 @@ export class AccountsComponent implements OnInit {
 			remove: true,
 			edit: true,
 			create: true,
-			label: 'User'
+			label: 'User',
+			sort: { field: 'username', order: 1 },
 		}
 
 		this.refresh = new Subject<void>();

@@ -5,9 +5,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'keys',
-  pure: false,
-  standalone: false
+    name: 'keys',
+    pure: false,
+    standalone: true
 })
 export class KeysPipe implements PipeTransform {
   transform(value:any, args:string[]) : any {

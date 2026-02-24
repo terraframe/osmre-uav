@@ -4,13 +4,14 @@
 
 import { Component, OnInit, Input, OnDestroy, Inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Clipboard } from '@angular/cdk/clipboard';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Subject } from 'rxjs';
 
 import { ErrorHandler, BasicConfirmModalComponent } from '@shared/component';
 
-import { ProcessConfig, SiteEntity, SiteObjectsResultSet } from '@site/model/management';
+import { SiteEntity, SiteObjectsResultSet } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 import { MetadataService } from '@site/service/metadata.service';
 import { MetadataModalComponent } from './metadata-modal.component';
@@ -23,22 +24,26 @@ import {
 } from 'angular-animations';
 import { ArtifactPageComponent } from './artifact-page.component';
 import { RunProcessModalComponent } from './run-process-modal.component';
-import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import EnvironmentUtil from '@core/utility/environment-util';
 import { environment } from 'src/environments/environment';
-import { WebSockets } from '@core/utility/web-sockets';
-import { ConfigurationService } from '@core/service/configuration.service';
-import { APP_BASE_HREF } from '@angular/common';
+import { NgIf, NgFor, NgClass } from '@angular/common';
 import { CreateProductGroupModalComponent } from './create-product-group-modal.component';
 import { UserAccessModalComponent } from './user-access-modal.component';
-import { AuthService } from '@shared/service/auth.service';
 import { ImagePreviewModalComponent } from './image-preview-modal.component';
 import { TusUploadModalComponent } from './tus-upload-modal.component';
 import { COLLECTION_FORMATS } from '@site/model/sensor';
-import { CreateRawSetModalComponent } from './create-raw-set-modal.component';
+import { RouterLink } from '@angular/router';
+import { TabsetComponent, TabDirective } from 'ngx-bootstrap/tabs';
+import { ArtifactUploadComponent } from '../artifact-upload/artifact-upload.component';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { SafeHtmlPipe } from '@shared/pipe/safe-html.pipe';
+import { IdmDatePipe } from '@shared/pipe/idmdate.pipe';
+import { WebsocketService } from '@shared/service/websocket.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { CreateImageSetModalComponent } from './create-image-set-modal.component';
+import { ImageSetPageComponent } from './image-set-page.component';
 
 @Component({
-	standalone: false,
+	standalone: true,
 	selector: 'collection-modal',
 	templateUrl: './collection-modal.component.html',
 	styleUrls: ['./collection-modal.component.scss'],
@@ -48,7 +53,8 @@ import { CreateRawSetModalComponent } from './create-raw-set-modal.component';
 		fadeOutOnLeaveAnimation(),
 		slideInLeftOnEnterAnimation(),
 		slideInRightOnEnterAnimation(),
-	]
+	],
+	imports: [NgIf, RouterLink, NgFor, TabsetComponent, TabDirective, NgClass, ArtifactUploadComponent, ArtifactPageComponent, ImageSetPageComponent, NgxPaginationModule, SafeHtmlPipe, IdmDatePipe]
 })
 export class CollectionModalComponent implements OnInit, OnDestroy {
 	entity: SiteEntity;
@@ -85,17 +91,30 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	video: { src: string, name: string } = { src: null, name: null };
 	context: string;
 
-	notifier: WebSocketSubject<any>;
 	loading = false;
 
 	constructor(
 		private service: ManagementService,
 		private metadataService: MetadataService,
-		private authService: AuthService,
 		private modalService: BsModalService,
-		public bsModalRef: BsModalRef
+		public bsModalRef: BsModalRef,
+		private websocketService: WebsocketService,
+		private clipboard: Clipboard
 	) {
 		this.context = environment.apiUrl;
+
+		this.websocketService.getNotifier()
+			.pipe(takeUntilDestroyed())
+			.subscribe((message) => {
+				if (this.entity != null && message.type === "UPLOAD_JOB_CHANGE" && message.content.collection === this.entity.id) {
+					if (this.tabName === 'image') {
+						this.onPageChange(this.page.pageNumber);
+					}
+					else if (this.tabName === 'video') {
+						this.getData(this.entity.id, this.tabName, null, null);
+					}
+				}
+			});
 	}
 
 	ngOnInit(): void {
@@ -105,23 +124,9 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		this.page.pageNumber = 1;
 		this.page.pageSize = this.constPageSize;
 		this.page.results = [];
-
-		this.notifier = webSocket(WebSockets.buildBaseUrl() + "/websocket-notifier/notify");
-		this.notifier.subscribe(message => {
-			if (this.entity != null && message.type === "UPLOAD_JOB_CHANGE" && message.content.collection === this.entity.id) {
-				if (this.tabName === 'image') {
-					this.onPageChange(this.page.pageNumber);
-				}
-				else if (this.tabName === 'video') {
-					this.getData(this.entity.id, this.tabName, null, null);
-				}
-			}
-		});
-
 	}
 
 	ngOnDestroy(): void {
-		this.notifier.unsubscribe();
 	}
 
 
@@ -353,9 +358,9 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		confirmModalRef.content.init(this.entity);
 	}
 
-	handleCreateRawSet(): void {
+	handleCreateImageSet(): void {
 
-		const confirmModalRef = this.modalService.show(CreateRawSetModalComponent, {
+		const confirmModalRef = this.modalService.show(CreateImageSetModalComponent, {
 			animated: true,
 			backdrop: true,
 			ignoreBackdropClick: true,
@@ -458,6 +463,11 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	closeVideo(): void {
 		this.video.name = null;
 		this.video.src = null;
+	}
+
+	copyLocation() {
+
+		this.clipboard.copy(window.location.href);
 	}
 
 	error(err: HttpErrorResponse): void {

@@ -24,7 +24,7 @@ import { ODMRun } from '@site/model/odmrun';
 
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ManagementService {
 
 	constructor(private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService, private authService: AuthService) { }
@@ -766,6 +766,9 @@ export class ManagementService {
 	evaluate(condition: Condition, entity: SiteEntity): boolean {
 		if (condition != null && condition.type === 'eq') {
 			return (entity[condition.name] === condition.value);
+		}
+		else if (condition != null && condition.type === 'eqn') {
+			return (entity[condition.name] === condition.value || entity[condition.name] == null);
 		}
 		else if (condition != null && condition.type === 'admin') {
 			return this.authService.isAdmin();

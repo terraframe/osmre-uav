@@ -11,13 +11,17 @@ import { ManagementService } from '@site/service/management.service';
 import { SiteEntity, ProcessConfig, Product } from '@site/model/management';
 import { Subject } from 'rxjs';
 import { ProductService } from '@site/service/product.service';
+import { FormsModule } from '@angular/forms';
+import { NgIf } from '@angular/common';
+import { ForbiddenNameDirective } from '../../directive/forbidden-name.directive';
 
 
 @Component({
-    standalone: false,
-  selector: 'create-product-group-modal',
+    standalone: true,
+    selector: 'create-product-group-modal',
     templateUrl: './create-product-group-modal.component.html',
-    styleUrls: []
+    styleUrls: [],
+    imports: [FormsModule, NgIf, ForbiddenNameDirective]
 })
 export class CreateProductGroupModalComponent {
 

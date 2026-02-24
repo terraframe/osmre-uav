@@ -2,21 +2,21 @@
 ///
 ///
 
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, TemplateRef, Inject } from "@angular/core";
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, TemplateRef } from "@angular/core";
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BsModalService } from "ngx-bootstrap/modal";
 import { BsModalRef } from "ngx-bootstrap/modal";
 import { v4 as uuid } from "uuid";
-import { Map, LngLatBounds, NavigationControl, MapEvent, AttributionControl, RasterSourceSpecification } from "maplibre-gl";
+import { Map, LngLatBounds, NavigationControl, AttributionControl } from "maplibre-gl";
 
 import { Observable, Subject } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
-import { webSocket, WebSocketSubject } from "rxjs/webSocket";
 
 import { BasicConfirmModalComponent } from "@shared/component/modal/basic-confirm-modal.component";
 import { NotificationModalComponent } from "@shared/component/modal/notification-modal.component";
 import { AuthService } from "@shared/service/auth.service";
 
-import { SiteEntity, Product, Task, MapLayer, ViewerSelection, SELECTION_TYPE, Filter, CollectionProductView, UploadTask, CollectionRawSetView, RawSet, MapLayerType } from "../model/management";
+import { SiteEntity, Product, Task, MapLayer, ViewerSelection, SELECTION_TYPE, Filter, CollectionProductView, UploadTask, CollectionImageSetView, ImageSet, MapLayerType } from "../model/management";
 
 import { EntityModalComponent } from "./modal/entity-modal.component";
 import { CollectionModalComponent } from "./modal/collection-modal.component";
@@ -32,17 +32,15 @@ import {
   fadeInOnEnterAnimation,
   fadeOutOnLeaveAnimation
 } from "angular-animations";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import { CreateCollectionModalComponent } from "./modal/create-collection-modal.component";
 import { CreateStandaloneProductModalComponent } from "./modal/create-standalone-product-group-modal.component";
 import { LayerColor, StacCollection, StacItem, StacLink, StacProperty, ToggleableLayer, ToggleableLayerType } from "@site/model/layer";
-import { StacLayer } from "@site/model/layer";
 
-import { BBox, bbox, bboxPolygon, centroid, envelope, featureCollection } from "@turf/turf";
+import { bbox, bboxPolygon, centroid, envelope, featureCollection } from "@turf/turf";
 import EnvironmentUtil from "@core/utility/environment-util";
 import { environment } from "src/environments/environment";
 import { ConfigurationService } from "@core/service/configuration.service";
-import { WebSockets } from "@core/utility/web-sockets";
 import { LPGSync } from "@shared/model/lpg";
 import { LPGSyncService } from "@shared/service/lpg-sync.service";
 import { FilterModalComponent } from "./modal/filter-modal.component";
@@ -54,6 +52,21 @@ import { KnowStacService } from "@site/service/know-stac.service";
 import { isMapboxURL, transformMapboxUrl } from "maplibregl-mapbox-request-transformer";
 import { UploadService } from "@site/service/upload.service";
 import { TusUploadModalComponent } from "./modal/tus-upload-modal.component";
+import { NgIf, NgFor, NgClass, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet, Location } from "@angular/common";
+import { CollapseDirective } from "ngx-bootstrap/collapse";
+import { UasdmHeaderComponent } from "../../shared/component/header/header.component";
+import { FormsModule } from "@angular/forms";
+import { TypeaheadDirective } from "ngx-bootstrap/typeahead";
+import { OrganizationFieldComponent } from "../../shared/component/organization-field/organization-field.component";
+import { TabsetComponent, TabDirective } from "ngx-bootstrap/tabs";
+import { ProductPanelComponent } from "./product-panel/product-panel.component";
+import { StacItemPanelComponent } from "./stac-item-panel/stac-item-panel.component";
+import { KnowStacPanelComponent } from "./know-stac-panel/know-stac-panel.component";
+import { ImageryPanelComponent } from "./imagery-panel/imagery-panel.component";
+import { AlertComponent } from "ngx-bootstrap/alert";
+import { LegendPanelComponent } from "./legend-panel/legend-panel.component";
+import { WebsocketService } from "@shared/service/websocket.service";
+import { ImageSetPanelComponent } from "./image-set-panel/image-set-panel.component";
 
 const enum PANEL_TYPE {
   SITE = 0,
@@ -64,14 +77,15 @@ const enum PANEL_TYPE {
 }
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: "projects",
   templateUrl: "./projects.component.html",
   styleUrls: ["./projects.css"],
   animations: [
     fadeInOnEnterAnimation(),
     fadeOutOnLeaveAnimation()
-  ]
+  ],
+  imports: [NgIf, NgFor, CollapseDirective, NgClass, UasdmHeaderComponent, FormsModule, TypeaheadDirective, OrganizationFieldComponent, TabsetComponent, TabDirective, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet, ProductPanelComponent, ImageSetPanelComponent, StacItemPanelComponent, KnowStacPanelComponent, ImageryPanelComponent, AlertComponent, RouterLink, LegendPanelComponent]
 })
 export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
@@ -175,8 +189,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   */
   private bsModalRef: BsModalRef;
 
-  notifier: WebSocketSubject<any>;
-
   tasks: Task[] = [];
 
   notifications: { text: string }[] = [];
@@ -241,7 +253,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   collection: StacCollection = null;
 
   views: CollectionProductView[] = [];
-  rawViews: CollectionRawSetView[] = [];
+  rawViews: CollectionImageSetView[] = [];
 
   properties: StacProperty[] = null;
 
@@ -257,7 +269,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     private route: ActivatedRoute,
     private cookieService: CookieService,
     private syncService: LPGSyncService,
-    private uploadService: UploadService
+    private uploadService: UploadService,
+    private websocketService: WebsocketService,
+    private location: Location,
+    private router: Router
   ) {
 
     this.subject = new Subject();
@@ -287,6 +302,15 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       });
     });
+
+    this.websocketService.getNotifier().pipe(takeUntilDestroyed()).subscribe((message) => {
+      if (message.type === "UPLOAD_JOB_CHANGE") {
+        this.tasks.push(message.content);
+      }
+      if (message.type === "NOTIFICATION") {
+        this.notifications.push(message.content);
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -295,24 +319,13 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.userName = this.service.getCurrentUser();
     this.organization = this.authService.getOrganization();
 
-    this.notifier = webSocket(WebSockets.buildBaseUrl() + "/websocket-notifier/notify");
-
-    this.notifier.subscribe(message => {
-      if (message.type === "UPLOAD_JOB_CHANGE") {
-        this.tasks.push(message.content);
-      }
-      if (message.type === "NOTIFICATION") {
-        this.notifications.push(message.content);
-      }
-    });
 
     const oid = this.route.snapshot.params["oid"];
     const action = this.route.snapshot.params["action"];
 
-    if (oid != null && action != null && action === "collection") {
+    if (oid != null && action != null && action === "entity") {
       this.handleViewSite(oid);
     }
-
 
     this.uploadService.findAllUploads().then(resumables => {
       if (resumables.length > 0) {
@@ -362,8 +375,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.map.remove();
-
-    this.notifier.complete();
   }
 
   ngAfterViewInit() {
@@ -657,7 +668,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // Reload the item layers
-    this.handleCollectionChange(this.collection);
+    this.handleCollectionChange({ visible: false, collection: this.collection });
   }
 
   handleExtentChange(e: any): void {
@@ -1177,7 +1188,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         "source": layer.key,
         "paint": {
           "circle-radius": 10,
-          "circle-color": LayerColor.RAW_SET,
+          "circle-color": LayerColor.IMAGE_SET,
           "circle-stroke-width": 2,
           "circle-stroke-color": "#FFFFFF"
         }
@@ -1246,6 +1257,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (event != null) {
       event.stopPropagation();
+    }
+
+    if (node != null) {
+      this.location.replaceState('/site/viewer/entity/' + node.id);
+    } else {
+      this.location.replaceState('/site/viewer/');
     }
 
     if (node != null && node.geometry != null && node.geometry.type === "Point") {
@@ -1347,6 +1364,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   back(breadcrumb: ViewerSelection): void {
 
     if (breadcrumb == null) {
+      this.location.replaceState('/site/viewer/');
+
       if (this.breadcrumbs.length > 0) {
 
         if (this.hierarchy.oid != null && this.hierarchy.oid.length > 0) {
@@ -1374,6 +1393,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     else if (breadcrumb.type === SELECTION_TYPE.SITE) {
       const node: SiteEntity = breadcrumb.data as SiteEntity;
+
+      this.location.replaceState('/site/viewer/entity/' + node.id);
 
       if (node.geometry != null && node.geometry.type === "Point") {
         //this.map.fitBounds(this.allPointsBounds, { padding: 50 });
@@ -1433,6 +1454,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   showLeafModal(collection: SiteEntity, folders: SiteEntity[], breadcrumbs: SiteEntity[]): void {
+    this.location.replaceState('/site/viewer/entity/' + collection.id);
 
     if (collection.type === "Mission") {
       this.bsModalRef = this.modalService.show(AccessibleSupportModalComponent, {
@@ -1444,6 +1466,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.bsModalRef.content.init(collection, folders, breadcrumbs);
     }
     else {
+
       this.bsModalRef = this.modalService.show(CollectionModalComponent, {
         animated: true,
         backdrop: true,
@@ -1908,7 +1931,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     (<any>this.map.getSource("items")).setData(featureCollection(features));
   }
 
-  handleCollectionChange(collection: StacCollection): void {
+  handleCollectionChange(event: { visible: boolean, collection: StacCollection }): void {
+
+    const { collection, visible } = event;
+
 
     if (collection != null && collection.extent.spatial != null && collection.extent.spatial.bbox.length > 0) {
 
@@ -1932,8 +1958,15 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.collection = collection;
 
+    this.map.setLayoutProperty('collection', "visibility", visible ? 'visible' : 'none');
+
     this.buildItemsLayer();
   }
+
+  handleToggleCollectionVisibility(visible: boolean): void {
+    this.map.setLayoutProperty('collection', "visibility", visible ? 'visible' : 'none');
+  }
+
 
   handleProductsChange(views: CollectionProductView[]): void {
 
@@ -2087,6 +2120,17 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         url += "?url=" + encodeURIComponent(link.href);
         url += "&assets=" + encodeURIComponent(item.asset);
 
+        const asset = item.assets[item.asset];
+        if (asset.roles != null && asset.roles.indexOf('multispectral') !== -1) {
+          url += "&multispectral=true";
+        }
+        else if (asset.roles != null && asset.roles.indexOf('thermal') !== -1) {
+          url += "&thermal=true";
+        }  
+        else if (asset.roles != null && asset.roles.indexOf('elevation') !== -1) {
+          url += "&hillshade=true";
+        }
+
         this.addImageLayer({
           type: MapLayerType.Raster,
           classification: "ORTHO",
@@ -2107,6 +2151,17 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       url += "?url=" + encodeURIComponent(link.href);
       url += "&assets=" + encodeURIComponent(item.asset);
 
+      const asset = item.assets[item.asset];
+      if (asset.roles != null && asset.roles.indexOf('multispectral') !== -1) {
+        url += "&multispectral=true";
+      }
+      else if (asset.roles != null && asset.roles.indexOf('elevation') !== -1) {
+        url += "&hillshade=true";
+      }
+      else if (asset.roles != null && asset.roles.indexOf('thermal') !== -1) {
+        url += "&thermal=true";
+      }
+
       this.addImageLayer({
         type: MapLayerType.Raster,
         classification: "ORTHO",
@@ -2125,7 +2180,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         url: layer.asset.url
       });
     }
-    else if (layer.type === ToggleableLayerType.RAW_SET) {
+    else if (layer.type === ToggleableLayerType.IMAGE_SET) {
 
       this.addImageLayer({
         type: MapLayerType.Geojson,
@@ -2151,7 +2206,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     else if (layer.type === ToggleableLayerType.PRODUCT) {
       this.removeImageLayer(layer.id);
     }
-    else if (layer.type === ToggleableLayerType.RAW_SET) {
+    else if (layer.type === ToggleableLayerType.IMAGE_SET) {
       this.removeImageLayer(layer.id, true);
     }
   }
@@ -2233,11 +2288,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     ((link.item != null) ? new Promise<StacItem>(function (myResolve, myReject) {
       myResolve(link.item);
     }) : this.stacService.item(link.href)).then(item => {
-      if (item.assets.thumbnail != null) {
-        item.thumbnail = item.assets.thumbnail.href;
+      if (item.assets['thumbnail'] != null) {
+        item.thumbnail = item.assets['thumbnail'].href;
       }
-      else if (item.assets['thumbnail-hd'] != null) {
-        item.thumbnail = item.assets['thumbnail-hd'].href;
+      else if (item.assets['overview'] != null) {
+        item.thumbnail = item.assets['overview'].href;
       }
 
       link.item = item;
@@ -2254,20 +2309,20 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   // Raw Sets
-  handleRawSetsChange(rawViews: CollectionRawSetView[]): void {
+  handleImageSetsChange(rawViews: CollectionImageSetView[]): void {
 
     this.rawViews = rawViews;
 
     this.buildItemsLayer();
   }
 
-  handleMapSet(set: RawSet): void {
+  handleMapSet(set: ImageSet): void {
     set.mapped = !set.mapped;
 
-    this.handleRawSetAsset(set, set.mapped);
+    this.handleImageSetAsset(set, set.mapped);
   }
 
-  handleRawSetAsset(set: RawSet, mapIt: boolean): void {
+  handleImageSetAsset(set: ImageSet, mapIt: boolean): void {
     const id = set.id;
 
     if (mapIt) {
@@ -2283,7 +2338,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       if (index === -1) {
         const layer: ToggleableLayer = {
           id: id,
-          type: ToggleableLayerType.RAW_SET,
+          type: ToggleableLayerType.IMAGE_SET,
           layerName: set.name,
           active: true,
           item: set,

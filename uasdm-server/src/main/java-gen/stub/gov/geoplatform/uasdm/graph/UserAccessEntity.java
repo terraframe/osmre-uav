@@ -76,7 +76,7 @@ public class UserAccessEntity extends UserAccessEntityBase
   {
     if (component instanceof UasComponent && !hasAccess((UasComponent) component))
     {
-      GenericException ex = new GenericException();
+      GenericException ex = new GenericException("User does not have access to component [" + component.getOid() + "]");
       ex.setUserMessage("Unable to find a component an id of [" + component.getOid() + "]");
       throw ex;
     }

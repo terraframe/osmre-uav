@@ -5,7 +5,7 @@
 import { Injectable } from "@angular/core";
 import { ConfigurationService } from "@core/service/configuration.service";
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class LocalizationService {
 
     constructor(private config : ConfigurationService) {

@@ -2,7 +2,7 @@
   <doIt>
 <!-- 
     <create>
-      <mdVertex name="gov.geoplatform.uasdm.graph.RawSet" label="Document" generateController="false">
+      <mdVertex name="gov.geoplatform.uasdm.graph.ImageSet" label="Document" generateController="false">
         <attributes>
           <char name="name" label="Name" size="256" required="true" />
           <dateTime name="lastUpdateDate" label="Last Update Date" required="true" />
@@ -13,10 +13,10 @@
         </attributes>
       </mdVertex>    
     
-      <mdEdge name="gov.geoplatform.uasdm.graph.ComponentHasRawSet" label="Component Has Raw Set" parent="gov.geoplatform.uasdm.graph.UasComponent" child="gov.geoplatform.uasdm.graph.RawSet">
+      <mdEdge name="gov.geoplatform.uasdm.graph.ComponentHasImageSet" label="Component Has Raw Set" parent="gov.geoplatform.uasdm.graph.UasComponent" child="gov.geoplatform.uasdm.graph.ImageSet">
       </mdEdge>      
       
-      <mdEdge name="gov.geoplatform.uasdm.graph.RawSettHasDocument" label="Product Has Raw Set"  child="gov.geoplatform.uasdm.graph.Document" parent="gov.geoplatform.uasdm.graph.RawSet">
+      <mdEdge name="gov.geoplatform.uasdm.graph.ImageSettHasDocument" label="Product Has Raw Set"  child="gov.geoplatform.uasdm.graph.Document" parent="gov.geoplatform.uasdm.graph.ImageSet">
       </mdEdge>            
     
     </create>
@@ -24,26 +24,26 @@
     <permissions>
       <role roleName="geoprism.admin.Administrator">
         <grant>
-          <mdBusinessPermission type="gov.geoplatform.uasdm.graph.RawSet">
+          <mdBusinessPermission type="gov.geoplatform.uasdm.graph.ImageSet">
             <operation name="ALL" />
           </mdBusinessPermission>
-          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.ComponentHasRawSet">
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.ComponentHasImageSet">
             <operation name="ALL" />
           </mdRelationshipPermission>
-          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.RawSettHasDocument">
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.ImageSettHasDocument">
             <operation name="ALL" />
           </mdRelationshipPermission>
         </grant>
       </role>
       <role roleName="geoprism.admin.DashboardBuilder">
         <grant>
-          <mdBusinessPermission type="gov.geoplatform.uasdm.graph.RawSet">
+          <mdBusinessPermission type="gov.geoplatform.uasdm.graph.ImageSet">
             <operation name="ALL" />
           </mdBusinessPermission>
-          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.ComponentHasRawSet">
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.ComponentHasImageSet">
             <operation name="ALL" />
           </mdRelationshipPermission>
-          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.RawSettHasDocument">
+          <mdRelationshipPermission type="gov.geoplatform.uasdm.graph.ImageSettHasDocument">
             <operation name="ALL" />
           </mdRelationshipPermission>
         </grant>
@@ -54,9 +54,9 @@
   </doIt>
   <undoIt>
     <delete>
-      <object key="gov.geoplatform.uasdm.graph.RawSettHasDocument" type="com.runwaysdk.system.metadata.MdEdge" />
-      <object key="gov.geoplatform.uasdm.graph.ComponentHasRawSet" type="com.runwaysdk.system.metadata.MdEdge" />
-      <object key="gov.geoplatform.uasdm.graph.RawSet" type="com.runwaysdk.system.metadata.MdVertex" />   
+      <object key="gov.geoplatform.uasdm.graph.ImageSettHasDocument" type="com.runwaysdk.system.metadata.MdEdge" />
+      <object key="gov.geoplatform.uasdm.graph.ComponentHasImageSet" type="com.runwaysdk.system.metadata.MdEdge" />
+      <object key="gov.geoplatform.uasdm.graph.ImageSet" type="com.runwaysdk.system.metadata.MdVertex" />   
     </delete>
   </undoIt>
 </version>

@@ -79,9 +79,19 @@ public class ProductController extends AbstractController
   @PostMapping("/toggle-publish")
   public ResponseEntity<String> togglePublish(@RequestBody IdBody body)
   {
-    ProductView view = service.togglePublish(this.getSessionId(), body.getId());
+    try
+    {
 
-    return ResponseEntity.ok(view.toJSON().toString());
+      ProductView view = service.togglePublish(this.getSessionId(), body.getId());
+
+      return ResponseEntity.ok(view.toJSON().toString());
+    }
+    catch (NullPointerException e)
+    {
+      e.printStackTrace();
+      
+      throw e;
+    }
   }
 
   @PostMapping("/toggle-lock")

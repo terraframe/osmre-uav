@@ -83,11 +83,11 @@ export class StacCollection {
 
 
 export enum ToggleableLayerType {
-    STAC = 0, PRODUCT = 1, KNOWSTAC = 2, RAW_SET = 3
+    STAC = 0, PRODUCT = 1, KNOWSTAC = 2, IMAGE_SET = 3
 }
 
 export enum LayerColor {
-    STAC = '#79E4E8', PRODUCT = '#9141AC', KNOWSTAC = '#E76EB1', SITE = '#800000', RAW_SET = '#10FFCB'
+    STAC = '#79E4E8', PRODUCT = '#9141AC', KNOWSTAC = '#E76EB1', SITE = '#800000', IMAGE_SET = '#10FFCB'
 }
 
 

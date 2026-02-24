@@ -22,10 +22,10 @@ import java.util.Set;
 import org.json.JSONObject;
 
 import gov.geoplatform.uasdm.bus.AllPrivilegeType;
+import gov.geoplatform.uasdm.graph.CollectionFormat;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
-import gov.geoplatform.uasdm.graph.RawSet;
-import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
-import gov.geoplatform.uasdm.view.CreateRawSetView;
+import gov.geoplatform.uasdm.graph.ImageSet;
+import gov.geoplatform.uasdm.view.CreateImageSetView;
 
 public interface CollectionIF extends UasComponentIF
 {
@@ -103,16 +103,12 @@ public interface CollectionIF extends UasComponentIF
 
   public CollectionFormat getFormat();
   
-  public void setFormat(CollectionFormat format);
-  
-  public void setFormat(String format);
-  
   public Boolean getHasAllZip();
 
   public void setHasAllZip(Boolean b);
 
   public Optional<CollectionMetadata> getMetadata();
 
-  public RawSet createRawSetIfNotExist(CreateRawSetView view);
+  public ImageSet createImageSetIfNotExist(CreateImageSetView view);
 
 }

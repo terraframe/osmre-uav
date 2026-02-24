@@ -129,6 +129,7 @@ public class Sandbox
 
       String token = tokens[1].trim();
 
+<<<<<<< HEAD
       String[] coordinates = token.split(",");
 
       String latitude = coordinates[0].trim();
@@ -146,9 +147,40 @@ public class Sandbox
 
       latitude = latitude.replaceAll("S", "").replaceAll("N", "");
       longitutde = longitutde.replaceAll("E", "").replaceAll("W", "");
+=======
+//    JSONObject criteria = new JSONObject("{\"should\":[{\"field\":\"bounds\",\"id\":\"4642708e-ea82-4591-8a11-ff7039925118\",\"label\":\"Bounds\",\"value\":{\"_sw\":{\"lng\":-127.25881772939388,\"lat\":20.357148832341863},\"_ne\":{\"lng\":-64.67488227060727,\"lat\":52.711281241966475}}}],\"must\":[{\"field\":\"site\",\"id\":\"51956c50-c514-4694-97dd-e5723dbbb344\",\"label\":\"Site\",\"value\":\"abc\"}]}\n");
+//
+//    Page<StacItem> items = IndexService.getItems(criteria, 30, 1);
+//
+//    System.out.println(items.toJSON().toString());
+//
+//    // testElasticSearch();
+//
+//    IndexService.shutdown();
+    
+    
+    String statement = "SELECT FROM " + MdGraphClassDAO.getMdGraphClassDAO(ODMRun.CLASS).getDBClassName();
+    statement += " WHERE saved = :saved";
+    
+    GraphQuery<ODMRun> query = new GraphQuery<ODMRun>(statement);
+    query.setParameter("saved", true);
+    
+    List<ODMRun> results = query.getResults();
+    
+    System.out.println("Results size: " + results.size());
+    
+    for(ODMRun run : results) {
+//      UasComponent component = run.getComponent();
+>>>>>>> refs/remotes/origin/master
       
+<<<<<<< HEAD
       System.out.println(latitude);
       System.out.println(longitutde);
+=======
+//      int items = RemoteFileFacade.getItemCount(component.getS3location() + ImageryComponent.ORTHO + "/" + run.getOid());
+//      
+//      System.out.println("Items for version " + component.getS3location() + " - " + run.getOid() + ": " + items);      
+>>>>>>> refs/remotes/origin/master
     }
 
   }

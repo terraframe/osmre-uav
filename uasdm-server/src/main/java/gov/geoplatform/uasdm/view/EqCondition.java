@@ -21,9 +21,9 @@ public class EqCondition implements Condition
 {
   private String name;
 
-  private String value;
+  private Object value;
 
-  public EqCondition(String name, String value)
+  public EqCondition(String name, Object value)
   {
     super();
     this.name = name;

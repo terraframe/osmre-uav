@@ -7,13 +7,13 @@ import { Directive } from '@angular/core';
 import { PhoneNumberUtil } from 'google-libphonenumber';
 
 @Directive({
-	standalone: false,
-  selector: '[phoneNumber]',
-	providers: [{
-		provide: NG_VALIDATORS,
-		useExisting: PhoneNumberValidatorDirective,
-		multi: true
-	}]
+    standalone: true,
+    selector: '[phoneNumber]',
+    providers: [{
+            provide: NG_VALIDATORS,
+            useExisting: PhoneNumberValidatorDirective,
+            multi: true
+        }]
 })
 export class PhoneNumberValidatorDirective implements Validator {
 

@@ -13,7 +13,7 @@ export interface IProgressListener {
   complete(): void;
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ProgressService {
   private listeners: IProgressListener[] = [];
   

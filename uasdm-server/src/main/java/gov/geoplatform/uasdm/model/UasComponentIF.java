@@ -32,13 +32,13 @@ import com.runwaysdk.resource.ApplicationFileResource;
 import com.runwaysdk.system.Actor;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
-import gov.geoplatform.uasdm.graph.RawSet;
+import gov.geoplatform.uasdm.graph.ImageSet;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.Artifact;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
-import gov.geoplatform.uasdm.view.CreateRawSetView;
+import gov.geoplatform.uasdm.view.CreateImageSetView;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
 public interface UasComponentIF extends ComponentWithAttributes
@@ -58,6 +58,8 @@ public interface UasComponentIF extends ComponentWithAttributes
   public void setName(String name);
 
   public boolean isPrivate();
+
+  public boolean hasPIIConcern();
 
   public String getFolderName();
 
@@ -155,9 +157,9 @@ public interface UasComponentIF extends ComponentWithAttributes
 
   public void regenerateMetadata();
 
-  public List<ComponentRawSet> getDerivedRawSets(String sortField, String sortOrder);
+  public List<ComponentImageSet> getDerivedImageSets(String sortField, String sortOrder);
 
-  RawSet createRawSetIfNotExist(CreateRawSetView view);
+  ImageSet createImageSetIfNotExist(CreateImageSetView view);
 
-  public List<RawSet> getRawSets();
+  public List<ImageSet> getImageSets();
 }

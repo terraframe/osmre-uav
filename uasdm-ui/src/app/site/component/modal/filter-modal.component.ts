@@ -18,18 +18,22 @@ import { Observable, Subject } from 'rxjs';
 import { SensorService } from '@site/service/sensor.service';
 import { PlatformService } from '@site/service/platform.service';
 import { UAVService } from '@site/service/uav.service';
+import { NgIf, NgFor } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TypeaheadDirective } from 'ngx-bootstrap/typeahead';
 
 @Component({
-	standalone: false,
-  selector: 'filter-modal',
-	templateUrl: './filter-modal.component.html',
-	styleUrls: [],
-	animations: [
-		fadeInOnEnterAnimation(),
-		fadeOutOnLeaveAnimation(),
-		slideInLeftOnEnterAnimation(),
-		slideInRightOnEnterAnimation(),
-	]
+    standalone: true,
+    selector: 'filter-modal',
+    templateUrl: './filter-modal.component.html',
+    styleUrls: [],
+    animations: [
+        fadeInOnEnterAnimation(),
+        fadeOutOnLeaveAnimation(),
+        slideInLeftOnEnterAnimation(),
+        slideInRightOnEnterAnimation(),
+    ],
+    imports: [NgIf, FormsModule, NgFor, TypeaheadDirective]
 })
 export class FilterModalComponent implements OnInit, OnDestroy {
 

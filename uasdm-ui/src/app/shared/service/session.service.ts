@@ -2,7 +2,7 @@
 ///
 ///
 
-import { Injectable } from '@angular/core';
+import { inject, Injectable, OnDestroy } from '@angular/core';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 
 // import 'rxjs/add/operator/toPromise';
@@ -10,16 +10,23 @@ import { finalize } from 'rxjs/operators';
 
 import { EventService } from './event.service';
 
-import { AuthService } from './auth.service';
 import { User } from '../model/user';
 import { environment } from 'src/environments/environment';
+import { firstValueFrom } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { SessionActions } from 'src/app/state/session.state';
 
 
 
-@Injectable()
-export class SessionService {
+@Injectable({ providedIn: 'root' })
+export class SessionService implements OnDestroy {
 
-	constructor(private eventService: EventService, private http: HttpClient, private authService: AuthService) {
+	private store = inject(Store);
+
+	constructor(private eventService: EventService, private http: HttpClient) {
+	}
+
+	ngOnDestroy(): void {
 	}
 
 	login(username: string, password: string): Promise<User> {
@@ -30,14 +37,13 @@ export class SessionService {
 
 		this.eventService.start();
 
-		return this.http
+		return firstValueFrom(this.http
 			.post<User>(environment.apiUrl + '/api/session/login', JSON.stringify({ username: username, password: password }), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
-			}))
-			.toPromise()
+			})))
 			.then((user: User) => {
-				this.authService.setUser(user);
+				this.store.dispatch(SessionActions.setUser({ user }));
 
 				return user;
 			})
@@ -51,14 +57,13 @@ export class SessionService {
 
 		this.eventService.start();
 
-		return this.http
+		return firstValueFrom(this.http
 			.get<void>(environment.apiUrl + '/api/session/logout', { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
-			}))
-			.toPromise()
+			})))
 			.then(() => {
-				this.authService.setUser(null);
+				this.store.dispatch(SessionActions.removeUser());
 
 				return;
 			})

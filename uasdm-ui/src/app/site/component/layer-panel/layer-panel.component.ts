@@ -12,6 +12,12 @@ import { PageResult } from '@shared/model/page';
 import EnvironmentUtil from '@core/utility/environment-util';
 import { environment } from 'src/environments/environment';
 import { LngLatBounds } from 'maplibre-gl';
+import { FormsModule } from '@angular/forms';
+import { NgIf, NgFor, KeyValuePipe } from '@angular/common';
+import { TypeaheadDirective } from 'ngx-bootstrap/typeahead';
+import { BooleanFieldComponent } from '@shared/component/boolean-field/boolean-field.component';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { SafeHtmlPipe } from '@shared/pipe/safe-html.pipe';
 
 const enum VIEW_MODE {
 	FORM = 0,
@@ -19,10 +25,11 @@ const enum VIEW_MODE {
 }
 
 @Component({
-	standalone: false,
-  selector: 'layer-panel',
-	templateUrl: './layer-panel.component.html',
-	styleUrls: []
+    standalone: true,
+    selector: 'layer-panel',
+    templateUrl: './layer-panel.component.html',
+    styleUrls: [],
+    imports: [FormsModule, NgIf, TypeaheadDirective, NgFor, BooleanFieldComponent, NgxPaginationModule, KeyValuePipe, SafeHtmlPipe]
 })
 export class LayerPanelComponent implements OnInit, OnDestroy {
 
@@ -167,8 +174,8 @@ export class LayerPanelComponent implements OnInit, OnDestroy {
 			// Assign the default asset for all stac items
 			this.page.resultSet.forEach(item => {
 				if (item.asset == null) {
-					if (item.assets['odm_orthophoto.cog'] != null) {
-						item.asset = 'odm_orthophoto.cog';
+					if (item.assets['odm_orthophoto_cog'] != null) {
+						item.asset = 'odm_orthophoto_cog';
 					}
 					else {
 						const keys = Object.keys(item.assets);

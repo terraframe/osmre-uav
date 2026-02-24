@@ -17,7 +17,7 @@ import { firstValueFrom } from 'rxjs';
 
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class UAVService implements GenericTableService {
 
     constructor(private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService) { }

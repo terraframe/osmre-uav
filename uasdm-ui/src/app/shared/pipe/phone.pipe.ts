@@ -7,8 +7,8 @@ import { PhoneNumberUtil, PhoneNumberFormat } from 'google-libphonenumber';
 
 
 @Pipe({
-	name: 'phone',
-	standalone: false
+    name: 'phone',
+    standalone: true
 })
 export class PhonePipe implements PipeTransform {
 

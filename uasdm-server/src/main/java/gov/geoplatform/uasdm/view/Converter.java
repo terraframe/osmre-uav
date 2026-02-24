@@ -41,7 +41,7 @@ import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Product;
-import gov.geoplatform.uasdm.graph.RawSet;
+import gov.geoplatform.uasdm.graph.ImageSet;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.model.CollectionIF;
@@ -413,7 +413,7 @@ public abstract class Converter<T extends UasComponentIF>
     return view;
   }
 
-  public static RawSetView toView(RawSet set, List<UasComponentIF> components)
+  public static ImageSetView toView(ImageSet set, List<UasComponentIF> components)
   {
     final SessionIF session = Session.getCurrentSession();
 
@@ -422,7 +422,7 @@ public abstract class Converter<T extends UasComponentIF>
       throw new ReadPermissionException("User does not have read access", (ComponentIF) set, session.getUser());
     }
 
-    RawSetView view = new RawSetView();
+    ImageSetView view = new ImageSetView();
 
     populate(view, set, components);
 
@@ -518,7 +518,7 @@ public abstract class Converter<T extends UasComponentIF>
     }
   }
 
-  protected static void populate(RawSetView view, RawSet set, List<UasComponentIF> components)
+  protected static void populate(ImageSetView view, ImageSet set, List<UasComponentIF> components)
   {
     List<SiteItem> list = new LinkedList<SiteItem>();
 

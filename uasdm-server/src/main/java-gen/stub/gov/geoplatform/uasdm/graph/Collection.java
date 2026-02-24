@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -69,9 +69,8 @@ import gov.geoplatform.uasdm.bus.WorkflowTaskQuery;
 import gov.geoplatform.uasdm.cog.CogPreviewParams;
 import gov.geoplatform.uasdm.cog.TiTillerProxy;
 import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
-import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
 import gov.geoplatform.uasdm.model.CollectionIF;
-import gov.geoplatform.uasdm.model.ComponentRawSet;
+import gov.geoplatform.uasdm.model.ComponentImageSet;
 import gov.geoplatform.uasdm.model.ComponentWithAttributes;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
@@ -122,12 +121,43 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public void apply(boolean regenerateMetadata)
   {
+    boolean hasPIIConcern = this.isModified(UasComponent.HASPIICONCERN) && this.hasPIIConcern();
+
+    if (hasPIIConcern)
+    {
+      this.setIsPrivate(true);
+    }
+
+    if (this.isNew())
+    {
+      this.setMetadataUploaded(false);
+    }
+    else if (this.isModified(UasComponent.ISPRIVATE) && this.isPrivate())
+    {
+      boolean isPublished = this.getProducts().stream().anyMatch(p -> p.isPublished());
+
+      if (isPublished)
+      {
+        GenericException ex = new GenericException();
+        ex.setUserMessage("A collection can not be made private if it has published products");
+        throw ex;
+      }
+    }
+
     if (this.getCollectionEndDate() == null)
     {
       this.setCollectionEndDate(this.getCollectionDate());
     }
 
     super.apply(regenerateMetadata);
+
+    if (this.hasPIIConcern())
+    {
+      this.getProducts().stream().filter(p -> !p.isLocked()).forEach(p -> {
+        p.toggleLock();
+      });
+    }
+
   }
 
   @Override
@@ -141,11 +171,13 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   {
     // Balk
   }
-  
+
   /**
-   * @return All raw "input" documents which may be used for processing, which may in practice be imagery, pointclouds, etc.
+   * @return All raw "input" documents which may be used for processing, which
+   *         may in practice be imagery, pointclouds, etc.
    */
-  public List<DocumentIF> getRaw() {
+  public List<DocumentIF> getRaw()
+  {
     return getDocuments().stream()//
         .filter(doc -> {
           return doc.getS3location().contains("/raw/");
@@ -154,26 +186,33 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
           return !doc.getS3location().endsWith(".xml");
         }).collect(Collectors.toList());
   }
-  
-  public CollectionFormat getFormat() {
+
+  public CollectionFormat getFormat()
+  {
+    var metadata = this.getMetadata().orElse(null);
+    
+    if (metadata != null && metadata.getFormat() != null)
+      return metadata.getFormat();
+
+    // Legacy behaviour here. At some point we should remove this attribute.
     if (StringUtils.isBlank(this.getSCollectionFormat()))
       return null;
 
     return CollectionFormat.valueOf(this.getSCollectionFormat());
   }
 
-  public void setFormat(CollectionFormat format)
-  {
-    this.setSCollectionFormat(format == null ? null : format.name());
-  }
-
-  public void setFormat(String format)
-  {
-    if (format != null)
-      CollectionFormat.valueOf(format); // validate
-
-    this.setSCollectionFormat(format);
-  }
+//  public void setFormat(CollectionFormat format)
+//  {
+//    this.setSCollectionFormat(format == null ? null : format.name());
+//  }
+//
+//  public void setFormat(String format)
+//  {
+//    if (format != null)
+//      CollectionFormat.valueOf(format); // validate
+//
+//    this.setSCollectionFormat(format);
+//  }
 
   @Override
   public UasComponent createDefaultChild()
@@ -367,22 +406,6 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public void applyWithParent(UasComponentIF parent)
   {
-    if (this.isNew())
-    {
-      this.setMetadataUploaded(false);
-    }
-    else if (this.isModified(UasComponent.ISPRIVATE) && this.isPrivate())
-    {
-      boolean isPublished = this.getProducts().stream().anyMatch(p -> p.isPublished());
-
-      if (isPublished)
-      {
-        GenericException ex = new GenericException();
-        ex.setUserMessage("A collection can not be made private if it has published products");
-        throw ex;
-      }
-    }
-
     super.applyWithParent(parent);
 
     if (this.isNew())
@@ -706,17 +729,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public boolean isMultiSpectral()
   {
-    var format = this.getFormat();
-    if (format != null) return format.isMultispectral();
-    
-    return this.getMetadata().map(metadata -> {
-      Sensor sensor = metadata.getSensor();
-      if (sensor == null)
-        return false;
-
-      var formats = sensor.getCollectionFormats();
-      return formats.contains(CollectionFormat.STILL_MULTISPECTRAL) || formats.contains(CollectionFormat.VIDEO_MULTISPECTRAL);
-    }).orElse(false);
+    return this.getMetadata().map(metadata -> metadata.isMultiSpectral()).orElse(false);
   }
 
   /**
@@ -734,33 +747,13 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   @Override
   public boolean isRadiometric()
   {
-    var format = this.getFormat();
-    if (format != null)
-      return format.isRadiometric();
-
-    return false;
+    return this.getMetadata().map(metadata -> metadata.isThermal()).orElse(false);
   }
 
   @Override
   public boolean isLidar()
   {
-    var format = this.getFormat();
-    if (format != null)
-      return format.isLidar();
-
-    // Maintain legacy behaviour (before collection format existed)
-    return this.getMetadata().map(metadata -> {
-      Sensor sensor = metadata.getSensor();
-
-      if (sensor != null)
-      {
-        SensorType type = sensor.getSensorType();
-
-        return type.isLidar();
-      }
-
-      return false;
-    }).orElse(false);
+    return this.getMetadata().map(metadata -> metadata.isLidar()).orElse(false);
   }
 
   @Override
@@ -886,7 +879,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   }
   
   @Override
-  public List<ComponentRawSet> getDerivedRawSets(String sortField, String sortOrder)
+  public List<ComponentImageSet> getDerivedImageSets(String sortField, String sortOrder)
   {
     // TODO Auto-generated method stub
     return null;

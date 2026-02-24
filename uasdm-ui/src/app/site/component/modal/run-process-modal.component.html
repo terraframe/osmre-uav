@@ -6,155 +6,8 @@
 
 
 <ng-template #odmConfig>
-	<div *ngIf="(config.processOrtho || config.processDem) && !isVideo(true)" class="form-group">
-		<boolean-field [(value)]="config.includeGeoLocationFile"
-			label="Use geo location file when processing (if uploaded)"></boolean-field>
-	</div>
 
-	<div class="form-group" *ngIf="config.processOrtho && config.includeGeoLocationFile && !isVideo(true)">
-		<label for="geoLocationFormat">Geo location file format</label>
-		<select [(ngModel)]="config.geoLocationFormat" name="geoLocationFormat" class="form-control">
-			<option value="RX1R2">RX1R2</option>
-			<option value="ODM">ODM</option>
-		</select>
-	</div>
-
-	<div class="form-group" *ngIf="config.processOrtho && config.includeGeoLocationFile && !isVideo(true)">
-		<label for="geoLocationFileName">Geo location file name</label>
-		<input [(ngModel)]="config.geoLocationFileName" name="geoLocationFileName" type="input" class="form-control"
-			placeholder="File name..." />
-	</div>
-
-	<div *ngIf="config.processOrtho && config.includeGeoLocationFile && config.geoLocationFormat === 'ODM'">
-		<p>File format:</p>
-		<pre>
-			<code>
-			projection
-			image_name geo_x geo_y [geo_z] [omega (degrees)] [phi (degrees)] [kappa (degrees)] [horz accuracy (meters)] [vert accuracy (meters)] [extras...]
-			...
-			</code>
-		</pre>
-		<p>Example:</p>
-		<pre>
-			<code>
-			EPSG:4326
-			DJI_0028.JPG    -91.9942096111111   46.84252125 198.609
-			DJI_0032.JPG    -91.9938293055556   46.8424584444444    198.609
-			</code>        
-		</pre>
-	</div>
-
-	<div *ngIf="(config.processOrtho || config.processDem) && !isVideo(true)" class="form-group">
-		<boolean-field [(value)]="config.includeGroundControlPointFile"
-			label="Use ground control point file when processing (if uploaded)"></boolean-field>
-	</div>
-
-	<div class="form-group" *ngIf="config.processOrtho && config.includeGroundControlPointFile && !isVideo(true)">
-		<label for="groundControlPointFileName">Ground control point file name</label>
-		<input [(ngModel)]="config.groundControlPointFileName" name="groundControlPointFileName" type="input"
-			class="form-control" placeholder="File name..." />
-	</div>
-
-	<div *ngIf="config.processOrtho && config.includeGroundControlPointFile">
-		<p>File format:</p>
-		<pre>
-			<code>
-			projection
-			geo_x geo_y geo_z im_x im_y image_name [gcp_name] [extra1] [extra2]
-			...						
-			</code>
-		</pre>
-		<p>Example:</p>
-		<pre>
-			<code>
-			+proj=utm +zone=10 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
-			544256.7 5320919.9 5 3044 2622 IMG_0525.jpg
-			544157.7 5320899.2 5 4193 1552 IMG_0585.jpg
-			544033.4 5320876.0 5 1606 2763 IMG_0690.jpg							
-			</code>        
-		</pre>
-	</div>
-
-	<button type="button" class="btn btn-default" style="margin-top:10px;" (click)="isAdvancedSettingsCollapsed = !isAdvancedSettingsCollapsed"
-		[attr.aria-expanded]="!isAdvancedSettingsCollapsed" aria-controls="collapseBasic">Advanced Settings
-	</button>
-	<div [collapse]="isAdvancedSettingsCollapsed" [isAnimated]="true" style="padding:10px;">
-		<div style="padding:10px;">
-			<div class="form-group">
-				<label for="outFileNamePrefix">Output Product Name Prefix</label>
-				<input [(ngModel)]="config.outFileNamePrefix" name="outFileNamePrefix" type="input" class="form-control"
-					placeholder="Output product name prefix..." />
-			</div>
-
-			<div *ngIf="config.processOrtho || config.processDem" class="form-group">
-				<label for="resolution">Orthophoto and DEM Resolution (cm)</label>
-				<input [(ngModel)]="config.resolution" (change)="configChange()" name="resolution" type="number" class="form-control"
-					placeholder="5" step="1" min="0" />
-			</div>
-
-			<div *ngIf="config.processOrtho || config.processDem" class="form-group">
-				<label for="matcherNeighbors">Matcher Nieghbors</label>
-				<input [(ngModel)]="config.matcherNeighbors" (change)="configChange()" name="matcherNeighbors" type="number" class="form-control"
-					placeholder="0" step="1" min="0" />
-			</div>
-
-			<div *ngIf="config.processOrtho || config.processDem" class="form-group">
-				<label for="minNumFeatures">Minimum number of features to extract per image</label>
-				<input [(ngModel)]="config.minNumFeatures" (change)="configChange()" name="minNumFeatures" type="number" class="form-control"
-					placeholder="10000" step="1" min="0" />
-			</div>
-
-			<div *ngIf="config.processPtcloud" class="form-group">
-				<label for="pcQuality">Generated point cloud quality</label>
-				<select [(ngModel)]="config.pcQuality" (change)="configChange()" name="pcQuality" class="form-control">
-					<option value="ULTRA">ULTRA</option>
-					<option value="HIGH">HIGH</option>
-					<option value="MEDIUM">MEDIUM</option>
-					<option value="LOW">LOW</option>
-					<option value="LOWEST">LOWEST</option>
-				</select>
-			</div>
-
-			<div *ngIf="config.processOrtho" class="form-group">
-				<label for="featureQuality">Generated feature quality</label>
-				<select [(ngModel)]="config.featureQuality" (change)="configChange()" name="featureQuality" class="form-control">
-					<option value="ULTRA">ULTRA</option>
-					<option value="HIGH">HIGH</option>
-					<option value="MEDIUM">MEDIUM</option>
-					<option value="LOW">LOW</option>
-					<option value="LOWEST">LOWEST</option>
-				</select>
-				<div class="form-text alert alert-warning">
-					Setting feature quality to higher settings will significantly increase the time to process.
-				</div>
-			</div>
-
-			<div *ngIf="config.radiometricCalibration && (isRadiometric() || isMultispectral())" class="form-group">
-				<label for="radiometricCalibration">Radiometric calibration</label>
-				<select [(ngModel)]="config.radiometricCalibration" (change)="configChange()" name="radiometricCalibration" class="form-control">
-					<option value="NONE">NONE</option>
-					<option value="CAMERA">CAMERA</option>
-					<option value="CAMERA_SUN">CAMERA+SUN (experimental)</option>
-				</select>
-			</div>
-
-			<div *ngIf="isVideo(false) && config.processOrtho" class="form-group">
-				<label for="videoResolution" title="Maximum output resolution of extracted video frames in pixels">Video Resolution</label>
-				<input [(ngModel)]="config.videoResolution" (change)="configChange()" name="`" type="number" class="form-control"
-					placeholder="4000" step="1" min="0" />
-			</div>
-
-			<div *ngIf="isVideo(false) && config.processOrtho" class="form-group">
-				<label for="videoLimit" title="Maximum number of frames to extract from video files for processing. Set to 0 for no limit">Video Limit</label>
-				<input [(ngModel)]="config.videoLimit" (change)="configChange()" name="`" type="number" class="form-control"
-					placeholder="500" step="1" min="0" />
-			</div>
-		</div>
-	</div>
-
-	<hr />
-
-	<h3>Run ortho to process the following products: </h3>
+	<h3 class="mt-2">Run ortho to process the following products: </h3>
 
 	<table style="width: 100%;">
 		<thead>
@@ -180,6 +33,158 @@
 			</td>
 		</tr>
 	</table>
+
+	<hr />
+
+	<div *ngIf="(config.processOrtho || config.processDem) && !isVideo(true)" class="form-group mt-1">
+		<boolean-field [(value)]="config.includeGeoLocationFile"
+			label="Use geo location file when processing (if uploaded)"></boolean-field>
+	</div>
+
+	<div class="form-group mt-1" *ngIf="config.processOrtho && config.includeGeoLocationFile && !isVideo(true)">
+		<label for="geoLocationFormat">Geo location file format</label>
+		<select [(ngModel)]="config.geoLocationFormat" name="geoLocationFormat" class="form-control">
+			<option value="RX1R2">RX1R2</option>
+			<option value="ODM">ODM</option>
+		</select>
+	</div>
+
+	<div class="form-group mt-1" *ngIf="config.processOrtho && config.includeGeoLocationFile && !isVideo(true)">
+		<label for="geoLocationFileName">Geo location file name</label>
+		<input [(ngModel)]="config.geoLocationFileName" name="geoLocationFileName" type="input" class="form-control"
+			placeholder="File name..." />
+	</div>
+
+	<div *ngIf="config.processOrtho && config.includeGeoLocationFile && config.geoLocationFormat === 'ODM'">
+		<p>File format:</p>
+		<pre>
+			<code>
+			projection
+			image_name geo_x geo_y [geo_z] [omega (degrees)] [phi (degrees)] [kappa (degrees)] [horz accuracy (meters)] [vert accuracy (meters)] [extras...]
+			...
+			</code>
+		</pre>
+		<p>Example:</p>
+		<pre>
+			<code>
+			EPSG:4326
+			DJI_0028.JPG    -91.9942096111111   46.84252125 198.609
+			DJI_0032.JPG    -91.9938293055556   46.8424584444444    198.609
+			</code>        
+		</pre>
+	</div>
+
+	<div *ngIf="(config.processOrtho || config.processDem) && !isVideo(true)" class="form-group mt-1">
+		<boolean-field [(value)]="config.includeGroundControlPointFile"
+			label="Use ground control point file when processing (if uploaded)"></boolean-field>
+	</div>
+
+	<div class="form-group mt-1" *ngIf="config.processOrtho && config.includeGroundControlPointFile && !isVideo(true)">
+		<label for="groundControlPointFileName">Ground control point file name</label>
+		<input [(ngModel)]="config.groundControlPointFileName" name="groundControlPointFileName" type="input"
+			class="form-control" placeholder="File name..." />
+	</div>
+
+	<div *ngIf="config.processOrtho && config.includeGroundControlPointFile">
+		<p>File format:</p>
+		<pre>
+			<code>
+			projection
+			geo_x geo_y geo_z im_x im_y image_name [gcp_name] [extra1] [extra2]
+			...						
+			</code>
+		</pre>
+		<p>Example:</p>
+		<pre>
+			<code>
+			+proj=utm +zone=10 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+			544256.7 5320919.9 5 3044 2622 IMG_0525.jpg
+			544157.7 5320899.2 5 4193 1552 IMG_0585.jpg
+			544033.4 5320876.0 5 1606 2763 IMG_0690.jpg							
+			</code>        
+		</pre>
+	</div>
+
+	
+
+	<!-- <button type="button" class="btn btn-default" style="margin-top:10px;" (click)="isAdvancedSettingsCollapsed = !isAdvancedSettingsCollapsed"
+		[attr.aria-expanded]="!isAdvancedSettingsCollapsed" aria-controls="collapseBasic">Advanced Settings
+	</button> -->
+	<h4 class="mt-2">Advanced Settings</h4>
+	<div [collapse]="isAdvancedSettingsCollapsed" [isAnimated]="true" class="ps-3">
+		<div>
+			<div class="form-group">
+				<label for="outFileNamePrefix">Output Product Name Prefix</label>
+				<input [(ngModel)]="config.outFileNamePrefix" name="outFileNamePrefix" type="input" class="form-control"
+					placeholder="Output product name prefix..." />
+			</div>
+
+			<div *ngIf="config.processOrtho || config.processDem" class="form-group mt-1">
+				<label for="resolution">Orthophoto and DEM Resolution (cm)</label>
+				<input [(ngModel)]="config.resolution" (change)="configChange()" name="resolution" type="number" class="form-control"
+					placeholder="5" step="1" min="0" />
+			</div>
+
+			<div *ngIf="config.processOrtho || config.processDem" class="form-group mt-1">
+				<label for="matcherNeighbors">Matcher Nieghbors</label>
+				<input [(ngModel)]="config.matcherNeighbors" (change)="configChange()" name="matcherNeighbors" type="number" class="form-control"
+					placeholder="0" step="1" min="0" />
+			</div>
+
+			<div *ngIf="config.processOrtho || config.processDem" class="form-group mt-1">
+				<label for="minNumFeatures">Minimum number of features to extract per image</label>
+				<input [(ngModel)]="config.minNumFeatures" (change)="configChange()" name="minNumFeatures" type="number" class="form-control"
+					placeholder="10000" step="1" min="0" />
+			</div>
+
+			<div *ngIf="config.processPtcloud" class="form-group mt-1">
+				<label for="pcQuality">Generated point cloud quality</label>
+				<select [(ngModel)]="config.pcQuality" (change)="configChange()" name="pcQuality" class="form-control">
+					<option value="ULTRA">ULTRA</option>
+					<option value="HIGH">HIGH</option>
+					<option value="MEDIUM">MEDIUM</option>
+					<option value="LOW">LOW</option>
+					<option value="LOWEST">LOWEST</option>
+				</select>
+			</div>
+
+			<div *ngIf="config.processOrtho" class="form-group mt-1">
+				<label for="featureQuality">Generated feature quality</label>
+				<select [(ngModel)]="config.featureQuality" (change)="configChange()" name="featureQuality" class="form-control">
+					<option value="ULTRA">ULTRA</option>
+					<option value="HIGH">HIGH</option>
+					<option value="MEDIUM">MEDIUM</option>
+					<option value="LOW">LOW</option>
+					<option value="LOWEST">LOWEST</option>
+				</select>
+				<div class="form-text alert alert-warning">
+					Setting feature quality to higher settings will significantly increase the time to process.
+				</div>
+			</div>
+
+			<div *ngIf="config.radiometricCalibration && (isRadiometric() || isMultispectral())" class="form-group mt-1">
+				<label for="radiometricCalibration">Radiometric calibration</label>
+				<select [(ngModel)]="config.radiometricCalibration" (change)="configChange()" name="radiometricCalibration" class="form-control">
+					<option value="NONE">NONE</option>
+					<option value="CAMERA">CAMERA</option>
+					<option value="CAMERA_SUN">CAMERA+SUN (experimental)</option>
+				</select>
+			</div>
+
+			<div *ngIf="isVideo(false) && config.processOrtho" class="form-group mt-1">
+				<label for="videoResolution" title="Maximum output resolution of extracted video frames in pixels">Video Resolution</label>
+				<input [(ngModel)]="config.videoResolution" (change)="configChange()" name="`" type="number" class="form-control"
+					placeholder="4000" step="1" min="0" />
+			</div>
+
+			<div *ngIf="isVideo(false) && config.processOrtho" class="form-group mt-1">
+				<label for="videoLimit" title="Maximum number of frames to extract from video files for processing. Set to 0 for no limit">Video Limit</label>
+				<input [(ngModel)]="config.videoLimit" (change)="configChange()" name="`" type="number" class="form-control"
+					placeholder="500" step="1" min="0" />
+			</div>
+		</div>
+	</div>
+
 
 </ng-template>
 
@@ -267,7 +272,7 @@
 			<i *ngIf="loadingEstimate" class="fa fa-spin fa-spinner"></i>
 		</div>
 
-		<div class="form-group">
+		<div class="form-group mt-1">
 			<label for="productName">Product name</label>
 			<input #productName="ngModel" [(ngModel)]="config.productName" name="productName" type="input" class="form-control"
 				placeholder="Product name" required forbiddenName />

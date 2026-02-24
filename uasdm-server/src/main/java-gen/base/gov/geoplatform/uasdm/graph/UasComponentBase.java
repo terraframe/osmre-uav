@@ -15,7 +15,7 @@
  */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = -797951450)
+@com.runwaysdk.business.ClassSignature(hash = -1823267559)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -29,6 +29,7 @@ public abstract class UasComponentBase extends com.runwaysdk.business.graph.Vert
   public final static java.lang.String DESCRIPTION = "description";
   public final static java.lang.String FOLDERNAME = "folderName";
   public final static java.lang.String GEOPOINT = "geoPoint";
+  public final static java.lang.String HASPIICONCERN = "hasPIIConcern";
   public final static java.lang.String ISPRIVATE = "isPrivate";
   public final static java.lang.String NAME = "name";
   public final static java.lang.String OID = "oid";
@@ -36,7 +37,7 @@ public abstract class UasComponentBase extends com.runwaysdk.business.graph.Vert
   public final static java.lang.String S3LOCATION = "s3location";
   public final static java.lang.String SEQ = "seq";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = -797951450;
+  private static final long serialVersionUID = -1823267559;
   
   public UasComponentBase()
   {
@@ -89,6 +90,22 @@ public abstract class UasComponentBase extends com.runwaysdk.business.graph.Vert
   public void setGeoPoint(org.locationtech.jts.geom.Point value)
   {
     this.setValue(GEOPOINT, value);
+  }
+  
+  public Boolean getHasPIIConcern()
+  {
+    return (Boolean) this.getObjectValue(HASPIICONCERN);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF getHasPIIConcernMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.UasComponent.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeBooleanDAOIF)mdClassIF.definesAttribute(HASPIICONCERN);
+  }
+  
+  public void setHasPIIConcern(Boolean value)
+  {
+    this.setValue(HASPIICONCERN, value);
   }
   
   public Boolean getIsPrivate()

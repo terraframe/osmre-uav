@@ -19,7 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.commongeoregistry.adapter.metadata.OrganizationDTO;
 import org.springframework.context.annotation.Primary;

@@ -30,7 +30,7 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.geojson.GeoJsonReader;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
 
-import gov.geoplatform.uasdm.graph.Sensor.CollectionFormat;
+import gov.geoplatform.uasdm.graph.CollectionFormat;
 
 public class SiteItem implements TreeComponent
 {
@@ -50,6 +50,8 @@ public class SiteItem implements TreeComponent
 
   public static String        IS_PRIVATE          = "isPrivate";
 
+  public static String        HAS_PII_CONCERN     = "hasPIIConcern";
+
   public static String        IS_OWNER            = "isOwner";
 
   public static String        NUMBER_OF_CHILDREN  = "numberOfChildren";
@@ -67,13 +69,13 @@ public class SiteItem implements TreeComponent
   public static String        PLATFORM            = "platform";
 
   public static String        SENSOR              = "sensor";
-  
+
   public static String        FORMAT              = "format";
 
   public static String        IS_LIDAR            = "isLidar";
-  
+
   public static String        IS_RADIOMETRIC      = "isRadiometric";
-  
+
   public static String        IS_MULTISPECTRAL    = "isMultispectral";
 
   public static String        COLLECTION_DATE     = "collectionDate";
@@ -101,11 +103,11 @@ public class SiteItem implements TreeComponent
   private Boolean             metadataUploaded;
 
   private String              format;
-  
+
   private Boolean             isLidar;
-  
+
   private Boolean             isRadiometric;
-  
+
   private Boolean             isMultispectral;
 
   private Geometry            geometry;
@@ -367,7 +369,7 @@ public class SiteItem implements TreeComponent
   {
     this.platform = platform;
   }
-  
+
   public String getFormat()
   {
     return format;
@@ -387,7 +389,7 @@ public class SiteItem implements TreeComponent
   {
     this.isLidar = isLidar;
   }
-  
+
   public Boolean getIsRadiometric()
   {
     return isRadiometric;
@@ -397,7 +399,7 @@ public class SiteItem implements TreeComponent
   {
     this.isRadiometric = isRadiometric;
   }
-  
+
   public Boolean getIsMultispectral()
   {
     return isMultispectral;

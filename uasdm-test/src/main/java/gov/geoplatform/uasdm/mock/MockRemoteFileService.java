@@ -105,6 +105,17 @@ public class MockRemoteFileService implements RemoteFileService
   }
 
   @Override
+<<<<<<< HEAD
+=======
+  public RemoteFileObject download(String key, String range)
+  {
+    this.actions.add(new RemoteFileAction(RemoteFileActionType.DOWNLOAD, key, range));
+
+    return this.getMockFile(key);
+  }
+
+  @Override
+>>>>>>> refs/remotes/origin/master
   public void createFolder(String key)
   {
     this.actions.add(new RemoteFileAction(RemoteFileActionType.CREATE_FOLDER, key));
@@ -145,7 +156,11 @@ public class MockRemoteFileService implements RemoteFileService
   {
     this.actions.add(new RemoteFileAction(RemoteFileActionType.UPLOAD, file, key, monitor));
 
+<<<<<<< HEAD
     return "";
+=======
+    return key;
+>>>>>>> refs/remotes/origin/master
   }
 
   @Override
@@ -258,10 +273,20 @@ public class MockRemoteFileService implements RemoteFileService
 
     return new MockRemoteFileObject();
   }
+<<<<<<< HEAD
+=======
+
+  @Override
+  public String presignUrl(String key, Duration duration)
+  {
+    return null;
+  }
+>>>>>>> refs/remotes/origin/master
 
   @Override
   public void copyFolder(String sourceKey, String sourceBucket, String destKey, String destBucket)
   {
+<<<<<<< HEAD
 
   }
 
@@ -292,5 +317,19 @@ public class MockRemoteFileService implements RemoteFileService
   {
     // TODO Auto-generated method stub
     return null;
+=======
+>>>>>>> refs/remotes/origin/master
   }
+
+  @Override
+  public void destroy()
+  {
+  }
+
+  @Override
+  public String getUrl(String bucket, String key)
+  {
+    return key;
+  }
+
 }

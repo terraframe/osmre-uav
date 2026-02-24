@@ -1,0 +1,31 @@
+---
+name: Bug report
+about: Create a detailed report to help us improve
+title: ''
+labels: ''
+assignees: ''
+
+---
+
+**List the IDM information**
+- IDM version:
+
+**Describe the bug (clear and concise)**
+
+
+**To Reproduce**
+1. Go to 
+2. Click on 
+3. See error
+
+**Expected behavior (clear and concise)**
+
+
+**Screenshots**
+
+
+**Desktop (please complete the following information):**
+ - OS: 
+ - Browser:
+
+**Additional context (if any)**

@@ -11,12 +11,15 @@ import { ErrorHandler } from '@shared/component';
 import { ManagementService } from '@site/service/management.service';
 
 import { Page, Selection } from '@site/model/management';
+import { NgIf } from '@angular/common';
+import { MetadataPageComponent } from '../metadata-page/metadata-page.component';
 
 @Component({
-	standalone: false,
-  selector: 'metadata-modal',
-	templateUrl: './metadata-modal.component.html',
-	styleUrls: []
+    standalone: true,
+    selector: 'metadata-modal',
+    templateUrl: './metadata-modal.component.html',
+    styleUrls: [],
+    imports: [NgIf, MetadataPageComponent]
 })
 export class MetadataModalComponent implements OnInit, OnDestroy {
 

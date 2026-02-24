@@ -169,7 +169,12 @@ public class ODMRun extends ODMRunBase
     odmRun.setComponent(component);
     odmRun.apply();
     
-    List<DocumentIF> documents = component.getDocuments();
+    List<DocumentIF> documents;
+    if (component instanceof Collection)
+      documents = ((Collection)component).getRaw();
+    else
+      documents = component.getDocuments();
+    
     documents.forEach(doc -> odmRun.addODMRunInputParent((Document) doc).apply());
     
     return odmRun;

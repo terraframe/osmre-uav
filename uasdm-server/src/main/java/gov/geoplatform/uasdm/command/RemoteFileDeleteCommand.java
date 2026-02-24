@@ -70,9 +70,9 @@ public class RemoteFileDeleteCommand implements Command
     }
     catch (RuntimeException e)
     {
-      log.error("Error indexing stac item", e);
+      log.error("Error deleting remote item", e);
 
-      throw e;
+//      throw e;
     }
 
   }

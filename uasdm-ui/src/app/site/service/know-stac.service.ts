@@ -18,7 +18,7 @@ import { ErrorModalComponent } from '@shared/component';
 
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class KnowStacService {
 
 	constructor(private http: HttpBackendClient, private modalService: BsModalService, private config: ConfigurationService) { }

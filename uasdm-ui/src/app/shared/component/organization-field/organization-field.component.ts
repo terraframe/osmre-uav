@@ -4,19 +4,25 @@
 
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from "@angular/core";
 import { BsModalService } from "ngx-bootstrap/modal";
-import { TypeaheadMatch } from "ngx-bootstrap/typeahead";
+import { TypeaheadMatch, TypeaheadDirective } from "ngx-bootstrap/typeahead";
 import { Observable, Observer, Subscription } from "rxjs";
 import { LocalizedValue, Organization } from "@shared/model/organization";
 import { OrganizationService } from "@shared/service/organization.service";
 import { OrganizationHierarchyModalComponent } from "./organization-hierarchy-modal.component";
-import { ControlContainer, NgForm } from "@angular/forms";
+import { ControlContainer, NgForm, FormsModule } from "@angular/forms";
+import { NgClass } from "@angular/common";
 
 @Component({
-    standalone: false,
-  selector: "organization-field",
+    standalone: true,
+    selector: "organization-field",
     templateUrl: "./organization-field.component.html",
     styleUrls: [],
-    viewProviders: [{ provide: ControlContainer, useExisting: NgForm }],    
+    viewProviders: [{ provide: ControlContainer, useExisting: NgForm }],
+    imports: [
+        FormsModule,
+        TypeaheadDirective,
+        NgClass,
+    ],
 })
 export class OrganizationFieldComponent implements OnInit, OnDestroy {
 

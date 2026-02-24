@@ -27,20 +27,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.opencsv.CSVWriter;
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
-import com.runwaysdk.dataaccess.cache.DataNotFoundException;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.session.Request;
 import com.runwaysdk.session.RequestType;
 
+import gov.geoplatform.uasdm.bus.ImageryUploadEvent;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.ODMRun;
-import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.Site;
 import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.model.UasComponentIF;
@@ -189,6 +189,7 @@ public class ProcessingReportService
   
   private static List<ErrorReportRecord> getRecords(Date since)
   {
+    final String imageFormats = StringUtils.join(ImageryUploadEvent.formats, "|");
     final String clazz = MdVertexDAO.getMdVertexDAO(ODMRun.CLASS).getDBClassName();
     final Map<String, Object> params = new HashMap<String, Object>();
 
@@ -196,7 +197,7 @@ public class ProcessingReportService
     StringBuilder builder = new StringBuilder();
     builder.append("SELECT"
         + " oid,config,runStart,runEnd,workflowTask,instanceType,"
-        + " in().fileSize,"
+        + " in()[name MATCHES '(?i).*\\\\.(" + imageFormats + ")$'].fileSize as fileSizes,"
         + " component.oid,"
         + " component.name,"
         + " component.s3location,"
@@ -233,7 +234,7 @@ public class ProcessingReportService
       result.instanceType = (String) map.get("instanceType");
       
       @SuppressWarnings("unchecked")
-      List<Long> fileSizes = (List<Long>) map.get("in().fileSize");
+      List<Long> fileSizes = (List<Long>) map.get("fileSizes");
       result.processedImageCount = String.valueOf(fileSizes.size());
       result.processedImageSizeMb = String.valueOf(fileSizes.stream().map(s -> s == null ? 0L : s/1024L/1024L).reduce(0L, (a,b) -> a + b));
       

@@ -13,12 +13,15 @@ import { UAVService } from '@site/service/uav.service';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { GenericTableColumn, GenericTableConfig, TableEvent } from '@shared/model/generic-table';
+import { NgIf } from '@angular/common';
+import { GenericTableComponent } from '@shared/component/generic-table/generic-table.component';
 
 @Component({
-    standalone: false,
-  selector: 'uavs',
+    standalone: true,
+    selector: 'uavs',
     templateUrl: './uavs.component.html',
-    styleUrls: ['./uav.css']
+    styleUrls: ['./uav.css'],
+    imports: [NgIf, GenericTableComponent]
 })
 export class UAVsComponent implements OnInit {
     bsModalRef: BsModalRef;
@@ -43,7 +46,8 @@ export class UAVsComponent implements OnInit {
             remove: true,
             view: true,
             create: true,
-            label: 'UAV'
+            label: 'UAV',
+            sort: { field: 'serialNumber', order: 1 },
         }
 
         this.refresh = new Subject<void>();

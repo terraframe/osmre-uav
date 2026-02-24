@@ -20,7 +20,11 @@
       <div class="row">
         <div class="col-md-12">
           <h2>{{entity.name}} <span *ngIf="!entity.metadataUploaded" style="margin-left: 0;margin-bottom: 5px;"></span>
+            <a class="float-end" (click)="copyLocation()" title="Copy url to clipboard">
+              <i class="fa fa-solid fa-share-nodes"></i>
+            </a>
           </h2>
+
         </div>
       </div>
 
@@ -53,6 +57,18 @@
       <div class="row">
         <div class="col-md-12">
           <label class="form-label">Collection Format: </label> &nbsp; {{labelForFormat(entity.format)}}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <label class="form-label">Accessibility: </label> &nbsp; {{entity.isPrivate ? 'Private' : 'Public'}}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <label class="form-label">Has PII Concerns: </label> &nbsp; {{entity.hasPIIConcern ? 'Yes' : 'No'}}
         </div>
       </div>
 
@@ -303,9 +319,9 @@
               <artifact-page *ngIf="tabName === 'artifacts'" [entity]="entity" [processRunning]="processRunning"
                 (onError)="error($event)"></artifact-page>
             </tab>
-            <tab heading="raw-sets" style="margin-top:10px;" (selectTab)="onSelect('raw-sets')">
-              <raw-set-page *ngIf="tabName === 'raw-sets'" [entity]="entity" [processRunning]="processRunning"
-                (onError)="error($event)"></raw-set-page>
+            <tab heading="image-sets" style="margin-top:10px;" (selectTab)="onSelect('image-sets')">
+              <image-set-page *ngIf="tabName === 'image-sets'" [entity]="entity" [processRunning]="processRunning"
+                (onError)="error($event)"></image-set-page>
             </tab>
           </tabset>
         </div>
@@ -339,7 +355,7 @@
                   Upload
                 </button>
                 <button *ngIf="tabName === 'image'" type="button" class="btn btn-primary"
-                  title="Create product group" [disabled]="processRunning" (click)="handleCreateRawSet()"
+                  title="Create product group" [disabled]="processRunning" (click)="handleCreateImageSet()"
                   style="margin-left: 5px;">
                   Create raw set
                 </button>

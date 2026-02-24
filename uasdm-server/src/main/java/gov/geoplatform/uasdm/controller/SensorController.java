@@ -42,9 +42,9 @@ public class SensorController extends AbstractCrudController
   }
 
   @GetMapping("/search")
-  public ResponseEntity<String> search(ClientRequestIF request, @RequestParam(name = "text") String text)
+  public ResponseEntity<String> search(@RequestParam(name = "text") String text)
   {
-    JSONArray response = this.service.search(request.getSessionId(), text);
+    JSONArray response = this.service.search(this.getSessionId(), text);
 
     return ResponseEntity.ok(response.toString());
   }

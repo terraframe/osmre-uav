@@ -7,11 +7,10 @@ import { Input, Component, OnInit } from '@angular/core';
 import { LocalizationService } from '../../service/localization.service';
 
 @Component({
-  
-  standalone: false,
-  selector: 'localize',
-  templateUrl: './localize.component.html',
-  styleUrls: []
+    standalone: true,
+    selector: 'localize',
+    templateUrl: './localize.component.html',
+    styleUrls: []
 })
 export class LocalizeComponent implements OnInit {
   @Input() key: string;

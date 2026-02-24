@@ -16,7 +16,7 @@ import { OrganizationSync } from '@shared/model/organization';
 
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class OrganizationSyncService implements GenericTableService {
 
     constructor(private http: HttpClient, private noErrorHttpClient: HttpBackendClient, private eventService: EventService) { }

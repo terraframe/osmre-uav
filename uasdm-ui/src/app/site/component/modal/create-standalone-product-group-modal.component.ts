@@ -23,6 +23,9 @@ import {
 	fadeInOnEnterAnimation,
 	fadeOutOnLeaveAnimation
 } from 'angular-animations';
+import { NgIf, NgFor } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MetadataPageComponent } from '../metadata-page/metadata-page.component';
 
 export class Page {
 	index?: number;
@@ -32,14 +35,15 @@ export class Page {
 };
 
 @Component({
-	standalone: false,
-  selector: 'create-standalone-pg-modal',
-	templateUrl: './create-standalone-product-group-modal.component.html',
-	styleUrls: ['./upload-modal.component.css'],
-	animations: [
-		fadeInOnEnterAnimation(),
-		fadeOutOnLeaveAnimation()
-	]
+    standalone: true,
+    selector: 'create-standalone-pg-modal',
+    templateUrl: './create-standalone-product-group-modal.component.html',
+    styleUrls: ['./upload-modal.component.css'],
+    animations: [
+        fadeInOnEnterAnimation(),
+        fadeOutOnLeaveAnimation()
+    ],
+    imports: [NgIf, FormsModule, NgFor, MetadataPageComponent]
 })
 export class CreateStandaloneProductModalComponent implements OnInit, OnDestroy {
 	message: string = "";
@@ -62,7 +66,7 @@ export class CreateStandaloneProductModalComponent implements OnInit, OnDestroy 
 
 	public productGroupName: string;
 
-	public metadata: any = {};
+	public metadata: any = { isNew: true };
 
 	parents: SiteEntity[];
 
@@ -97,7 +101,6 @@ export class CreateStandaloneProductModalComponent implements OnInit, OnDestroy 
 	}
 
 	close(): void {
-		console.log("close");
 		this.bsModalRef.hide();
 	}
 
@@ -114,6 +117,9 @@ export class CreateStandaloneProductModalComponent implements OnInit, OnDestroy 
 		if ((this.metadata.collectionDate == null || this.metadata.collectionDate.length === 0)) {
 			return false;
 		}
+
+		if ((this.metadata.format == null || this.metadata.format.length == 0))
+			return false;
 
 		return true;
 	}

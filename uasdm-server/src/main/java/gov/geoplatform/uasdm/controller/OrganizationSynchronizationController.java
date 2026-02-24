@@ -15,9 +15,9 @@
  */
 package gov.geoplatform.uasdm.controller;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,7 +46,7 @@ public class OrganizationSynchronizationController extends AbstractController
   private OrganizationSynchronizationService service;
 
   @GetMapping("/page")
-  public ResponseEntity<String> page(@NotEmpty @RequestParam(name = "criteria") String criteria) throws JSONException
+  public ResponseEntity<String> page(@NotBlank @RequestParam(name = "criteria") String criteria) throws JSONException
   {
     JsonObject page = this.service.page(getSessionId(), JsonParser.parseString(criteria).getAsJsonObject());
 
@@ -62,7 +62,7 @@ public class OrganizationSynchronizationController extends AbstractController
   }
 
   @GetMapping("/get")
-  public ResponseEntity<String> get(@NotEmpty @RequestParam(name = "oid") String oid) throws JSONException
+  public ResponseEntity<String> get(@NotBlank @RequestParam(name = "oid") String oid) throws JSONException
   {
     JsonObject response = this.service.get(getSessionId(), oid);
 

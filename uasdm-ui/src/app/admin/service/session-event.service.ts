@@ -12,10 +12,11 @@ import { PageResult } from '@shared/model/page';
 
 import { SessionEvent } from '../model/session-event';
 import { environment } from 'src/environments/environment';
+import { firstValueFrom } from 'rxjs';
 
 
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class SessionEventService {
 
 	constructor(private eventService: EventService, private http: HttpClient) { }
@@ -27,11 +28,11 @@ export class SessionEventService {
 
 		this.eventService.start();
 
-		return this.http
+		return firstValueFrom(this.http
 			.get<PageResult<SessionEvent>>(environment.apiUrl + '/api/session-event/page', { params: params })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
-			.toPromise()
+		)
 	}
 }

@@ -10,6 +10,7 @@ import {
     fadeInOnEnterAnimation,
     fadeOutOnLeaveAnimation
  } from 'angular-animations';
+import { NgIf, NgFor, NgClass } from '@angular/common';
 
 // HOW TO USE:
 // Set the component in a template:
@@ -23,17 +24,18 @@ import {
 //      {"label":"Final", "active":true, "enabled":true}
 // ]};
 
-@Component( { 
-    standalone: false,
-  selector: 'modal-step-indicator',
+@Component({
+    standalone: true,
+    selector: 'modal-step-indicator',
     templateUrl: './modal-step-indicator.component.html',
     styleUrls: ['./modal-step-indicator.css'],
-        animations: [
+    animations: [
         fadeInOnEnterAnimation(),
-        fadeOutOnLeaveAnimation() 
+        fadeOutOnLeaveAnimation()
     ],
-    changeDetection: ChangeDetectionStrategy.OnPush
-} )
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [NgIf, NgFor, NgClass]
+})
 export class ModalStepIndicatorComponent {
 
     @Input() stepConfig: StepConfig

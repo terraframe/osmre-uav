@@ -320,20 +320,20 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
     return super.getParents("gov.geoplatform.uasdm.graph.ProductHasDocument", gov.geoplatform.uasdm.graph.Product.class);
   }
   
-  public com.runwaysdk.business.graph.EdgeObject addRawSetHasDocumentParent(gov.geoplatform.uasdm.graph.RawSet rawSet)
+  public com.runwaysdk.business.graph.EdgeObject addImageSetHasDocumentParent(gov.geoplatform.uasdm.graph.ImageSet rawSet)
   {
-    return super.addParent(rawSet, "gov.geoplatform.uasdm.graph.RawSetHasDocument");
+    return super.addParent(rawSet, "gov.geoplatform.uasdm.graph.ImageSetHasDocument");
   }
   
-  public void removeRawSetHasDocumentParent(gov.geoplatform.uasdm.graph.RawSet rawSet)
+  public void removeImageSetHasDocumentParent(gov.geoplatform.uasdm.graph.ImageSet rawSet)
   {
-    super.removeParent(rawSet, "gov.geoplatform.uasdm.graph.RawSetHasDocument");
+    super.removeParent(rawSet, "gov.geoplatform.uasdm.graph.ImageSetHasDocument");
   }
   
   @SuppressWarnings("unchecked")
-  public java.util.List<gov.geoplatform.uasdm.graph.RawSet> getRawSetHasDocumentParentRawSets()
+  public java.util.List<gov.geoplatform.uasdm.graph.ImageSet> getImageSetHasDocumentParentImageSets()
   {
-    return super.getParents("gov.geoplatform.uasdm.graph.RawSetHasDocument", gov.geoplatform.uasdm.graph.RawSet.class);
+    return super.getParents("gov.geoplatform.uasdm.graph.ImageSetHasDocument", gov.geoplatform.uasdm.graph.ImageSet.class);
   }
   
   public static Document get(String oid)

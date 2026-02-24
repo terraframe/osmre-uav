@@ -5,17 +5,15 @@
 /// <reference types="node" />
 
 import { enableProdMode } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-
-import { UasdmAppModule } from './app/uasdm-app.module';
+import { bootstrapApplication } from '@angular/platform-browser';
 import { environment } from './environments/environment';
+import { AppComponent } from './app/app.component';
+import { appConfig } from './app/app.config';
 
 
 if (environment.production) {
   enableProdMode();
 }
 
-platformBrowserDynamic().bootstrapModule(UasdmAppModule)
-  .then(success => console.log('Bootstrap success'))
-  .catch(error => console.log(error));
 
+bootstrapApplication(AppComponent, appConfig).catch((e) => console.error(e));

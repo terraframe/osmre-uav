@@ -29,7 +29,7 @@ export interface TileJson {
     version: string
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class MapService {
 
     constructor(private http: HttpClient, private configuration: ConfigurationService) {

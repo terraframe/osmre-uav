@@ -51,8 +51,8 @@ import gov.geoplatform.uasdm.command.IndexDeleteDocumentCommand;
 import gov.geoplatform.uasdm.command.IndexDeleteDocumentsCommand;
 import gov.geoplatform.uasdm.command.IndexUpdateDocumentCommand;
 import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
-import gov.geoplatform.uasdm.graph.RawSet;
-import gov.geoplatform.uasdm.model.ComponentRawSet;
+import gov.geoplatform.uasdm.graph.ImageSet;
+import gov.geoplatform.uasdm.model.ComponentImageSet;
 import gov.geoplatform.uasdm.model.ComponentWithAttributes;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ProductIF;
@@ -64,7 +64,7 @@ import gov.geoplatform.uasdm.view.AdminCondition;
 import gov.geoplatform.uasdm.view.Artifact;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
-import gov.geoplatform.uasdm.view.CreateRawSetView;
+import gov.geoplatform.uasdm.view.CreateImageSetView;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
@@ -711,20 +711,26 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
-  public RawSet createRawSetIfNotExist(CreateRawSetView view)
+  public ImageSet createImageSetIfNotExist(CreateImageSetView view)
   {
     return null;
   }
 
   @Override
-  public List<ComponentRawSet> getDerivedRawSets(String sortField, String sortOrder)
+  public List<ComponentImageSet> getDerivedImageSets(String sortField, String sortOrder)
   {
     return new LinkedList<>();
   }
 
   @Override
-  public List<RawSet> getRawSets()
+  public List<ImageSet> getImageSets()
   {
     return new LinkedList<>();
+  }
+  
+  @Override
+  public boolean hasPIIConcern()
+  {
+    return false;
   }
 }

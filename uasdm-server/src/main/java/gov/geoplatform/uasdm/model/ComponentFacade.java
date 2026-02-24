@@ -21,7 +21,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import gov.geoplatform.uasdm.graph.RawSet;
+import gov.geoplatform.uasdm.graph.ImageSet;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.CollectionCriteria;
 
@@ -109,14 +109,14 @@ public class ComponentFacade
     return STRATEGY.getProducts(criteria);
   }
 
-  public static RawSet getRawSet(String oid)
+  public static ImageSet getImageSet(String oid)
   {
-    return STRATEGY.getRawSet(oid);
+    return STRATEGY.getImageSet(oid);
   }
 
-  public static List<ComponentRawSet> getRawSets(CollectionCriteria criteria)
+  public static List<ComponentImageSet> getImageSets(CollectionCriteria criteria)
   {
-    return STRATEGY.getRawSets(criteria);
+    return STRATEGY.getImageSets(criteria);
   }
 
 }

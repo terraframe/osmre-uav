@@ -21,7 +21,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import gov.geoplatform.uasdm.graph.RawSet;
+import gov.geoplatform.uasdm.graph.ImageSet;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.CollectionCriteria;
 
@@ -59,8 +59,8 @@ public interface ComponentStrategy
 
   public JSONArray bbox();
 
-  public RawSet getRawSet(String oid);
+  public ImageSet getImageSet(String oid);
 
-  public List<ComponentRawSet> getRawSets(CollectionCriteria criteria);
+  public List<ComponentImageSet> getImageSets(CollectionCriteria criteria);
 
 }

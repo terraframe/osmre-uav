@@ -9,9 +9,7 @@ import { WebStorageUrlStorage } from 'tus-js-client/lib/browser/urlStorage.js'
 
 
 
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root', })
 export class UploadService {
     private upload: Upload | null = null
 
@@ -73,7 +71,6 @@ export class UploadService {
 
         this.upload = new Upload(file, options)
         this.upload.findPreviousUploads().then((previousUploads) => {
-            console.log('Found previous uploads', previousUploads);
 
             // Found previous uploads so we select the first one.
             if (previousUploads.length) {

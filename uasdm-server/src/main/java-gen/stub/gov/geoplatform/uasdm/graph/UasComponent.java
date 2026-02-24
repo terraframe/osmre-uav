@@ -76,7 +76,7 @@ import gov.geoplatform.uasdm.command.IndexUpdateDocumentCommand;
 import gov.geoplatform.uasdm.command.ReIndexStacItemCommand;
 import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
 import gov.geoplatform.uasdm.model.CollectionIF;
-import gov.geoplatform.uasdm.model.ComponentRawSet;
+import gov.geoplatform.uasdm.model.ComponentImageSet;
 import gov.geoplatform.uasdm.model.ComponentWithAttributes;
 import gov.geoplatform.uasdm.model.CompositeDeleteException;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -94,7 +94,8 @@ import gov.geoplatform.uasdm.view.AdminCondition;
 import gov.geoplatform.uasdm.view.Artifact;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
-import gov.geoplatform.uasdm.view.CreateRawSetView;
+import gov.geoplatform.uasdm.view.CreateImageSetView;
+import gov.geoplatform.uasdm.view.EqOrNullCondition;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import net.geoprism.GeoprismUser;
@@ -664,7 +665,8 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.NAME)));
     list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.FOLDERNAME), true, new AdminCondition()));
     list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.DESCRIPTION)));
-    list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.ISPRIVATE)));
+    list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.HASPIICONCERN)));
+    list.add(AttributeType.create(this.getMdAttributeDAO(UasComponent.ISPRIVATE), false, new EqOrNullCondition(UasComponent.HASPIICONCERN, false)));
 
     return list;
   }
@@ -886,22 +888,40 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     return this.getChildren(EdgeType.COMPONENT_HAS_DOCUMENT, DocumentIF.class);
   }
 
+  /**
+   * @return product groups.
+   */
   public List<Product> getProducts()
   {
     return this.getChildren(EdgeType.COMPONENT_HAS_PRODUCT, Product.class);
   }
 
-  public List<RawSet> getRawSets()
+  public List<ImageSet> getImageSets()
   {
-    return this.getChildren(EdgeType.COMPONENT_HAS_RAW_SET, RawSet.class);
+    return this.getChildren(EdgeType.COMPONENT_HAS_IMAGE_SET, ImageSet.class);
   }
 
-  public Integer getNumberOfProducts()
+  public Integer getNumberOfProductGroups()
   {
     MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_PRODUCT);
 
     StringBuilder statement = new StringBuilder();
     statement.append("SELECT OUT('" + mdEdge.getDBClassName() + "').size()");
+    statement.append(" FROM :rid ");
+
+    final GraphQuery<Integer> query = new GraphQuery<Integer>(statement.toString());
+    query.setParameter("rid", this.getRID());
+
+    return query.getSingleResult();
+  }
+
+  public Integer getNumberOfProductArtifacts()
+  {
+    String chp = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_PRODUCT).getDBClassName();
+    String phd = MdEdgeDAO.getMdEdgeDAO(EdgeType.PRODUCT_HAS_DOCUMENT).getDBClassName();
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("SELECT OUT('" + chp + "').out('" + phd + "').size()");
     statement.append(" FROM :rid ");
 
     final GraphQuery<Integer> query = new GraphQuery<Integer>(statement.toString());
@@ -1253,13 +1273,13 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
-  public RawSet createRawSetIfNotExist(CreateRawSetView view)
+  public ImageSet createImageSetIfNotExist(CreateImageSetView view)
   {
-    return RawSet.createIfNotExist(this, view);
+    return ImageSet.createIfNotExist(this, view);
   }
 
   @Override
-  public List<ComponentRawSet> getDerivedRawSets(String sortField, String sortOrder)
+  public List<ComponentImageSet> getDerivedImageSets(String sortField, String sortOrder)
   {
     sortField = sortField != null ? sortField : "name";
     sortOrder = sortOrder != null ? sortOrder : "DESC";
@@ -1283,7 +1303,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     }
     String expand = "unionall(*, " + String.join(",", descends) + ")";
 
-    final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_RAW_SET);
+    final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_IMAGE_SET);
 
     boolean hasMetadataSort = ( sortField.equals("sensor") || sortField.equals("serialNumber") || sortField.equals("faaNumber") );
 
@@ -1334,7 +1354,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     final GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(statement.toString(), parameters);
 
-    return ComponentRawSet.process(query.getResults());
+    return ComponentImageSet.process(query.getResults());
   }
 
   public static <T extends UasComponent> Optional<T> getWithAccessControl(String oid)
@@ -1415,6 +1435,12 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   public UasComponentIF getUasComponent()
   {
     return this;
+  }
+
+  @Override
+  public boolean hasPIIConcern()
+  {
+    return this.getHasPIIConcern() != null && this.getHasPIIConcern();
   }
 
 }

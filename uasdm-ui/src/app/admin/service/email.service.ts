@@ -5,15 +5,15 @@
 import { Injectable } from '@angular/core';
 import { HttpHeaders, HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 
-// import 'rxjs/add/operator/toPromise';
 import { finalize } from 'rxjs/operators';
 
 import { EventService } from '@shared/service/event.service';
 
 import { Email } from '../model/email';
 import { environment } from 'src/environments/environment';
+import { firstValueFrom } from 'rxjs';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class EmailService {
 
 	constructor(private http: HttpClient, private eventService: EventService) { }
@@ -22,11 +22,11 @@ export class EmailService {
 
 		this.eventService.start();
 
-		return this.http.get<Email>(environment.apiUrl + '/api/email/editDefault')
+		return firstValueFrom(this.http.get<Email>(environment.apiUrl + '/api/email/editDefault')
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
-			.toPromise();
+		);
 	}
 
 	apply(email: Email): Promise<Email> {
@@ -36,11 +36,11 @@ export class EmailService {
 
 		this.eventService.start();
 
-		return this.http
+		return firstValueFrom(this.http
 			.post<Email>(environment.apiUrl + '/api/email/apply', JSON.stringify(email), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
-			.toPromise()
+		)
 	}
 }

@@ -109,6 +109,7 @@ export class SiteEntity {
 	projectionName?: string;
 	orthoCorrectionModel?: string;
 	isPrivate?: boolean;
+	hasPIIConcern?: boolean;
 
 }
 
@@ -211,6 +212,7 @@ export class Selection {
 	weatherConditions?: string;
 	artifacts?: any[];
 	isPrivate?: boolean;
+	hasPIIConcern?: boolean;
 	format?: string;
 };
 
@@ -475,7 +477,7 @@ export class Page {
 	type?: string
 };
 
-export class RawSet {
+export class ImageSet {
 	id: string;
 	name: string;
 	components: SiteEntity[];
@@ -490,8 +492,8 @@ export class RawSet {
 	documentId?: string;
 }
 
-export class CollectionRawSetView {
+export class CollectionImageSetView {
 	componentId: string;
 	componentType: string;
-	sets: RawSet[];
+	sets: ImageSet[];
 }

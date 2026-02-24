@@ -15,14 +15,14 @@
  */
 package gov.geoplatform.uasdm.controller.body;
 
-import org.hibernate.validator.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 public class EntityProductBody
 {
   @NotBlank
   private String id;
 
-  @NotBlank
+  // This is blank when manually uploading a geologger file
   private String productName;
 
   public String getId()

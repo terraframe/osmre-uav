@@ -10,7 +10,7 @@ export interface IEventListener {
     complete(): void;
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class EventService {
     private listeners: IEventListener[] = [];
 

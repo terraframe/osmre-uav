@@ -30,7 +30,7 @@ import gov.geoplatform.uasdm.bus.Product;
 import gov.geoplatform.uasdm.bus.Project;
 import gov.geoplatform.uasdm.bus.Site;
 import gov.geoplatform.uasdm.bus.UasComponent;
-import gov.geoplatform.uasdm.graph.RawSet;
+import gov.geoplatform.uasdm.graph.ImageSet;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.CollectionCriteria;
 
@@ -136,13 +136,13 @@ public class BusinessStrategy implements ComponentStrategy
   }
 
   @Override
-  public RawSet getRawSet(String oid)
+  public ImageSet getImageSet(String oid)
   {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public List<ComponentRawSet> getRawSets(CollectionCriteria criteria)
+  public List<ComponentImageSet> getImageSets(CollectionCriteria criteria)
   {
     throw new UnsupportedOperationException();
   }
