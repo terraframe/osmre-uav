@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.processing;
 
-@com.runwaysdk.business.ClassSignature(hash = 1374889509)
+@com.runwaysdk.business.ClassSignature(hash = -229764790)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -11,15 +11,73 @@ package gov.geoplatform.uasdm.processing;
 public abstract class FargateStoreTaskBase extends gov.geoplatform.uasdm.bus.WorkflowTask
 {
   public final static String CLASS = "gov.geoplatform.uasdm.processing.FargateStoreTask";
+  public final static java.lang.String PROCESSINGJOBID = "processingJobId";
+  public final static java.lang.String PROCESSINGRUN = "processingRun";
   public final static java.lang.String PROCESSINGTYPE = "processingType";
   public final static java.lang.String TASKARN = "taskArn";
   public final static java.lang.String TASKDEFINITIONARN = "taskDefinitionArn";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 1374889509;
+  private static final long serialVersionUID = -229764790;
   
   public FargateStoreTaskBase()
   {
     super();
+  }
+  
+  public String getProcessingJobId()
+  {
+    return getValue(PROCESSINGJOBID);
+  }
+  
+  public void validateProcessingJobId()
+  {
+    this.validateAttribute(PROCESSINGJOBID);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getProcessingJobIdMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.processing.FargateStoreTask.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(PROCESSINGJOBID);
+  }
+  
+  public void setProcessingJobId(String value)
+  {
+    if(value == null)
+    {
+      setValue(PROCESSINGJOBID, "");
+    }
+    else
+    {
+      setValue(PROCESSINGJOBID, value);
+    }
+  }
+  
+  public gov.geoplatform.uasdm.graph.ProcessingRun getProcessingRun()
+  {
+    return (gov.geoplatform.uasdm.graph.ProcessingRun)com.runwaysdk.business.graph.VertexObject.get("gov.geoplatform.uasdm.graph.ProcessingRun", getValue(PROCESSINGRUN));
+  }
+  
+  public void validateProcessingRun()
+  {
+    this.validateAttribute(PROCESSINGRUN);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeGraphReferenceDAOIF getProcessingRunMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.processing.FargateStoreTask.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeGraphReferenceDAOIF)mdClassIF.definesAttribute(PROCESSINGRUN);
+  }
+  
+  public void setProcessingRun(gov.geoplatform.uasdm.graph.ProcessingRun value)
+  {
+    if(value == null)
+    {
+      setValue(PROCESSINGRUN, "");
+    }
+    else
+    {
+      setValue(PROCESSINGRUN, value.getOid());
+    }
   }
   
   public String getProcessingType()

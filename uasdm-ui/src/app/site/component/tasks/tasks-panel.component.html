@@ -65,6 +65,8 @@
                     (click)="task.showODMOutput = !task.showODMOutput">Show Detailed Log Output</button>
                   <button class="btn btn-default" *ngIf="task.odmRunId" (click)="viewOdmRun(task)">View ODM Run
                     Information</button>
+                  <button class="btn btn-default" *ngIf="task.processingRunId" (click)="viewProcessingRun(task)">View Processing Run
+                    Information</button>
                   <button class="btn btn-default"
                     *ngIf="task.type === 'gov.geoplatform.uasdm.lidar.LidarProcessingTask'"
                     (click)="viewConfiguration(task)">View Run Configuration</button>

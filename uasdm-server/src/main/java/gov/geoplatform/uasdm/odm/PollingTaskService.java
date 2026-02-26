@@ -28,10 +28,12 @@ import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery;
+import gov.geoplatform.uasdm.model.AbstractWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.odm.ODMTaskProcessor.TaskResult;
 import gov.geoplatform.uasdm.odm.ODMTaskProcessor.TaskStatus;
 import gov.geoplatform.uasdm.processing.FargateProcessingTask;
+import gov.geoplatform.uasdm.processing.ProcessingTaskStatus;
 
 public class PollingTaskService implements TaskService
 {
@@ -196,37 +198,48 @@ public class PollingTaskService implements TaskService
           throw new InterruptedException();
         }
 
-        ImageryWorkflowTaskIF task = it.next();
-
-        if (task instanceof ODMProcessingTaskIF)
-        {
-          TaskResult result = new ODMTaskProcessor().handleProcessingTask((ODMProcessingTaskIF) task);
-
-          if (!result.getStatus().equals(TaskStatus.ACTIVE))
+        ImageryWorkflowTaskIF task = null;
+        try {
+          task = it.next();
+  
+          if (task instanceof ODMProcessingTaskIF)
           {
-            it.remove();
+            TaskResult result = new ODMTaskProcessor().handleProcessingTask((ODMProcessingTaskIF) task);
+  
+            if (!result.getStatus().equals(TaskStatus.ACTIVE))
+            {
+              it.remove();
+            }
+  
+            if (result.getStatus().equals(TaskStatus.UPLOAD))
+            {
+              ODMUploadTaskIF uploadTask = result.getDownstreamTask();
+  
+              S3ResultsUploadThread thread = new S3ResultsUploadThread("S3Uploader for " + uploadTask.getOdmUUID(), uploadTask);
+              uploadThreads.add(thread);
+              thread.start();
+            }
           }
-
-          if (result.getStatus().equals(TaskStatus.UPLOAD))
+          else if (task instanceof FargateProcessingTask)
           {
-            ODMUploadTaskIF uploadTask = result.getDownstreamTask();
-
-            S3ResultsUploadThread thread = new S3ResultsUploadThread("S3Uploader for " + uploadTask.getOdmUUID(), uploadTask);
-            uploadThreads.add(thread);
-            thread.start();
+            TaskResult result = ((FargateProcessingTask)task).poll();
+            
+            if (!result.getStatus().equals(TaskStatus.ACTIVE)) {
+              it.remove();
+            }
+          }
+          else
+          {
+            throw new UnsupportedOperationException();
           }
         }
-        else if (task instanceof FargateProcessingTask)
-        {
-          TaskResult result = ((FargateProcessingTask)task).poll();
+        catch(Throwable t) {
+          task.appLock();
+          task.setMessage("An unexpected error occured. Please contact your technical support.");
+          task.setStatus(ProcessingTaskStatus.FAILED.getLabel());
+          task.apply();
           
-          if (!result.getStatus().equals(TaskStatus.ACTIVE)) {
-            it.remove();
-          }
-        }
-        else
-        {
-          throw new UnsupportedOperationException();
+          it.remove();
         }
       }
     }

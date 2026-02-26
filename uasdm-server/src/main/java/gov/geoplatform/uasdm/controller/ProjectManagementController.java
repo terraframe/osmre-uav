@@ -112,6 +112,12 @@ public class ProjectManagementController extends AbstractController
   {
     return ResponseEntity.ok(service.getODMRunByTask(this.getSessionId(), taskId).toJson().toString());
   }
+  
+  @GetMapping("/get-processing-run-by-task")
+  public ResponseEntity<String> getProcessingRun(@RequestParam(required = false, name = "taskId") String taskId) throws IOException
+  {
+    return ResponseEntity.ok(service.getProcessingRunByTask(this.getSessionId(), taskId).toJson().toString());
+  }
 
   @GetMapping("/get-configuration-by-task")
   public ResponseEntity<String> getConfigurationByTask(@RequestParam(required = false, name = "taskId") String taskId) throws IOException

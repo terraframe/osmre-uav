@@ -55,6 +55,8 @@ import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.processing.CopcLazValidator;
+import gov.geoplatform.uasdm.processing.WorkflowTaskMonitor;
 import gov.geoplatform.uasdm.resource.EditableArchiveFileResource;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import gov.geoplatform.uasdm.ws.MessageType;
@@ -337,22 +339,7 @@ public class UploadValidationProcessor
     
     if (!Mission.ACCESSIBLE_SUPPORT.equals(uploadTarget))
     {
-      if (Util.isImageFile(res.getName()))
-      {
-        try
-        {
-          ImageIO.read(res.getUnderlyingFile());
-        }
-        catch (Exception e)
-        {
-          task.lock();
-          task.setStatus(WorkflowTaskStatus.ERROR.toString());
-          task.setMessage("The file [" + res.getName() + " is not a valid image file]");
-          task.apply();
-          
-          return false;
-        }
-      }
+      if (!validateFileFormat(res, task, configuration)) return false;
   
       if (!UasComponentIF.isValidName(res.getName()))
       {
@@ -418,6 +405,48 @@ public class UploadValidationProcessor
       }
     }
 
+    return true;
+  }
+  
+  protected boolean validateFileFormat(ApplicationFileResource res, AbstractUploadTask task, ProcessConfiguration configuration)
+  {
+    if (Util.isImageFile(res.getName()))
+    {
+      try
+      {
+        ImageIO.read(res.getUnderlyingFile());
+      }
+      catch (Exception e)
+      {
+        task.lock();
+        task.setStatus(WorkflowTaskStatus.ERROR.toString());
+        task.setMessage("The file [" + res.getName() + "] is not a valid image file. (" + e.getMessage() + ")");
+        task.apply();
+        
+        return false;
+      }
+    }
+    
+    if (res.getName().toLowerCase().endsWith(".copc.laz")) {
+      if (!new CopcLazValidator(new WorkflowTaskMonitor(task)).isValidCopc(res)) {
+        task.lock();
+        task.setStatus(WorkflowTaskStatus.ERROR.toString());
+        task.setMessage("The file [" + res.getName() + "] did not pass copc validation (when using 'pdal info').");
+        task.apply();
+        
+        return false;
+      }
+    } else if (res.getNameExtension().equalsIgnoreCase("laz")) {
+      if (!!new CopcLazValidator(new WorkflowTaskMonitor(task)).isValidLaz(res)) {
+        task.lock();
+        task.setStatus(WorkflowTaskStatus.ERROR.toString());
+        task.setMessage("The file [" + res.getName() + "] did not pass laz validation ('pdal info' threw an error).");
+        task.apply();
+        
+        return false;
+      }
+    }
+    
     return true;
   }
   

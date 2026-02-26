@@ -1,14 +1,8 @@
 package gov.geoplatform.uasdm.processing.fargate;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 
 import org.json.JSONArray;
 import org.slf4j.Logger;
@@ -18,20 +12,13 @@ import org.springframework.stereotype.Component;
 
 import com.runwaysdk.RunwayException;
 import com.runwaysdk.constants.CommonProperties;
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
-import com.runwaysdk.resource.ArchiveFileResource;
-import com.runwaysdk.resource.CloseableFile;
-import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Request;
 
 import gov.geoplatform.uasdm.model.CollectionIF;
-import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.processing.FargateProcessingTask;
-import gov.geoplatform.uasdm.service.ExcludeSiteObjectPredicate;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
-import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;

@@ -33,6 +33,7 @@ import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.ODMRun;
+import gov.geoplatform.uasdm.graph.ProcessingRun;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.UserAccessEntity;
 import gov.geoplatform.uasdm.model.CollectionIF;
@@ -44,6 +45,7 @@ import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.ODMRunView;
+import gov.geoplatform.uasdm.view.ProcessingRunView;
 import gov.geoplatform.uasdm.view.ProductCriteria;
 import gov.geoplatform.uasdm.view.ProductDetailView;
 import gov.geoplatform.uasdm.view.ProductView;
@@ -227,6 +229,19 @@ public class ProductService
     ODMRun run = ODMRun.getGeneratingRun(doc);
 
     return ODMRunView.fromODMRun(run);
+  }
+  
+  @Request(RequestType.SESSION)
+  public ProcessingRunView getProcessingRunByArtifact(String sessionId, String artifactId)
+  {
+    Document doc = Document.get(artifactId);
+
+    UasComponentIF component = doc.getComponent();
+    UserAccessEntity.validateAccess(component);
+
+    ProcessingRun run = ProcessingRun.getGeneratingRun(doc);
+
+    return ProcessingRunView.fromProcessingRun(run);
   }
 
   @Request(RequestType.SESSION)

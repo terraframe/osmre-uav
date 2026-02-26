@@ -1,0 +1,116 @@
+<!--
+
+
+
+-->
+<div>
+  <div class="modal-body" tabindex="-1" role="dialog">
+
+    <div *ngIf="message != null && message.length > 0" class="row error-container">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">
+        <div class="label-holder">
+          <strong style="color:#8c0000;">Error</strong>
+        </div>
+        <div class="holder">
+          <div>
+            <p class="error-message">{{message}}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2"></div>
+    </div>
+
+	<span *ngIf="loading">
+		<h4>
+			<i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
+		</h4>
+	</span>
+    
+    <div *ngIf="config" class="card border border-secondary mb-2">
+    	<div class="card-header bg-secondary">
+    		Basic Information
+    	</div>
+	    <div class="card-body" style="padding:10px;">
+	    	<div class="form-group">
+		    	<label class="form-label">
+		    		Start Time
+		    	</label>
+			    <div>
+			      {{ formatDate(processingRun.runStart) }}
+			    </div>
+		    </div>
+		    
+		    <div *ngIf="processingRun.runEnd" class="form-group">
+			    <label class="form-label">
+		    		End Time
+		    	</label>
+			    <div>
+			      {{ formatDate(processingRun.runEnd) }}
+			    </div>
+		    </div>
+		    
+		    <div *ngIf="processingRun.runEnd" class="form-group">
+			    <label class="form-label">
+		    		Total Runtime
+		    	</label>
+			    <div>
+			      {{ getRuntime() }}
+			    </div>
+		    </div>
+	    </div>
+	</div>
+    
+    <div *ngIf="config" class="card border border-secondary mb-2">
+    	<div class="card-header bg-secondary">
+    		Configuration
+    	</div>
+	    <div class="card-body" style="padding:10px;">
+	        <div class="form-group">
+	            <boolean-field [(value)]="config.generateCopc"
+	                label="Generate COPC" [disabled]="true"></boolean-field>
+	        </div>
+			<div class="form-group">
+	            <boolean-field [(value)]="config.generateTreeCanopyCover"
+	                label="Generate Tree canopy cover" [disabled]="true"></boolean-field>
+	        </div>
+			<div class="form-group">
+	            <boolean-field [(value)]="config.generateGSM"
+	                label="Generate ground surface model" [disabled]="true"></boolean-field>
+	        </div>
+			<div class="form-group">
+	            <boolean-field [(value)]="config.generateTerrainModel"
+	                label="Generate terrain model" [disabled]="true"></boolean-field>
+	        </div>
+	    </div>
+	</div>
+	
+	<div *ngIf="processingRun && processingRun.output" class="card border border-secondary mb-2">
+    	<div class="card-header bg-secondary">
+    		Output
+    	</div>
+	    <div class="card-body">
+	      <textarea style="color: grey; width: 100%; height: 500px;" [innerHTML]="processingRun.output"></textarea>
+	    </div>
+	</div>
+    
+    <div class="modal-footer">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="btn-holder" style="text-align: right;">
+                    <button type="button" (click)="close()"
+                        class="btn btn-default" role="button" aria-disabled="false" style="padding: 4px 18px;">
+                        <span class="ui-button-text">Close</span>
+                    </button>
+                    <button *ngIf="processingRun && processingRun.report" type="button" (click)="downloadReport()"
+                        class="btn btn-default" role="button" aria-disabled="false" style="padding: 4px 18px;">
+                        <span class="ui-button-text">Download Quality Report</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  </div>
+</div>

@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.processing;
 
-@com.runwaysdk.business.ClassSignature(hash = 2100263342)
+@com.runwaysdk.business.ClassSignature(hash = -1228228077)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -11,7 +11,7 @@ package gov.geoplatform.uasdm.processing;
 public class FargateStoreTaskQueryDTO extends gov.geoplatform.uasdm.bus.WorkflowTaskQueryDTO
 {
 @SuppressWarnings("unused")
-private static final long serialVersionUID = 2100263342;
+private static final long serialVersionUID = -1228228077;
 
   protected FargateStoreTaskQueryDTO(String type)
   {

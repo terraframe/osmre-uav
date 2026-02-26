@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.processing;
 
-@com.runwaysdk.business.ClassSignature(hash = -46702158)
+@com.runwaysdk.business.ClassSignature(hash = 487675310)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -13,11 +13,12 @@ public abstract class FargateProcessingTaskBase extends gov.geoplatform.uasdm.bu
   public final static String CLASS = "gov.geoplatform.uasdm.processing.FargateProcessingTask";
   public final static java.lang.String CONFIGURATIONJSON = "configurationJson";
   public final static java.lang.String PROCESSFILENAMEARRAY = "processFilenameArray";
+  public final static java.lang.String PROCESSINGRUN = "processingRun";
   public final static java.lang.String PROCESSINGTYPE = "processingType";
   public final static java.lang.String TASKARN = "taskArn";
   public final static java.lang.String TASKDEFINITIONARN = "taskDefinitionArn";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = -46702158;
+  private static final long serialVersionUID = 487675310;
   
   public FargateProcessingTaskBase()
   {
@@ -77,6 +78,34 @@ public abstract class FargateProcessingTaskBase extends gov.geoplatform.uasdm.bu
     else
     {
       setValue(PROCESSFILENAMEARRAY, value);
+    }
+  }
+  
+  public gov.geoplatform.uasdm.graph.ProcessingRun getProcessingRun()
+  {
+    return (gov.geoplatform.uasdm.graph.ProcessingRun)com.runwaysdk.business.graph.VertexObject.get("gov.geoplatform.uasdm.graph.ProcessingRun", getValue(PROCESSINGRUN));
+  }
+  
+  public void validateProcessingRun()
+  {
+    this.validateAttribute(PROCESSINGRUN);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeGraphReferenceDAOIF getProcessingRunMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.processing.FargateProcessingTask.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeGraphReferenceDAOIF)mdClassIF.definesAttribute(PROCESSINGRUN);
+  }
+  
+  public void setProcessingRun(gov.geoplatform.uasdm.graph.ProcessingRun value)
+  {
+    if(value == null)
+    {
+      setValue(PROCESSINGRUN, "");
+    }
+    else
+    {
+      setValue(PROCESSINGRUN, value.getOid());
     }
   }
   

@@ -77,6 +77,7 @@ import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.ODMRun;
+import gov.geoplatform.uasdm.graph.ProcessingRun;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
@@ -112,6 +113,7 @@ import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.ODMRunView;
+import gov.geoplatform.uasdm.view.ProcessingRunView;
 import gov.geoplatform.uasdm.view.QueryResult;
 import gov.geoplatform.uasdm.view.QuerySiteResult;
 import gov.geoplatform.uasdm.view.SiteItem;
@@ -1352,6 +1354,19 @@ public class ProjectManagementService
     }
 
     return ODMRunView.fromODMRun(run);
+  }
+  
+  @Request(RequestType.SESSION)
+  public ProcessingRunView getProcessingRunByTask(String sessionId, String taskId)
+  {
+    ProcessingRun run = ProcessingRun.getForTask(taskId);
+
+    if (run == null)
+    {
+      throw new DataNotFoundException("Run does not exist", MdVertexDAO.getMdVertexDAO(ProcessingRun.CLASS));
+    }
+
+    return ProcessingRunView.fromProcessingRun(run);
   }
 
   @Request(RequestType.SESSION)

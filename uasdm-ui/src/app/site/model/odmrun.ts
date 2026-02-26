@@ -12,6 +12,14 @@ export class ODMRun {
 	runEnd: string;
 }
 
+export class ProcessingRun {
+	output: string;
+	config: ProcessConfig;
+    report: SiteEntity;
+	runStart: string;
+	runEnd: string;
+}
+
 export interface RuntimeEstimate {runtime: number, confidence: number, similarJobs: number};
 export type RuntimeDisplay = { primary: string; secondary?: string; };
 

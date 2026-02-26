@@ -26,6 +26,7 @@
           <text name="autoscaleResourceId" label="autoscaleResourceId"></text>
           <dateTime name="runStart"></dateTime>
           <dateTime name="runEnd"></dateTime>
+          <graphReference name="report" label="report" type="gov.geoplatform.uasdm.graph.Document"></graphReference>
           <reference name="workflowTask" label="Workflow Task" type="gov.geoplatform.uasdm.bus.AbstractWorkflowTask"></reference>
           <graphReference name="component" label="Component" type="gov.geoplatform.uasdm.graph.UasComponent"></graphReference>
         </attributes>
@@ -41,6 +42,7 @@
           <text name="taskArn" label="taskArn"></text>
           <text name="processFilenameArray" label="processFilenameArray"></text>
           <text name="configurationJson" label="configurationJson"></text>
+          <graphReference name="processingRun" type="gov.geoplatform.uasdm.graph.ProcessingRun"></graphReference>
         </attributes>
       </mdBusiness>
       
@@ -48,11 +50,14 @@
         <attributes>
           <text name="processingType" label="processingType"></text>
           <text name="taskDefinitionArn" label="taskDefinitionArn"></text>
+          <text name="processingJobId" label="processingJobId"></text>
           <text name="taskArn" label="taskArn"></text>
+          <graphReference name="processingRun" type="gov.geoplatform.uasdm.graph.ProcessingRun"></graphReference>
         </attributes>
       </mdBusiness>
     </create>
-    <update></update>
+    <update>
+    </update>
     <permissions>
       <role roleName="geoprism.admin.Administrator">
         <grant>
@@ -88,6 +93,7 @@
       <object key="gov.geoplatform.uasdm.graph.ProcessingRunOutput" type="com.runwaysdk.system.metadata.MdEdge"></object>
       <object key="gov.geoplatform.uasdm.graph.ProcessingRun" type="com.runwaysdk.system.metadata.MdVertex"></object>
       <object key="gov.geoplatform.uasdm.processing.FargateProcessingTask" type="com.runwaysdk.system.metadata.MdBusiness"></object>
+      <object key="gov.geoplatform.uasdm.processing.FargateStoreTask" type="com.runwaysdk.system.metadata.MdBusiness"></object>
     </delete>
   </undoIt>
 </version>

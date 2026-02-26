@@ -16,6 +16,7 @@ import { getRuntimeDisplay } from '@site/model/odmrun';
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { CollapseDirective } from 'ngx-bootstrap/collapse';
 import { IdmDatePipe } from '@shared/pipe/idmdate.pipe';
+import { ProcessingRunModalComponent } from '../modal/processingrun-modal.component';
 
 
 @Component({
@@ -74,6 +75,16 @@ export class TasksPanelComponent implements OnInit {
 	
 	viewOdmRun(task: Task): void {
 		const modal = this.modalService.show(ODMRunModalComponent, {
+			animated: true,
+			backdrop: true, class: 'modal-xl',
+			ignoreBackdropClick: false,
+		});
+		
+		modal.content.initOnWorkflowTask(task);
+	}
+
+	viewProcessingRun(task: Task): void {
+		const modal = this.modalService.show(ProcessingRunModalComponent, {
 			animated: true,
 			backdrop: true, class: 'modal-xl',
 			ignoreBackdropClick: false,

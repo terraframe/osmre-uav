@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.processing;
 
-@com.runwaysdk.business.ClassSignature(hash = 210252892)
+@com.runwaysdk.business.ClassSignature(hash = 910850625)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -37,6 +37,40 @@ public  class FargateStoreTaskQuery extends gov.geoplatform.uasdm.bus.WorkflowTa
   public String getClassType()
   {
     return gov.geoplatform.uasdm.processing.FargateStoreTask.CLASS;
+  }
+  public com.runwaysdk.query.SelectableChar getProcessingJobId()
+  {
+    return getProcessingJobId(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getProcessingJobId(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.processing.FargateStoreTask.PROCESSINGJOBID, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getProcessingJobId(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.processing.FargateStoreTask.PROCESSINGJOBID, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableUUID getProcessingRun()
+  {
+    return getProcessingRun(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableUUID getProcessingRun(String alias)
+  {
+    return (com.runwaysdk.query.SelectableUUID)this.getComponentQuery().get(gov.geoplatform.uasdm.processing.FargateStoreTask.PROCESSINGRUN, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableUUID getProcessingRun(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableUUID)this.getComponentQuery().get(gov.geoplatform.uasdm.processing.FargateStoreTask.PROCESSINGRUN, alias, displayLabel);
+
   }
   public com.runwaysdk.query.SelectableChar getProcessingType()
   {
@@ -121,6 +155,12 @@ public  class FargateStoreTaskQuery extends gov.geoplatform.uasdm.bus.WorkflowTa
   public interface FargateStoreTaskQueryReferenceIF extends gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryReferenceIF
   {
 
+    public com.runwaysdk.query.SelectableChar getProcessingJobId();
+    public com.runwaysdk.query.SelectableChar getProcessingJobId(String alias);
+    public com.runwaysdk.query.SelectableChar getProcessingJobId(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableUUID getProcessingRun();
+    public com.runwaysdk.query.SelectableUUID getProcessingRun(String alias);
+    public com.runwaysdk.query.SelectableUUID getProcessingRun(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getProcessingType();
     public com.runwaysdk.query.SelectableChar getProcessingType(String alias);
     public com.runwaysdk.query.SelectableChar getProcessingType(String alias, String displayLabel);
@@ -165,6 +205,40 @@ public  class FargateStoreTaskQuery extends gov.geoplatform.uasdm.bus.WorkflowTa
       return this.NE(fargateStoreTask.getOid());
     }
 
+  public com.runwaysdk.query.SelectableChar getProcessingJobId()
+  {
+    return getProcessingJobId(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getProcessingJobId(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.processing.FargateStoreTask.PROCESSINGJOBID, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getProcessingJobId(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.processing.FargateStoreTask.PROCESSINGJOBID, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableUUID getProcessingRun()
+  {
+    return getProcessingRun(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableUUID getProcessingRun(String alias)
+  {
+    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.processing.FargateStoreTask.PROCESSINGRUN, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableUUID getProcessingRun(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.processing.FargateStoreTask.PROCESSINGRUN, alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableChar getProcessingType()
   {
     return getProcessingType(null);
@@ -225,6 +299,12 @@ public  class FargateStoreTaskQuery extends gov.geoplatform.uasdm.bus.WorkflowTa
   public interface FargateStoreTaskQueryMultiReferenceIF extends gov.geoplatform.uasdm.bus.WorkflowTaskQuery.WorkflowTaskQueryMultiReferenceIF
   {
 
+    public com.runwaysdk.query.SelectableChar getProcessingJobId();
+    public com.runwaysdk.query.SelectableChar getProcessingJobId(String alias);
+    public com.runwaysdk.query.SelectableChar getProcessingJobId(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableUUID getProcessingRun();
+    public com.runwaysdk.query.SelectableUUID getProcessingRun(String alias);
+    public com.runwaysdk.query.SelectableUUID getProcessingRun(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getProcessingType();
     public com.runwaysdk.query.SelectableChar getProcessingType(String alias);
     public com.runwaysdk.query.SelectableChar getProcessingType(String alias, String displayLabel);
@@ -317,6 +397,40 @@ public  class FargateStoreTaskQuery extends gov.geoplatform.uasdm.bus.WorkflowTa
       }
 
       return this.containsExactly(itemIdArray);
+  }
+  public com.runwaysdk.query.SelectableChar getProcessingJobId()
+  {
+    return getProcessingJobId(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getProcessingJobId(String alias)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.processing.FargateStoreTask.PROCESSINGJOBID, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableChar getProcessingJobId(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.processing.FargateStoreTask.PROCESSINGJOBID, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableUUID getProcessingRun()
+  {
+    return getProcessingRun(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableUUID getProcessingRun(String alias)
+  {
+    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.processing.FargateStoreTask.PROCESSINGRUN, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableUUID getProcessingRun(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.processing.FargateStoreTask.PROCESSINGRUN, alias, displayLabel);
+
   }
   public com.runwaysdk.query.SelectableChar getProcessingType()
   {

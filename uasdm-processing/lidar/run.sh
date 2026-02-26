@@ -154,12 +154,47 @@ if [ ! -f "$LOCAL_INPUT_FILE" ]; then
   exit 1
 fi
 
-## Convert point cloud to COPC ##
-if [[ "$LOCAL_INPUT_FILE" != *.copc.laz ]]; then
+## Convert point cloud to COPC (robust: validate LAZ + detect COPC by metadata) ##
+
+# Helper: confirm PDAL can read the file and that it's compressed (LAZ)
+is_valid_laz() {
+  local f="$1"
+
+  # 1) PDAL must be able to read it (valid LAS/LAZ structure)
+  conda run -n silvimetric pdal info "$f" >/dev/null 2>&1 || return 1
+
+  # 2) Must be compressed (LAZ specifically)
+  conda run -n silvimetric pdal info --metadata "$f" 2>/dev/null \
+    | jq -e '.metadata.compressed == true' >/dev/null 2>&1
+}
+
+# Helper: detect COPC by presence of metadata.copc
+is_copc() {
+  local f="$1"
+  conda run -n silvimetric pdal info --metadata "$f" 2>/dev/null \
+    | jq -e '.metadata.copc != null' >/dev/null 2>&1
+}
+
+# ---- Step 1: verify LAZ ----
+if ! is_valid_laz "$LOCAL_INPUT_FILE"; then
+  echo "Error: Input is not a valid LAZ (compressed LAS) file: $LOCAL_INPUT_FILE" >&2
+  exit 1
+fi
+
+# ---- Step 2: if not COPC, generate COPC ----
+if ! is_copc "$LOCAL_INPUT_FILE"; then
+  echo "Input is LAZ but not COPC; generating COPC..."
+
   ORIGINAL_BASENAME="$(basename "$LOCAL_INPUT_FILE")"
 
-  # Strip only the final .laz (not anything earlier in name)
-  BASE_NO_EXT="${ORIGINAL_BASENAME%.laz}"
+  # Build output name safely:
+  # - if input ends with .copc.laz (but isn't COPC), strip that and re-add .copc.laz (no .copc.copc.laz)
+  # - else strip trailing .laz and add .copc.laz
+  if [[ "$ORIGINAL_BASENAME" == *.copc.laz ]]; then
+    BASE_NO_EXT="${ORIGINAL_BASENAME%.copc.laz}"
+  else
+    BASE_NO_EXT="${ORIGINAL_BASENAME%.laz}"
+  fi
 
   COPC_FILENAME="${BASE_NO_EXT}.copc.laz"
   COPC_FILE="$OUTPUT_DIR/$COPC_FILENAME"
@@ -174,10 +209,19 @@ if [[ "$LOCAL_INPUT_FILE" != *.copc.laz ]]; then
     exit 1
   fi
 
+  # Optional sanity check: ensure output is actually COPC
+  if ! is_copc "$COPC_FILE"; then
+    echo "Error: COPC translation produced a file that does not appear to be COPC: $COPC_FILE" >&2
+    exit 1
+  fi
+
   echo "Uploading: $COPC_FILENAME -> $S3_OUTPUT_URI"
   aws s3 cp "$COPC_FILE" "$S3_OUTPUT_URI" --region "$AWS_REGION" --no-progress
 
+  # Use COPC for downstream processing
   LOCAL_INPUT_FILE="$COPC_FILE"
+else
+  echo "Input is already COPC; using as-is."
 fi
 
 
@@ -222,4 +266,4 @@ for fname in "${COG_FILES[@]}"; do
   aws s3 cp "$cog" "$S3_OUTPUT_URI" --region "$AWS_REGION" --no-progress
 done
 
-echo "Done."
+echo "IDM_PROCESSING_COMPLETE"

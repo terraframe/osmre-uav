@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.processing;
 
-@com.runwaysdk.business.ClassSignature(hash = -1424214871)
+@com.runwaysdk.business.ClassSignature(hash = 1804430743)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -70,6 +70,23 @@ public  class FargateProcessingTaskQuery extends gov.geoplatform.uasdm.bus.Workf
   public com.runwaysdk.query.SelectableChar getProcessFilenameArray(String alias, String displayLabel)
   {
     return (com.runwaysdk.query.SelectableChar)this.getComponentQuery().get(gov.geoplatform.uasdm.processing.FargateProcessingTask.PROCESSFILENAMEARRAY, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableUUID getProcessingRun()
+  {
+    return getProcessingRun(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableUUID getProcessingRun(String alias)
+  {
+    return (com.runwaysdk.query.SelectableUUID)this.getComponentQuery().get(gov.geoplatform.uasdm.processing.FargateProcessingTask.PROCESSINGRUN, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableUUID getProcessingRun(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableUUID)this.getComponentQuery().get(gov.geoplatform.uasdm.processing.FargateProcessingTask.PROCESSINGRUN, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableChar getProcessingType()
@@ -161,6 +178,9 @@ public  class FargateProcessingTaskQuery extends gov.geoplatform.uasdm.bus.Workf
     public com.runwaysdk.query.SelectableChar getProcessFilenameArray();
     public com.runwaysdk.query.SelectableChar getProcessFilenameArray(String alias);
     public com.runwaysdk.query.SelectableChar getProcessFilenameArray(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableUUID getProcessingRun();
+    public com.runwaysdk.query.SelectableUUID getProcessingRun(String alias);
+    public com.runwaysdk.query.SelectableUUID getProcessingRun(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getProcessingType();
     public com.runwaysdk.query.SelectableChar getProcessingType(String alias);
     public com.runwaysdk.query.SelectableChar getProcessingType(String alias, String displayLabel);
@@ -239,6 +259,23 @@ public  class FargateProcessingTaskQuery extends gov.geoplatform.uasdm.bus.Workf
     return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.processing.FargateProcessingTask.PROCESSFILENAMEARRAY, alias, displayLabel);
 
   }
+  public com.runwaysdk.query.SelectableUUID getProcessingRun()
+  {
+    return getProcessingRun(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableUUID getProcessingRun(String alias)
+  {
+    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.processing.FargateProcessingTask.PROCESSINGRUN, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableUUID getProcessingRun(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.processing.FargateProcessingTask.PROCESSINGRUN, alias, displayLabel);
+
+  }
   public com.runwaysdk.query.SelectableChar getProcessingType()
   {
     return getProcessingType(null);
@@ -305,6 +342,9 @@ public  class FargateProcessingTaskQuery extends gov.geoplatform.uasdm.bus.Workf
     public com.runwaysdk.query.SelectableChar getProcessFilenameArray();
     public com.runwaysdk.query.SelectableChar getProcessFilenameArray(String alias);
     public com.runwaysdk.query.SelectableChar getProcessFilenameArray(String alias, String displayLabel);
+    public com.runwaysdk.query.SelectableUUID getProcessingRun();
+    public com.runwaysdk.query.SelectableUUID getProcessingRun(String alias);
+    public com.runwaysdk.query.SelectableUUID getProcessingRun(String alias, String displayLabel);
     public com.runwaysdk.query.SelectableChar getProcessingType();
     public com.runwaysdk.query.SelectableChar getProcessingType(String alias);
     public com.runwaysdk.query.SelectableChar getProcessingType(String alias, String displayLabel);
@@ -430,6 +470,23 @@ public  class FargateProcessingTaskQuery extends gov.geoplatform.uasdm.bus.Workf
   public com.runwaysdk.query.SelectableChar getProcessFilenameArray(String alias, String displayLabel)
   {
     return (com.runwaysdk.query.SelectableChar)this.get(gov.geoplatform.uasdm.processing.FargateProcessingTask.PROCESSFILENAMEARRAY, alias, displayLabel);
+
+  }
+  public com.runwaysdk.query.SelectableUUID getProcessingRun()
+  {
+    return getProcessingRun(null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableUUID getProcessingRun(String alias)
+  {
+    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.processing.FargateProcessingTask.PROCESSINGRUN, alias, null);
+
+  }
+ 
+  public com.runwaysdk.query.SelectableUUID getProcessingRun(String alias, String displayLabel)
+  {
+    return (com.runwaysdk.query.SelectableUUID)this.get(gov.geoplatform.uasdm.processing.FargateProcessingTask.PROCESSINGRUN, alias, displayLabel);
 
   }
   public com.runwaysdk.query.SelectableChar getProcessingType()

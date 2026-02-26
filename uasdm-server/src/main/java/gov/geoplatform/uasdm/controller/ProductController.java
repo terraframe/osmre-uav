@@ -32,6 +32,7 @@ import gov.geoplatform.uasdm.controller.body.IdBody;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.service.request.ProductService;
 import gov.geoplatform.uasdm.view.ODMRunView;
+import gov.geoplatform.uasdm.view.ProcessingRunView;
 import gov.geoplatform.uasdm.view.ProductCriteria;
 import gov.geoplatform.uasdm.view.ProductDetailView;
 import gov.geoplatform.uasdm.view.ProductView;
@@ -48,6 +49,14 @@ public class ProductController extends AbstractController
   public ResponseEntity<String> getODMRun(@RequestParam(name = "artifactId") String artifactId)
   {
     ODMRunView response = service.getODMRunByArtifact(this.getSessionId(), artifactId);
+
+    return ResponseEntity.ok(response.toJson().toString());
+  }
+  
+  @GetMapping("/get-processing-run")
+  public ResponseEntity<String> getProcessingRun(@RequestParam(name = "artifactId") String artifactId)
+  {
+    ProcessingRunView response = service.getProcessingRunByArtifact(this.getSessionId(), artifactId);
 
     return ResponseEntity.ok(response.toJson().toString());
   }

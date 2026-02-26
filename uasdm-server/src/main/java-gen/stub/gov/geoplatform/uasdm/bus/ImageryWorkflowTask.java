@@ -88,4 +88,10 @@ public class ImageryWorkflowTask extends ImageryWorkflowTaskBase implements Imag
     
     return label;
   }
+
+  @Override
+  public UasComponentIF getComponentInstance()
+  {
+    throw new UnsupportedOperationException();
+  }
 }

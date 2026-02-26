@@ -50,7 +50,7 @@ public class FargateResponseProcessor
   private boolean sawDone = false;
   private boolean hasFatal = false;
 
-  public void process(FargateStoreTask task, String fargateOutput)
+  public void process(FargateTaskIF task, String fargateOutput)
   {
     errors.clear();
     warnings.clear();
@@ -95,7 +95,7 @@ public class FargateResponseProcessor
    * - Data-specific: show to end user as actionable messages.
    * - Non-data critical: mark sawNonDataCritical=true (end user sees generic message).
    */
-  private void processOutput(FargateStoreTask task, String output)
+  private void processOutput(FargateTaskIF task, String output)
   {
     if (output == null || output.trim().isEmpty())
     {

@@ -263,6 +263,7 @@ export class Task {
 	uploadId: string;
 	odmOutput: string;
 	odmRunId: string;
+	processingRunId: string;
 	collection: string;
 	collectionLabel: string;
 	type: string;

@@ -1,6 +1,6 @@
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = -1887916976)
+@com.runwaysdk.business.ClassSignature(hash = -1110327113)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -17,12 +17,13 @@ public abstract class ProcessingRunBase extends com.runwaysdk.business.graph.Ver
   public final static java.lang.String OID = "oid";
   public final static java.lang.String OUTPUT = "output";
   public final static java.lang.String PROCESSINGTYPE = "processingType";
+  public final static java.lang.String REPORT = "report";
   public final static java.lang.String RUNEND = "runEnd";
   public final static java.lang.String RUNSTART = "runStart";
   public final static java.lang.String SEQ = "seq";
   public final static java.lang.String WORKFLOWTASK = "workflowTask";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = -1887916976;
+  private static final long serialVersionUID = -1110327113;
   
   public ProcessingRunBase()
   {
@@ -118,6 +119,22 @@ public abstract class ProcessingRunBase extends com.runwaysdk.business.graph.Ver
   public void setProcessingType(String value)
   {
     this.setValue(PROCESSINGTYPE, value);
+  }
+  
+  public gov.geoplatform.uasdm.graph.Document getReport()
+  {
+    return (gov.geoplatform.uasdm.graph.Document) this.getObjectValue(REPORT);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeGraphReferenceDAOIF getReportMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.ProcessingRun.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeGraphReferenceDAOIF)mdClassIF.definesAttribute(REPORT);
+  }
+  
+  public void setReport(gov.geoplatform.uasdm.graph.Document value)
+  {
+    this.setValue(REPORT, value);
   }
   
   public java.util.Date getRunEnd()

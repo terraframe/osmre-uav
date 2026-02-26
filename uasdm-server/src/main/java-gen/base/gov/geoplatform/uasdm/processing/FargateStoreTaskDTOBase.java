@@ -1,11 +1,11 @@
 package gov.geoplatform.uasdm.processing;
 
-@com.runwaysdk.business.ClassSignature(hash = -1736570971)
+@com.runwaysdk.business.ClassSignature(hash = 995742410)
 public abstract class FargateStoreTaskDTOBase extends gov.geoplatform.uasdm.bus.WorkflowTaskDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.processing.FargateStoreTask";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = -1736570971;
+  private static final long serialVersionUID = 995742410;
   
   protected FargateStoreTaskDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -28,9 +28,48 @@ public abstract class FargateStoreTaskDTOBase extends gov.geoplatform.uasdm.bus.
     return CLASS;
   }
   
+  public static java.lang.String PROCESSINGJOBID = "processingJobId";
+  public static java.lang.String PROCESSINGRUN = "processingRun";
   public static java.lang.String PROCESSINGTYPE = "processingType";
   public static java.lang.String TASKARN = "taskArn";
   public static java.lang.String TASKDEFINITIONARN = "taskDefinitionArn";
+  public String getProcessingJobId()
+  {
+    return getValue(PROCESSINGJOBID);
+  }
+  
+  public void setProcessingJobId(String value)
+  {
+    if(value == null)
+    {
+      setValue(PROCESSINGJOBID, "");
+    }
+    else
+    {
+      setValue(PROCESSINGJOBID, value);
+    }
+  }
+  
+  public boolean isProcessingJobIdWritable()
+  {
+    return isWritable(PROCESSINGJOBID);
+  }
+  
+  public boolean isProcessingJobIdReadable()
+  {
+    return isReadable(PROCESSINGJOBID);
+  }
+  
+  public boolean isProcessingJobIdModified()
+  {
+    return isModified(PROCESSINGJOBID);
+  }
+  
+  public final com.runwaysdk.transport.metadata.AttributeTextMdDTO getProcessingJobIdMd()
+  {
+    return (com.runwaysdk.transport.metadata.AttributeTextMdDTO) getAttributeDTO(PROCESSINGJOBID).getAttributeMdDTO();
+  }
+  
   public String getProcessingType()
   {
     return getValue(PROCESSINGTYPE);

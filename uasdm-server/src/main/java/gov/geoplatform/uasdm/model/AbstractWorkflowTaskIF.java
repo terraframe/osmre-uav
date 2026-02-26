@@ -15,11 +15,15 @@
  */
 package gov.geoplatform.uasdm.model;
 
+import java.util.List;
+
 import com.runwaysdk.business.Element;
 import com.runwaysdk.business.Entity;
 import com.runwaysdk.system.SingleActor;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
+import gov.geoplatform.uasdm.bus.WorkflowAction;
 import net.geoprism.account.GeoprismActorIF;
 
 public interface AbstractWorkflowTaskIF
@@ -90,6 +94,16 @@ public interface AbstractWorkflowTaskIF
    * {@link Element#lock()}
    */
   public void lock();
+  
+  public void appLock();
+  
+  public List<WorkflowAction> getActions();
+  
+  public String getOid();
+  
+  public void createAction(String message, TaskActionType actionType);
+  
+  public UasComponentIF getComponentInstance();
 
   public String getUploadTarget();
 }

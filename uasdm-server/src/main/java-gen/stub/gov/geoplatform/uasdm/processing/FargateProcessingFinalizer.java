@@ -1,27 +1,37 @@
 package gov.geoplatform.uasdm.processing;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.runwaysdk.RunwayException;
 import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
+import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.AppProperties;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
-import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.ProcessingRun;
 import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.odm.ODMTaskProcessor.TaskResult;
 import gov.geoplatform.uasdm.odm.ODMTaskProcessor.TaskStatus;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.SiteObject;
+import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
+import gov.geoplatform.uasdm.ws.MessageType;
+import gov.geoplatform.uasdm.ws.NotificationFacade;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
@@ -31,46 +41,82 @@ import software.amazon.awssdk.services.cloudwatchlogs.model.OutputLogEvent;
 
 public class FargateProcessingFinalizer
 {
-  protected FargateStoreTask task;
+  private static final Logger logger = LoggerFactory.getLogger(FargateProcessingFinalizer.class);
+  
+  protected FargateTaskIF task;
   
   protected TaskResult result;
   
   protected boolean reponseProcessorSetMessageAndStatus = false;
   
-  public FargateProcessingFinalizer(FargateStoreTask task, TaskResult result) {
+  protected boolean missingRequiredArtifact = false;
+  
+  public FargateProcessingFinalizer(FargateTaskIF task, TaskResult result) {
     this.task = task;
     this.result = result;
   }
   
   public void finalize() {
-    if (result.getStatus().equals(TaskStatus.COMPLETED))
+    try {
+      if (result.getStatus().equals(TaskStatus.COMPLETED))
+      {
+        handleArtifacts();
+      }
+      
+      addOutputToTask();
+      
+      if (!reponseProcessorSetMessageAndStatus) {
+        final String exitCode = result.getExitCode() == null ? " (the job never ran)" : " (exit code " + result.getExitCode() + ")";
+        task.appLock();
+        task.setMessage("Encountered a fatal error during processing" + exitCode);
+        task.setStatus(ProcessingTaskStatus.FAILED.getLabel());
+        task.apply();
+      }
+      
+      RemoteFileFacade.deleteObjects(FargateProcessingTask.JOBS + "/" + task.getOid());
+      
+      if (missingRequiredArtifact)
+      {
+        task.appLock();
+        task.setStatus(ProcessingTaskStatus.FAILED.getLabel());
+        task.setMessage("Required artifacts were not produced during processing. See messages for more information.");
+        task.apply();
+      }
+      else if (result.getStatus().equals(TaskStatus.COMPLETED))
+      {
+        task.appLock();
+        task.setStatus(ProcessingTaskStatus.COMPLETED.getLabel());
+        
+        final String seeWarnings = task.getActions().size() > 0 ? ", but with warnings. See messages for more information." : ".";
+        task.setMessage("Artifacts archived successfully" + seeWarnings);
+        
+        task.apply();
+      }
+    }
+    catch (Throwable t)
     {
-      handleArtifacts();
-    }
-    
-    addOutputToTask();
-    
-    task.appLock();
-    if (!reponseProcessorSetMessageAndStatus) {
-      final String exitCode = result.getExitCode() == null ? " (the job never ran)" : " (exit code " + result.getExitCode() + ")";
-      task.setMessage("Encountered a fatal error during processing" + exitCode);
-      task.setStatus(ProcessingTaskStatus.FAILED.getLabel());
+      logger.error("Error occurred while archiving files for " + task.getTaskArn(), t);
+
+      String msg = RunwayException.localizeThrowable(t, Session.getCurrentLocale());
+
+      task.lock();
+      task.setStatus(ODMStatus.FAILED.getLabel());
+      task.setMessage(msg);
       task.apply();
+
+      NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
     }
-    
-    RemoteFileFacade.deleteObjects(FargateProcessingTask.JOBS + "/" + task.getOid());
   }
   
   protected void handleArtifacts() {
-    final StatusMonitorIF monitor = new WorkflowTaskMonitor(task);
+    final StatusMonitorIF monitor = new WorkflowTaskMonitor((AbstractWorkflowTask) task);
     final UasComponentIF component = task.getComponentInstance();
     final ProcessConfiguration config = task.getConfiguration();
     final Product product = (Product) component.createProductIfNotExist(config.getProductName());
     
-    List<SiteObject> items = RemoteFileFacade.getSiteObjects(component, FargateProcessingTask.JOBS + "/" + task.getOid(), new LinkedList<SiteObject>(), null, null).getObjects();
+    List<SiteObject> items = RemoteFileFacade.getSiteObjects(component, FargateProcessingTask.JOBS + "/" + task.getProcessingJobId(), new LinkedList<SiteObject>(), null, null).getObjects();
     
-    
-    handleArtifact(".*\\.copc\\.laz", ImageryComponent.PTCLOUD + "/pointcloud.copc.laz", config.toLidar().isGenerateCopc(), items, product, component, monitor);
+    handleArtifact(".*\\.copc\\.laz", ImageryComponent.PTCLOUD + "/pointcloud.copc.laz", (config.toLidar().isGenerateCopc() && !alreadyHasCopc()), items, product, component, monitor);
     handleArtifact("m_Classification_veg_density.cog.tif", ImageryComponent.ORTHO + "/m_Classification_veg_density.cog.tif", config.toLidar().isGenerateTreeCanopyCover(), items, product, component, monitor);
     handleArtifact("m_Z_diff.cog.tif", ImageryComponent.ORTHO + "/m_Z_diff.cog.tif", config.toLidar().isGenerateTreeStructure(), items, product, component, monitor);
     handleArtifact("m_Z_max.cog.tif", ImageryComponent.ORTHO + "/m_Z_max.cog.tif", config.toLidar().isGenerateGSM(), items, product, component, monitor);
@@ -89,10 +135,16 @@ public class FargateProcessingFinalizer
   }
   
   protected boolean alreadyHasCopc() {
-    Document laz = FargateProcessingTask.selectLazForProcessing(task.getComponentInstance());
+    DocumentIF laz = FargateProcessingTask.selectLazForProcessing(task.getComponentInstance());
+    
+    // This works so long as we never allow them to store a non-copc format with this extension.
+    return laz.getName().endsWith(".copc.laz");
   }
   
   protected void handleArtifact(String regex, String s3Path, boolean required, List<SiteObject> items, Product product, UasComponentIF component, StatusMonitorIF monitor) {
+    if (!required)
+      return;
+    
     for (var item : items) {
       if (item.getName().matches(regex)) {
         manageRemote(s3Path, item, product, component, monitor);
@@ -100,9 +152,8 @@ public class FargateProcessingFinalizer
       }
     }
     
-    if (required) {
-      task.createAction("Processing job did not generated expected file [" + s3Path + "]", TaskActionType.ERROR);
-    }
+    task.createAction("Processing job did not generated expected file [" + s3Path + "]", TaskActionType.ERROR);
+    missingRequiredArtifact = true;
   }
   
   protected void designatePrimaryProduct(UasComponentIF component, ProcessConfiguration config) {
@@ -136,10 +187,11 @@ public class FargateProcessingFinalizer
 
         new FargateResponseProcessor().process(task, output);
         
-        ProcessingRun run = ProcessingRun.getForTask(task.getOid());
+        ProcessingRun run = task.getProcessingRun();
         if (run != null)
         {
           run.setOutput(output);
+          run.setRunEnd(new Date());
           run.apply();
         }
         

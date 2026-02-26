@@ -5,6 +5,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,12 +16,14 @@ import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.graph.Collection;
-import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.ProcessingRun;
 import gov.geoplatform.uasdm.graph.UasComponent;
+import gov.geoplatform.uasdm.lidar.LidarProcessConfiguration;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.EmptyFileSetException;
+import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
+import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.odm.ODMTaskProcessor.TaskResult;
 import gov.geoplatform.uasdm.odm.ODMTaskProcessor.TaskStatus;
 import gov.geoplatform.uasdm.odm.ProcessingTaskStatusServer;
@@ -38,7 +42,7 @@ import software.amazon.awssdk.services.ecs.model.RunTaskRequest;
 import software.amazon.awssdk.services.ecs.model.RunTaskResponse;
 import software.amazon.awssdk.services.ecs.model.TaskOverride;
 
-public class FargateProcessingTask extends FargateProcessingTaskBase
+public class FargateProcessingTask extends FargateProcessingTaskBase implements FargateTaskIF
 {
   @SuppressWarnings("unused")
   private static final long serialVersionUID = -377855652;
@@ -70,9 +74,10 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
       }
 
       String taskArn = ecsResp.get("taskArn").getAsString();
-      ProcessingRun.createAndApplyFor(this, taskArn, taskDef);
+      ProcessingRun run = ProcessingRun.createAndApplyFor(this, taskArn, taskDef);
 
       this.appLock();
+      this.setProcessingRun(run);
       this.setStatus(ProcessingTaskStatus.RUNNING.getLabel());
       this.setTaskArn(ecsResp.get("taskArn").getAsString());
       this.setTaskDefinitionArn(taskDef.getArn());
@@ -96,7 +101,7 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
     }
     catch (Throwable t)
     {
-      logger.error("Error occurred while initiating ODM Processing.", t);
+      logger.error("Error occurred while initiating fargate processing.", t);
 
       this.appLock();
       this.setStatus(ProcessingTaskStatus.FAILED.getLabel());
@@ -214,6 +219,7 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
       this.appLock();
       if (success)
       {
+        this.appLock();
         this.setStatus(ProcessingTaskStatus.COMPLETED.getLabel());
         this.setMessage("Processing completed successfully.");
         this.apply();
@@ -222,6 +228,7 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
       }
       else
       {
+        this.appLock();
         this.setStatus(ProcessingTaskStatus.FAILED.getLabel());
 
         String msg = "Processing failed on ECS.";
@@ -370,15 +377,37 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
       return resp;
     }
   }
+  
+  public String getProcessingRunOid() {
+    return getValue(PROCESSINGRUN);
+  }
+  
+  @Override
+  public JSONObject toJSON()
+  {
+    JSONObject obj = super.toJSON();
+
+    String runId = this.getProcessingRunOid();
+    if (runId != null)
+    {
+      obj.put("processingRunId", runId);
+    }
+    
+    // TODO : Runtime estimates?
+//    if (StringUtils.isNotBlank(getRuntimeEstimateJson()))
+//      obj.put("runtimeEstimate", new JSONObject(getRuntimeEstimateJson()));
+
+    return obj;
+  }
 
   public TaskResult poll()
   {
     TaskResult status = checkStatus();
     
-    boolean jobFinished = status.getStatus().equals(TaskStatus.COMPLETED) || status.getStatus().equals(TaskStatus.ERROR);
-    
-    if (jobFinished) {
+    if (status.getStatus().equals(TaskStatus.COMPLETED)) {
       storeResults(status);
+    } else if (status.getStatus().equals(TaskStatus.ERROR)) {
+      new FargateProcessingFinalizer(this, status).finalize();
     }
     
     return status;
@@ -386,10 +415,41 @@ public class FargateProcessingTask extends FargateProcessingTaskBase
   
   protected void storeResults(TaskResult status) {
     var store = new FargateStoreTask();
+    store.setComponent(this.getComponent());
+    store.setUploadId(this.getUploadId());
+    store.setGeoprismUserId(this.getGeoprismUserOid());
+    store.setStatus(ProcessingTaskStatus.RUNNING.getLabel());
+    store.setMessage("Artifacts from processing are being archived.");
     store.setTaskArn(this.getTaskArn());
     store.setTaskDefinitionArn(this.getTaskDefinitionArn());
     store.setProcessingType(this.getProcessingType());
+    store.setConfiguration(getConfiguration());
+    store.setProcessingRun(getProcessingRun());
+    store.setProcessingJobId(this.getProcessingJobId());
     store.apply();
     store.finalize(status);
+  }
+  
+  public LidarProcessConfiguration getConfiguration()
+  {
+    String json = this.getConfigurationJson();
+
+    if (!StringUtils.isEmpty(json))
+    {
+      return LidarProcessConfiguration.parse(json);
+    }
+
+    return new LidarProcessConfiguration();
+  }
+
+  public void setConfiguration(LidarProcessConfiguration configuration)
+  {
+    this.setConfigurationJson(configuration.toJson().toString());
+  }
+
+  @Override
+  public String getProcessingJobId()
+  {
+    return this.getOid();
   }
 }

@@ -177,15 +177,6 @@ export class ManagementService {
 			.toPromise()
 	}
 
-	getODMRunByArtifact(artifactId: string): Promise<ODMRun> {
-		let params: HttpParams = new HttpParams();
-		params = params.set('artifactId', artifactId);
-
-		return this.http
-			.get<ODMRun>(environment.apiUrl + '/api/product/get-odm-run', { params: params })
-			.toPromise()
-	}
-
 	getConfigurationByTask(taskId: string): Promise<ProcessConfig> {
 		let params: HttpParams = new HttpParams();
 		params = params.set('taskId', taskId);
@@ -195,12 +186,39 @@ export class ManagementService {
 			.toPromise()
 	}
 
+	getODMRunByArtifact(artifactId: string): Promise<ODMRun> {
+		let params: HttpParams = new HttpParams();
+		params = params.set('artifactId', artifactId);
+
+		return this.http
+			.get<ODMRun>(environment.apiUrl + '/api/product/get-odm-run', { params: params })
+			.toPromise()
+	}
+
 	getODMRunByTask(taskId: string): Promise<ODMRun> {
 		let params: HttpParams = new HttpParams();
 		params = params.set('taskId', taskId);
 
 		return this.http
 			.get<ODMRun>(environment.apiUrl + '/api/project/get-odm-run-by-task', { params: params })
+			.toPromise()
+	}
+
+	getProcessingRunByTask(taskId: string): Promise<ODMRun> {
+		let params: HttpParams = new HttpParams();
+		params = params.set('taskId', taskId);
+
+		return this.http
+			.get<ODMRun>(environment.apiUrl + '/api/project/get-processing-run-by-task', { params: params })
+			.toPromise()
+	}
+
+	getProcessingRunByArtifact(artifactId: string): Promise<ODMRun> {
+		let params: HttpParams = new HttpParams();
+		params = params.set('artifactId', artifactId);
+
+		return this.http
+			.get<ODMRun>(environment.apiUrl + '/api/product/get-processing-run', { params: params })
 			.toPromise()
 	}
 

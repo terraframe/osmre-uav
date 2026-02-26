@@ -1,11 +1,11 @@
 package gov.geoplatform.uasdm.processing;
 
-@com.runwaysdk.business.ClassSignature(hash = 475800370)
+@com.runwaysdk.business.ClassSignature(hash = 1338164270)
 public abstract class FargateProcessingTaskDTOBase extends gov.geoplatform.uasdm.bus.WorkflowTaskDTO
 {
   public final static String CLASS = "gov.geoplatform.uasdm.processing.FargateProcessingTask";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = 475800370;
+  private static final long serialVersionUID = 1338164270;
   
   protected FargateProcessingTaskDTOBase(com.runwaysdk.constants.ClientRequestIF clientRequest)
   {
@@ -30,6 +30,7 @@ public abstract class FargateProcessingTaskDTOBase extends gov.geoplatform.uasdm
   
   public static java.lang.String CONFIGURATIONJSON = "configurationJson";
   public static java.lang.String PROCESSFILENAMEARRAY = "processFilenameArray";
+  public static java.lang.String PROCESSINGRUN = "processingRun";
   public static java.lang.String PROCESSINGTYPE = "processingType";
   public static java.lang.String TASKARN = "taskArn";
   public static java.lang.String TASKDEFINITIONARN = "taskDefinitionArn";
