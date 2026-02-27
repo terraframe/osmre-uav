@@ -29,10 +29,12 @@ export class ImageSetPageComponent implements OnInit, OnDestroy {
 	@Input() processRunning: boolean;
 
 	@Output() onError = new EventEmitter<HttpErrorResponse>();
+	@Output() onRemove = new EventEmitter<ImageSet>();
+	@Output() onUpdate = new EventEmitter<ImageSet>();
 
 	loading = false;
 
-	sets: ImageSet[];
+	@Input() sets: ImageSet[] = [];
 
 	context: string;
 
@@ -45,15 +47,6 @@ export class ImageSetPageComponent implements OnInit, OnDestroy {
 
 	ngOnInit(): void {
 
-		this.loading = true;
-		this.service.list(this.entity.id).then(sets => {
-
-			this.loading = false;
-
-			this.sets = sets;
-		}).catch((err: HttpErrorResponse) => {
-			this.error(err);
-		});
 	}
 
 	ngOnDestroy(): void {
@@ -72,13 +65,12 @@ export class ImageSetPageComponent implements OnInit, OnDestroy {
 		modal.content.submitText = 'Delete';
 
 		modal.content.onConfirm.subscribe(() => {
-			// this.service.removeArtifacts(this.entity.id, name, section.folder).then(artifacts => {
 
-			// 	// TODO: Handle refresh
-			// 	//				this.artifacts = artifacts;
-			// }).catch((err: HttpErrorResponse) => {
-			// 	this.error(err);
-			// });
+			this.service.removeImage(set.id, file.id)
+				.then(s => this.onUpdate.emit(s))
+				.catch((err: HttpErrorResponse) => {
+					this.error(err);
+				});
 		});
 	}
 
@@ -97,11 +89,7 @@ export class ImageSetPageComponent implements OnInit, OnDestroy {
 		modal.content.onConfirm.subscribe(() => {
 			this.service.remove(set.id)
 				.then(() => {
-					const index = this.sets.findIndex(s => s.id === set.id);
-
-					if (index != -1) {
-						this.sets.splice(index);
-					}
+					this.onRemove.emit(set);
 				})
 				.catch((err: HttpErrorResponse) => {
 					this.error(err);
