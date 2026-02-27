@@ -95,9 +95,9 @@ public class FargateProvisioner
     task.setComponent(collection.getOid());
     task.setGeoprismUser(GeoprismUser.getCurrentUser());
     task.setStatus(ODMStatus.RUNNING.getLabel());
-    task.setTaskLabel("Lidar processing for collection [" + collection.getName() + "]");
-    task.setMessage("The point clouds uploaded to ['" + collection.getName() + "'] are submitted for processing. Check back later for updates.");
-    task.setConfiguration(configuration.toLidar());
+    task.setTaskLabel("Processing for collection [" + collection.getName() + "]");
+    task.setMessage("Processing for your collection ['" + collection.getName() + "'] has begun. Check back later for updates.");
+    task.setConfiguration(configuration);
     task.apply();
 
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));

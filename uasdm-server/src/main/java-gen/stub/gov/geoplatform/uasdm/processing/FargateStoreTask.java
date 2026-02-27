@@ -3,6 +3,7 @@ package gov.geoplatform.uasdm.processing;
 import org.apache.commons.lang3.StringUtils;
 
 import gov.geoplatform.uasdm.lidar.LidarProcessConfiguration;
+import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.odm.ODMTaskProcessor.TaskResult;
 
 public class FargateStoreTask extends FargateStoreTaskBase implements FargateTaskIF
@@ -16,22 +17,22 @@ public class FargateStoreTask extends FargateStoreTaskBase implements FargateTas
   }
   
   public void finalize(TaskResult result) {
-    new FargateProcessingFinalizer(this, result).finalize();
+    FargateProcessingFinalizer.factory(this, result).finalize();
   }
   
-  public LidarProcessConfiguration getConfiguration()
+  public ProcessConfiguration getConfiguration()
   {
     String json = this.getUploadConfigurationJson();
-
+    
     if (!StringUtils.isEmpty(json))
     {
-      return LidarProcessConfiguration.parse(json);
+      return ProcessConfiguration.parse(json);
     }
 
-    return new LidarProcessConfiguration();
+    return null;
   }
 
-  public void setConfiguration(LidarProcessConfiguration configuration)
+  public void setConfiguration(ProcessConfiguration configuration)
   {
     this.setUploadConfigurationJson(configuration.toJson().toString());
   }

@@ -33,12 +33,67 @@ EXCLUDES="${EXCLUDES:-}"
 
 AWS_REGION="${AWS_REGION:-us-west-2}"
 
-WORKDIR="${WORKDIR:-/work}"
-INPUT_DIR="${INPUT_DIR:-$WORKDIR/input}"
-OUTPUT_DIR="${OUTPUT_DIR:-$WORKDIR/output}"
+# ---------------------------
+# Scratch/workdir management
+# ---------------------------
+
+# Base mount for persistent scratch (EFS). We'll create per-job subdir under this.
+WORK_ROOT="${WORK_ROOT:-/work}"           # The EFS mount point in the container
+JOB_WORKDIR="${WORK_ROOT}/${JOB_ID}"      # Per-job scratch dir
+
+# Cleanup controls
+CLEANUP_ON_EXIT="${CLEANUP_ON_EXIT:-true}"        # "true" to rm -rf JOB_WORKDIR on exit
+SCRATCH_TTL_DAYS="${SCRATCH_TTL_DAYS:-14}"         # prune /work/* older than N days on boot
+SCRATCH_PRUNE_ON_BOOT="${SCRATCH_PRUNE_ON_BOOT:-true}"
+
+# (A) On boot: prune forgotten job dirs older than N days (best-effort; don't fail the job)
+prune_old_scratch() {
+  [ -d "$WORK_ROOT" ] || return 0
+
+  # Only consider immediate children of WORK_ROOT, and only directories.
+  # Use mtime to decide "old"; ignores current JOB_ID dir.
+  find "$WORK_ROOT" -mindepth 1 -maxdepth 1 -type d \
+    ! -name "$JOB_ID" \
+    -mtime +"$SCRATCH_TTL_DAYS" \
+    -print0 2>/dev/null \
+    | while IFS= read -r -d '' d; do
+        echo "Pruning old scratch dir (>${SCRATCH_TTL_DAYS}d): $d"
+        rm -rf "$d" || echo "Warning: failed to delete $d" >&2
+      done || true
+}
+
+# (B) Trap: always cleanup this job's scratch on exit (success/fail/ctrl-c/kill where possible)
+cleanup() {
+  local code=$?
+  # If we ever created the dir, try to remove it (best-effort)
+  if [ "${CLEANUP_ON_EXIT}" = "true" ] && [ -n "${JOB_WORKDIR:-}" ] && [ -d "${JOB_WORKDIR:-}" ]; then
+    echo "Cleaning up job scratch: $JOB_WORKDIR"
+    rm -rf "$JOB_WORKDIR" || echo "Warning: failed to remove $JOB_WORKDIR" >&2
+  else
+    echo "Skipping cleanup (CLEANUP_ON_EXIT=${CLEANUP_ON_EXIT}). Scratch kept at: ${JOB_WORKDIR:-<unset>}"
+  fi
+  exit $code
+}
+trap cleanup EXIT INT TERM
+
+if [ "${SCRATCH_PRUNE_ON_BOOT}" = "true" ]; then
+  prune_old_scratch
+fi
+
+# (C) Use /work/$JOB_ID as the working directory
+WORKDIR="${JOB_WORKDIR}"
+INPUT_DIR="${WORKDIR}/input"
+OUTPUT_DIR="${WORKDIR}/output"
 
 mkdir -p "$INPUT_DIR"
 mkdir -p "$OUTPUT_DIR"
+
+echo "WORK_ROOT      : $WORK_ROOT"
+echo "JOB_WORKDIR    : $WORKDIR"
+echo "INPUT_DIR      : $INPUT_DIR"
+echo "OUTPUT_DIR     : $OUTPUT_DIR"
+echo "SCRATCH_TTL_DAYS: $SCRATCH_TTL_DAYS"
+echo "CLEANUP_ON_EXIT: $CLEANUP_ON_EXIT"
 
 # ---- helpers ----
 trim() {
@@ -255,7 +310,7 @@ for fname in "${COG_FILES[@]}"; do
 
   # Build internal overviews
   conda run -n silvimetric gdaladdo -r average "$overview" 2 4 8 16
-  
+
   # Translate to COG using the overviewed input
   conda run -n silvimetric gdal_translate "$overview" "$cog" -of COG -co COMPRESS=LZW -co BIGTIFF=YES
 

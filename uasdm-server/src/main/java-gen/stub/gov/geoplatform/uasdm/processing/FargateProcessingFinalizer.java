@@ -18,6 +18,7 @@ import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
 import gov.geoplatform.uasdm.graph.ProcessingRun;
 import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.lidar.LidarProcessConfiguration;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
@@ -39,7 +40,7 @@ import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
 import software.amazon.awssdk.services.cloudwatchlogs.model.GetLogEventsRequest;
 import software.amazon.awssdk.services.cloudwatchlogs.model.OutputLogEvent;
 
-public class FargateProcessingFinalizer
+abstract public class FargateProcessingFinalizer
 {
   private static final Logger logger = LoggerFactory.getLogger(FargateProcessingFinalizer.class);
   
@@ -54,6 +55,14 @@ public class FargateProcessingFinalizer
   public FargateProcessingFinalizer(FargateTaskIF task, TaskResult result) {
     this.task = task;
     this.result = result;
+  }
+  
+  public static FargateProcessingFinalizer factory(FargateTaskIF task, TaskResult result) {
+    if (task.getConfiguration() instanceof LidarProcessConfiguration) {
+      return new LidarFargateProcessingFinalizer(task, result);
+    } else {
+      throw new UnsupportedOperationException("Unsupported process type " + task.getConfiguration().getType().getClass().getName());
+    }
   }
   
   public void finalize() {
@@ -108,23 +117,7 @@ public class FargateProcessingFinalizer
     }
   }
   
-  protected void handleArtifacts() {
-    final StatusMonitorIF monitor = new WorkflowTaskMonitor((AbstractWorkflowTask) task);
-    final UasComponentIF component = task.getComponentInstance();
-    final ProcessConfiguration config = task.getConfiguration();
-    final Product product = (Product) component.createProductIfNotExist(config.getProductName());
-    
-    List<SiteObject> items = RemoteFileFacade.getSiteObjects(component, FargateProcessingTask.JOBS + "/" + task.getProcessingJobId(), new LinkedList<SiteObject>(), null, null).getObjects();
-    
-    handleArtifact(".*\\.copc\\.laz", ImageryComponent.PTCLOUD + "/pointcloud.copc.laz", (config.toLidar().isGenerateCopc() && !alreadyHasCopc()), items, product, component, monitor);
-    handleArtifact("m_Classification_veg_density.cog.tif", ImageryComponent.ORTHO + "/m_Classification_veg_density.cog.tif", config.toLidar().isGenerateTreeCanopyCover(), items, product, component, monitor);
-    handleArtifact("m_Z_diff.cog.tif", ImageryComponent.ORTHO + "/m_Z_diff.cog.tif", config.toLidar().isGenerateTreeStructure(), items, product, component, monitor);
-    handleArtifact("m_Z_max.cog.tif", ImageryComponent.ORTHO + "/m_Z_max.cog.tif", config.toLidar().isGenerateGSM(), items, product, component, monitor);
-    handleArtifact("m_Z_min.cog.tif", ImageryComponent.ORTHO + "/m_Z_min.cog.tif", config.toLidar().isGenerateTerrainModel(), items, product, component, monitor);
-    
-    // Designate a primary product if it makes sense
-    designatePrimaryProduct(component, config);
-  }
+  abstract protected void handleArtifacts();
   
   protected void manageRemote(String s3Path, SiteObject item, Product product, UasComponentIF component, StatusMonitorIF monitor) {
     RemoteFileObject remote = RemoteFileFacade.download(item.getKey());
@@ -132,13 +125,6 @@ public class FargateProcessingFinalizer
     try(CloseableFile downloaded = remote.openNewFile()) {
       new ManagedDocument(s3Path, product, component, monitor).process(new FileResource(downloaded));
     }
-  }
-  
-  protected boolean alreadyHasCopc() {
-    DocumentIF laz = FargateProcessingTask.selectLazForProcessing(task.getComponentInstance());
-    
-    // This works so long as we never allow them to store a non-copc format with this extension.
-    return laz.getName().endsWith(".copc.laz");
   }
   
   protected void handleArtifact(String regex, String s3Path, boolean required, List<SiteObject> items, Product product, UasComponentIF component, StatusMonitorIF monitor) {

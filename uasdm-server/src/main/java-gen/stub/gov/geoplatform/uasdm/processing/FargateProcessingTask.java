@@ -18,12 +18,10 @@ import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.ProcessingRun;
 import gov.geoplatform.uasdm.graph.UasComponent;
-import gov.geoplatform.uasdm.lidar.LidarProcessConfiguration;
 import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.EmptyFileSetException;
-import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
-import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.odm.ODMTaskProcessor.TaskResult;
 import gov.geoplatform.uasdm.odm.ODMTaskProcessor.TaskStatus;
 import gov.geoplatform.uasdm.odm.ProcessingTaskStatusServer;
@@ -259,7 +257,7 @@ public class FargateProcessingTask extends FargateProcessingTaskBase implements 
     }
   }
   
-  public static DocumentIF selectLazForProcessing(UasComponentIF component) {
+  public static List<DocumentIF> getRaw(UasComponentIF component) {
     List<DocumentIF> documents;
     if (component instanceof Collection)
         documents = ((Collection) component).getRaw();
@@ -268,6 +266,13 @@ public class FargateProcessingTask extends FargateProcessingTaskBase implements 
     
     documents = documents.stream()
         .filter(d -> !Boolean.TRUE.equals(d.getExclude()))
+        .collect(Collectors.toList());
+    
+    return documents;
+  }
+  
+  public static DocumentIF selectLazForProcessing(UasComponentIF component) {
+    var documents = getRaw(component).stream()
         .filter(d -> FilenameUtils.getExtension(d.getName()).equalsIgnoreCase("laz"))
         .collect(Collectors.toList());
     
@@ -281,19 +286,22 @@ public class FargateProcessingTask extends FargateProcessingTaskBase implements 
   }
   
   protected FargateTaskDefinition taskForRequest() {
-    var laz = selectLazForProcessing(this.getComponentInstance());
-
-    long totalBytes = laz.getFileSize();
-//    long totalBytes = 0L;
-//    for (var doc : documents) {
-//        totalBytes += doc.getFileSize();
-//    }
+    long totalBytes = 0L;
+  
+    if (this.getConfiguration().isLidar()) {
+      var laz = selectLazForProcessing(this.getComponentInstance());
+  
+      totalBytes = laz.getFileSize();
+    } else {
+      for (var doc : getRaw(this.getComponentInstance())) {
+          totalBytes += doc.getFileSize();
+      }
+    }
 
     long colSizeMb = totalBytes / (1024L * 1024L);
-    int sizeMb = (int) Math.min(colSizeMb, Integer.MAX_VALUE); // Guards against an overflow
+    int sizeGb = (int) Math.min(colSizeMb, Integer.MAX_VALUE); // Guards against an overflow
     
-    // TODO : Different task sizes
-    return FargateTaskDefinition.SMALL;
+    return FargateTaskDefinition.select(sizeGb);
 }
   
   public JsonObject invokeFargate(Set<String> excludes, FargateTaskDefinition taskDef)
@@ -407,7 +415,7 @@ public class FargateProcessingTask extends FargateProcessingTaskBase implements 
     if (status.getStatus().equals(TaskStatus.COMPLETED)) {
       storeResults(status);
     } else if (status.getStatus().equals(TaskStatus.ERROR)) {
-      new FargateProcessingFinalizer(this, status).finalize();
+      FargateProcessingFinalizer.factory(this, status).finalize();
     }
     
     return status;
@@ -430,19 +438,19 @@ public class FargateProcessingTask extends FargateProcessingTaskBase implements 
     store.finalize(status);
   }
   
-  public LidarProcessConfiguration getConfiguration()
+  public ProcessConfiguration getConfiguration()
   {
     String json = this.getConfigurationJson();
-
+    
     if (!StringUtils.isEmpty(json))
     {
-      return LidarProcessConfiguration.parse(json);
+      return ProcessConfiguration.parse(json);
     }
 
-    return new LidarProcessConfiguration();
+    return null;
   }
 
-  public void setConfiguration(LidarProcessConfiguration configuration)
+  public void setConfiguration(ProcessConfiguration configuration)
   {
     this.setConfigurationJson(configuration.toJson().toString());
   }
