@@ -527,7 +527,6 @@ public abstract class Converter<T extends UasComponentIF>
       list.add(Converter.toSiteItem(component, false));
     }
 
-    UasComponentIF component = components.size() > 0 ? components.get(components.size() - 1) : null;
 
     view.setComponents(list);
     view.setId(set.getOid());
@@ -539,19 +538,6 @@ public abstract class Converter<T extends UasComponentIF>
     List<DocumentIF> mappables = set.getDocuments();
     view.setDocuments(mappables.stream().map(d -> DocumentView.fromDocument(d)).collect(Collectors.toList()));
 
-    if (set.isPublished())
-    {
-      // "https://osmre-uas-dev-public.s3.amazonaws.com/-stac-/2c8712a5-d051-4249-a9bc-fedd3795ce74.json"
-      //
-      // String bucket = "https://" + AppProperties.getPublicBucketName() +
-      // ".s3.amazonaws.com/";
-      //
-      // view.setPublicStacUrl(bucket + S3RemoteFileService.STAC_BUCKET + "/" +
-      // product.getOid() + ".json");
-      // view.setPublicTilejson(bucket + "cog/tilejson.json?path=" +
-      // URLEncoder.encode(mappable.getS3location(),
-      // StandardCharsets.UTF_8.name()));
-    }
   }
 
   public static ProductDetailView toDetailView(ProductIF product, List<UasComponentIF> components, List<DocumentIF> generated, Integer pageNumber, Integer pageSize)

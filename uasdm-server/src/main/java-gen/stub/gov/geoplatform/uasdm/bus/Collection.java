@@ -45,7 +45,7 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.raw.FileUploadProcessor;
-import gov.geoplatform.uasdm.view.CreateImageSetView;
+import gov.geoplatform.uasdm.view.AssignImageSetView;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import net.geoprism.GeoprismUser;

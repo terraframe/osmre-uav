@@ -17,7 +17,7 @@
         </div>
         <div class="col-sm-4 no-edit-actions">
           <span class="action-col">
-            <button type="button" class="btn btn-danger" [disabled]="processRunning" (click)="handleRemoveImageSet(set)">
+            <button type="button" class="btn btn-danger float-end" [disabled]="processRunning" (click)="handleRemoveImageSet(set)">
               Delete Set
             </button>
           </span>
@@ -37,7 +37,7 @@
               <tr class="artifact-row">
                 <td>{{document.name}}</td>
                 <td class="no-edit-actions">
-                  <div dropdown [dropup]="true" class="btn-group dropup">
+                  <div dropdown [dropup]="true" class="btn-group dropup float-end">
                     <button class="btn btn-secondary btn-sm dropdown-toggle" dropdownToggle type="button"
                       data-bs-toggle="dropdown" aria-expanded="false">
                       Actions

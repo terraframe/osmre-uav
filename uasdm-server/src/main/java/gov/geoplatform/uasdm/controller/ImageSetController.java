@@ -31,14 +31,44 @@ import gov.geoplatform.uasdm.controller.body.IdBody;
 import gov.geoplatform.uasdm.service.request.ImageSetService;
 import gov.geoplatform.uasdm.view.CollectionCriteria;
 import gov.geoplatform.uasdm.view.ComponentImageSetView;
-import gov.geoplatform.uasdm.view.CreateImageSetView;
+import gov.geoplatform.uasdm.view.AssignImageSetView;
 import gov.geoplatform.uasdm.view.ImageSetView;
+import jakarta.validation.constraints.NotBlank;
 
 @RestController
 @Validated
 @RequestMapping("/api/image-set")
 public class ImageSetController extends AbstractController
 {
+  public static class RemoveImageBody
+  {
+    @NotBlank
+    private String id;
+
+    @NotBlank
+    private String imageId;
+
+    public String getId()
+    {
+      return id;
+    }
+
+    public void setId(String id)
+    {
+      this.id = id;
+    }
+
+    public String getImageId()
+    {
+      return imageId;
+    }
+
+    public void setImageId(String imageId)
+    {
+      this.imageId = imageId;
+    }
+  }
+
   @Autowired
   private ImageSetService service;
 
@@ -54,10 +84,18 @@ public class ImageSetController extends AbstractController
   public ResponseEntity<List<ImageSetView>> list(@RequestParam(name = "collectionId") String collectionId)
   {
     List<ImageSetView> response = service.list(this.getSessionId(), collectionId);
-    
+
     return ResponseEntity.ok(response);
   }
-  
+
+  @GetMapping("/get")
+  public ResponseEntity<ImageSetView> get(@RequestParam(name = "oid") String oid)
+  {
+    ImageSetView response = service.get(this.getSessionId(), oid);
+
+    return ResponseEntity.ok(response);
+  }
+
   // @GetMapping("/detail")
   // public ResponseEntity<String> detail(@RequestParam(name = "id") String id,
   // @RequestParam(name = "pageNumber", defaultValue = "1") Integer pageNumber,
@@ -93,16 +131,24 @@ public class ImageSetController extends AbstractController
     return ResponseEntity.ok(null);
   }
 
-//  @PostMapping("/remove-file")
-//  public ResponseEntity<Void> remove(@RequestBody IdBody body)
-//  {
-//    this.service.remove(this.getSessionId(), body.getId());
-//    
-//    return ResponseEntity.ok(null);
-//  }
-  
+  @PostMapping("/remove-image")
+  public ResponseEntity<ImageSetView> removeImage(@RequestBody RemoveImageBody body)
+  {
+    ImageSetView set =this.service.removeImage(this.getSessionId(), body.getId(), body.getImageId());
+
+    return ResponseEntity.ok(set);
+  }
+
+  // @PostMapping("/remove-file")
+  // public ResponseEntity<Void> remove(@RequestBody IdBody body)
+  // {
+  // this.service.remove(this.getSessionId(), body.getId());
+  //
+  // return ResponseEntity.ok(null);
+  // }
+
   @PostMapping("/create")
-  public ResponseEntity<ImageSetView> create(@RequestBody CreateImageSetView body)
+  public ResponseEntity<ImageSetView> create(@RequestBody AssignImageSetView body)
   {
     ImageSetView view = service.create(this.getSessionId(), body);
 

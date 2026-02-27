@@ -17,14 +17,15 @@ import { SafeHtmlPipe } from '@shared/pipe/safe-html.pipe';
 
 
 @Component({
-    selector: 'imagery-panel',
-    templateUrl: './imagery-panel.component.html',
-    styleUrls: [],
-    standalone: true,
-    imports: [NgIf, NgFor, SafeHtmlPipe]
+	selector: 'imagery-panel',
+	templateUrl: './imagery-panel.component.html',
+	styleUrls: [],
+	standalone: true,
+	imports: [NgIf, NgFor, SafeHtmlPipe]
 })
 export class ImageryPanelComponent implements OnInit, OnDestroy, OnChanges {
 
+	public ToggleableLayerType = ToggleableLayerType;
 
 	@Output() onVisibilityChange: EventEmitter<ToggleableLayer> = new EventEmitter<ToggleableLayer>();
 

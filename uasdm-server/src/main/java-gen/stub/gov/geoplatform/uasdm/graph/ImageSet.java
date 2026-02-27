@@ -3,6 +3,7 @@ package gov.geoplatform.uasdm.graph;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +26,7 @@ import com.runwaysdk.business.rbac.SingleActorDAOIF;
 import com.runwaysdk.dataaccess.MdAttributeDAOIF;
 import com.runwaysdk.dataaccess.MdEdgeDAOIF;
 import com.runwaysdk.dataaccess.MdVertexDAOIF;
+import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
@@ -43,8 +45,8 @@ import gov.geoplatform.uasdm.processing.SystemProcessExecutor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.service.business.IDMHierarchyTypeSnapshotBusinessService;
+import gov.geoplatform.uasdm.view.AssignImageSetView;
 import gov.geoplatform.uasdm.view.CollectionCriteria;
-import gov.geoplatform.uasdm.view.CreateImageSetView;
 import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
@@ -211,21 +213,11 @@ public class ImageSet extends ImageSetBase
    * @return
    */
   @Transaction
-  public static ImageSet createIfNotExist(UasComponentIF uasComponent, CreateImageSetView view)
+  public static ImageSet createIfNotExist(UasComponentIF uasComponent, AssignImageSetView view)
   {
     // Get the documents
-    List<Document> documents = view.getFiles().stream() //
+    List<Document> documents = Arrays.asList(view.getDocumentId()).stream() //
         .map(id -> Document.get(id)) //
-        .collect(Collectors.toList());
-
-    // TODO: REMOVE WHEN FRONT-END SUPPORT IS ADDED
-    List<DocumentIF> raws = ( (Collection) uasComponent ).getRaw();
-
-    documents = raws.stream() //
-        .map(d -> (Document) d) //
-        // .filter(d -> d.getKey().toUpperCase().endsWith(".PNG") ||
-        // d.getKey().toUpperCase().endsWith(".JPG") ||
-        // d.getKey().toUpperCase().endsWith(".JPEG")) //
         .collect(Collectors.toList());
 
     // Ensure that each document has Points
@@ -249,11 +241,16 @@ public class ImageSet extends ImageSetBase
 
     // Get or create the raw set
     ImageSet set = find(uasComponent, view.getName()).orElseGet(() -> {
-      ImageSet newInstance = new ImageSet();
-      newInstance.setName(view.getName());
-      newInstance.setPublished(false);
+      if (view.getIsNew())
+      {
+        ImageSet newInstance = new ImageSet();
+        newInstance.setName(view.getName());
+        newInstance.setPublished(false);
 
-      return newInstance;
+        return newInstance;
+      }
+
+      throw new ProgrammingErrorException("Unable to find image set with the given name [" + view.getName() + "]");
     });
 
     // Update values

@@ -25,7 +25,7 @@ import gov.geoplatform.uasdm.bus.AllPrivilegeType;
 import gov.geoplatform.uasdm.graph.CollectionFormat;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
 import gov.geoplatform.uasdm.graph.ImageSet;
-import gov.geoplatform.uasdm.view.CreateImageSetView;
+import gov.geoplatform.uasdm.view.AssignImageSetView;
 
 public interface CollectionIF extends UasComponentIF
 {
@@ -109,6 +109,6 @@ public interface CollectionIF extends UasComponentIF
 
   public Optional<CollectionMetadata> getMetadata();
 
-  public ImageSet createImageSetIfNotExist(CreateImageSetView view);
+  public ImageSet createImageSetIfNotExist(AssignImageSetView view);
 
 }

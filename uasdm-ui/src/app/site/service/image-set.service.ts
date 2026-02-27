@@ -27,6 +27,14 @@ export class ImageSetService {
 		return firstValueFrom(this.http.get<CollectionImageSetView[]>(environment.apiUrl + '/api/image-set/get-all', { params: params }));
 	}
 
+	get(oid: string): Promise<ImageSet> {
+		let params: HttpParams = new HttpParams();
+		params = params.set('oid', oid);
+
+		return firstValueFrom(this.http.get<ImageSet>(environment.apiUrl + '/api/image-set/get', { params: params }));
+	}
+
+
 	list(collectionId: string): Promise<ImageSet[]> {
 		let params: HttpParams = new HttpParams();
 		params = params.set('collectionId', collectionId);
@@ -44,6 +52,22 @@ export class ImageSetService {
 
 		return firstValueFrom(this.http
 			.post<void>(environment.apiUrl + '/api/image-set/remove', JSON.stringify({ id: id }), { headers: headers })
+			.pipe(finalize(() => {
+				this.eventService.complete();
+			}))
+		)
+	}
+
+	removeImage(id: string, imageId: string): Promise<ImageSet> {
+
+		let headers = new HttpHeaders({
+			'Content-Type': 'application/json'
+		});
+
+		this.eventService.start();
+
+		return firstValueFrom(this.http
+			.post<ImageSet>(environment.apiUrl + '/api/image-set/remove-image', JSON.stringify({ id, imageId }), { headers: headers })
 			.pipe(finalize(() => {
 				this.eventService.complete();
 			}))
@@ -82,7 +106,7 @@ export class ImageSetService {
 		)
 	}
 
-	create(id: string, name: string, files: string[]): Promise<ImageSet> {
+	create(id: string, isNew: boolean, name: string, documentId: string): Promise<ImageSet> {
 
 		let headers = new HttpHeaders({
 			'Content-Type': 'application/json'
@@ -92,8 +116,9 @@ export class ImageSetService {
 
 		const params = {
 			collectionId: id,
-			name: name,
-			files: files
+			isNew,
+			name,
+			documentId
 		};
 
 		return firstValueFrom(this.http

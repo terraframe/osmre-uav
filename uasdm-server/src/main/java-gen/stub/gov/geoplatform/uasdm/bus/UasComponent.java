@@ -64,7 +64,7 @@ import gov.geoplatform.uasdm.view.AdminCondition;
 import gov.geoplatform.uasdm.view.Artifact;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
-import gov.geoplatform.uasdm.view.CreateImageSetView;
+import gov.geoplatform.uasdm.view.AssignImageSetView;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
@@ -711,7 +711,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   }
 
   @Override
-  public ImageSet createImageSetIfNotExist(CreateImageSetView view)
+  public ImageSet createImageSetIfNotExist(AssignImageSetView view)
   {
     return null;
   }

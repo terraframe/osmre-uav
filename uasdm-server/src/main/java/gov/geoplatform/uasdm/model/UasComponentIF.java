@@ -38,7 +38,7 @@ import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.Artifact;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
-import gov.geoplatform.uasdm.view.CreateImageSetView;
+import gov.geoplatform.uasdm.view.AssignImageSetView;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
 public interface UasComponentIF extends ComponentWithAttributes
@@ -159,7 +159,7 @@ public interface UasComponentIF extends ComponentWithAttributes
 
   public List<ComponentImageSet> getDerivedImageSets(String sortField, String sortOrder);
 
-  ImageSet createImageSetIfNotExist(CreateImageSetView view);
+  ImageSet createImageSetIfNotExist(AssignImageSetView view);
 
   public List<ImageSet> getImageSets();
 }

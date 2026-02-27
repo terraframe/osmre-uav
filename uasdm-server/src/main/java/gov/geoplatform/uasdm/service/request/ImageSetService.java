@@ -19,10 +19,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
@@ -31,17 +29,18 @@ import com.runwaysdk.session.RequestType;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.ImageSet;
 import gov.geoplatform.uasdm.graph.UserAccessEntity;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.ComponentImageSet;
-import gov.geoplatform.uasdm.model.DocumentIF;
+import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.CollectionCriteria;
 import gov.geoplatform.uasdm.view.ComponentImageSetView;
 import gov.geoplatform.uasdm.view.Converter;
-import gov.geoplatform.uasdm.view.CreateImageSetView;
+import gov.geoplatform.uasdm.view.AssignImageSetView;
 import gov.geoplatform.uasdm.view.ImageSetView;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
@@ -59,6 +58,21 @@ public class ImageSetService
     UserAccessEntity.validateAccess(component);
 
     set.delete();
+  }
+
+  @Request(RequestType.SESSION)
+  public ImageSetView get(String sessionId, String oid)
+  {
+    ImageSet set = ComponentFacade.getImageSet(oid);
+
+    UasComponentIF component = set.getComponent();
+    UserAccessEntity.validateAccess(component);
+
+    List<UasComponentIF> components = component.getAncestors();
+    Collections.reverse(components);
+    components.add(component);
+
+    return Converter.toView(set, components);
   }
 
   @Request(RequestType.SESSION)
@@ -118,8 +132,6 @@ public class ImageSetService
   @Request(RequestType.SESSION)
   public List<ImageSetView> list(String sessionId, String collectionId)
   {
-    List<ComponentImageSetView> array = new LinkedList<>();
-
     UasComponentIF component = Collection.get(collectionId);
 
     List<UasComponentIF> components = component.getAncestors();
@@ -181,7 +193,7 @@ public class ImageSetService
   }
 
   @Request(RequestType.SESSION)
-  public ImageSetView create(String sessionId, CreateImageSetView view)
+  public ImageSetView create(String sessionId, AssignImageSetView view)
   {
     CollectionIF collection = ComponentFacade.getCollection(view.getCollectionId());
 
@@ -195,6 +207,26 @@ public class ImageSetService
     data.put("collection", collection.getOid());
 
     NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.PRODUCT_GROUP_CHANGE, data));
+
+    return Converter.toView(set, components);
+  }
+
+  @Request(RequestType.SESSION)
+  public ImageSetView removeImage(String sessionId, String id, String imageId)
+  {
+    ImageSet set = ComponentFacade.getImageSet(id);
+
+    UasComponentIF component = set.getComponent();
+
+    UserAccessEntity.validateAccess(component);
+
+    Document document = Document.get(imageId);
+
+    set.removeChild(document, EdgeType.IMAGE_SET_HAS_DOCUMENT);
+
+    List<UasComponentIF> components = component.getAncestors();
+    Collections.reverse(components);
+    components.add(component);
 
     return Converter.toView(set, components);
   }

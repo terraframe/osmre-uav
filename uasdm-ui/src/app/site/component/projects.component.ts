@@ -68,6 +68,7 @@ import { LegendPanelComponent } from "./legend-panel/legend-panel.component";
 import { WebsocketService } from "@shared/service/websocket.service";
 import { ImageSetPanelComponent } from "./image-set-panel/image-set-panel.component";
 import { ImagePreviewModalComponent } from "./modal/image-preview-modal.component";
+import { ImageSetService } from "@site/service/image-set.service";
 
 const enum PANEL_TYPE {
   SITE = 0,
@@ -264,6 +265,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     private service: ManagementService,
     private authService: AuthService,
     private pService: ProductService,
+    private iService: ImageSetService,
     private stacService: KnowStacService,
     private mapService: MapService,
     private modalService: BsModalService,
@@ -273,8 +275,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     private syncService: LPGSyncService,
     private uploadService: UploadService,
     private websocketService: WebsocketService,
-    private location: Location,
-    private router: Router
+    private location: Location
   ) {
 
     this.subject = new Subject();
@@ -320,14 +321,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.worker = this.authService.isWorker();
     this.userName = this.service.getCurrentUser();
     this.organization = this.authService.getOrganization();
-
-
-    const oid = this.route.snapshot.params["oid"];
-    const action = this.route.snapshot.params["action"];
-
-    if (oid != null && action != null && action === "entity") {
-      this.handleViewSite(oid);
-    }
 
     this.uploadService.findAllUploads().then(resumables => {
       if (resumables.length > 0) {
@@ -545,6 +538,15 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
 
+    const oid = this.route.snapshot.params["oid"];
+    const action = this.route.snapshot.params["action"];
+
+    if (oid != null && action != null && action === "entity") {
+      this.handleViewSite(oid);
+    }
+    else if (oid != null && action != null && action === "set") {
+      this.handleViewSet(oid);
+    }
   }
 
   addLayers(): void {
@@ -1116,8 +1118,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  handleViewSite(id: string): void {
-    this.service.view(id).then(response => {
+  handleViewSite(id: string): Promise<SiteEntity[]> {
+    return this.service.view(id).then(response => {
       const node = response.item;
       const breadcrumbs = response.breadcrumbs;
 
@@ -1140,7 +1142,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.nodes = this.current.data.children;
 
-        this.select(node, null, null);
+        return this.select(node, null, null);
       }
       else {
         const parent = breadcrumbs.length > 0 ? breadcrumbs[breadcrumbs.length - 1] : null;
@@ -1153,10 +1155,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         });
 
-        this.select(node, parent, null);
+        return this.select(node, parent, null);
       }
     });
-
   }
 
 
@@ -1263,7 +1264,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
 
-  select(node: SiteEntity, parent: SiteEntity, event: any): void {
+  select(node: SiteEntity, parent: SiteEntity, event: any): Promise<SiteEntity[]> {
 
     if (event != null) {
       event.stopPropagation();
@@ -1298,8 +1299,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
       if (this.metadataService.getTypeContainsFolders(node)) {
-        this.service.getItems(node.id, null, this.getConditions()).then(nodes => {
+        return this.service.getItems(node.id, null, this.getConditions()).then(nodes => {
           this.showLeafModal(node, nodes, breadcrumbs.filter(b => b.type === SELECTION_TYPE.SITE).map(b => b.data as SiteEntity));
+
+          return nodes;
         });
       }
       else {
@@ -1311,7 +1314,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       //                return this.service.getItems( node.data.id, node.data.name );
     }
     else {
-      this.service.getItems(node.id, null, this.getConditions()).then(nodes => {
+      return this.service.getItems(node.id, null, this.getConditions()).then(nodes => {
         this.current = {
           type: SELECTION_TYPE.SITE,
           data: node,
@@ -1324,8 +1327,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.addBreadcrumb(node);
         this.setNodes(nodes);
+
+        return nodes;
       });
     }
+
+    return Promise.resolve([]);
   }
 
   addBreadcrumb(node: SiteEntity): void {
@@ -2086,6 +2093,18 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
     }
+    else if (layer.type === ToggleableLayerType.IMAGE_SET) {
+      const set: ImageSet = layer.item;
+
+      if (set.boundingBox != null) {
+        let bbox = JSON.parse(set.boundingBox);
+
+        let bounds = new LngLatBounds([bbox[0], bbox[2]], [bbox[1], bbox[3]]);
+
+        this.map.fitBounds(bounds, { padding: 50 });
+      }
+
+    }
   }
 
   handleLayerVisibilityChange(layer: ToggleableLayer): void {
@@ -2323,6 +2342,20 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.imageViews = imageViews;
 
+    const oid = this.route.snapshot.params["oid"];
+    const action = this.route.snapshot.params["action"];
+
+    if (oid != null && action != null && action === "set") {
+
+      this.imageViews.forEach(view => {
+        const index = view.sets.findIndex(set => set.id === oid);
+
+        if (index != -1) {
+          view.sets[index].mapped = true;
+        }
+      })
+    }
+
     this.buildItemsLayer();
   }
 
@@ -2335,6 +2368,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   handleImageSetAsset(set: ImageSet, mapIt: boolean): void {
 
     if (mapIt) {
+      this.location.replaceState('/site/viewer/set/' + set.id);
+
       const component: string = set.components[set.components.length - 1].id;
 
       // Create the map layer from the StacItem
@@ -2372,12 +2407,29 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     else {
+      this.location.replaceState('/site/viewer/entity/' + this.current.data.id);
+
       const index = this.mapLayers.findIndex(l => l.id === 'image-set');
 
       if (index !== -1) {
         this.handleRemoveToggleableLayer(this.mapLayers[index])
       }
     }
+  }
+
+  handleViewSet(id: string): void {
+    this.iService.get(id).then(set => {
+
+      // Get the mission
+      const component: string = set.components[set.components.length - 2].id;
+
+      this.handleViewSite(component).then(() => {
+        this.activeTab = 'IMAGE_SETS';
+
+        this.handleImageSetAsset(set, true);
+
+      });
+    });
   }
 
   previewImage(component: string, key: string): void {

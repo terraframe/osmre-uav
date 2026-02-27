@@ -3,8 +3,12 @@
 ///
 
 import { Component, Input, Output, EventEmitter, SimpleChanges, OnDestroy } from '@angular/core';
+import { NgClass, NgFor, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, UrlTree } from '@angular/router';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { bounceInOnEnterAnimation, bounceOutOnLeaveAnimation, fadeInOnEnterAnimation, fadeOutOnLeaveAnimation } from 'angular-animations';
 import { BsModalService } from 'ngx-bootstrap/modal';
-import { BsModalRef } from 'ngx-bootstrap/modal';
 
 import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confirm-modal.component';
 import { ImagePreviewModalComponent } from '../modal/image-preview-modal.component';
@@ -12,22 +16,12 @@ import { ImagePreviewModalComponent } from '../modal/image-preview-modal.compone
 import { CollectionImageSetView, Filter, ImageSet, ProductCriteria, SELECTION_TYPE, ViewerSelection, ProductDocument } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 
-import {
-    fadeInOnEnterAnimation,
-    fadeOutOnLeaveAnimation,
-    bounceInOnEnterAnimation,
-    bounceOutOnLeaveAnimation
-} from 'angular-animations';
-import { ConfigurationService } from '@core/service/configuration.service';
 import EnvironmentUtil from '@core/utility/environment-util';
 import { AuthService } from '@shared/service/auth.service';
 import { LocalizedValue } from '@shared/model/organization';
 import { ImageSetService } from '@site/service/image-set.service';
 import { ModalTypes } from '@shared/model/modal';
 import { SafeHtmlPipe } from '@shared/pipe/safe-html.pipe';
-import { PopoverDirective } from 'ngx-bootstrap/popover';
-import { NgClass, NgFor, NgIf } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 
 @Component({
     standalone: true,
@@ -70,11 +64,15 @@ export class ImageSetPanelComponent implements OnDestroy {
     isAdmin: boolean = false;
 
 
-    constructor(private configuration: ConfigurationService,
+    constructor(
         private pService: ImageSetService,
         private mService: ManagementService,
         private modalService: BsModalService,
-        private authService: AuthService) {
+        private authService: AuthService,
+        private route: ActivatedRoute,
+        private clipboard: Clipboard,
+        private router: Router
+    ) {
 
         this.context = EnvironmentUtil.getApiUrl();
         this.isAdmin = this.authService.isAdmin();
@@ -267,4 +265,14 @@ export class ImageSetPanelComponent implements OnDestroy {
         });
     }
 
+    handleClipboard(imageSet: ImageSet) {
+        const urlTree: UrlTree = this.router.createUrlTree(
+            ['/site/viewer', 'set', imageSet.id]
+        );
+
+        // Convert UrlTree to a string
+        const generatedUrl = this.router.serializeUrl(urlTree);
+
+        this.clipboard.copy(window.location.origin + "/#" + generatedUrl);
+    }
 }
