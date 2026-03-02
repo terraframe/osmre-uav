@@ -44,3 +44,11 @@ button.advanced-filter .fa {
 .inverse:hover {
   color: #007276;
 }
+
+button.maplibregl-popup-close-button {
+  font-size: 20px;
+  width: 25px;
+  height: 25px;
+
+  background: white;
+}
