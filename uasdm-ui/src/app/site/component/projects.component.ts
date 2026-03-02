@@ -7,7 +7,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BsModalService } from "ngx-bootstrap/modal";
 import { BsModalRef } from "ngx-bootstrap/modal";
 import { v4 as uuid } from "uuid";
-import { Map, LngLatBounds, NavigationControl, AttributionControl } from "maplibre-gl";
+import { Map, LngLatBounds, NavigationControl, AttributionControl, Popup } from "maplibre-gl";
 
 import { Observable, Subject } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
@@ -69,6 +69,7 @@ import { WebsocketService } from "@shared/service/websocket.service";
 import { ImageSetPanelComponent } from "./image-set-panel/image-set-panel.component";
 import { ImagePreviewModalComponent } from "./modal/image-preview-modal.component";
 import { ImageSetService } from "@site/service/image-set.service";
+import { HttpParams } from "@angular/common/http";
 
 const enum PANEL_TYPE {
   SITE = 0,
@@ -496,7 +497,25 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
           const component = features[0].properties.component;
           const key = features[0].properties.key;
 
-          this.previewImage(component, key);
+          const rootPath: string = key.substr(0, key.lastIndexOf("/"));
+          const fileName: string = /[^/]*$/.exec(key)[0];
+          const lastPeriod: number = fileName.lastIndexOf(".");
+          const thumbKey: string = rootPath + "/thumbnails/" + fileName.substr(0, lastPeriod) + ".png";
+
+          let params: HttpParams = new HttpParams();
+          params = params.set('id', component);
+          params = params.set('key', thumbKey);
+
+          const url = environment.apiUrl + '/api/project/download?' + params.toString()
+          const onerror = "\"this.src='" + environment.apiUrl + 'assets/thumbnail-default.png' + "';\""
+
+          let html = "<img class='thumb figure-img img-fluid rounded' style='max-height: 150px' src='" + url + "' onerror=" + onerror + " alt='Image'>";
+
+          // this.previewImage(component, key);
+          const popup = new Popup({ closeOnClick: false })
+            .setLngLat(e.lngLat)
+            .setHTML(html)
+            .addTo(this.map);
         }
         else if (type === ToggleableLayerType.KNOWSTAC && this.collection != null) {
           const link = this.collection.links.find(l => l.id === id);
