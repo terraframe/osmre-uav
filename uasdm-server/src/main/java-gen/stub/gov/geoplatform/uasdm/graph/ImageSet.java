@@ -215,6 +215,20 @@ public class ImageSet extends ImageSetBase
   @Transaction
   public static ImageSet createIfNotExist(UasComponentIF uasComponent, AssignImageSetView view)
   {
+    // Get or create the raw set
+    ImageSet set = find(uasComponent, view.getName()).orElseGet(() -> {
+      if (view.getIsNew())
+      {
+        ImageSet newInstance = new ImageSet();
+        newInstance.setName(view.getName());
+        newInstance.setPublished(false);
+
+        return newInstance;
+      }
+
+      throw new ProgrammingErrorException("Unable to find image set with the given name [" + view.getName() + "]");
+    });
+
     // Get the documents
     List<Document> documents = Arrays.asList(view.getDocumentId()).stream() //
         .map(id -> Document.get(id)) //
@@ -233,25 +247,19 @@ public class ImageSet extends ImageSetBase
         .filter(point -> point != null) //
         .forEach(point -> envelope.expandToInclude(point.getCoordinate()));
 
+    if (!set.isNew())
+    {
+      set.getDocuments().stream() //
+          .map(document -> document.getPoint()) //
+          .filter(point -> point != null) //
+          .forEach(point -> envelope.expandToInclude(point.getCoordinate()));
+    }
+
     JSONArray array = new JSONArray();
     array.put(envelope.getMinX());
     array.put(envelope.getMinY());
     array.put(envelope.getMaxX());
     array.put(envelope.getMaxY());
-
-    // Get or create the raw set
-    ImageSet set = find(uasComponent, view.getName()).orElseGet(() -> {
-      if (view.getIsNew())
-      {
-        ImageSet newInstance = new ImageSet();
-        newInstance.setName(view.getName());
-        newInstance.setPublished(false);
-
-        return newInstance;
-      }
-
-      throw new ProgrammingErrorException("Unable to find image set with the given name [" + view.getName() + "]");
-    });
 
     // Update values
     set.setBoundingBox(array.toString());
