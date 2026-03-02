@@ -135,6 +135,18 @@ export class ImageSetPanelComponent implements OnDestroy {
         }
 
         this.pService.getImageSets(criteria).then(views => {
+
+            views.forEach(view => {
+                view.sets.forEach(set => {
+                    if (set.documents.length > 0) {
+                        set.document = set.documents[0];
+                        set.documentId = set.document.id;
+
+                        this.getThumbnail(view, set);
+                    }
+                })
+            });
+
             if (original === this.requestId) {
 
                 this.loading = false;
@@ -167,24 +179,26 @@ export class ImageSetPanelComponent implements OnDestroy {
     getThumbnail(view: CollectionImageSetView, set: ImageSet): void {
 
         // imageKey only exists if an image actually exists on s3
-        if (set.document.key != null) {
-            const component: string = view.componentId;
-            const rootPath: string = set.document.key.substr(0, set.document.key.lastIndexOf("/"));
-            const fileName: string = /[^/]*$/.exec(set.document.key)[0];
-            const lastPeriod: number = fileName.lastIndexOf(".");
-            const thumbKey: string = rootPath + "/thumbnails/" + fileName.substr(0, lastPeriod) + ".png";
+        if (set.document != null) {
+            if (set.document.key != null) {
+                const component: string = view.componentId;
+                const rootPath: string = set.document.key.substr(0, set.document.key.lastIndexOf("/"));
+                const fileName: string = /[^/]*$/.exec(set.document.key)[0];
+                const lastPeriod: number = fileName.lastIndexOf(".");
+                const thumbKey: string = rootPath + "/thumbnails/" + fileName.substr(0, lastPeriod) + ".png";
 
-            this.mService.download(component, thumbKey, false).subscribe(blob => {
-                this.createImageFromBlob(blob, set.document);
-            }, error => {
-                console.log(error);
+                this.mService.download(component, thumbKey, false).subscribe(blob => {
+                    this.createImageFromBlob(blob, set.document);
+                }, error => {
+                    console.log(error);
 
+                    this.thumbnails[set.document.id] = this.context + 'assets/thumbnail-default.png';
+
+                });
+            }
+            else {
                 this.thumbnails[set.document.id] = this.context + 'assets/thumbnail-default.png';
-
-            });
-        }
-        else {
-            this.thumbnails[set.document.id] = this.context + 'assets/thumbnail-default.png';
+            }
         }
     }
 

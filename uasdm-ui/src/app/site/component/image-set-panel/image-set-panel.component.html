@@ -61,11 +61,12 @@
                                 <span>View Centroids</span>
                             </button>
 
-
-                            <button class="image-set-action danger" type="button" *ngIf="!set.locked && !set.published"
-                                (click)="handleDelete(view, set, $event)">
-                                <i class="fa fa-trash-alt image-set-icon"></i><span>Delete</span>
-                            </button>
+<!--
+    <button class="image-set-action danger" type="button" *ngIf="!set.locked && !set.published"
+    (click)="handleDelete(view, set, $event)">
+    <i class="fa fa-trash-alt image-set-icon"></i><span>Delete</span>
+</button>
+-->
 
                             <button class="image-set-action" type="button"
                                 (click)="handleClipboard(set)">

@@ -494,6 +494,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
           this.handleGetProductInfo(id);
         }
         else if (type === ToggleableLayerType.IMAGE_SET) {
+          // Create a pop-up of the image
           const component = features[0].properties.component;
           const key = features[0].properties.key;
 
@@ -509,9 +510,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
           const url = environment.apiUrl + '/api/project/download?' + params.toString()
           const onerror = "\"this.src='" + environment.apiUrl + 'assets/thumbnail-default.png' + "';\""
 
-          let html = "<img class='thumb figure-img img-fluid rounded' style='max-height: 150px' src='" + url + "' onerror=" + onerror + " alt='Image'>";
+          const html = "<img class='thumb figure-img img-fluid rounded' style='max-height: 150px' src='" + url + "' onerror=" + onerror + " alt='Image' />";
 
-          // this.previewImage(component, key);
           const popup = new Popup({ closeOnClick: false })
             .setLngLat(e.lngLat)
             .setHTML(html)

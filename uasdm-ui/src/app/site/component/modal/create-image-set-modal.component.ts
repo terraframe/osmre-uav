@@ -31,7 +31,7 @@ export class CreateImageSetModalComponent implements OnInit, OnDestroy {
     item: SiteEntity = null;
     sets: ImageSet[] = [];
 
-    isNew: boolean = false;
+    useExisting: boolean = false;
     newName: string = "";
     name: string = null;
     files: string[] = [];
@@ -54,7 +54,7 @@ export class CreateImageSetModalComponent implements OnInit, OnDestroy {
         this.item = item;
         this.sets = sets;
 
-        this.isNew = sets.length == 0;
+        this.useExisting = sets.length > 0;
 
         if (sets.length > 0) {
             this.name = sets[0].name;
@@ -64,7 +64,7 @@ export class CreateImageSetModalComponent implements OnInit, OnDestroy {
     }
 
     confirm(): void {
-        this.service.create(this.entity.id, this.isNew, this.isNew ? this.newName : this.name, this.item.id).then((set: ImageSet) => {
+        this.service.create(this.entity.id, !this.useExisting, !this.useExisting ? this.newName : this.name, this.item.id).then((set: ImageSet) => {
             this.onUpdate.next(set)
             this.bsModalRef.hide();
         }).catch((err: HttpErrorResponse) => {
