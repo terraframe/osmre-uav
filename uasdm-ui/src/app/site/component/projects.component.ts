@@ -512,7 +512,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
           const html = "<img class='thumb figure-img img-fluid rounded' style='max-height: 150px' src='" + url + "' onerror=" + onerror + " alt='Image' />";
 
-          const popup = new Popup({ closeOnClick: false })
+          const popup = new Popup({ closeOnClick: false, maxWidth: "300px" })
             .setLngLat(e.lngLat)
             .setHTML(html)
             .addTo(this.map);
