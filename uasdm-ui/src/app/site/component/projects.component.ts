@@ -483,8 +483,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
 
+      const layerIds = this.mapLayers.filter(l => l.type === ToggleableLayerType.IMAGE_SET).map(l => l.id);
+
       // Items
-      features = this.map.queryRenderedFeatures(e.point, { layers: ["items", "image-set"] });
+      features = this.map.queryRenderedFeatures(e.point, { layers: [...layerIds, "items"] });
 
       if (features.length > 0) {
         const id = features[0].properties.id;
@@ -2392,7 +2394,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       const component: string = set.components[set.components.length - 1].id;
 
       // Create the map layer from the StacItem
-      const index = this.mapLayers.findIndex(l => l.id === 'image-set');
+      const index = this.mapLayers.findIndex(l => l.id === set.id);
 
       const features = set.documents.filter(d => d.point != null).map(d => {
         return turf.feature(d.point, { label: d.name, component, key: d.key, type: ToggleableLayerType.IMAGE_SET });
@@ -2401,7 +2403,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       // The layer may already exist
       if (index === -1) {
         const layer: ToggleableLayer = {
-          id: 'image-set',
+          id: set.id,
           type: ToggleableLayerType.IMAGE_SET,
           layerName: set.name,
           active: true,
@@ -2428,7 +2430,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     else {
       this.location.replaceState('/site/viewer/entity/' + this.current.data.id);
 
-      const index = this.mapLayers.findIndex(l => l.id === 'image-set');
+      const index = this.mapLayers.findIndex(l => l.id === set.id);
 
       if (index !== -1) {
         this.handleRemoveToggleableLayer(this.mapLayers[index])
