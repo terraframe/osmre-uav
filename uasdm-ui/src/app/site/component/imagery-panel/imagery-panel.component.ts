@@ -2,7 +2,7 @@
 ///
 ///
 
-import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
 
 import { StacItem, StacProperty, ToggleableLayer, ToggleableLayerType } from '@site/model/layer';
 import { Product } from '@site/model/management';
@@ -14,6 +14,10 @@ import { ProductModalComponent } from '../modal/product-modal.component';
 import { KnowStacModalComponent } from '../know-stac-modal/know-stac-modal.component';
 import { NgIf, NgFor } from '@angular/common';
 import { SafeHtmlPipe } from '@shared/pipe/safe-html.pipe';
+import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { getMapLayers, MapActions } from 'src/app/state/map.state';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 
 @Component({
@@ -27,17 +31,22 @@ export class ImageryPanelComponent implements OnInit, OnDestroy, OnChanges {
 
 	public ToggleableLayerType = ToggleableLayerType;
 
-	@Output() onVisibilityChange: EventEmitter<ToggleableLayer> = new EventEmitter<ToggleableLayer>();
+	private store = inject(Store);
+
+	layers$: Observable<ToggleableLayer[]> = this.store.select(getMapLayers);
+
+	layers: ToggleableLayer[] = [];
+
+	// @Output() onVisibilityChange: EventEmitter<ToggleableLayer> = new EventEmitter<ToggleableLayer>();
+	// @Output() onRemove: EventEmitter<ToggleableLayer> = new EventEmitter<ToggleableLayer>();
 
 	@Output() onGotoExtent: EventEmitter<ToggleableLayer> = new EventEmitter<ToggleableLayer>();
 
-	@Output() onRemove: EventEmitter<ToggleableLayer> = new EventEmitter<ToggleableLayer>();
 
 	@Output() close: EventEmitter<void> = new EventEmitter<void>();
 
 	@Input() properties: StacProperty[] = null;
 
-	@Input() layers: ToggleableLayer[] = [];
 
 	context: string;
 
@@ -46,15 +55,14 @@ export class ImageryPanelComponent implements OnInit, OnDestroy, OnChanges {
 	constructor(private mService: ManagementService,
 		private pService: ProductService,
 		private modalService: BsModalService) {
+
 		this.context = environment.apiUrl;
+
+		this.layers$.pipe(takeUntilDestroyed()).subscribe((layers) => this.setLayers(layers));
 	}
 
 	ngOnInit(): void {
 		this.thumbnails = {}
-
-		this.layers.filter(l => l.type === ToggleableLayerType.PRODUCT).forEach(l => {
-			this.getThumbnail(l);
-		});
 	}
 
 	ngOnDestroy(): void {
@@ -71,18 +79,24 @@ export class ImageryPanelComponent implements OnInit, OnDestroy, OnChanges {
 		}
 	}
 
+	setLayers(layers: ToggleableLayer[]): void {
+		this.layers = layers;
+
+		this.layers.filter(l => l.type === ToggleableLayerType.PRODUCT).forEach(l => {
+			this.getThumbnail(l);
+		});
+	}
+
 	handleClose(): void {
 		this.close.emit();
 	}
 
 	handleRemoveLayer(layer: ToggleableLayer): void {
-		this.onRemove.emit(layer);
+		this.store.dispatch(MapActions.removeMapLayer({ id: layer.id }));
 	}
 
 	handleToggleVisibility(layer: ToggleableLayer): void {
-		layer.active = !layer.active;
-
-		this.onVisibilityChange.emit(layer);
+		this.store.dispatch(MapActions.toggleVisibility({ layer }));
 	}
 
 	handleGotoExtent(layer: ToggleableLayer): void {

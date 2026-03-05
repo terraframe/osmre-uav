@@ -2,7 +2,7 @@
 ///
 ///
 
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, TemplateRef } from "@angular/core";
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, TemplateRef, inject } from "@angular/core";
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BsModalService } from "ngx-bootstrap/modal";
 import { BsModalRef } from "ngx-bootstrap/modal";
@@ -26,7 +26,7 @@ import { ManagementService } from "../service/management.service";
 import { MapService } from "../service/map.service";
 import { MetadataService } from "../service/metadata.service";
 import { CookieService } from "ngx-cookie-service";
-import * as turf from '@turf/turf';
+import * as lodash from 'lodash';
 
 import {
   fadeInOnEnterAnimation,
@@ -60,7 +60,6 @@ import { TypeaheadDirective } from "ngx-bootstrap/typeahead";
 import { OrganizationFieldComponent } from "../../shared/component/organization-field/organization-field.component";
 import { TabsetComponent, TabDirective } from "ngx-bootstrap/tabs";
 import { ProductPanelComponent } from "./product-panel/product-panel.component";
-import { StacItemPanelComponent } from "./stac-item-panel/stac-item-panel.component";
 import { KnowStacPanelComponent } from "./know-stac-panel/know-stac-panel.component";
 import { ImageryPanelComponent } from "./imagery-panel/imagery-panel.component";
 import { AlertComponent } from "ngx-bootstrap/alert";
@@ -70,6 +69,8 @@ import { ImageSetPanelComponent } from "./image-set-panel/image-set-panel.compon
 import { ImagePreviewModalComponent } from "./modal/image-preview-modal.component";
 import { ImageSetService } from "@site/service/image-set.service";
 import { HttpParams } from "@angular/common/http";
+import { Store } from "@ngrx/store";
+import { createSetLayer, getImageSets, getMapLayers, MapActions } from "src/app/state/map.state";
 
 const enum PANEL_TYPE {
   SITE = 0,
@@ -88,9 +89,14 @@ const enum PANEL_TYPE {
     fadeInOnEnterAnimation(),
     fadeOutOnLeaveAnimation()
   ],
-  imports: [NgIf, NgFor, CollapseDirective, NgClass, UasdmHeaderComponent, FormsModule, TypeaheadDirective, OrganizationFieldComponent, TabsetComponent, TabDirective, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet, ProductPanelComponent, ImageSetPanelComponent, StacItemPanelComponent, KnowStacPanelComponent, ImageryPanelComponent, AlertComponent, RouterLink, LegendPanelComponent]
+  imports: [NgIf, NgFor, CollapseDirective, NgClass, UasdmHeaderComponent, FormsModule, TypeaheadDirective, OrganizationFieldComponent, TabsetComponent, TabDirective, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet, ProductPanelComponent, ImageSetPanelComponent, KnowStacPanelComponent, ImageryPanelComponent, AlertComponent, RouterLink, LegendPanelComponent]
 })
 export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  private store = inject(Store);
+
+  mapLayers$: Observable<ToggleableLayer[]> = this.store.select(getMapLayers);
+
 
   // imageToShow: any;
   userName: string = "";
@@ -257,7 +263,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   productViews: CollectionProductView[] = [];
 
-  imageViews: CollectionImageSetView[] = [];
+  sets$: Observable<ImageSet[]> = this.store.select(getImageSets);
 
   properties: StacProperty[] = null;
 
@@ -278,6 +284,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     private websocketService: WebsocketService,
     private location: Location
   ) {
+
+    this.mapLayers$.pipe(takeUntilDestroyed()).subscribe((mapLayers) => this.setMapLayers(mapLayers));
+    // this.sets$.pipe(takeUntilDestroyed()).subscribe((sets) => this.sets = sets);
+
 
     this.subject = new Subject();
     this.subject.pipe(debounceTime(300), distinctUntilChanged()).subscribe(event => this.handleExtentChange(event));
@@ -365,6 +375,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   ngOnDestroy(): void {
+    this.store.dispatch(MapActions.clear());
 
     if (this.subject != null) {
       this.subject.unsubscribe();
@@ -1139,7 +1150,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  handleViewSite(id: string): Promise<SiteEntity[]> {
+  handleViewSite(id: string, easeTo: boolean = true): Promise<SiteEntity[]> {
     return this.service.view(id).then(response => {
       const node = response.item;
       const breadcrumbs = response.breadcrumbs;
@@ -1163,7 +1174,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.nodes = this.current.data.children;
 
-        return this.select(node, null, null);
+        return this.selectNode(node, null, easeTo);
       }
       else {
         const parent = breadcrumbs.length > 0 ? breadcrumbs[breadcrumbs.length - 1] : null;
@@ -1176,7 +1187,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         });
 
-        return this.select(node, parent, null);
+        return this.selectNode(node, parent, easeTo);
       }
     });
   }
@@ -1244,8 +1255,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
           "text-size": 12,
         }
       });
-
-
     }
 
     // Add the layer to the list of layers to be recreated on style change
@@ -1284,7 +1293,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     return metadata;
   }
 
-
   select(node: SiteEntity, parent: SiteEntity, event: any): Promise<SiteEntity[]> {
 
     if (event != null) {
@@ -1297,7 +1305,13 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.location.replaceState('/site/viewer/');
     }
 
-    if (node != null && node.geometry != null && node.geometry.type === "Point") {
+    return this.selectNode(node, parent);
+  }
+
+
+  selectNode(node: SiteEntity, parent: SiteEntity, easeTo: boolean = true): Promise<SiteEntity[]> {
+
+    if (easeTo && node != null && node.geometry != null && node.geometry.type === "Point") {
       //this.map.fitBounds(this.allPointsBounds, { padding: 50 });
 
       this.map.easeTo({
@@ -2030,39 +2044,19 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (mapIt) {
 
-      // Create the map layer from the StacItem
-      const index = this.mapLayers.findIndex(l => l.id === id);
+      const layer: ToggleableLayer = {
+        id: id,
+        type: ToggleableLayerType.PRODUCT,
+        layerName: product.name,
+        active: true,
+        item: lodash.cloneDeep(product),
+        asset: product.layers.find(l => l.classification === classification)
+      };
 
-      // The layer may already exist
-      if (index === -1) {
-        const layer: ToggleableLayer = {
-          id: id,
-          type: ToggleableLayerType.PRODUCT,
-          layerName: product.name,
-          active: true,
-          item: product,
-          asset: product.layers.find(l => l.classification === classification)
-        };
-
-        this.mapLayers.push(layer);
-
-        this.showToggleableLayer(layer);
-      }
-
-      if (product.boundingBox != null) {
-        let bbox = product.boundingBox;
-
-        let bounds = new LngLatBounds([bbox[0], bbox[2]], [bbox[1], bbox[3]]);
-
-        this.map.fitBounds(bounds, { padding: 50 });
-      }
+      this.store.dispatch(MapActions.addMapLayer({ layer }));
     }
     else {
-      const index = this.mapLayers.findIndex(l => l.id === id);
-
-      if (index !== -1) {
-        this.handleRemoveToggleableLayer(this.mapLayers[index])
-      }
+      this.store.dispatch(MapActions.removeMapLayer({ id }));
     }
   }
 
@@ -2076,19 +2070,13 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         type: ToggleableLayerType.KNOWSTAC,
         layerName: item.properties.title,
         active: true,
-        item: item
+        item: lodash.cloneDeep(item),
       };
 
-      this.mapLayers.push(layer);
-
-      this.showToggleableLayer(layer);
+      this.store.dispatch(MapActions.addMapLayer({ layer }));
     }
     else {
-      const index = this.mapLayers.findIndex(l => l.id === item.id);
-
-      if (index !== -1) {
-        this.handleRemoveToggleableLayer(this.mapLayers[index])
-      }
+      this.store.dispatch(MapActions.removeMapLayer({ id: item.id }));
     }
   }
 
@@ -2128,69 +2116,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  handleLayerVisibilityChange(layer: ToggleableLayer): void {
-    if (layer.active) {
-      this.showToggleableLayer(layer);
-    }
-    else {
-      this.hideToggleableLayer(layer);
-    }
-  }
-
-  handleRemoveToggleableLayer(layer: ToggleableLayer): void {
-
-    if (layer.active) {
-      this.hideToggleableLayer(layer);
-    }
-
-    this.mapLayers = this.mapLayers.filter(f => f.id !== layer.id);
-  }
-
-  handleToggleToggleableLayer(layer: ToggleableLayer): void {
-    layer.active = !layer.active;
-
-    if (layer.active) {
-      this.showToggleableLayer(layer);
-    }
-    else {
-      this.hideToggleableLayer(layer);
-    }
-  }
 
   showToggleableLayer(layer: ToggleableLayer): void {
 
-    if (layer.type === ToggleableLayerType.STAC) {
-
-      layer.item.items.forEach(item => {
-
-        const index = item.links.findIndex(link => link.rel === 'self');
-        const link = item.links[index];
-
-        let url = "/stac/tilejson.json";
-        url += "?url=" + encodeURIComponent(link.href);
-        url += "&assets=" + encodeURIComponent(item.asset);
-
-        const asset = item.assets[item.asset];
-        if (asset.roles != null && asset.roles.indexOf('multispectral') !== -1) {
-          url += "&multispectral=true";
-        }
-        else if (asset.roles != null && asset.roles.indexOf('thermal') !== -1) {
-          url += "&thermal=true";
-        }
-        else if (asset.roles != null && asset.roles.indexOf('elevation') !== -1) {
-          url += "&hillshade=true";
-        }
-
-        this.addImageLayer({
-          type: MapLayerType.Raster,
-          classification: "ORTHO",
-          key: layer.id + '-' + item.id + '-' + item.asset,
-          isMapped: true,
-          url: url
-        });
-      });
-    }
-    else if (layer.type === ToggleableLayerType.KNOWSTAC) {
+    if (layer.type === ToggleableLayerType.KNOWSTAC) {
       const item: StacItem = layer.item;
 
       // Add the layer to the map
@@ -2215,7 +2144,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.addImageLayer({
         type: MapLayerType.Raster,
         classification: "ORTHO",
-        key: item.id + '-' + item.asset,
+        key: layer.id,
         isMapped: true,
         url: url
       });
@@ -2243,80 +2172,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   hideToggleableLayer(layer: ToggleableLayer): void {
-    if (layer.type === ToggleableLayerType.STAC) {
-      layer.item.items.forEach(item => {
-        this.removeImageLayer(layer.id + '-' + item.id + '-' + item.asset);
-      });
-    }
-    else if (layer.type === ToggleableLayerType.KNOWSTAC) {
-      const item: StacItem = layer.item;
-
-      this.removeImageLayer(item.id + '-' + item.asset);
-    }
-    else if (layer.type === ToggleableLayerType.PRODUCT) {
-      this.removeImageLayer(layer.id);
-    }
-    else if (layer.type === ToggleableLayerType.IMAGE_SET) {
-      this.removeImageLayer(layer.id, true);
-    }
+    this.removeImageLayer(layer.id, layer.type === ToggleableLayerType.IMAGE_SET);
   }
 
-  /*
-   * Original STAC panel management
-   */
-  handleStacEdit(layer?: ToggleableLayer): void {
-
-    this.panelType = PANEL_TYPE.STAC;
-
-    if (layer != null) {
-      this.mapLayer = JSON.parse(JSON.stringify(layer));
-    }
-    else {
-      this.mapLayer = null;
-    }
-  }
-
-  handleStacConfirm(layer: ToggleableLayer): void {
-    const index = this.mapLayers.findIndex(l => l.id === layer.id);
-
-    if (index !== -1) {
-      // Remove existing image layers
-      if (this.mapLayers[index].active) {
-        this.hideToggleableLayer(this.mapLayers[index]);
-      }
-
-      this.mapLayers[index] = layer;
-    }
-    else {
-      this.mapLayers.push(layer);
-    }
-
-    if (layer.active) {
-
-      this.handleStacZoom(layer);
-
-      this.showToggleableLayer(layer);
-    }
-
-    this.panelType = PANEL_TYPE.SITE;
-    this.mapLayer = null;
-  }
-
-  handleStacZoom(layer: ToggleableLayer): void {
-
-    if (layer.type === ToggleableLayerType.STAC) {
-      const polygons = layer.item.items.map(item => bboxPolygon(item.bbox as [number, number, number, number]));
-
-      // Determine the bounding box of the layer
-      const features = featureCollection(polygons);
-      const env = envelope(features);
-      const bounds = bbox(env) as [number, number, number, number];
-
-      this.map.fitBounds(bounds);
-    }
-  }
-
-  handleStacCancel(): void {
+  handleClosePanel(): void {
     this.panelType = PANEL_TYPE.SITE;
     this.mapLayer = null;
   }
@@ -2358,85 +2217,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
 
-  // Raw Sets
-  handleImageSetsChange(imageViews: CollectionImageSetView[]): void {
-
-    this.imageViews = imageViews;
-
-    const oid = this.route.snapshot.params["oid"];
-    const action = this.route.snapshot.params["action"];
-
-    if (oid != null && action != null && action === "set") {
-
-      this.imageViews.forEach(view => {
-        const index = view.sets.findIndex(set => set.id === oid);
-
-        if (index != -1) {
-          view.sets[index].mapped = true;
-        }
-      })
-    }
-
-    this.buildItemsLayer();
-  }
-
-  handleMapSet(set: ImageSet): void {
-    set.mapped = !set.mapped;
-
-    this.handleImageSetAsset(set, set.mapped);
-  }
-
-  handleImageSetAsset(set: ImageSet, mapIt: boolean): void {
-
-    if (mapIt) {
-      this.location.replaceState('/site/viewer/set/' + set.id);
-
-      const component: string = set.components[set.components.length - 1].id;
-
-      // Create the map layer from the StacItem
-      const index = this.mapLayers.findIndex(l => l.id === set.id);
-
-      const features = set.documents.filter(d => d.point != null).map(d => {
-        return turf.feature(d.point, { label: d.name, component, key: d.key, type: ToggleableLayerType.IMAGE_SET });
-      });
-
-      // The layer may already exist
-      if (index === -1) {
-        const layer: ToggleableLayer = {
-          id: set.id,
-          type: ToggleableLayerType.IMAGE_SET,
-          layerName: set.name,
-          active: true,
-          item: set,
-          geojson: {
-            type: "FeatureCollection",
-            features: features
-          }
-        };
-
-        this.mapLayers.push(layer);
-
-        this.showToggleableLayer(layer);
-      }
-
-      if (set.boundingBox != null) {
-        let bbox = JSON.parse(set.boundingBox);
-
-        let bounds = new LngLatBounds([bbox[0], bbox[1]], [bbox[2], bbox[3]]);
-
-        this.map.fitBounds(bounds, { padding: 50 });
-      }
-    }
-    else {
-      this.location.replaceState('/site/viewer/entity/' + this.current.data.id);
-
-      const index = this.mapLayers.findIndex(l => l.id === set.id);
-
-      if (index !== -1) {
-        this.handleRemoveToggleableLayer(this.mapLayers[index])
-      }
-    }
-  }
 
   handleViewSet(id: string): void {
     this.iService.get(id).then(set => {
@@ -2444,11 +2224,15 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
       // Get the mission
       const component: string = set.components[set.components.length - 2].id;
 
-      this.handleViewSite(component).then(() => {
+      // View the site
+      this.handleViewSite(component, false).then(() => {
         this.activeTab = 'IMAGE_SETS';
 
-        this.handleImageSetAsset(set, true);
+        // create the set layer
+        const layer = createSetLayer(set);
 
+        // Add the layer to the map
+        this.store.dispatch(MapActions.addMapLayer({ layer, routeSet: id }));
       });
     });
   }
@@ -2468,4 +2252,46 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  setMapLayers(mapLayers: ToggleableLayer[]): void {
+
+    // Remove misisng layers from the map
+    this.mapLayers.filter(existing => mapLayers.findIndex(layer => existing.id === layer.id) === -1).forEach(layer => {
+      this.hideToggleableLayer(layer);
+    });
+
+    // Add new layers to the map
+    mapLayers.filter(layer => this.mapLayers.findIndex(existing => existing.id === layer.id) === -1).forEach(layer => {
+      this.showToggleableLayer(layer);
+
+      if (layer.type === ToggleableLayerType.IMAGE_SET) {
+        if (layer.item.boundingBox != null) {
+          let bbox = JSON.parse(layer.item.boundingBox);
+
+          let bounds = new LngLatBounds([bbox[0], bbox[1]], [bbox[2], bbox[3]]);
+
+          this.map.fitBounds(bounds, { padding: 50 });
+        }
+      }
+      if (layer.type === ToggleableLayerType.PRODUCT) {
+        if (layer.item.boundingBox != null) {
+          const bbox = layer.item.boundingBox;
+
+          const bounds = new LngLatBounds([bbox[0], bbox[2]], [bbox[1], bbox[3]]);
+
+          this.map.fitBounds(bounds, { padding: 50 });
+        }
+      }
+    });
+
+    // update the show/hide status of all map layers 
+    mapLayers.forEach(layer => {
+      this.map.setLayoutProperty(layer.id, "visibility", layer.active ? 'visible' : 'none');
+
+      if (layer.type === ToggleableLayerType.IMAGE_SET) {
+        this.map.setLayoutProperty(layer.id + '-label', "visibility", layer.active ? 'visible' : 'none');
+      }
+    });
+
+    this.mapLayers = mapLayers;
+  }
 }

@@ -2,10 +2,10 @@
 ///
 ///
 
-import { Component, Input, Output, EventEmitter, SimpleChanges, OnDestroy } from '@angular/core';
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { Component, Input, SimpleChanges, OnDestroy, inject } from '@angular/core';
+import { Location, NgClass, NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, UrlTree } from '@angular/router';
+import { Router, UrlTree } from '@angular/router';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { bounceInOnEnterAnimation, bounceOutOnLeaveAnimation, fadeInOnEnterAnimation, fadeOutOnLeaveAnimation } from 'angular-animations';
 import { BsModalService } from 'ngx-bootstrap/modal';
@@ -13,7 +13,7 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { BasicConfirmModalComponent } from '@shared/component/modal/basic-confirm-modal.component';
 import { ImagePreviewModalComponent } from '../modal/image-preview-modal.component';
 
-import { CollectionImageSetView, Filter, ImageSet, ProductCriteria, SELECTION_TYPE, ViewerSelection, ProductDocument } from '@site/model/management';
+import { Filter, ImageSet, ProductCriteria, SELECTION_TYPE, ViewerSelection, ProductDocument } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 
 import EnvironmentUtil from '@core/utility/environment-util';
@@ -22,6 +22,10 @@ import { LocalizedValue } from '@shared/model/organization';
 import { ImageSetService } from '@site/service/image-set.service';
 import { ModalTypes } from '@shared/model/modal';
 import { SafeHtmlPipe } from '@shared/pipe/safe-html.pipe';
+import { Store } from '@ngrx/store';
+import { getImageSets, MapActions } from 'src/app/state/map.state';
+import { Observable } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     standalone: true,
@@ -37,6 +41,7 @@ import { SafeHtmlPipe } from '@shared/pipe/safe-html.pipe';
     imports: [FormsModule, NgFor, NgIf, NgClass, SafeHtmlPipe]
 })
 export class ImageSetPanelComponent implements OnDestroy {
+    private store = inject(Store);
 
     @Input() selection: ViewerSelection;
 
@@ -44,15 +49,13 @@ export class ImageSetPanelComponent implements OnDestroy {
 
     @Input() organization?: { code: string, label: LocalizedValue };
 
-    @Output() toggleMapSet = new EventEmitter<ImageSet>();
-
-    @Output() onViewsChange = new EventEmitter<CollectionImageSetView[]>();
+    sets$: Observable<ImageSet[]> = this.store.select(getImageSets);
 
 
     /* 
      * List of imageSets for the current node
      */
-    @Input() views: CollectionImageSetView[] = [];
+    sets: ImageSet[] = [];
 
     thumbnails: any = {};
 
@@ -69,17 +72,19 @@ export class ImageSetPanelComponent implements OnDestroy {
         private mService: ManagementService,
         private modalService: BsModalService,
         private authService: AuthService,
-        private route: ActivatedRoute,
+        private location: Location,
         private clipboard: Clipboard,
         private router: Router
     ) {
 
         this.context = EnvironmentUtil.getApiUrl();
         this.isAdmin = this.authService.isAdmin();
+
+        this.sets$.pipe(takeUntilDestroyed()).subscribe((sets) => this.sets = sets);
     }
 
     ngOnDestroy(): void {
-        this.onViewsChange.emit([]);
+        this.store.dispatch(MapActions.setImageSets({ sets: [] }));
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -94,7 +99,8 @@ export class ImageSetPanelComponent implements OnDestroy {
     }
 
     refreshImageSets(selection: ViewerSelection): void {
-        this.onViewsChange.emit([]);
+        this.store.dispatch(MapActions.setImageSets({ sets: [] }));
+
         this.thumbnails = {};
 
         this.loading = true;
@@ -135,32 +141,32 @@ export class ImageSetPanelComponent implements OnDestroy {
         }
 
         this.pService.getImageSets(criteria).then(views => {
+            if (original === this.requestId) {
 
-            views.forEach(view => {
-                view.sets.forEach(set => {
+                const sets = views.flatMap(view => view.sets)
+
+                sets.forEach(set => {
+                    set.mapped = false;
                     if (set.documents.length > 0) {
                         set.document = set.documents[0];
                         set.documentId = set.document.id;
 
-                        this.getThumbnail(view, set);
+                        this.getThumbnail(set);
                     }
                 })
-            });
-
-            if (original === this.requestId) {
 
                 this.loading = false;
 
-                this.onViewsChange.emit(views);
+                this.store.dispatch(MapActions.setImageSets({ sets }));
             }
         });
     }
 
-    setDocument(view: CollectionImageSetView, set: ImageSet): void {
+    setDocument(set: ImageSet): void {
 
         set.document = set.documents.find(p => p.id === set.documentId);
 
-        this.getThumbnail(view, set);
+        this.getThumbnail(set);
     }
 
 
@@ -176,12 +182,12 @@ export class ImageSetPanelComponent implements OnDestroy {
         }
     }
 
-    getThumbnail(view: CollectionImageSetView, set: ImageSet): void {
+    getThumbnail(set: ImageSet): void {
 
         // imageKey only exists if an image actually exists on s3
         if (set.document != null) {
             if (set.document.key != null) {
-                const component: string = view.componentId;
+                const component: string = set.components[set.components.length - 1].id;
                 const rootPath: string = set.document.key.substr(0, set.document.key.lastIndexOf("/"));
                 const fileName: string = /[^/]*$/.exec(set.document.key)[0];
                 const lastPeriod: number = fileName.lastIndexOf(".");
@@ -206,12 +212,16 @@ export class ImageSetPanelComponent implements OnDestroy {
         event.target.src = this.context + 'assets/thumbnail-default.png';
     }
 
-    handleMapIt(imageSet: ImageSet): void {
-        this.toggleMapSet.emit(imageSet);
+    handleMapIt(set: ImageSet): void {
+
+        this.location.replaceState('/site/viewer/set/' + set.id);
+
+
+        this.store.dispatch(MapActions.toggleSet({ set }));
     }
 
 
-    handleDelete(view: CollectionImageSetView, set: ImageSet, event: any): void {
+    handleDelete(set: ImageSet, event: any): void {
 
         event.stopPropagation();
 
@@ -229,12 +239,9 @@ export class ImageSetPanelComponent implements OnDestroy {
         bsModalRef.content.onConfirm.subscribe(data => {
             const imageSetId = set.id;
 
-            this.pService.remove(imageSetId).then(response => {
-                view.sets = view.sets.filter((n: ImageSet) => n.id !== imageSetId);
+            this.pService.remove(imageSetId).then(() => {
 
-                this.onViewsChange.emit(
-                    this.views.filter((n: CollectionImageSetView) => n.componentId !== view.componentId)
-                );
+                this.store.dispatch(MapActions.removeImageSet({ id: set.id }));
             });
         });
     }
@@ -256,22 +263,6 @@ export class ImageSetPanelComponent implements OnDestroy {
         }
     }
 
-
-    handleTogglePublish(imageSet: ImageSet): void {
-        this.pService.togglePublish(imageSet.id).then(p => {
-            const mapIt: boolean = imageSet.mapped;
-
-            if (mapIt) {
-                this.toggleMapSet.emit(imageSet);
-            }
-
-            imageSet.published = p.published;
-
-            if (mapIt) {
-                this.toggleMapSet.emit(imageSet);
-            }
-        });
-    }
 
     handleToggleLock(imageSet: ImageSet): void {
         this.pService.toggleLock(imageSet.id).then(() => {
