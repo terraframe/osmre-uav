@@ -13,12 +13,12 @@ export AWS_SECRET_ACCESS_KEY=$UASDM_S3_SECRET
 
 2. Now, you can run:
 
-sudo docker build -t uasdm-lidar .
+sudo docker build -t uasdm-processing-lidar .
 
 sudo -E docker run --rm \
   -e AWS_REGION=us-west-2 \
   -e S3_COMPONENT="s3://osmre-uas-dev/lidar/lidar/lidar/lidar" \
   -e JOB_ID="9f3c2e6b-7a4d-4c91-b8f2-6e5d1a0c3f77" \
   -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
-  uasdm-lidar
+  uasdm-processing-lidar
 
