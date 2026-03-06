@@ -98,6 +98,7 @@ public class FargateProvisioner
     task.setTaskLabel("Processing for collection [" + collection.getName() + "]");
     task.setMessage("Processing for your collection ['" + collection.getName() + "'] has begun. Check back later for updates.");
     task.setConfiguration(configuration);
+    task.setProcessingType(configuration.getType().name());
     task.apply();
 
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
