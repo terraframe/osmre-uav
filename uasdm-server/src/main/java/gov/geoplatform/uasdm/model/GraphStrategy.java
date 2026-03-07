@@ -27,10 +27,11 @@ import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.Imagery;
 import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.graph.ImageSet;
 import gov.geoplatform.uasdm.graph.Site;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
-import gov.geoplatform.uasdm.view.ProductCriteria;
+import gov.geoplatform.uasdm.view.CollectionCriteria;
 
 public class GraphStrategy implements ComponentStrategy
 {
@@ -91,7 +92,7 @@ public class GraphStrategy implements ComponentStrategy
   }
 
   @Override
-  public List<ComponentProductDTO> getProducts(ProductCriteria criteria)
+  public List<ComponentProductDTO> getProducts(CollectionCriteria criteria)
   {
     return Product.getProducts(criteria);
   }
@@ -135,5 +136,17 @@ public class GraphStrategy implements ComponentStrategy
   public JSONArray bbox()
   {
     return UasComponent.bbox();
+  }
+  
+  @Override
+  public ImageSet getImageSet(String oid)
+  {
+    return ImageSet.get(oid);
+  }
+
+  @Override
+  public List<ComponentImageSet> getImageSets(CollectionCriteria criteria)
+  {
+    return ImageSet.getAll(criteria);
   }
 }

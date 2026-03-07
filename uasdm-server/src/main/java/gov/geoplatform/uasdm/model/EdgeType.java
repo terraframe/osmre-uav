@@ -42,4 +42,9 @@ public interface EdgeType
   public static final String COLLECTION_HAS_METADATA    = "gov.geoplatform.uasdm.graph.CollectionHasMetadata";
 
   public static final String PRODUCT_HAS_METADATA       = "gov.geoplatform.uasdm.graph.ProductHasMetadata";
+  
+  public static final String IMAGE_SET_HAS_DOCUMENT       = "gov.geoplatform.uasdm.graph.ImageSetHasDocument";
+
+  public static final String COMPONENT_HAS_IMAGE_SET      = "gov.geoplatform.uasdm.graph.ComponentHasImageSet";
+
 }

@@ -24,6 +24,8 @@ import org.json.JSONObject;
 import gov.geoplatform.uasdm.bus.AllPrivilegeType;
 import gov.geoplatform.uasdm.graph.CollectionFormat;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
+import gov.geoplatform.uasdm.graph.ImageSet;
+import gov.geoplatform.uasdm.view.AssignImageSetView;
 
 public interface CollectionIF extends UasComponentIF
 {
@@ -106,5 +108,7 @@ public interface CollectionIF extends UasComponentIF
   public void setHasAllZip(Boolean b);
 
   public Optional<CollectionMetadata> getMetadata();
+
+  public ImageSet createImageSetIfNotExist(AssignImageSetView view);
 
 }

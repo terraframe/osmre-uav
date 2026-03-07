@@ -43,7 +43,11 @@ public class MockRemoteFileMetadata implements RemoteFileMetadata
   @Override
   public String getContentRange()
   {
+<<<<<<< HEAD
+    return "Range: bytes=0-499";
+=======
     return "0";
+>>>>>>> refs/remotes/origin/master
   }
 
   @Override

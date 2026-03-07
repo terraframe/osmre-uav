@@ -29,17 +29,17 @@ import { BooleanFieldComponent } from '@shared/component/boolean-field/boolean-f
 type SupportedRow = { type: string; formats: string };
 
 @Component({
-    standalone: true,
-    selector: 'tus-upload-modal',
-    templateUrl: './tus-upload-modal.component.html',
-    styleUrls: [
-        './upload-modal.component.css',
-    ],
-    animations: [
-        fadeInOnEnterAnimation(),
-        fadeOutOnLeaveAnimation()
-    ],
-    imports: [FormsModule, NgIf, BooleanFieldComponent, NgFor, NgxFileDropModule, DecimalPipe]
+	standalone: true,
+	selector: 'tus-upload-modal',
+	templateUrl: './tus-upload-modal.component.html',
+	styleUrls: [
+		'./upload-modal.component.css',
+	],
+	animations: [
+		fadeInOnEnterAnimation(),
+		fadeOutOnLeaveAnimation()
+	],
+	imports: [FormsModule, NgIf, BooleanFieldComponent, NgFor, NgxFileDropModule, DecimalPipe]
 })
 export class TusUploadModalComponent implements OnInit, OnDestroy {
 
@@ -125,10 +125,10 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 	close(): void {
 		this.bsModalRef.hide();
 	}
-	
+
 	visitTaskPage(): void {
-	  // this.close won't close the outer modal... since we're modal inside a modal here
-	  window.location.href = '/#/site/tasks';
+		// this.close won't close the outer modal... since we're modal inside a modal here
+		window.location.href = '/#/site/tasks';
 	}
 
 	onFileSelected(files: NgxFileDropEntry[]): void {
@@ -235,57 +235,71 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 	}
 
 	get supportedRawFormats(): SupportedRow[] {
+
+		const rows: SupportedRow[] = [];
+
+
 		if (!this.component) {
 			return [];
 		}
+		else if (this.uploadTarget === 'raw') {
 
-		const fmt = this.component.format;
-		const rows: SupportedRow[] = [];
+			const fmt = this.component.format;
 
-		// ---- Legacy behaviour (no format set) ----
-		if (!fmt) {
-			if (this.component.isLidar) {
-				rows.push({ type: 'Pointcloud', formats: 'laz, las' });
-			} else if (this.component.isRadiometric) {
-				rows.push({ type: 'Radiometric Data', formats: 'tif' });
-			} else {
-				// default legacy RGB/multispectral behaviour
-				rows.push(
-				{ type: 'RGB Image Data',           formats: 'jpg, jpeg, png' },
-				{ type: 'Multispectral Image Data', formats: 'tif' }
-				);
+			// ---- Legacy behaviour (no format set) ----
+			if (!fmt) {
+				if (this.component.isLidar) {
+					rows.push({ type: 'Pointcloud', formats: 'laz, las' });
+				} else if (this.component.isRadiometric) {
+					rows.push({ type: 'Radiometric Data', formats: 'tif' });
+				} else {
+					// default legacy RGB/multispectral behaviour
+					rows.push(
+						{ type: 'RGB Image Data', formats: 'jpg, jpeg, png' },
+						{ type: 'Multispectral Image Data', formats: 'tif' }
+					);
+				}
+
+				// Legacy table always includes Video row
+				rows.push({ type: 'Video', formats: 'mp4' });
+				return rows;
 			}
 
-			// Legacy table always includes Video row
-			rows.push({ type: 'Video', formats: 'mp4' });
-				return rows;
+			// ---- New behaviour driven by CollectionFormat ----
+			switch (fmt) {
+				case 'LIDAR':
+					rows.push({ type: 'Pointcloud', formats: 'laz, las' });
+					break;
+
+				case 'STILL_RADIOMETRIC':
+					rows.push({ type: 'Radiometric Data', formats: 'tif' });
+					break;
+
+				case 'STILL_MULTISPECTRAL':
+					rows.push({ type: 'Multispectral Image Data', formats: 'tif' });
+					break;
+
+				case 'STILL_IMAGERY_RGB':
+				case 'STILL_THERMAL_RGB':
+					rows.push({ type: 'RGB Image Data', formats: 'jpg, jpeg, png' });
+					break;
+
+				case 'VIDEO_RGB':
+				case 'VIDEO_THERMAL_RGB':
+				case 'VIDEO_RADIOMETRIC':
+				case 'VIDEO_MULTISPECTRAL':
+					rows.push({ type: 'Video', formats: 'mp4' });
+					break;
+			}
 		}
-
-		// ---- New behaviour driven by CollectionFormat ----
-		switch (fmt) {
-			case 'LIDAR':
-				rows.push({ type: 'Pointcloud', formats: 'laz, las' });
-				break;
-
-			case 'STILL_RADIOMETRIC':
-				rows.push({ type: 'Radiometric Data', formats: 'tif' });
-				break;
-
-			case 'STILL_MULTISPECTRAL':
-				rows.push({ type: 'Multispectral Image Data', formats: 'tif' });
-				break;
-
-			case 'STILL_IMAGERY_RGB':
-			case 'STILL_THERMAL_RGB':
-				rows.push({ type: 'RGB Image Data', formats: 'jpg, jpeg, png' });
-				break;
-
-			case 'VIDEO_RGB':
-			case 'VIDEO_THERMAL_RGB':
-			case 'VIDEO_RADIOMETRIC':
-			case 'VIDEO_MULTISPECTRAL':
-				rows.push({ type: 'Video', formats: 'mp4' });
-				break;
+		else if(this.uploadTarget === 'ptcloud') {
+			rows.push({ type: 'Pointcloud', formats: 'laz, las' });
+		}
+		else if(this.uploadTarget === 'ortho') {
+			rows.push({ type: 'Ortho', formats: 'tif, tiff, png' });
+		}
+		else if(this.uploadTarget === 'dem') {
+			rows.push({ type: 'DEM', formats: 'tif, tiff' });
 		}
 
 		return rows;

@@ -40,11 +40,19 @@ public class ODMGeoFileValidationTest
   public void testValidate()
   {
     ODMProcessingPayload payload = new ODMProcessingPayload(new ArchiveFileResource(new FileResource(new CloseableFile(""))));
+<<<<<<< HEAD
+    
+    payload.addImage("DSC00001.jpg", 0L);
+    payload.addImage("DSC00002.jpg", 0L);
+    payload.addImage("DSC00003.jpg", 0L);
+    
+=======
 
     payload.addImage("DSC00001.jpg", 10L);
     payload.addImage("DSC00002.jpg", 10L);
     payload.addImage("DSC00003.jpg", 10L);
 
+>>>>>>> refs/remotes/origin/master
     payload.setGeoLocationFile("EPSG:4326\nDSC00001.jpg    -092.5672988  47.6537057    0589.32\nDSC00002.jpg   -092.5672988  47.6537057    0589.32\nDSC00003.jpg   -092.5672988  47.6537057    0589.32");
     validateThrowErrors(payload);
   }
@@ -53,11 +61,19 @@ public class ODMGeoFileValidationTest
   public void testValidateWhitespace()
   {
     ODMProcessingPayload payload = new ODMProcessingPayload(new ArchiveFileResource(new FileResource(new CloseableFile(""))));
+<<<<<<< HEAD
+    
+    payload.addImage("DSC00001.jpg", 0L);
+    payload.addImage("DSC00002.jpg", 0L);
+    payload.addImage("DSC00003.jpg", 0L);
+    
+=======
 
     payload.addImage("DSC00001.jpg", 10L);
     payload.addImage("DSC00002.jpg", 10L);
     payload.addImage("DSC00003.jpg", 10L);
 
+>>>>>>> refs/remotes/origin/master
     payload.setGeoLocationFile("EPSG:4326\nDSC00001.jpg	-092.5672988   47.6537057	0589.32\nDSC00002.jpg   -092.5672988  47.6537057	0589.32\nDSC00003.jpg   -092.5672988  47.6537057	0589.32");
     validateThrowErrors(payload);
   }
@@ -66,11 +82,19 @@ public class ODMGeoFileValidationTest
   public void testNoEPSG()
   {
     ODMProcessingPayload payload = new ODMProcessingPayload(new ArchiveFileResource(new FileResource(new CloseableFile(""))));
+<<<<<<< HEAD
+    
+    payload.addImage("DSC00001.jpg", 0L);
+    payload.addImage("DSC00002.jpg", 0L);
+    payload.addImage("DSC00003.jpg", 0L);
+    
+=======
 
     payload.addImage("DSC00001.jpg", 10L);
     payload.addImage("DSC00002.jpg", 10L);
     payload.addImage("DSC00003.jpg", 10L);
 
+>>>>>>> refs/remotes/origin/master
     payload.setGeoLocationFile("DSC00001.jpg    -092.5672988   47.6537057   0589.32\\nDSC00002.jpg   -092.5672988  47.6537057    0589.32\\nDSC00003.jpg   -092.5672988   47.6537057   0589.32");
     validateThrowErrors(payload);
   }
@@ -79,11 +103,19 @@ public class ODMGeoFileValidationTest
   public void testValidateBadCase()
   {
     ODMProcessingPayload payload = new ODMProcessingPayload(new ArchiveFileResource(new FileResource(new CloseableFile(""))));
+<<<<<<< HEAD
+    
+    payload.addImage("DSC00001.JPG", 0L);
+    payload.addImage("DSC00002.JPG", 0L);
+    payload.addImage("DSC00003.JPG", 0L);
+    
+=======
 
     payload.addImage("DSC00001.jpg", 10L);
     payload.addImage("DSC00002.jpg", 10L);
     payload.addImage("DSC00003.jpg", 10L);
 
+>>>>>>> refs/remotes/origin/master
     payload.setGeoLocationFile("EPSG:4326\nDSC00001.jpg -092.5672988 47.6537057 0589.32\nDSC00002.jpg -092.5672988 47.6537057 0589.32\nDSC00003.jpg -092.5672988 47.6537057 0589.32");
     validateThrowErrors(payload);
   }
@@ -105,11 +137,19 @@ public class ODMGeoFileValidationTest
   public void testValidateLatBounds()
   {
     ODMProcessingPayload payload = new ODMProcessingPayload(new ArchiveFileResource(new FileResource(new CloseableFile(""))));
+<<<<<<< HEAD
+    
+    payload.addImage("DSC00001.jpg", 0L);
+    payload.addImage("DSC00002.jpg", 0L);
+    payload.addImage("DSC00003.jpg", 0L);
+    
+=======
 
     payload.addImage("DSC00001.jpg", 10L);
     payload.addImage("DSC00002.jpg", 10L);
     payload.addImage("DSC00003.jpg", 10L);
 
+>>>>>>> refs/remotes/origin/master
     payload.setGeoLocationFile("EPSG:4326\nDSC00001.jpg -092.5672988 47.6537057 0589.32\nDSC00002.jpg 47.6537057 -092.5672988 0589.32\nDSC00003.jpg 47.6537057 -092.5672988 0589.32");
     validateThrowErrors(payload);
   }
@@ -118,11 +158,19 @@ public class ODMGeoFileValidationTest
   public void testValidateLongBounds()
   {
     ODMProcessingPayload payload = new ODMProcessingPayload(new ArchiveFileResource(new FileResource(new CloseableFile(""))));
+<<<<<<< HEAD
+    
+    payload.addImage("DSC00001.jpg", 0L);
+    payload.addImage("DSC00002.jpg", 0L);
+    payload.addImage("DSC00003.jpg", 0L);
+    
+=======
 
     payload.addImage("DSC00001.jpg", 10L);
     payload.addImage("DSC00002.jpg", 10L);
     payload.addImage("DSC00003.jpg", 10L);
 
+>>>>>>> refs/remotes/origin/master
     payload.setGeoLocationFile("EPSG:4326\nDSC00001.jpg -0192.5672988 47.6537057 0589.32\nDSC00002.jpg -092.5672988 47.6537057 0589.32\nDSC00003.jpg -092.567298847.6537057  0589.32");
     validateThrowErrors(payload);
   }

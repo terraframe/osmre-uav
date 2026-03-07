@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = -229712764)
+@com.runwaysdk.business.ClassSignature(hash = -1466896856)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -33,13 +18,14 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
   public final static java.lang.String NAME = "name";
   public final static java.lang.String OID = "oid";
   public final static java.lang.String ORTHOCORRECTIONMODEL = "orthoCorrectionModel";
+  public final static java.lang.String POINT = "point";
   public final static java.lang.String PROJECTIONNAME = "projectionName";
   public final static java.lang.String PTEPSG = "ptEpsg";
   public final static java.lang.String S3LOCATION = "s3location";
   public final static java.lang.String SEQ = "seq";
   public final static java.lang.String TOOL = "tool";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = -229712764;
+  private static final long serialVersionUID = -1466896856;
   
   public DocumentBase()
   {
@@ -151,6 +137,22 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
   public void setOrthoCorrectionModel(String value)
   {
     this.setValue(ORTHOCORRECTIONMODEL, value);
+  }
+  
+  public org.locationtech.jts.geom.Point getPoint()
+  {
+    return (org.locationtech.jts.geom.Point) this.getObjectValue(POINT);
+  }
+  
+  public static com.runwaysdk.gis.dataaccess.MdAttributePointDAOIF getPointMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.Document.CLASS);
+    return (com.runwaysdk.gis.dataaccess.MdAttributePointDAOIF)mdClassIF.definesAttribute(POINT);
+  }
+  
+  public void setPoint(org.locationtech.jts.geom.Point value)
+  {
+    this.setValue(POINT, value);
   }
   
   public String getProjectionName()
@@ -284,6 +286,22 @@ public abstract class DocumentBase extends com.runwaysdk.business.graph.VertexOb
   public java.util.List<gov.geoplatform.uasdm.graph.UasComponent> getComponentHasDocumentParentUasComponents()
   {
     return super.getParents("gov.geoplatform.uasdm.graph.ComponentHasDocument", gov.geoplatform.uasdm.graph.UasComponent.class);
+  }
+  
+  public com.runwaysdk.business.graph.EdgeObject addImageSetHasDocumentParent(gov.geoplatform.uasdm.graph.ImageSet imageSet)
+  {
+    return super.addParent(imageSet, "gov.geoplatform.uasdm.graph.ImageSetHasDocument");
+  }
+  
+  public void removeImageSetHasDocumentParent(gov.geoplatform.uasdm.graph.ImageSet imageSet)
+  {
+    super.removeParent(imageSet, "gov.geoplatform.uasdm.graph.ImageSetHasDocument");
+  }
+  
+  @SuppressWarnings("unchecked")
+  public java.util.List<gov.geoplatform.uasdm.graph.ImageSet> getImageSetHasDocumentParentImageSets()
+  {
+    return super.getParents("gov.geoplatform.uasdm.graph.ImageSetHasDocument", gov.geoplatform.uasdm.graph.ImageSet.class);
   }
   
   public com.runwaysdk.business.graph.EdgeObject addODMRunOutputParent(gov.geoplatform.uasdm.graph.ODMRun oDMRun)

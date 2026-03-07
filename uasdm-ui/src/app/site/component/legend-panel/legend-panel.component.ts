@@ -10,7 +10,7 @@ import { NgIf } from '@angular/common';
 @Component({
     selector: 'legend-panel',
     templateUrl: './legend-panel.component.html',
-    styleUrls: [],
+    styleUrls: ['./legend-panel.css'],
     standalone: true,
     imports: [NgIf]
 })

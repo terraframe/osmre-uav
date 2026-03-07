@@ -1,23 +1,24 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.model;
 
 import java.util.Date;
 
 import org.json.JSONObject;
+import org.locationtech.jts.geom.Point;
 
 import com.runwaysdk.ComponentIF;
 
@@ -31,13 +32,13 @@ public interface DocumentIF extends ComponentIF, JSONSerializable
     private String  description;
 
     private String  tool;
-    
+
     private Integer ptEpsg;
 
     private String  projectionName;
 
     private String  orthoCorrectionModel;
-    
+
     private Long    fileSize;
 
     public String getDescription()
@@ -89,7 +90,7 @@ public interface DocumentIF extends ComponentIF, JSONSerializable
     {
       this.orthoCorrectionModel = orthoCorrectionModel;
     }
-    
+
     public Long getFileSize()
     {
       return fileSize;
@@ -113,7 +114,7 @@ public interface DocumentIF extends ComponentIF, JSONSerializable
       return metadata;
     }
   }
-  
+
   public Long getFileSize();
 
   public String getS3location();
@@ -154,4 +155,5 @@ public interface DocumentIF extends ComponentIF, JSONSerializable
 
   public ODMRun getGeneratingODMRun();
 
+  public Point getPoint();
 }
