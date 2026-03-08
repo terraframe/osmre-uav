@@ -26,6 +26,7 @@ import Aura from '@primeuix/themes/aura';
 
 import { sessionReducer } from './state/session.state';
 import { provideStore } from '@ngrx/store';
+import { provideMarkdown } from 'ngx-markdown';
 import { mapReducer } from './state/map.state';
 
 
@@ -38,6 +39,7 @@ export const appConfig: ApplicationConfig = {
     },
     provideAnimationsAsync(),
     provideAnimations(),
+    provideMarkdown(),
     provideHttpClient(withInterceptorsFromDi()),
     {
       provide: HTTP_INTERCEPTORS,
