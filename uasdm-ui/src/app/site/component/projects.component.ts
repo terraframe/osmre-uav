@@ -6,7 +6,6 @@ import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, TemplateRef, in
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BsModalService } from "ngx-bootstrap/modal";
 import { BsModalRef } from "ngx-bootstrap/modal";
-import { v4 as uuid } from "uuid";
 import { Map, LngLatBounds, NavigationControl, AttributionControl, Popup } from "maplibre-gl";
 
 import { Observable, Subject } from "rxjs";
@@ -70,7 +69,7 @@ import { ImagePreviewModalComponent } from "./modal/image-preview-modal.componen
 import { ImageSetService } from "@site/service/image-set.service";
 import { HttpParams } from "@angular/common/http";
 import { Store } from "@ngrx/store";
-import { createSetLayer, getImageSets, getMapLayers, MapActions } from "src/app/state/map.state";
+import { createSetLayer, getCollection, getImageSets, getMapLayers, getVisible, MapActions } from "src/app/state/map.state";
 
 const enum PANEL_TYPE {
   SITE = 0,
@@ -96,6 +95,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   private store = inject(Store);
 
   mapLayers$: Observable<ToggleableLayer[]> = this.store.select(getMapLayers);
+  collection$: Observable<StacCollection> = this.store.select(getCollection);
+  visible$: Observable<boolean> = this.store.select(getVisible);
 
 
   // imageToShow: any;
@@ -286,7 +287,18 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {
 
     this.mapLayers$.pipe(takeUntilDestroyed()).subscribe((mapLayers) => this.setMapLayers(mapLayers));
-    // this.sets$.pipe(takeUntilDestroyed()).subscribe((sets) => this.sets = sets);
+    this.collection$.pipe(takeUntilDestroyed()).subscribe((collection) => this.handleCollectionChange(collection));
+    this.visible$.pipe(takeUntilDestroyed()).subscribe((visible) => {
+      if (this.map != null) {
+        // console.log('Visibility', visible)
+        try {
+          this.map.setLayoutProperty('collection', "visibility", visible ? 'visible' : 'none');
+        }
+        catch (e) {
+          // Ignore
+        }
+      }
+    });
 
 
     this.subject = new Subject();
@@ -424,7 +436,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.addLayers();
-
 
     this.refreshMapPoints(true);
 
@@ -600,6 +611,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         "fill-color": "grey",
         "fill-opacity": 0.3,
         "fill-outline-color": "black"
+      },
+      layout: {
+        visibility: 'none'
       }
     });
 
@@ -712,7 +726,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // Reload the item layers
-    this.handleCollectionChange({ visible: false, collection: this.collection });
+    // this.handleCollectionChange({ visible: false, collection: this.collection });
   }
 
   handleExtentChange(e: any): void {
@@ -1313,6 +1327,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (easeTo && node != null && node.geometry != null && node.geometry.type === "Point") {
       //this.map.fitBounds(this.allPointsBounds, { padding: 50 });
+      // console.log('[Select Node] Ease To:', node)
 
       this.map.easeTo({
         center: node.geometry.coordinates,
@@ -1450,6 +1465,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
       if (node.geometry != null && node.geometry.type === "Point") {
         //this.map.fitBounds(this.allPointsBounds, { padding: 50 });
+
+        // console.log('[Back] Ease To:', node)
 
         this.map.easeTo({
           center: node.geometry.coordinates,
@@ -1811,6 +1828,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
           const env = envelope(result.envelope);
           const bounds = bbox(env) as [number, number, number, number];
 
+          // console.log('[handleHierarchyClick] FitBounds:', bounds)
+
           this.map.fitBounds(bounds, {
             padding: 20
           });
@@ -1983,42 +2002,33 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     (<any>this.map.getSource("items")).setData(featureCollection(features));
   }
 
-  handleCollectionChange(event: { visible: boolean, collection: StacCollection }): void {
+  handleCollectionChange(collection: StacCollection): void {
 
-    const { collection, visible } = event;
+    if (this.map != null) {
 
 
-    if (collection != null && collection.extent.spatial != null && collection.extent.spatial.bbox.length > 0) {
+      if (collection != null && collection.extent.spatial != null && collection.extent.spatial.bbox.length > 0) {
 
-      // Setup the bbox information
-      for (let i = 1; i < collection.links.length; i++) {
-        collection.links[i].bbox = collection.extent.spatial.bbox[i];
-        collection.links[i].id = uuid();
+        // Setup the map layer
+        const collectionBbox: any = collection.extent.spatial.bbox[0];
+
+        // Update the collection layer
+        (<any>this.map.getSource("collection")).setData(featureCollection([bboxPolygon(collectionBbox)]));
+
+        // console.log('[collectionChange] FitBounds:', collectionBbox)
+
+        // this.map.fitBounds(collectionBbox);
+      }
+      else {
+        (<any>this.map.getSource("collection")).setData(featureCollection([]));
       }
 
-      // Setup the map layer
-      const collectionBbox: any = collection.extent.spatial.bbox[0];
+      this.collection = collection;
 
-      // Update the collection layer
-      (<any>this.map.getSource("collection")).setData(featureCollection([bboxPolygon(collectionBbox)]));
 
-      this.map.fitBounds(collectionBbox);
+      this.buildItemsLayer();
     }
-    else {
-      (<any>this.map.getSource("collection")).setData(featureCollection([]));
-    }
-
-    this.collection = collection;
-
-    this.map.setLayoutProperty('collection', "visibility", visible ? 'visible' : 'none');
-
-    this.buildItemsLayer();
   }
-
-  handleToggleCollectionVisibility(visible: boolean): void {
-    this.map.setLayoutProperty('collection', "visibility", visible ? 'visible' : 'none');
-  }
-
 
   handleProductsChange(productViews: CollectionProductView[]): void {
 
@@ -2082,12 +2092,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   handleViewExtent(link: StacLink): void {
     if (link.bbox != null) {
+      // console.log('[handleViewExtent] FitBounds:', link.bbox)
+
       this.map.fitBounds(<any>link.bbox);
     }
   }
 
   handleGotoExtent(layer: ToggleableLayer): void {
     if (layer.type === ToggleableLayerType.KNOWSTAC) {
+      // console.log('[handleGotoExtent] KnowStac FitBounds:', layer.item.bbox)
+
       this.map.fitBounds(<any>layer.item.bbox);
     }
     else if (layer.type === ToggleableLayerType.PRODUCT) {
@@ -2097,6 +2111,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         let bbox = product.boundingBox;
 
         let bounds = new LngLatBounds([bbox[0], bbox[2]], [bbox[1], bbox[3]]);
+
+        // console.log('[handleGotoExtent] Product FitBounds:', bounds)
 
         this.map.fitBounds(bounds, { padding: 50 });
       }

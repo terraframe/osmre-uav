@@ -1,8 +1,10 @@
 import { createActionGroup, props, createReducer, on, createFeatureSelector, createSelector, emptyProps } from "@ngrx/store";
 // @ts-ignore
-import { ToggleableLayer, ToggleableLayerType } from "@site/model/layer";
+import { StacCollection, StacItem, StacLink, ToggleableLayer, ToggleableLayerType } from "@site/model/layer";
 import { ImageSet } from "@site/model/management";
 import * as turf from '@turf/turf';
+import { v4 as uuid } from "uuid";
+import * as lodash from 'lodash';
 
 export const MapActions = createActionGroup({
     source: 'map',
@@ -15,6 +17,10 @@ export const MapActions = createActionGroup({
         'Remove Image Set': props<{ id: string }>(),
         'Toggle Set': props<{ set: ImageSet }>(),
         'Toggle Visibility': props<{ layer: ToggleableLayer }>(),
+        'Set Collection': props<{ collection: StacCollection }>(),
+        'Toggle Link Item': props<{ link: StacLink, item?: StacItem }>(),
+        'Set Link Item': props<{ link: StacLink, item?: StacItem }>(),
+        'Toggle Collection Visibility': emptyProps(),
         'Clear': emptyProps()
     },
 });
@@ -24,12 +30,16 @@ export interface MapStateModel {
     mapLayers: ToggleableLayer[];
     sets: ImageSet[];
     routeSet: string;
+    collection: StacCollection | null;
+    visible: boolean;
 }
 
 export const initialState: MapStateModel = {
     mapLayers: [],
     sets: [],
-    routeSet: ""
+    routeSet: "",
+    collection: null,
+    visible: false
 }
 
 export function createSetLayer(set: ImageSet): ToggleableLayer {
@@ -57,6 +67,60 @@ export function createSetLayer(set: ImageSet): ToggleableLayer {
 export const mapReducer = createReducer(
     initialState,
 
+    on(MapActions.setLinkItem, (state, { link, item }) => {
+
+        const links = [...state.collection.links]
+
+        const index = links.findIndex(s => s.id === link.id);
+
+        if (index !== -1) {
+            links[index] = { ...link, item: item };
+        }
+
+        return {
+            ...state,
+            collection: { ...state.collection, links }
+        };
+    }),
+    on(MapActions.toggleCollectionVisibility, (state) => {
+        return {
+            ...state,
+            visible: !state.visible
+        };
+
+    }),
+    on(MapActions.toggleLinkItem, (state, { link, item }) => {
+
+        const links = [...state.collection.links]
+
+        const index = links.findIndex(s => s.id === link.id);
+
+        if (index !== -1) {
+            links[index] = { ...link, open: !link.open, item: item != null ? item : link.item };
+        }
+
+        return {
+            ...state,
+            collection: { ...state.collection, links }
+        };
+    }),
+    on(MapActions.setCollection, (state, params) => {
+
+        const collection = lodash.cloneDeep(params.collection);
+
+        // Setup the bbox information
+        for (let i = 1; i < collection.links.length; i++) {
+            collection.links[i].bbox = collection.extent.spatial.bbox[i];
+            collection.links[i].id = uuid();
+        }
+
+
+        return {
+            ...state,
+            collection,
+            visible: false
+        };
+    }),
     on(MapActions.setMapLayers, (state, { mapLayers }) => {
 
         return {
@@ -80,6 +144,22 @@ export const mapReducer = createReducer(
     on(MapActions.removeMapLayer, (state, { id }) => {
 
         const mapLayers = state.mapLayers.filter(f => f.id !== id)
+
+        // Update the collection
+        if (state.collection != null) {
+            const links = [...state.collection.links]
+                .filter(l => l.item != null && l.item.id === id)
+                .map(link => {
+                    const item = { ...link.item, enabled: false }
+                    return { ...link, item }
+                });
+
+            return {
+                ...state,
+                mapLayers,
+                collection: { ...state.collection, links }
+            };
+        }
 
         return {
             ...state,
@@ -190,4 +270,12 @@ export const getMapLayers = createSelector(selector, (s) => {
 
 export const getImageSets = createSelector(selector, (s) => {
     return s.sets;
+});
+
+export const getCollection = createSelector(selector, (s) => {
+    return s.collection;
+});
+
+export const getVisible = createSelector(selector, (s) => {
+    return s.visible;
 });
