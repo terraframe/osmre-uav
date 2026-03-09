@@ -108,10 +108,12 @@ export const mapReducer = createReducer(
 
         const collection = lodash.cloneDeep(params.collection);
 
-        // Setup the bbox information
-        for (let i = 1; i < collection.links.length; i++) {
-            collection.links[i].bbox = collection.extent.spatial.bbox[i];
-            collection.links[i].id = uuid();
+        if (collection != null) {
+            // Setup the bbox information
+            for (let i = 1; i < collection.links.length; i++) {
+                collection.links[i].bbox = collection.extent.spatial.bbox[i];
+                collection.links[i].id = uuid();
+            }
         }
 
 

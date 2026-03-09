@@ -2015,9 +2015,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
         // Update the collection layer
         (<any>this.map.getSource("collection")).setData(featureCollection([bboxPolygon(collectionBbox)]));
 
-        // console.log('[collectionChange] FitBounds:', collectionBbox)
+        // if (this.collection == null || this.collection.id !== collection.id) {
+        //   console.log('[collectionChange] FitBounds:', collectionBbox)
 
-        // this.map.fitBounds(collectionBbox);
+        //   this.map.fitBounds(collectionBbox);
+        // }
       }
       else {
         (<any>this.map.getSource("collection")).setData(featureCollection([]));
