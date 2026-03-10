@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
@@ -41,6 +41,7 @@ import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Product;
+import gov.geoplatform.uasdm.graph.ImageSet;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.model.CollectionIF;
@@ -412,6 +413,22 @@ public abstract class Converter<T extends UasComponentIF>
     return view;
   }
 
+  public static ImageSetView toView(ImageSet set, List<UasComponentIF> components)
+  {
+    final SessionIF session = Session.getCurrentSession();
+
+    if (!session.checkTypeAccess(Operation.READ, set.getMdClass()))
+    {
+      throw new ReadPermissionException("User does not have read access", (ComponentIF) set, session.getUser());
+    }
+
+    ImageSetView view = new ImageSetView();
+
+    populate(view, set, components);
+
+    return view;
+  }
+
   protected static void populate(ProductView view, ProductIF product, List<UasComponentIF> components)
   {
     List<SiteItem> list = new LinkedList<SiteItem>();
@@ -424,9 +441,9 @@ public abstract class Converter<T extends UasComponentIF>
     UasComponentIF component = components.size() > 0 ? components.get(components.size() - 1) : null;
 
     final String s3Loc = component != null ? component.getS3location(product, ODMZipPostProcessor.POTREE) : "";
-    
+
     List<DocumentIF> docs = product.getDocuments();
-    
+
     boolean hasPointcloud = docs.stream().anyMatch(d -> d.getS3location().endsWith(".copc.laz"));
     hasPointcloud = hasPointcloud || RemoteFileFacade.objectExists(s3Loc + "metadata.json") || RemoteFileFacade.objectExists(s3Loc + "ept.json");
     hasPointcloud = hasPointcloud || RemoteFileFacade.objectExists(component != null ? component.getS3location(product, PointcloudService.LEGACY_POTREE_SUPPORT) : "" + "cloud.js");
@@ -501,6 +518,28 @@ public abstract class Converter<T extends UasComponentIF>
     }
   }
 
+  protected static void populate(ImageSetView view, ImageSet set, List<UasComponentIF> components)
+  {
+    List<SiteItem> list = new LinkedList<SiteItem>();
+
+    for (UasComponentIF component : components)
+    {
+      list.add(Converter.toSiteItem(component, false));
+    }
+
+
+    view.setComponents(list);
+    view.setId(set.getOid());
+    view.setName(set.getName());
+    view.setPublished(set.isPublished());
+    view.setLocked(set.isLocked());
+    view.setBoundingBox(set.getBoundingBox());
+
+    List<DocumentIF> mappables = set.getDocuments();
+    view.setDocuments(mappables.stream().map(d -> DocumentView.fromDocument(d)).collect(Collectors.toList()));
+
+  }
+
   public static ProductDetailView toDetailView(ProductIF product, List<UasComponentIF> components, List<DocumentIF> generated, Integer pageNumber, Integer pageSize)
   {
     final SessionIF session = Session.getCurrentSession();
@@ -517,9 +556,9 @@ public abstract class Converter<T extends UasComponentIF>
     Page<JSONWrapper> page = product.getGeneratedFromDocuments(pageNumber, pageSize).map(r -> {
       return new JSONWrapper(r.toJSON());
     });
-    
+
     product.getMetadata().ifPresent(metadata -> {
-      
+
       view.setPilotName(metadata.getPocName());
 
       Sensor sensor = metadata.getSensor();

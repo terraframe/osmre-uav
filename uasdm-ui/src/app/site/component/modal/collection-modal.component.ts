@@ -11,7 +11,7 @@ import { Subject } from 'rxjs';
 
 import { ErrorHandler, BasicConfirmModalComponent } from '@shared/component';
 
-import { SiteEntity, SiteObjectsResultSet } from '@site/model/management';
+import { ImageSet, SiteEntity, SiteObjectsResultSet } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 import { MetadataService } from '@site/service/metadata.service';
 import { MetadataModalComponent } from './metadata-modal.component';
@@ -39,6 +39,10 @@ import { SafeHtmlPipe } from '@shared/pipe/safe-html.pipe';
 import { IdmDatePipe } from '@shared/pipe/idmdate.pipe';
 import { WebsocketService } from '@shared/service/websocket.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { CreateImageSetModalComponent } from './create-image-set-modal.component';
+import { ImageSetPageComponent } from './image-set-page.component';
+import { ContextMenuModule } from '@perfectmemory/ngx-contextmenu';
+import { ImageSetService } from '@site/service/image-set.service';
 
 @Component({
 	standalone: true,
@@ -52,7 +56,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 		slideInLeftOnEnterAnimation(),
 		slideInRightOnEnterAnimation(),
 	],
-	imports: [NgIf, RouterLink, NgFor, TabsetComponent, TabDirective, NgClass, ArtifactUploadComponent, ArtifactPageComponent, NgxPaginationModule, SafeHtmlPipe, IdmDatePipe]
+	imports: [NgIf, RouterLink, NgFor, TabsetComponent, TabDirective, NgClass, ArtifactUploadComponent, ArtifactPageComponent, ImageSetPageComponent, NgxPaginationModule, SafeHtmlPipe, IdmDatePipe, ContextMenuModule]
 })
 export class CollectionModalComponent implements OnInit, OnDestroy {
 	entity: SiteEntity;
@@ -76,6 +80,8 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	tabName: string;
 	showOrthoRerunMessage: boolean = false;
 	canReprocessImagery: boolean = false;
+	sets: ImageSet[] = [];
+
 
 	constPageSize: number = 25;
 
@@ -94,6 +100,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	constructor(
 		private service: ManagementService,
 		private metadataService: MetadataService,
+		private iService: ImageSetService,
 		private modalService: BsModalService,
 		public bsModalRef: BsModalRef,
 		private websocketService: WebsocketService,
@@ -140,6 +147,12 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		this.onSelect("image");
 
 		this.processable = this.metadataService.isProcessable(entity.type);
+
+		this.iService.list(this.entity.id).then(sets => {
+			this.sets = sets;
+		}).catch((err: HttpErrorResponse) => {
+			this.error(err);
+		});
 	}
 
 	labelForFormat(format: string) {
@@ -264,7 +277,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		return false;
 	}
 
-	toggleExcludeImage(event: any, image: any): void {
+	toggleExcludeImage(image: SiteEntity): void {
 		this.service.setExclude(image.id, !image.exclude).then(result => {
 			image.exclude = result.exclude;
 		});
@@ -355,6 +368,18 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		});
 		confirmModalRef.content.init(this.entity);
 	}
+
+	handleAssignImageSet(item: SiteEntity): void {
+
+		const confirmModalRef = this.modalService.show(CreateImageSetModalComponent, {
+			animated: true,
+			backdrop: true,
+			ignoreBackdropClick: true,
+			'class': 'confirmation-modal modal-xl'
+		});
+		confirmModalRef.content.init(this.entity, item, this.sets, (set) => this.handleImageSetUpdate(set));
+	}
+
 
 
 	handleDownload(): void {
@@ -455,6 +480,26 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 
 		this.clipboard.copy(window.location.href);
 	}
+
+	handleImageSetUpdate(set: ImageSet): void {
+
+		const index = this.sets.findIndex(s => s.id === set.id);
+
+		if (index == -1) {
+			this.sets.push(set);
+		} else {
+			this.sets[index] = set;
+		}
+	}
+
+	handleImageSetRemove(set: ImageSet): void {
+		const index = this.sets.findIndex(s => s.id === set.id);
+
+		if (index != -1) {
+			this.sets.splice(index, 1);
+		}
+	}
+
 
 	error(err: HttpErrorResponse): void {
 		this.message = ErrorHandler.getMessageFromError(err);

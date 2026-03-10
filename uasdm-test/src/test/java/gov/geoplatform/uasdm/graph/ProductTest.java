@@ -343,7 +343,10 @@ public class ProductTest extends Area51DataTest
     Assert.assertEquals(collection.getName(), properties.getTitle());
     Assert.assertEquals(collection.getName(), properties.getCollection());
     Assert.assertEquals(collection.getDescription(), properties.getDescription());
+<<<<<<< HEAD
+=======
     Assert.assertEquals(product.getLastUpdateDate(), properties.getDatetime());
+>>>>>>> refs/remotes/origin/master
     Assert.assertEquals(sensor.getName(), properties.getSensor());
     Assert.assertEquals(uav.getPlatform().getName(), properties.getPlatform());
     Assert.assertEquals(uav.getFaaNumber(), properties.getFaaNumber());

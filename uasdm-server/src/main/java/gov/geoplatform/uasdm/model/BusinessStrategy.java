@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.model;
 
@@ -30,8 +30,9 @@ import gov.geoplatform.uasdm.bus.Product;
 import gov.geoplatform.uasdm.bus.Project;
 import gov.geoplatform.uasdm.bus.Site;
 import gov.geoplatform.uasdm.bus.UasComponent;
+import gov.geoplatform.uasdm.graph.ImageSet;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
-import gov.geoplatform.uasdm.view.ProductCriteria;
+import gov.geoplatform.uasdm.view.CollectionCriteria;
 
 public class BusinessStrategy implements ComponentStrategy
 {
@@ -129,7 +130,19 @@ public class BusinessStrategy implements ComponentStrategy
   }
 
   @Override
-  public List<ComponentProductDTO> getProducts(ProductCriteria criteria)
+  public List<ComponentProductDTO> getProducts(CollectionCriteria criteria)
+  {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public ImageSet getImageSet(String oid)
+  {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public List<ComponentImageSet> getImageSets(CollectionCriteria criteria)
   {
     throw new UnsupportedOperationException();
   }

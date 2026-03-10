@@ -6,9 +6,6 @@ import { Injectable } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 
 
-import { EventService } from '@shared/service/event.service';
-
-import { environment } from 'src/environments/environment';
 import { StacCollection, StacItem, StacProperty } from '@site/model/layer';
 import { ConfigurationService } from '@core/service/configuration.service';
 import { firstValueFrom } from 'rxjs';

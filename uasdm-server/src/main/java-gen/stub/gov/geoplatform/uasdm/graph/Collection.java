@@ -70,6 +70,7 @@ import gov.geoplatform.uasdm.cog.CogPreviewParams;
 import gov.geoplatform.uasdm.cog.TiTillerProxy;
 import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.ComponentImageSet;
 import gov.geoplatform.uasdm.model.ComponentWithAttributes;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
@@ -780,6 +781,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     return product;
   }
 
+  
   public static java.util.Collection<CollectionIF> getMissingMetadata(Integer pageNumber, Integer pageSize)
   {
     SingleActor singleActor = GeoprismUser.getCurrentUser();
@@ -874,6 +876,13 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
     UasComponentIF component = ImageryWorkflowTaskIF.createUasComponent(selections);
 
     return component.getOid();
+  }
+  
+  @Override
+  public List<ComponentImageSet> getDerivedImageSets(String sortField, String sortOrder)
+  {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }

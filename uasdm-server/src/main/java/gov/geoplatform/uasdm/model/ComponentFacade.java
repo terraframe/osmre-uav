@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.model;
 
@@ -21,8 +21,9 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import gov.geoplatform.uasdm.graph.ImageSet;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
-import gov.geoplatform.uasdm.view.ProductCriteria;
+import gov.geoplatform.uasdm.view.CollectionCriteria;
 
 public class ComponentFacade
 {
@@ -103,9 +104,19 @@ public class ComponentFacade
     return STRATEGY.bbox();
   }
 
-  public static List<ComponentProductDTO> getProducts(ProductCriteria criteria)
+  public static List<ComponentProductDTO> getProducts(CollectionCriteria criteria)
   {
     return STRATEGY.getProducts(criteria);
+  }
+
+  public static ImageSet getImageSet(String oid)
+  {
+    return STRATEGY.getImageSet(oid);
+  }
+
+  public static List<ComponentImageSet> getImageSets(CollectionCriteria criteria)
+  {
+    return STRATEGY.getImageSets(criteria);
   }
 
 }

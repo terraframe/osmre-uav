@@ -24,7 +24,7 @@ import org.json.JSONObject;
 
 import gov.geoplatform.uasdm.Util;
 
-public class ProductCriteria
+public class CollectionCriteria
 {
   public static class Condition
   {
@@ -145,7 +145,7 @@ public class ProductCriteria
 
   private String              sortOrder;
 
-  public ProductCriteria()
+  public CollectionCriteria()
   {
     this.type = SITE;
     this.conditions = new LinkedList<Condition>();
@@ -226,14 +226,14 @@ public class ProductCriteria
     this.sortOrder = sortOrder;
   }
 
-  public static ProductCriteria deserialize(String jsonString)
+  public static CollectionCriteria deserialize(String jsonString)
   {
     return deserialize(new JSONObject(jsonString));
   }
 
-  public static ProductCriteria deserialize(JSONObject object)
+  public static CollectionCriteria deserialize(JSONObject object)
   {
-    ProductCriteria criteria = new ProductCriteria();
+    CollectionCriteria criteria = new CollectionCriteria();
 
     if (object.has("type"))
     {

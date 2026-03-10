@@ -32,11 +32,13 @@ import com.runwaysdk.resource.ApplicationFileResource;
 import com.runwaysdk.system.Actor;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.graph.ImageSet;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.Artifact;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
+import gov.geoplatform.uasdm.view.AssignImageSetView;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 
 public interface UasComponentIF extends ComponentWithAttributes
@@ -154,4 +156,10 @@ public interface UasComponentIF extends ComponentWithAttributes
   public List<Pair<ComponentWithAttributes, List<AttributeType>>> getCompositeAttributes();
 
   public void regenerateMetadata();
+
+  public List<ComponentImageSet> getDerivedImageSets(String sortField, String sortOrder);
+
+  ImageSet createImageSetIfNotExist(AssignImageSetView view);
+
+  public List<ImageSet> getImageSets();
 }

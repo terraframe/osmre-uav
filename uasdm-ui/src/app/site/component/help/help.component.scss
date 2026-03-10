@@ -1,0 +1,109 @@
+.help-page {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.help-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 1rem;
+    gap: 0.75rem;
+}
+
+organization-field {
+    flex-grow: 1;
+}
+
+.icon-button {
+    border: 1px solid #ccc;
+    background: white;
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+}
+
+.icon-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f5f5f5;
+    border-color: #ddd;
+}
+
+.icon-button:hover {
+    background: #f5f5f5;
+}
+
+.editor-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.action-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 0.5rem 0.9rem;
+    cursor: pointer;
+    background: white;
+}
+
+.action-button:hover:not(:disabled) {
+    background: #f5f5f5;
+}
+
+.action-button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.markdown-editor {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.markdown-textarea {
+    width: 100%;
+    min-height: 600px;
+    resize: vertical;
+    font-family: monospace;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.markdown-preview {
+    position: relative;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    background: #fafafa;
+    overflow: auto;
+}
+
+.preview-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: rotate(-45deg);
+    font-style: italic;
+    color: rgba(1, 1, 1, 0.2);
+}
+
+.markdown-view {
+    // min-height: 300px;
+}
+
+.admin-editor-indicator {
+    padding: 1rem;
+    border: 1px dashed #ccc;
+    border-radius: 6px;
+    color: #666;
+    background: #fafafa;
+}

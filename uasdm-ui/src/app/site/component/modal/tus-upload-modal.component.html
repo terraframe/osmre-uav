@@ -173,7 +173,7 @@
                   <th>Formats</th>
                 </tr>
               </thead>
-              <tbody *ngIf="uploadTarget === 'raw'">
+              <tbody>
                 <tr *ngFor="let row of supportedRawFormats">
                   <td>{{ row.type }}</td>
                   <td>{{ row.formats }}</td>

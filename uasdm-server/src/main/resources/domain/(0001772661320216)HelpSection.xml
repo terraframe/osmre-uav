@@ -1,0 +1,36 @@
+<version xsi:noNamespaceSchemaLocation="classpath:com/runwaysdk/resources/xsd/version.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <doIt>
+    <create>
+      <mdVertex name="gov.geoplatform.uasdm.doc.HelpPageContent">
+        <attributes>
+          <graphReference name="organization" type="net.geoprism.registry.graph.GraphOrganization" required="false" label="Organization" indexType="unique index" />
+          <text name="markdown"></text>
+        </attributes>
+      </mdVertex>
+    </create>
+    <update></update>
+    <permissions>
+	    <role roleName="geoprism.admin.Administrator">
+	      <grant>
+	        <mdBusinessPermission type="gov.geoplatform.uasdm.doc.HelpPageContent">
+	          <operation name="ALL" />
+	        </mdBusinessPermission>
+	      </grant>
+	    </role>
+	    <!--
+	    <role roleName="geoprism.admin.DashboardBuilder">
+	      <grant>
+	        <mdBusinessPermission type="gov.geoplatform.uasdm.doc.HelpPageContent">
+	          <operation name="ALL" />
+	        </mdBusinessPermission>
+	      </grant>
+	    </role>
+	    -->
+	</permissions>
+  </doIt>
+  <undoIt>
+    <delete>
+      <object key="gov.geoplatform.uasdm.doc.HelpPageContent" type="com.runwaysdk.system.metadata.MdVertex"/>
+    </delete>
+  </undoIt>
+</version>

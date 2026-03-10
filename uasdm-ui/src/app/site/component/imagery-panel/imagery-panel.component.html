@@ -27,9 +27,9 @@
                         <div class="card card-default">
                             <div class="card-body">
                                 <!-- Know STAC Layer-->
-                                <ng-container *ngIf="layer.type === 2">
+                                <ng-container *ngIf="layer.type === ToggleableLayerType.KNOWSTAC">
                                     <h5 class="card-title" style="color:#a0a0a0">
-                                        {{layer.layerName}}
+                                        {{layer.layerName}} (GeoPlatform Image)
                                     </h5>
 
                                     <span class="thumbnail">
@@ -40,10 +40,10 @@
                                 </ng-container>
 
                                 <!-- Product Layer-->
-                                <ng-container *ngIf="layer.type === 1">
+                                <ng-container *ngIf="layer.type === ToggleableLayerType.PRODUCT">
 
                                     <h5 class="card-title" style="color:#a0a0a0">
-                                        {{layer.layerName}} - {{layer.asset.classification}}
+                                        {{layer.layerName}} - {{layer.asset.classification}} (Product)
                                     </h5>
 
                                     <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
@@ -59,6 +59,16 @@
                                             alt="Image">
                                     </span>
                                 </ng-container>
+
+                                <!-- Product Layer-->
+                                <ng-container *ngIf="layer.type === ToggleableLayerType.IMAGE_SET">
+
+                                    <h5 class="card-title" style="color:#a0a0a0">
+                                        {{layer.layerName}} (Image Set)
+                                    </h5>
+
+                                </ng-container>
+
 
                                 <div class="row">
                                     <div class="col-sm-4">
@@ -79,7 +89,7 @@
                                             Remove
                                         </a>
                                     </div>
-                                    <div class="col-sm-4">
+                                    <div class="col-sm-4" *ngIf="layer.type !== ToggleableLayerType.IMAGE_SET">
                                         <a (click)="handleGetInfo(layer)" title="View more information layer.">
                                             <i class="fa fa-info-circle product-icon"></i>
                                             Get Info

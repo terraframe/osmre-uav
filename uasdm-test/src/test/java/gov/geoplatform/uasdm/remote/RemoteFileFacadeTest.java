@@ -152,7 +152,11 @@ public class RemoteFileFacadeTest extends Area51DataTest
   @Request
   public void testDownloadRange()
   {
+<<<<<<< HEAD
+    String range = "Range: bytes=0-499";
+=======
     String range = "0-1000,10000";
+>>>>>>> refs/remotes/origin/master
     RemoteFileFacade.download("test.JPG", range);
 
     List<RemoteFileAction> actions = service.getActions();

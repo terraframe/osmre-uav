@@ -29,8 +29,12 @@ button.advanced-filter .fa {
   margin-right: 0.2rem;
 }
 
+.hover-color:hover {
+  color: #007276;
+}
+
 .fa-stack:hover .fa {
-  color: #00bfff;
+  color: #007276;
 }
 
 .inverse {
@@ -38,5 +42,13 @@ button.advanced-filter .fa {
 }
 
 .inverse:hover {
-  color: #00bfff;
+  color: #007276;
+}
+
+button.maplibregl-popup-close-button {
+  font-size: 20px;
+  width: 25px;
+  height: 25px;
+
+  background: white;
 }

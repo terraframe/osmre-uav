@@ -3,6 +3,19 @@
 
 
 -->
+<context-menu #imageMenu menuClass="top-level" style="z-index: 100000;">
+  <ng-template contextMenuItem let-item (execute)="handleDownloadFile($event.value)">
+    Download image
+  </ng-template>
+  <ng-template *ngIf="enableSelectableImages" contextMenuItem let-item (execute)="toggleExcludeImage($event.value)">
+    {{item.exclude ? 'Include image in processing' : 'Exclude image from processing'}}
+  </ng-template>
+  <ng-template *ngIf="enableSelectableImages" contextMenuItem let-item (execute)="handleAssignImageSet($event.value)">
+    Add to image set...
+  </ng-template>
+</context-menu>
+
+
 <div class="modal-body" style="padding-bottom: 0;" [@fadeInOnEnter]>
   <div>
     <div *ngIf="message != null" class="error-container">
@@ -183,15 +196,9 @@
                 <ul class="list-group list-group-horizontal flex-wrap">
                   <li
                     *ngFor="let item of page.results | paginate: { itemsPerPage: page.pageSize, currentPage: page.pageNumber, totalItems: page.count }"
-                    class="list-group-item col-3">
+                    class="list-group-item col-3" [contextMenu]="imageMenu" [contextMenuValue]="item">
                     <a class="d-block text-decoration-none text-reset mx-auto d-block"
                       [ngClass]="{'card-disabled' : item.exclude, 'non-clickable' : !enableSelectableImages}">
-                      <i class="image-action download fa fa-download float-end" (click)="handleDownloadFile(item)"
-                        title="Download image" style="cursor: pointer;"></i>
-                      <input type="checkbox" class="image-action exclude" *ngIf="enableSelectableImages"
-                        [checked]="item.exclude" (change)="toggleExcludeImage($event, item)"
-                        [title]="item.exclude ? 'Include image in processing' : 'Exclude image from processing'"
-                        style="cursor: pointer;" />
                       <figure class="figure ">
                         <img class="thumb figure-img img-fluid rounded" style="max-height: 150px"
                           (click)="previewImage(item)" [ngClass]="{'img-disabled' : item.exclude}"
@@ -319,6 +326,11 @@
               <artifact-page *ngIf="tabName === 'artifacts'" [entity]="entity" [processRunning]="processRunning"
                 (onError)="error($event)"></artifact-page>
             </tab>
+            <tab heading="image-sets" style="margin-top:10px;" (selectTab)="onSelect('image-sets')">
+              <image-set-page *ngIf="tabName === 'image-sets'" [sets]="sets" [entity]="entity"
+                [processRunning]="processRunning" (onUpdate)="handleImageSetUpdate($event)"
+                (onRemove)="handleImageSetRemove($event)" (onError)="error($event)"></image-set-page>
+            </tab>
           </tabset>
         </div>
       </div>
@@ -350,11 +362,11 @@
                   (click)="handleUpload()">
                   Upload
                 </button>
-
               </div>
               <div class="flex-fill"></div>
               <div>
                 <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
+
 
                 <button *ngIf="tabName === 'artifacts'" type="button" class="btn btn-secondary"
                   title="Create product group" [disabled]="processRunning" (click)="handleCreateProductGroup()"

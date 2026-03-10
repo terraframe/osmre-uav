@@ -46,7 +46,7 @@ import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.ODMRunView;
 import gov.geoplatform.uasdm.view.ProcessingRunView;
-import gov.geoplatform.uasdm.view.ProductCriteria;
+import gov.geoplatform.uasdm.view.CollectionCriteria;
 import gov.geoplatform.uasdm.view.ProductDetailView;
 import gov.geoplatform.uasdm.view.ProductView;
 import gov.geoplatform.uasdm.view.SiteObject;
@@ -94,13 +94,13 @@ public class ProductService
   }
 
   @Request(RequestType.SESSION)
-  public JSONArray getProducts(String sessionId, ProductCriteria criteria)
+  public JSONArray getProducts(String sessionId, CollectionCriteria criteria)
   {
     JSONArray array = new JSONArray();
 
     List<ComponentProductDTO> dtos = null;
 
-    if (criteria.getType().equals(ProductCriteria.SITE))
+    if (criteria.getType().equals(CollectionCriteria.SITE))
     {
       final UasComponentIF parent = ComponentFacade.getComponent(criteria.getId());
       dtos = parent.getDerivedProducts(criteria.getSortField(), criteria.getSortOrder());

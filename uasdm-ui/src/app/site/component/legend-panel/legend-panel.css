@@ -1,0 +1,10 @@
+.legend-panel {
+    background: #fff;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.legend-toggle:hover {
+    color: #007276;
+}

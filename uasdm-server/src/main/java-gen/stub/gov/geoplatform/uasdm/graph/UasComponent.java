@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -76,6 +76,7 @@ import gov.geoplatform.uasdm.command.IndexUpdateDocumentCommand;
 import gov.geoplatform.uasdm.command.ReIndexStacItemCommand;
 import gov.geoplatform.uasdm.command.RemoteFileDeleteCommand;
 import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.ComponentImageSet;
 import gov.geoplatform.uasdm.model.ComponentWithAttributes;
 import gov.geoplatform.uasdm.model.CompositeDeleteException;
 import gov.geoplatform.uasdm.model.DocumentIF;
@@ -91,6 +92,7 @@ import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.view.AdminCondition;
 import gov.geoplatform.uasdm.view.Artifact;
+import gov.geoplatform.uasdm.view.AssignImageSetView;
 import gov.geoplatform.uasdm.view.AttributeType;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.EqOrNullCondition;
@@ -894,6 +896,11 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     return this.getChildren(EdgeType.COMPONENT_HAS_PRODUCT, Product.class);
   }
 
+  public List<ImageSet> getImageSets()
+  {
+    return this.getChildren(EdgeType.COMPONENT_HAS_IMAGE_SET, ImageSet.class);
+  }
+
   public Integer getNumberOfProductGroups()
   {
     MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_PRODUCT);
@@ -907,7 +914,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
 
     return query.getSingleResult();
   }
-  
+
   public Integer getNumberOfProductArtifacts()
   {
     String chp = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_PRODUCT).getDBClassName();
@@ -1265,6 +1272,91 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     return Product.createIfNotExist(this, productName);
   }
 
+  @Override
+  public ImageSet createImageSetIfNotExist(AssignImageSetView view)
+  {
+    return ImageSet.createIfNotExist(this, view);
+  }
+
+  @Override
+  public List<ComponentImageSet> getDerivedImageSets(String sortField, String sortOrder)
+  {
+    sortField = sortField != null ? sortField : "name";
+    sortOrder = sortOrder != null ? sortOrder : "DESC";
+
+    HashMap<String, Object> parameters = new HashMap<String, Object>();
+    parameters.put("rid", this.getRID());
+
+    // String expand = "unionall(*, " + String.join(", ",
+    // this.buildProductExpandClause()) + ")";
+
+    List<String> descends = new ArrayList<String>();
+    List<String> clause = this.buildProductExpandClause();
+    for (int i = 0; i < clause.size(); ++i)
+    {
+      List<String> d2 = new ArrayList<String>();
+      for (int j = 0; j < clause.size() - i; ++j)
+      {
+        d2.add(clause.get(j));
+      }
+      descends.add(String.join(".", d2));
+    }
+    String expand = "unionall(*, " + String.join(",", descends) + ")";
+
+    final MdEdgeDAOIF mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_IMAGE_SET);
+
+    boolean hasMetadataSort = ( sortField.equals("sensor") || sortField.equals("serialNumber") || sortField.equals("faaNumber") );
+
+    StringBuilder statement = new StringBuilder();
+    statement.append("TRAVERSE OUT('" + mdEdge.getDBClassName() + "') FROM (");
+
+    if (hasMetadataSort)
+    {
+      String sortAttribute = "sensor.name";
+
+      if (sortField.equals("serialNumber"))
+      {
+        sortAttribute = "uav.serialNumber";
+      }
+      else if (sortField.equals("faaNumber"))
+      {
+        sortAttribute = "uav.faaNumber";
+      }
+
+      statement.append("  SELECT @rid FROM (\n");
+      statement.append("    SELECT @rid, first(out('collection_has_metadata'))." + sortAttribute + " AS sortBy FROM (\n");
+    }
+
+    statement.append("  SELECT FROM (");
+    statement.append("    SELECT EXPAND(" + expand + ")");
+    statement.append("    FROM :rid ");
+    statement.append("  )");
+
+    // Add the access criteria
+    addAccessFilter(parameters, statement);
+
+    if (sortField.equals("name"))
+    {
+      statement.append("  ORDER BY name " + sortOrder);
+    }
+    else if (sortField.equals("collectionDate"))
+    {
+      statement.append("  ORDER BY collectionDate " + sortOrder);
+    }
+    else if (hasMetadataSort)
+    {
+      statement.append(")\n");
+      statement.append("  ORDER BY sortBy " + sortOrder);
+      statement.append(")\n");
+    }
+
+    statement.append(")");
+
+    final GraphQuery<VertexObject> query = new GraphQuery<VertexObject>(statement.toString(), parameters);
+
+    return ComponentImageSet.process(query.getResults());
+  }
+
   public static <T extends UasComponent> Optional<T> getWithAccessControl(String oid)
   {
     HashMap<String, Object> parameters = new HashMap<String, Object>();
@@ -1344,7 +1436,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   {
     return this;
   }
-  
+
   @Override
   public boolean hasPIIConcern()
   {
