@@ -54,7 +54,7 @@ export class HelpComponent implements OnInit {
 
     public defaultMarkdownTemplate = `## [Bureau Name] Help Desk
 
-- **Help Desk URL:** [Help Desk Portal](https://example.gov/helpdesk)
+- **Help Desk URL:** [Help Desk Portal](https://www.markdownguide.org/cheat-sheet)
 - **Help Desk Email:** [helpdesk@example.gov](mailto:helpdesk@example.gov)
 - **Help Desk Phone:** [Optional Help Desk Phone Number]
 - **Support Hours:** [e.g. Monday-Friday, 8:00 AM-5:00 PM Mountain Time]
@@ -225,26 +225,26 @@ Below are bureau-specific documentation resources.
 
 ### Core Documentation
 
-- **[Document Title 1](https://example.gov/doc1)**  
+- **[Document Title 1](https://www.markdownguide.org/cheat-sheet)**  
   Short description of what this document covers and when users should reference it.
 
-- **[Document Title 2](https://example.gov/doc2)**  
+- **[Document Title 2](https://www.markdownguide.org/cheat-sheet)**  
   Short description of what this document covers and when users should reference it.
 
-- **[Document Title 3](https://example.gov/doc3)**  
+- **[Document Title 3](https://www.markdownguide.org/cheat-sheet)**  
   Short description of what this document covers and when users should reference it.
 
 ## Training Resources
 
 Use the following training resources to learn more about bureau processes, tools, and workflows.
 
-- **[Training Resource 1](https://example.gov/training1)**  
+- **[Training Resource 1](https://www.markdownguide.org/cheat-sheet)**  
   Short description of the training content.
 
-- **[Training Resource 2](https://example.gov/training2)**  
+- **[Training Resource 2](https://www.markdownguide.org/cheat-sheet)**  
   Short description of the training content.
 
-- **[Training Resource 3](https://example.gov/training3)**  
+- **[Training Resource 3](https://www.markdownguide.org/cheat-sheet)**  
   Short description of the training content.
 
 ## Additional Notes
