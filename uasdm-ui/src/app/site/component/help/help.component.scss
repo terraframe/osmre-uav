@@ -1,5 +1,6 @@
 .help-page {
-    padding: 1rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
 }
 
 .help-toolbar {
@@ -10,12 +11,23 @@
     gap: 0.75rem;
 }
 
+organization-field {
+    flex-grow: 1;
+}
+
 .icon-button {
     border: 1px solid #ccc;
     background: white;
     border-radius: 6px;
     padding: 0.5rem 0.75rem;
     cursor: pointer;
+}
+
+.icon-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f5f5f5;
+    border-color: #ddd;
 }
 
 .icon-button:hover {
@@ -67,6 +79,7 @@
 }
 
 .markdown-preview {
+    position: relative;
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 1rem;
@@ -74,6 +87,23 @@
     overflow: auto;
 }
 
+.preview-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: rotate(-45deg);
+    font-style: italic;
+    color: rgba(1, 1, 1, 0.2);
+}
+
 .markdown-view {
-    min-height: 300px;
+    // min-height: 300px;
+}
+
+.admin-editor-indicator {
+    padding: 1rem;
+    border: 1px dashed #ccc;
+    border-radius: 6px;
+    color: #666;
+    background: #fafafa;
 }

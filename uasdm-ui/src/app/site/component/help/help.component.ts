@@ -20,6 +20,7 @@ import { OrganizationFieldComponent } from '@shared/component/organization-field
 import { AuthService } from '@shared/service/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { CollapseModule } from 'ngx-bootstrap/collapse';
 
 const enum VIEW_MODE {
     FORM = 0,
@@ -31,7 +32,7 @@ const enum VIEW_MODE {
     selector: 'help',
     templateUrl: './help.component.html',
     styleUrls: ['./help.component.scss'],
-    imports: [CommonModule, FormsModule, UasdmHeaderComponent, MarkdownComponent, OrganizationFieldComponent]
+    imports: [CommonModule, FormsModule, CollapseModule, UasdmHeaderComponent, MarkdownComponent, OrganizationFieldComponent]
 })
 export class HelpComponent implements OnInit {
 
@@ -51,6 +52,206 @@ export class HelpComponent implements OnInit {
     public editMarkdown: string = '';
     public isSaving: boolean = false;
 
+    public defaultMarkdownTemplate = `## [Bureau Name] Help Desk
+
+- **Help Desk URL:** [Help Desk Portal](https://example.gov/helpdesk)
+- **Help Desk Email:** [helpdesk@example.gov](mailto:helpdesk@example.gov)
+- **Help Desk Phone:** [Optional Help Desk Phone Number]
+- **Support Hours:** [e.g. Monday-Friday, 8:00 AM-5:00 PM Mountain Time]
+- **Preferred Contact Method:** [Portal / Email / Phone / Any]
+
+## Help Desk Instructions
+
+Please choose the support method that best matches your need:
+
+- **Portal:** Use the help desk portal for the fastest tracking and resolution of tickets.
+- **Email:** Use email for bug reports, feature requests, and general questions.
+- **Phone:** Use phone support for urgent issues, if available.
+- **Any:** If no preferred method is required, use whichever is most convenient.
+
+Before submitting a request, please gather as much relevant information as possible, such as screenshots, URLs, error messages, and steps to reproduce the issue.
+
+## Support Request Templates
+
+Use the following templates when submitting requests to the help desk.
+
+<details>
+<summary>Bug Report Template</summary>
+
+**Subject:**  
+\`Bug Report: <short description of issue>\`
+
+**Body:**
+
+\`\`\`
+Summary
+- Briefly describe the issue in one sentence.
+
+Steps to reproduce
+1. Go to:
+2. Perform action:
+3. Expected result:
+4. Actual result:
+
+Expected behavior
+- What should have happened?
+
+Actual behavior
+- What happened instead?
+- Include error messages if applicable.
+
+Environment
+- Application URL or instance:
+- Application version:
+- OS:
+- Browser and version:
+- Network/VPN/proxy details (if relevant):
+
+Scope and impact
+- How often does the issue occur?
+- Does it block your workflow? (yes/no)
+- Who is affected?
+
+Attachments
+- Screenshots or screen recordings:
+- Relevant logs or console output:
+
+Additional context
+- Any configuration details, unusual circumstances, or related issues.
+
+Optional additional items
+- Issue default title:
+- Assignees:
+- Labels:
+\`\`\`
+
+</details>
+
+<details>
+<summary>Feature Request Template</summary>
+
+**Subject:**  
+\`Feature Request: <short description of request>\`
+
+**Body:**
+
+\`\`\`
+Issue: Feature request
+Suggest an idea that would improve this project
+
+Summary
+- Briefly describe the feature you would like added.
+
+User story
+- As a [type of user], I want [feature], so that [benefit].
+
+Problem / Job-to-be-done
+- What problem does this feature solve?
+- What workflow or goal is currently difficult or impossible?
+
+Proposed solution
+- Describe how you think the feature should work.
+- Include specific behaviors, inputs, outputs, or UI expectations.
+
+Why this solution?
+- What makes this option valuable or necessary?
+- Who benefits?
+
+Considered alternatives
+- Have you tried other approaches? Why did they not work?
+
+Impact / Priority
+- How important is this for your work? (e.g. low / medium / high)
+
+Additional context
+- Screenshots, URLs, or examples
+- Related tickets, integrations, or dependencies
+
+Optional additional items
+- Issue default title:
+- Assignees:
+- Labels: enhancement
+\`\`\`
+
+</details>
+
+<details>
+<summary>General Question Template</summary>
+
+**Subject:**  
+\`Question: <short description of question>\`
+
+**Body:**
+
+\`\`\`
+Issue: Question
+Ask for clarification or guidance
+
+Question
+- What is your question?
+
+Context
+- Where in the application are you?
+- What are you trying to accomplish?
+
+Steps taken so far
+1.
+2.
+3.
+
+What you expected to happen
+- Describe what you thought would happen
+
+What actually happened (if applicable)
+- Describe what you observed
+
+Relevant details (if any)
+- Screenshots or URLs:
+- Environment (OS / browser / version):
+
+Optional additional items
+- Issue default title:
+- Assignees:
+- Labels:
+\`\`\`
+
+</details>
+
+<br>
+
+## Documentation
+
+Below are bureau-specific documentation resources.
+
+### Core Documentation
+
+- **[Document Title 1](https://example.gov/doc1)**  
+  Short description of what this document covers and when users should reference it.
+
+- **[Document Title 2](https://example.gov/doc2)**  
+  Short description of what this document covers and when users should reference it.
+
+- **[Document Title 3](https://example.gov/doc3)**  
+  Short description of what this document covers and when users should reference it.
+
+## Training Resources
+
+Use the following training resources to learn more about bureau processes, tools, and workflows.
+
+- **[Training Resource 1](https://example.gov/training1)**  
+  Short description of the training content.
+
+- **[Training Resource 2](https://example.gov/training2)**  
+  Short description of the training content.
+
+- **[Training Resource 3](https://example.gov/training3)**  
+  Short description of the training content.
+
+## Additional Notes
+
+Add any bureau-specific policies, escalation guidance, onboarding notes, or special instructions here.
+`;
+
     constructor(private helpService: HelpService, private authService: AuthService) { }
 
     ngOnInit(): void {
@@ -59,26 +260,31 @@ export class HelpComponent implements OnInit {
     }
 
     onOrganizationChange(): void {
+        if (!this.data?.organization?.code)
+            return;
 
-        this.fetchData();
+        this.fetchData(true);
     }
 
-    fetchData() {
+    fetchData(andStartEdit: boolean = false) {
         let orgCode = this.data?.organization?.code;
 
         this.helpService.content(orgCode).subscribe(response => {
             this.data = response;
             this.renderedMarkdown = this.data.markdown;
 
-            this.showRenderedMarkdown = false;
-            setTimeout(() => {
-                this.showRenderedMarkdown = true;
-            },0);
+            if (andStartEdit)
+                this.startEdit();
+
+            // this.showRenderedMarkdown = false;
+            // setTimeout(() => {
+            //     this.showRenderedMarkdown = true;
+            // },0);
         });
     }
 
     startEdit(): void {
-        this.editMarkdown = this.data?.markdown ?? '';
+        this.editMarkdown = (this.data?.markdown == null || this.data?.markdown === '') ? this.defaultMarkdownTemplate : this.data?.markdown;
         this.isEditing = true;
     }
 
@@ -88,11 +294,9 @@ export class HelpComponent implements OnInit {
     }
 
     saveEdit(): void {
-        if (!this.data?.organization?.code) return;
-
         this.isSaving = true;
 
-        this.helpService.edit(this.data.organization.code, this.editMarkdown).subscribe({
+        this.helpService.edit(this.data?.organization?.code, this.editMarkdown).subscribe({
             next: () => {
                 if (this.data) {
                     this.data = {
