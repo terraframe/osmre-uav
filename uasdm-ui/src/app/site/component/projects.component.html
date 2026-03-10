@@ -411,10 +411,8 @@
       <!-- KNOWSTAC PANEL -->
       <ng-container *ngIf="panelType === 3">
 
-        <know-stac-panel [collection]="collection" [bounds]="bounds" [(properties)]="properties"
-          (collectionChange)="handleCollectionChange($event)" (onViewExtent)="handleViewExtent($event)"
-          (onToggleMapItem)="handleToggleMapItem($event)"
-          (onToggleVisibility)="handleToggleCollectionVisibility($event)" (close)="handleClosePanel()">
+        <know-stac-panel [bounds]="bounds" [(properties)]="properties" (onViewExtent)="handleViewExtent($event)"
+          (close)="handleClosePanel()">
         </know-stac-panel>
       </ng-container>
 

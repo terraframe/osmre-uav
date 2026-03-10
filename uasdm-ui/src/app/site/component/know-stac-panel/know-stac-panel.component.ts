@@ -2,15 +2,20 @@
 ///
 ///
 
-import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, Input, ViewEncapsulation, inject } from '@angular/core';
 
-import { StacCollection, StacItem, StacLink, StacProperty } from '@site/model/layer';
+import { StacCollection, StacItem, StacLink, StacProperty, ToggleableLayer, ToggleableLayerType } from '@site/model/layer';
 import { KnowStacService } from '@site/service/know-stac.service';
 import { LngLatBounds } from 'maplibre-gl';
 import { environment } from 'src/environments/environment';
 import { NgIf, NgFor, NgSwitch, NgSwitchCase, NgSwitchDefault, KeyValuePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BooleanFieldComponent } from '@shared/component/boolean-field/boolean-field.component';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { getCollection, MapActions } from 'src/app/state/map.state';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import * as lodash from 'lodash';
 
 
 @Component({
@@ -22,20 +27,17 @@ import { BooleanFieldComponent } from '@shared/component/boolean-field/boolean-f
 })
 export class KnowStacPanelComponent implements OnInit, OnDestroy {
 
+	private store = inject(Store);
+
+	collection$: Observable<StacCollection> = this.store.select(getCollection);
 
 	@Output() propertiesChange: EventEmitter<StacProperty[]> = new EventEmitter<StacProperty[]>();
 
-	@Output() collectionChange: EventEmitter<{ visible: boolean, collection: StacCollection }> = new EventEmitter<{ visible: boolean, collection: StacCollection }>();
-
 	@Output() onViewExtent: EventEmitter<StacLink> = new EventEmitter<StacLink>();
-
-	@Output() onToggleMapItem: EventEmitter<StacItem> = new EventEmitter<StacItem>();
-
-	@Output() onToggleVisibility: EventEmitter<boolean> = new EventEmitter<boolean>();
 
 	@Output() close: EventEmitter<void> = new EventEmitter<void>();
 
-	@Input() collection: StacCollection;
+	collection: StacCollection;
 
 	@Input() bounds: LngLatBounds = null;
 
@@ -48,6 +50,8 @@ export class KnowStacPanelComponent implements OnInit, OnDestroy {
 
 	constructor(private service: KnowStacService) {
 		this.context = environment.apiUrl;
+
+		this.collection$.pipe(takeUntilDestroyed()).subscribe((collection) => this.collection = lodash.cloneDeep(collection));
 	}
 
 	ngOnInit(): void {
@@ -66,24 +70,29 @@ export class KnowStacPanelComponent implements OnInit, OnDestroy {
 	}
 
 	handleClear(): void {
-		this.collectionChange.emit({ visible: false, collection: null });
+		this.store.dispatch(MapActions.setCollection({ collection: null }));
+
+		// this.collectionChange.emit({ visible: false, collection: null });
 	}
 
 	handleSearch(): void {
 		const bbox = this.bounds.toArray().flat();
 
 		this.service.search(bbox).then(collection => {
-			this.collectionChange.emit({ visible: this.visible, collection });
+
+			this.store.dispatch(MapActions.setCollection({ collection }));
+
+			// this.collectionChange.emit({ visible: this.visible, collection });
 		})
 	}
 
 	handleCardToggle(event, link: StacLink): void {
 		event.stopPropagation();
 
-		link.open = !link.open;
 
-		if (link.open && link.item == null) {
+		if (!link.open && link.item == null) {
 			this.service.item(link.href).then(item => {
+
 				item.enabled = false;
 
 				if (item.assets['thumbnail'] != null) {
@@ -93,17 +102,39 @@ export class KnowStacPanelComponent implements OnInit, OnDestroy {
 					item.thumbnail = item.assets['overview'].href;
 				}
 
-				link.item = item;
+				this.store.dispatch(MapActions.toggleLinkItem({ link, item }));
 			})
+		}
+		else {
+			this.store.dispatch(MapActions.toggleLinkItem({ link }));
 		}
 	}
 
-	handleToggleItem(item: StacItem): void {
+	handleToggleItem(link: StacLink): void {
+		const item = link.item;
 
 		item.enabled = !item.enabled;
 
-		this.onToggleMapItem.emit(item);
+		if (item.enabled) {
+
+			// Create the map layer from the StacItem
+			const layer: ToggleableLayer = {
+				id: item.id,
+				type: ToggleableLayerType.KNOWSTAC,
+				layerName: item.properties.title,
+				active: true,
+				item: item,
+			};
+
+			this.store.dispatch(MapActions.addMapLayer({ layer }));
+		}
+		else {
+			this.store.dispatch(MapActions.removeMapLayer({ id: item.id }));
+		}
+
+		this.store.dispatch(MapActions.setLinkItem({ link, item }));
 	}
+
 
 	handleGotoExtent(event, link: StacLink): void {
 		event.stopPropagation();
@@ -112,6 +143,6 @@ export class KnowStacPanelComponent implements OnInit, OnDestroy {
 	}
 
 	handleToggleVisibility(): void {
-		this.onToggleVisibility.emit(this.visible);
+		this.store.dispatch(MapActions.toggleCollectionVisibility());
 	}
 }
