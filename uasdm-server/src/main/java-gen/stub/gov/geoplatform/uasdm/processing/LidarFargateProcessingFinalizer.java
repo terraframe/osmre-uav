@@ -41,7 +41,7 @@ public class LidarFargateProcessingFinalizer extends FargateProcessingFinalizer
   }
   
   protected boolean alreadyHasCopc() {
-    DocumentIF laz = FargateProcessingTask.selectLazForProcessing(task.getComponentInstance());
+    DocumentIF laz = FargateRunConfiguration.selectLazForProcessing(task, task.getComponentInstance());
     
     // This works so long as we never allow them to store a non-copc format with this extension.
     return laz.getName().endsWith(".copc.laz");

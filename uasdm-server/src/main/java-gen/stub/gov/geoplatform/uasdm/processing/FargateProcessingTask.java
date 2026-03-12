@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -58,9 +57,9 @@ public class FargateProcessingTask extends FargateProcessingTaskBase implements 
   {
     try
     {
-      FargateTaskDefinition taskDef = taskForRequest();
+      FargateRunConfiguration runConfig = FargateRunConfiguration.configForTask(this);
       
-      JsonObject ecsResp = invokeFargate(excludes, taskDef);
+      JsonObject ecsResp = invokeFargate(excludes, runConfig);
       
       if (!"success".equals(ecsResp.get("status").getAsString()))
       {
@@ -72,13 +71,13 @@ public class FargateProcessingTask extends FargateProcessingTaskBase implements 
       }
 
       String taskArn = ecsResp.get("taskArn").getAsString();
-      ProcessingRun run = ProcessingRun.createAndApplyFor(this, taskArn, taskDef);
+      ProcessingRun run = ProcessingRun.createAndApplyFor(this, taskArn, runConfig);
 
       this.appLock();
       this.setProcessingRun(run);
       this.setStatus(ProcessingTaskStatus.RUNNING.getLabel());
       this.setTaskArn(ecsResp.get("taskArn").getAsString());
-      this.setTaskDefinitionArn(taskDef.getArn());
+      this.setTaskDefinitionArn(runConfig.getArn());
       
       // TODO : Runtime estimate?
 //      JSONObject estimate = new ODMRunService().estimateRuntimeInRequest(this.getImageryComponentOid(), this.getConfigurationJson());
@@ -271,40 +270,7 @@ public class FargateProcessingTask extends FargateProcessingTaskBase implements 
     return documents;
   }
   
-  public static DocumentIF selectLazForProcessing(UasComponentIF component) {
-    var documents = getRaw(component).stream()
-        .filter(d -> FilenameUtils.getExtension(d.getName()).equalsIgnoreCase("laz"))
-        .collect(Collectors.toList());
-    
-    if (documents.size() > 1) {
-      throw new RuntimeException("Expected a single laz file, but there were " + documents.size());
-    } else if (documents.size() == 0) {
-      throw new EmptyFileSetException();
-    }
-    
-    return documents.get(0);
-  }
-  
-  protected FargateTaskDefinition taskForRequest() {
-    long totalBytes = 0L;
-  
-    if (this.getConfiguration().isLidar()) {
-      var laz = selectLazForProcessing(this.getComponentInstance());
-  
-      totalBytes = laz.getFileSize();
-    } else {
-      for (var doc : getRaw(this.getComponentInstance())) {
-          totalBytes += doc.getFileSize();
-      }
-    }
-
-    long colSizeMb = totalBytes / (1024L * 1024L);
-    int sizeGb = (int) Math.min(colSizeMb, Integer.MAX_VALUE); // Guards against an overflow
-    
-    return FargateTaskDefinition.select(sizeGb);
-}
-  
-  public JsonObject invokeFargate(Set<String> excludes, FargateTaskDefinition taskDef)
+  public JsonObject invokeFargate(Set<String> excludes, FargateRunConfiguration taskDef)
   {
     UasComponent component = (UasComponent) this.getComponentInstance();
 
@@ -322,6 +288,9 @@ public class FargateProcessingTask extends FargateProcessingTaskBase implements 
     {
       ContainerOverride containerOverride = ContainerOverride.builder()
           .name(AppProperties.getFargateAutoscalerContainerName())
+          .cpu(taskDef.getCpu())
+          .memory(taskDef.getMemory())
+          .memoryReservation(taskDef.getMemory())
           .environment(
               KeyValuePair.builder().name("EXCLUDES").value(String.join(",", excludes)).build(),
               KeyValuePair.builder().name("JOB_ID").value(this.getOid()).build(),
@@ -334,6 +303,8 @@ public class FargateProcessingTask extends FargateProcessingTaskBase implements 
 
       TaskOverride overrides = TaskOverride.builder()
           .containerOverrides(containerOverride)
+          .memory(String.valueOf(taskDef.getMemory()))
+          .cpu(String.valueOf(taskDef.getCpu()))
           .build();
 
       AwsVpcConfiguration vpcConfig = AwsVpcConfiguration.builder()
@@ -415,7 +386,7 @@ public class FargateProcessingTask extends FargateProcessingTaskBase implements 
     if (status.getStatus().equals(TaskStatus.COMPLETED)) {
       storeResults(status);
     } else if (status.getStatus().equals(TaskStatus.ERROR)) {
-      FargateProcessingFinalizer.factory(this, status).finalize();
+      FargateProcessingFinalizer.factory(this, status).finalizeProcessing();
     }
     
     return status;
@@ -435,7 +406,7 @@ public class FargateProcessingTask extends FargateProcessingTaskBase implements 
     store.setProcessingRun(getProcessingRun());
     store.setProcessingJobId(this.getProcessingJobId());
     store.apply();
-    store.finalize(status);
+    store.finalizeProcessing(status);
   }
   
   public ProcessConfiguration getConfiguration()

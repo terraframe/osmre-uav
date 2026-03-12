@@ -16,8 +16,8 @@ public class FargateStoreTask extends FargateStoreTaskBase implements FargateTas
     super();
   }
   
-  public void finalize(TaskResult result) {
-    FargateProcessingFinalizer.factory(this, result).finalize();
+  public void finalizeProcessing(TaskResult result) {
+    FargateProcessingFinalizer.factory(this, result).finalizeProcessing();
   }
   
   public ProcessConfiguration getConfiguration()

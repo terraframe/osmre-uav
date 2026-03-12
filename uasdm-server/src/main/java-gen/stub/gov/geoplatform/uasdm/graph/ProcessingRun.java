@@ -13,7 +13,7 @@ import gov.geoplatform.uasdm.lidar.LidarProcessConfiguration;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.processing.FargateProcessingTask;
-import gov.geoplatform.uasdm.processing.FargateTaskDefinition;
+import gov.geoplatform.uasdm.processing.FargateRunConfiguration;
 
 public class ProcessingRun extends ProcessingRunBase
 {
@@ -98,7 +98,7 @@ public class ProcessingRun extends ProcessingRunBase
    * @param task
    * @return
    */
-  public static ProcessingRun createAndApplyFor(FargateProcessingTask task, String autoscaleResourceId, FargateTaskDefinition fargateTask)
+  public static ProcessingRun createAndApplyFor(FargateProcessingTask task, String autoscaleResourceId, FargateRunConfiguration fargateTask)
   {
     UasComponent component = (UasComponent) task.getComponentInstance();
     

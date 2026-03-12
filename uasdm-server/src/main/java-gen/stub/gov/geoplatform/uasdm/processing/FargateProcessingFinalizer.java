@@ -65,7 +65,7 @@ abstract public class FargateProcessingFinalizer
     }
   }
   
-  public void finalize() {
+  public void finalizeProcessing() {
     try {
       if (result.getStatus().equals(TaskStatus.COMPLETED))
       {
