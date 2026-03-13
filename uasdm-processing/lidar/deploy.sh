@@ -25,9 +25,11 @@ set -e
 [ -z "$UASDM_ECR_SECRET" ] && echo "UASDM_ECR_SECRET is null. Set this environment variable and then try running this script again." && exit 1;
 
 docker tag uasdm-processing-lidar:latest 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-processing-lidar:latest
+docker tag uasdm-processing-lidar:latest 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-processing-lidar:prod
 
 export AWS_ACCESS_KEY_ID=$UASDM_ECR_KEY
 export AWS_SECRET_ACCESS_KEY=$UASDM_ECR_SECRET
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 813324710591.dkr.ecr.us-east-1.amazonaws.com
 
 docker push 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-processing-lidar:latest
+docker push 813324710591.dkr.ecr.us-east-1.amazonaws.com/uasdm-processing-lidar:prod

@@ -43,19 +43,26 @@ public class SilvimetricProcessor extends ManagedDocument
   private LidarProcessConfiguration config;
   
   public static enum Metric {
-    TREE_CANOPY_COVER("tree_canopy_cover"),
-    GROUND_SURFACE_MODEL("ground_surface_model"),
-    TREE_STRUCTURE("tree_structure"),
-    TERRAIN_MODEL("terrain_model");
+    TREE_CANOPY_COVER("tree_canopy_cover", "m_classification_veg_density"),
+    GROUND_SURFACE_MODEL("ground_surface_model", "m_z_max"),
+    TREE_STRUCTURE("tree_structure", "m_z_diff"),
+    TERRAIN_MODEL("terrain_model", "m_z_min");
     
     private String name;
     
-    private Metric(String name) {
+    private String silvimetricName;
+    
+    private Metric(String name, String silvimetricName) {
       this.name = name;
+      this.silvimetricName = silvimetricName;
     }
     
     public String getName() {
       return this.name;
+    }
+    
+    public String getSilvimetricName() {
+      return this.silvimetricName;
     }
     
     public static Metric fromSilvimetric(String silvimetric) {
@@ -68,17 +75,7 @@ public class SilvimetricProcessor extends ManagedDocument
     }
     
     public boolean matches(String metricName) {
-      if (this.equals(GROUND_SURFACE_MODEL) && metricName.toLowerCase().equals("m_z_max")) {
-        return true;
-      } else if (this.equals(TERRAIN_MODEL) && metricName.toLowerCase().equals("m_z_min")) {
-        return true;
-      } else if (this.equals(TREE_STRUCTURE) && metricName.toLowerCase().equals("m_z_diff")) {
-        return true;
-      } else if (this.equals(TREE_CANOPY_COVER) && metricName.toLowerCase().equals("m_classification_veg_density")) {
-        return true;
-      }
-      
-      return false;
+      return this.getSilvimetricName().equals(metricName.toLowerCase());
     }
     
     public boolean shouldGenerate(LidarProcessConfiguration config) {

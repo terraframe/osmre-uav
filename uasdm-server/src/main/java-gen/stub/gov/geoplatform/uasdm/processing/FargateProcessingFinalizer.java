@@ -67,6 +67,7 @@ abstract public class FargateProcessingFinalizer
   
   public void finalizeProcessing() {
     try {
+      // This code gets invoked on failure as well
       if (result.getStatus().equals(TaskStatus.COMPLETED))
       {
         handleArtifacts();
@@ -119,27 +120,31 @@ abstract public class FargateProcessingFinalizer
   
   abstract protected void handleArtifacts();
   
-  protected void manageRemote(String s3Path, SiteObject item, Product product, UasComponentIF component, StatusMonitorIF monitor) {
-    RemoteFileObject remote = RemoteFileFacade.download(item.getKey());
-    
-    try(CloseableFile downloaded = remote.openNewFile()) {
-      new ManagedDocument(s3Path, product, component, monitor).process(new FileResource(downloaded));
-    }
-  }
-  
-  protected void handleArtifact(String regex, String s3Path, boolean required, List<SiteObject> items, Product product, UasComponentIF component, StatusMonitorIF monitor) {
+  protected void potentialOutput(String regex, String s3Path, ManagedDocumentTool tool, boolean required, List<SiteObject> items, Product product, UasComponentIF component, StatusMonitorIF monitor) {
     if (!required)
       return;
     
     for (var item : items) {
       if (item.getName().matches(regex)) {
-        manageRemote(s3Path, item, product, component, monitor);
+        handleGeneratedArtifact(s3Path, tool, item, product, component, monitor);
         return;
       }
     }
     
     task.createAction("Processing job did not generated expected file [" + s3Path + "]", TaskActionType.ERROR);
     missingRequiredArtifact = true;
+  }
+  
+  protected void handleGeneratedArtifact(String s3Path, ManagedDocumentTool tool, SiteObject item, Product product, UasComponentIF component, StatusMonitorIF monitor) {
+    if (item == null) return;
+    
+    RemoteFileObject remote = RemoteFileFacade.download(item.getKey());
+    
+    try(CloseableFile downloaded = remote.openNewFile()) {
+      var manage = new ManagedDocument(s3Path, product, component, monitor);
+      manage.setTool(tool);
+      manage.process(new FileResource(downloaded));
+    }
   }
   
   protected void designatePrimaryProduct(UasComponentIF component, ProcessConfiguration config) {

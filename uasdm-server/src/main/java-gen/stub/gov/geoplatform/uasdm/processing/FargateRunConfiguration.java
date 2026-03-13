@@ -4,6 +4,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 
+import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.EmptyFileSetException;
@@ -65,8 +66,7 @@ abstract public class FargateRunConfiguration {
   }
 
   public static class LidarFargateRunConfiguration extends FargateRunConfiguration {
-    public static final String LIDAR_TASK_ARN = "arn:aws:ecs:us-east-1:813324710591:task-definition/uasdm-processing-lidar";
-//    public static final String LIDAR_TASK_ARN = "arn:aws:ecs:us-east-1:813324710591:task-definition/uasdm-processing-large-noefs";
+    public static final String LIDAR_TASK_ARN = AppProperties.getFargateLidarTaskDefinitionArn();
     
     public LidarFargateRunConfiguration(int cpu, int memory, int maxDiskGb)
     {

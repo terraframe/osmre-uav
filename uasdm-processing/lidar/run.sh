@@ -300,6 +300,9 @@ for fname in "${COG_FILES[@]}"; do
     echo "Warning: expected file not found, skipping: $src" >&2
     continue
   fi
+  
+  echo "Uploading original: $(basename "$src") -> $S3_OUTPUT_URI"
+  aws s3 cp "$src" "$S3_OUTPUT_URI" --region "$AWS_REGION" --no-progress
 
   base="${fname%.tif}"
   overview="$OUTPUT_DIR/${base}.overview.tif"
@@ -317,7 +320,7 @@ for fname in "${COG_FILES[@]}"; do
   # (Optional) remove intermediate overview file
   rm -f "$overview"
 
-  echo "Uploading: $(basename "$cog") -> $S3_OUTPUT_URI"
+  echo "Uploading COG: $(basename "$cog") -> $S3_OUTPUT_URI"
   aws s3 cp "$cog" "$S3_OUTPUT_URI" --region "$AWS_REGION" --no-progress
 done
 

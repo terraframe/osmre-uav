@@ -223,6 +223,16 @@ public class AppProperties
     return Singleton.getProps().getString("autoscale.ecs.logGroup", "ecs");
   }
   
+  public static String getFargateAutoscalerContainerName()
+  {
+    return Singleton.getProps().getString("autoscale.ecs.containerName", "processing");
+  }
+  
+  public static String getFargateLidarTaskDefinitionArn()
+  {
+    return Singleton.getProps().getString("autoscale.ecs.lidartaskdef", "arn:aws:ecs:us-east-1:813324710591:task-definition/uasdm-processing-lidar");
+  }
+  
   public static String getFargateAutoscalerECSAccessKey()
   {
     return Singleton.getProps().getString("autoscale.ecs.accessKey");
@@ -238,16 +248,11 @@ public class AppProperties
     return Singleton.getProps().getString("autoscale.ecs.cluster");
   }
 
-  public static String getFargateAutoscalerContainerName()
-  {
-    return Singleton.getProps().getString("autoscale.ecs.containerName");
-  }
-
   public static String getFargateAutoscalerSubnets()
   {
     return Singleton.getProps().getString("autoscale.ecs.subnets");
   }
-
+  
   public static String getAppDisclaimer()
   {
     return Singleton.getProps().getString("app.disclaimer");

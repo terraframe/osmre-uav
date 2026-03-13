@@ -105,6 +105,8 @@ public class ManagedDocument extends S3FileUpload
   }
 
   private DocumentInfo info;
+  
+  private ManagedDocumentTool tool = null;
 
   public ManagedDocument(String s3Path, Product product, UasComponentIF component, StatusMonitorIF monitor)
   {
@@ -124,10 +126,18 @@ public class ManagedDocument extends S3FileUpload
 
     this.info = info;
   }
+  
+  protected void setTool(ManagedDocumentTool tool)
+  {
+    this.tool = tool;
+  }
 
   protected ManagedDocumentTool getTool()
   {
-    return ManagedDocumentTool.ODM;
+    if (this.tool == null)
+      return ManagedDocumentTool.ODM;
+    else
+      return this.tool;
   }
 
   @Override
