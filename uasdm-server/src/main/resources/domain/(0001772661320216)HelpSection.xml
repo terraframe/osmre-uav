@@ -3,7 +3,7 @@
     <create>
       <mdVertex name="gov.geoplatform.uasdm.doc.HelpPageContent">
         <attributes>
-          <graphReference name="organization" type="net.geoprism.registry.graph.GraphOrganization" required="true" label="Organization" indexType="unique index" />
+          <graphReference name="organization" type="net.geoprism.registry.graph.GraphOrganization" required="false" label="Organization" indexType="unique index" />
           <text name="markdown"></text>
         </attributes>
       </mdVertex>
@@ -29,6 +29,8 @@
 	</permissions>
   </doIt>
   <undoIt>
-    <delete></delete>
+    <delete>
+      <object key="gov.geoplatform.uasdm.doc.HelpPageContent" type="com.runwaysdk.system.metadata.MdVertex"/>
+    </delete>
   </undoIt>
 </version>

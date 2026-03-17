@@ -24,10 +24,15 @@ public class HelpPageContent extends HelpPageContentBase
 
     StringBuilder statement = new StringBuilder();
     statement.append("SELECT FROM " + mdVertex.getDBClassName());
-    statement.append(" WHERE " + mdAttribute.getColumnName() + " = :organization");
+    if (org != null)
+      statement.append(" WHERE " + mdAttribute.getColumnName() + " = :organization");
+    else
+      statement.append(" WHERE " + mdAttribute.getColumnName() + " IS NULL");
 
     GraphQuery<HelpPageContent> query = new GraphQuery<HelpPageContent>(statement.toString());
-    query.setParameter("organization", org.getRID());
+    
+    if (org != null)
+      query.setParameter("organization", org.getRID());
 
     return query.getSingleResult();
   }

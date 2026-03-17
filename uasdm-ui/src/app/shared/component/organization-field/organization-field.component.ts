@@ -36,9 +36,19 @@ export class OrganizationFieldComponent implements OnInit, OnDestroy {
     @Input() classNames: string = "";
     @Input() container: string = null;
 
-    @Input() value: { code: string, label: LocalizedValue } = null;
-
     @Output() valueChange = new EventEmitter<{ code: string, label: LocalizedValue }>();
+
+    private _value: { code: string, label: LocalizedValue } = null;
+
+    @Input()
+    get value(): { code: string, label: LocalizedValue } {
+        return this._value;
+    }
+    set value(v: { code: string, label: LocalizedValue }) {
+        this._value = v;
+        this.text = v?.label?.localizedValue ?? "";
+    }
+
 
     loading: boolean = false;
     text: string = "";

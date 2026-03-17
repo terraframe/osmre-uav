@@ -17,58 +17,67 @@
             <li><a href="https://geoplatform.atlassian.net/wiki/spaces/BETC" target="_blank">GeoPlatform Documentation</a> (Access issued through the DOI)</li>
         </ul>
 
-        <organization-field *ngIf="isAdmin" name="organization" [(value)]="data.organization"
-            (valueChange)="onOrganizationChange()">
-        </organization-field>
-
-
         <div class="help-page" *ngIf="data">
-            <div class="help-toolbar">
-                <button
-                    type="button"
-                    class="icon-button"
-                    *ngIf="!isEditing"
-                    (click)="startEdit()"
-                    title="Edit markdown">
-                    <i class="fa fa-pencil"></i>
-                </button>
-
-                <div class="editor-actions" *ngIf="isEditing">
-                    <button
-                        type="button"
-                        class="action-button save"
-                        (click)="saveEdit()"
-                        [disabled]="isSaving">
-                        <i class="fa fa-save"></i>
-                        <span>{{ isSaving ? 'Saving...' : 'Save' }}</span>
-                    </button>
+            <div [class.admin-editor-indicator]="isAdmin">
+                <div *ngIf="isAdmin" class="help-toolbar">
+                    <organization-field name="organization" [(value)]="data.organization" (valueChange)="onOrganizationChange()" [required]="true">
+                    </organization-field>
 
                     <button
                         type="button"
-                        class="action-button cancel"
-                        (click)="cancelEdit()"
-                        [disabled]="isSaving">
-                        <i class="fa fa-cancel"></i>
-                        <span>Cancel</span>
+                        class="icon-button"
+                        *ngIf="!isEditing"
+                        [disabled]="!data?.organization"
+                        (click)="startEdit()"
+                        title="Edit markdown">
+                        <i class="fa fa-pencil"></i>
                     </button>
+
+                    <div class="editor-actions" *ngIf="isEditing">
+                        <button
+                            type="button"
+                            class="action-button save"
+                            (click)="saveEdit()"
+                            [disabled]="isSaving">
+                            <i class="fa fa-save"></i>
+                            <span>{{ isSaving ? 'Saving...' : 'Save' }}</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="action-button cancel"
+                            (click)="cancelEdit()"
+                            [disabled]="isSaving">
+                            <i class="fa fa-cancel"></i>
+                            <span>Cancel</span>
+                        </button>
+                    </div>
                 </div>
-            </div>
 
-            <div *ngIf="!isEditing" class="markdown-view">
-                <markdown *ngIf="showRenderedMarkdown" [data]="renderedMarkdown"></markdown>
-            </div>
+                <div *ngIf="!isEditing" class="markdown-view">
+                    <div *ngIf="isAdmin && data.organization == null">
+                        <ul>
+                        <li style="padding-top: 15px;">Select an Organization above to edit the help documentation.</li>
+                        <li>Use the organization 'tree picker' (three dots) to see the full organization tree (and select a specific node).</li>
+                        <li>Higher level pages are displayed as defaults for lower level pages (where a page does not exist).</li>
+                        </ul>
+                    </div>
 
-            <div *ngIf="isEditing" class="markdown-editor">
-                <textarea
-                    [(ngModel)]="editMarkdown"
-                    class="markdown-textarea"
-                    rows="24"
-                    placeholder="Enter markdown here...">
-                </textarea>
+                    <markdown *ngIf="showRenderedMarkdown" [data]="renderedMarkdown"></markdown>
+                </div>
 
-                <div class="markdown-preview">
-                    <h3>Preview</h3>
-                    <markdown [data]="editMarkdown"></markdown>
+                <div *ngIf="isEditing" class="markdown-editor">
+                    <textarea
+                        [(ngModel)]="editMarkdown"
+                        class="markdown-textarea"
+                        rows="24"
+                        placeholder="Enter markdown here...">
+                    </textarea>
+
+                    <div class="markdown-preview">
+                        <h3 class="preview-indicator">Preview</h3>
+                        <markdown [data]="editMarkdown"></markdown>
+                    </div>
                 </div>
             </div>
         </div>
