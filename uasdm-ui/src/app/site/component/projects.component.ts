@@ -726,7 +726,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // Reload the item layers
-    // this.handleCollectionChange({ visible: false, collection: this.collection });
+    this.handleCollectionChange(this.collection);
   }
 
   handleExtentChange(e: any): void {
