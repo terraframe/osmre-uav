@@ -16,6 +16,7 @@
 package gov.geoplatform.uasdm.odm;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.json.JSONArray;
@@ -360,6 +361,23 @@ public class ODMTaskProcessor
           result.setDownstreamTask(uploadTask);
 
           NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
+        }
+        else
+        {
+          task.appLock();
+          task.setStatus(ODMStatus.FAILED.getLabel());
+          
+          String errorMsg = resp.hasError() ? " " + resp.getError() : "";
+          errorMsg = StringUtils.isBlank(errorMsg) && StringUtils.isNotBlank(resp.getStatusError()) ? " " + resp.getStatusError() : errorMsg;
+          task.setMessage("ODM returned an unexpected response status [" + respStatus + "]." + Objects.requireNonNullElse(errorMsg, ""));
+          
+          addOutputToTask(task);
+          task.apply();
+
+          result.setStatus(TaskStatus.ERROR);
+
+          sendEmail(task);
+          removeFromOdm(task, task.getOdmUUID());
         }
       }
     }
