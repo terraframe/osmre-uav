@@ -118,7 +118,7 @@ public class ODMService implements ODMServiceIF
 
       String url = connector.getServerUrl() + "task/" + uuid + "/download/all.zip";
       logger.info("Downloading file from ODM [" + url + "].");
-      FileUtils.copyURLToFile(new URL(url), zip, 20000, 0);
+      FileUtils.copyURLToFile(new URL(url), zip, 20000, 1200000);
 
       return zip;
     }

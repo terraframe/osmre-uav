@@ -1,18 +1,3 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.odm;
 
 import java.io.IOException;
@@ -33,6 +18,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpRequestRetryHandler;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -40,6 +26,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustAllStrategy;
@@ -51,8 +42,8 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.LaxRedirectStrategy;
-import org.apache.http.impl.client.cache.CachingHttpClients;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
@@ -67,23 +58,40 @@ import gov.geoplatform.uasdm.DevProperties;
 
 public class HTTPConnector
 {
-  CloseableHttpClient          client;
+  private static final Logger logger = LoggerFactory.getLogger(HTTPConnector.class);
 
-  Logger                       logger = LoggerFactory.getLogger(HTTPConnector.class);
+  /**
+   * Tune these as needed.
+   */
+  private static final int CONNECT_TIMEOUT_MS = 10_000;
+  private static final int CONNECTION_REQUEST_TIMEOUT_MS = 10_000;
+  private static final int SOCKET_TIMEOUT_MS = 60_000;
 
-  String                       serverurl;
+  /**
+   * How long an idle pooled connection can sit before we stop trusting it.
+   * Apache will validate the connection before reuse if it has been idle longer
+   * than this threshold.
+   */
+  private static final int VALIDATE_AFTER_INACTIVITY_MS = 5_000;
 
-  String                       username;
+  /**
+   * Pool sizing. Adjust if you truly need more concurrency.
+   */
+  private static final int MAX_TOTAL_CONNECTIONS = 50;
+  private static final int MAX_CONNECTIONS_PER_ROUTE = 20;
 
-  String                       password;
+  private volatile CloseableHttpClient client;
+  private volatile PoolingHttpClientConnectionManager connectionManager;
 
-  protected HttpClientContext  localContext;
+  private String serverurl;
+  private String username;
+  private String password;
 
-  private HTTPExceptionHandler handler;
+  private final HTTPExceptionHandler handler;
 
   public HTTPConnector()
   {
-    this.handler = (e) -> {
+    this.handler = e -> {
       throw new UnreachableHostException(e);
     };
   }
@@ -101,7 +109,7 @@ public class HTTPConnector
 
   public String getServerUrl()
   {
-    return serverurl;
+    return this.serverurl;
   }
 
   public void setServerUrl(String url)
@@ -114,77 +122,114 @@ public class HTTPConnector
     this.serverurl = url;
   }
 
-  synchronized public void initialize()
+  public synchronized void initialize()
   {
+    if (this.client != null)
+    {
+      return;
+    }
+
     try
     {
-      HttpClientBuilder builder = CachingHttpClients.custom();
+      HttpClientBuilder builder = HttpClients.custom();
 
-      if (DevProperties.isLocalKnowStac())
-      {
-        SSLContextBuilder sslBuilder = new SSLContextBuilder();
-        sslBuilder.loadTrustMaterial(TrustAllStrategy.INSTANCE);
+      PoolingHttpClientConnectionManager cm = this.buildConnectionManager();
+      cm.setMaxTotal(MAX_TOTAL_CONNECTIONS);
+      cm.setDefaultMaxPerRoute(MAX_CONNECTIONS_PER_ROUTE);
+      cm.setValidateAfterInactivity(VALIDATE_AFTER_INACTIVITY_MS);
 
-        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslBuilder.build(), new NoopHostnameVerifier());
+      RequestConfig defaultRequestConfig = RequestConfig.custom()
+          .setConnectTimeout(CONNECT_TIMEOUT_MS)
+          .setConnectionRequestTimeout(CONNECTION_REQUEST_TIMEOUT_MS)
+          .setSocketTimeout(SOCKET_TIMEOUT_MS)
+          .build();
 
-        builder = builder.setSSLSocketFactory(sslsf);
-      }
+      builder.setConnectionManager(cm);
+      builder.setDefaultRequestConfig(defaultRequestConfig);
 
-      HttpRequestRetryHandler backoffRetryHandler = new DefaultHttpRequestRetryHandler(7, true)
+      HttpRequestRetryHandler backoffRetryHandler = new DefaultHttpRequestRetryHandler(4, false)
       {
         @Override
         public boolean retryRequest(final IOException exception, final int executionCount, final HttpContext context)
         {
+          if (!super.retryRequest(exception, executionCount, context))
+          {
+            return false;
+          }
+
           try
           {
-            Thread.sleep((long) ( 1000 * Math.pow(2, executionCount) ));
+            long sleepMs = (long) (500L * Math.pow(2, executionCount - 1));
+            Thread.sleep(sleepMs);
           }
           catch (InterruptedException e)
           {
-            throw new RuntimeException(e);
+            Thread.currentThread().interrupt();
+            return false;
           }
 
-          return super.retryRequest(exception, executionCount, context);
+          return true;
         }
       };
 
       builder.setRetryHandler(backoffRetryHandler);
 
-      // By default, only GET requests resulting in a redirect are automatically
-      // followed. We want to follow it on POST as well.
-      builder.setRedirectStrategy(new LaxRedirectStrategy());
+      // Evict connections that have expired or been idle too long.
+      builder.evictExpiredConnections();
+      builder.evictIdleConnections(30, java.util.concurrent.TimeUnit.SECONDS);
 
       if (username != null && password != null)
       {
         HttpHost target = HttpHost.create(serverurl);
 
         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-        Credentials defaultcreds = new UsernamePasswordCredentials(username, password);
-        credentialsProvider.setCredentials(new AuthScope(target.getHostName(), target.getPort()), defaultcreds);
+        Credentials defaultCreds = new UsernamePasswordCredentials(username, password);
+        credentialsProvider.setCredentials(new AuthScope(target.getHostName(), target.getPort()), defaultCreds);
         builder.setDefaultCredentialsProvider(credentialsProvider);
-
-        // Adding an authCache to a localContext will make the authentication
-        // preemptive.
-        AuthCache authCache = new BasicAuthCache();
-        BasicScheme basicAuth = new BasicScheme();
-        authCache.put(target, basicAuth);
-
-        localContext = HttpClientContext.create();
-        localContext.setAuthCache(authCache);
       }
 
+      this.connectionManager = cm;
       this.client = builder.build();
+
+      logger.info(
+          "Initialized HTTPConnector for [{}] connectTimeout={}ms socketTimeout={}ms connectionRequestTimeout={}ms",
+          this.serverurl,
+          CONNECT_TIMEOUT_MS,
+          SOCKET_TIMEOUT_MS,
+          CONNECTION_REQUEST_TIMEOUT_MS);
     }
     catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException e)
     {
       throw new ProgrammingErrorException(e);
     }
+  }
 
+  private PoolingHttpClientConnectionManager buildConnectionManager()
+      throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException
+  {
+    if (DevProperties.isLocalKnowStac())
+    {
+      SSLContextBuilder sslBuilder = new SSLContextBuilder();
+      sslBuilder.loadTrustMaterial(TrustAllStrategy.INSTANCE);
+
+      SSLConnectionSocketFactory sslSocketFactory =
+          new SSLConnectionSocketFactory(sslBuilder.build(), new NoopHostnameVerifier());
+
+      Registry<ConnectionSocketFactory> socketFactoryRegistry =
+          RegistryBuilder.<ConnectionSocketFactory>create()
+              .register("http", PlainConnectionSocketFactory.getSocketFactory())
+              .register("https", sslSocketFactory)
+              .build();
+
+      return new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+    }
+
+    return new PoolingHttpClientConnectionManager();
   }
 
   public boolean isInitialized()
   {
-    return client != null;
+    return this.client != null;
   }
 
   public Response httpGet(String url, List<NameValuePair> params)
@@ -194,40 +239,36 @@ public class HTTPConnector
       initialize();
     }
 
-    URI uri;
     try
     {
-      uri = new URIBuilder(this.getServerUrl() + url).addParameters(params).build();
+      URI uri = new URIBuilder(this.getServerUrl() + url).addParameters(params).build();
+
+      HttpGet get = new HttpGet(uri);
+      get.addHeader(new BasicHeader("Accept", ContentType.APPLICATION_JSON.getMimeType()));
+
+      Response response = this.httpRequest(get);
+
+      if (response.getStatusCode() == 401)
+      {
+        throw new InvalidLoginException("Unable to log in to " + this.getServerUrl());
+      }
+
+      return response;
     }
     catch (URISyntaxException e)
     {
       throw new ProgrammingErrorException(e);
     }
-
-    HttpGet get = new HttpGet(uri);
-
-    get.addHeader(new BasicHeader("Accept", ContentType.APPLICATION_JSON.getMimeType()));
-
-    Response response = this.httpRequest(get);
-
-    if (response.getStatusCode() == 401)
-    {
-      throw new InvalidLoginException("Unable to log in to " + this.getServerUrl());
-    }
-
-    return response;
   }
 
   public Response postAsMultipart(String url, HttpEntity entity)
   {
-    // try {
     if (!isInitialized())
     {
       initialize();
     }
 
     HttpPost post = new HttpPost(this.getServerUrl() + url);
-
     post.setEntity(entity);
 
     Response response = this.httpRequest(post);
@@ -238,9 +279,6 @@ public class HTTPConnector
     }
 
     return response;
-    // } catch (FileNotFoundException e) {
-    // throw new RuntimeException(e);
-    // }
   }
 
   public Response httpPost(String url, List<NameValuePair> body)
@@ -251,9 +289,7 @@ public class HTTPConnector
     }
 
     HttpPost post = new HttpPost(this.getServerUrl() + url);
-
-    UrlEncodedFormEntity entity = new UrlEncodedFormEntity(body, Consts.UTF_8);
-    post.setEntity(entity);
+    post.setEntity(new UrlEncodedFormEntity(body, Consts.UTF_8));
 
     Response response = this.httpRequest(post);
 
@@ -272,10 +308,8 @@ public class HTTPConnector
       initialize();
     }
 
-    StringEntity entity = new StringEntity(body.toString(), ContentType.APPLICATION_JSON);
-
     HttpPost post = new HttpPost(this.getServerUrl() + url);
-    post.setEntity(entity);
+    post.setEntity(new StringEntity(body, ContentType.APPLICATION_JSON));
 
     Response response = this.httpRequest(post);
 
@@ -289,38 +323,108 @@ public class HTTPConnector
 
   public Response httpRequest(HttpUriRequest request)
   {
-    this.logger.debug("Sending request to " + request.getURI());
+    HttpClientContext context = this.buildRequestContext();
 
-    String sResponse = null;
+    logger.debug("Request start: {} {}", request.getMethod(), request.getURI());
 
-    try (CloseableHttpResponse response = client.execute(request, localContext))
+    try (CloseableHttpResponse response = client.execute(request, context))
     {
       int statusCode = response.getStatusLine().getStatusCode();
-
       HttpEntity responseEntity = response.getEntity();
+
+      String responseBody = null;
 
       if (responseEntity != null)
       {
-        sResponse = EntityUtils.toString(responseEntity);
+        responseBody = EntityUtils.toString(responseEntity);
 
-        if (sResponse.length() < 1000)
+        if (responseBody.length() < 1000)
         {
-          this.logger.debug("Response string = '" + sResponse + "'.");
+          logger.debug("Response body for [{} {}]: {}", request.getMethod(), request.getURI(), responseBody);
         }
         else
         {
-          this.logger.debug("Receieved a very large response.");
+          logger.debug("Response body for [{} {}] is {} chars",
+              request.getMethod(),
+              request.getURI(),
+              responseBody.length());
         }
       }
 
-      return new gov.geoplatform.uasdm.odm.HttpResponse(sResponse, statusCode);
+      logger.debug("Request end: {} {} status={}", request.getMethod(), request.getURI(), statusCode);
+
+      return new gov.geoplatform.uasdm.odm.HttpResponse(responseBody, statusCode);
     }
     catch (IOException e)
     {
+      logger.debug("Request failed: {} {}", request.getMethod(), request.getURI(), e);
+
       this.handler.uncaughtException(e);
 
       return null;
     }
   }
 
+  private HttpClientContext buildRequestContext()
+  {
+    if (username == null || password == null)
+    {
+      return null;
+    }
+
+    HttpHost target = HttpHost.create(serverurl);
+
+    // Adding an authCache to a localContext will make the authentication preemptive.
+    AuthCache authCache = new BasicAuthCache();
+    authCache.put(target, new BasicScheme());
+
+    HttpClientContext context = HttpClientContext.create();
+    context.setAuthCache(authCache);
+
+    return context;
+  }
+
+  /**
+   * Optional cleanup hook if your application lifecycle supports it.
+   */
+  public synchronized void close()
+  {
+    if (this.client != null)
+    {
+      try
+      {
+        this.client.close();
+      }
+      catch (IOException e)
+      {
+        logger.warn("Error closing HTTP client", e);
+      }
+      finally
+      {
+        this.client = null;
+      }
+    }
+
+    if (this.connectionManager != null)
+    {
+      this.connectionManager.close();
+      this.connectionManager = null;
+    }
+  }
+
+  /**
+   * diagnostics helper.
+   */
+  public String getPoolStats()
+  {
+    HttpClientConnectionManager cm = this.connectionManager;
+
+    if (cm instanceof PoolingHttpClientConnectionManager)
+    {
+      PoolingHttpClientConnectionManager pooling = (PoolingHttpClientConnectionManager) cm;
+      return pooling.getTotalStats().toString();
+    }
+
+    return "Connection manager not initialized";
+  }
 }
