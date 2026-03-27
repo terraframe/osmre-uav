@@ -21,6 +21,9 @@ import java.net.URI;
 import java.net.URL;
 import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -53,8 +56,10 @@ import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.http.nio.netty.NettyNioAsyncHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -114,9 +119,20 @@ public class S3RemoteFileService implements RemoteFileService
   {
     if (asyncClient == null)
     {
-      this.asyncClient = S3AsyncClient.builder() //
-          .region(region()) //
-          .credentialsProvider(StaticCredentialsProvider.create(credentials())) //
+      this.asyncClient = S3AsyncClient.builder()
+          .region(region())
+          .credentialsProvider(StaticCredentialsProvider.create(credentials()))
+          .multipartEnabled(true)
+          .multipartConfiguration(b -> b
+              .thresholdInBytes(128L * 1024L * 1024L)
+              .minimumPartSizeInBytes(512L * 1024L * 1024L)
+          )
+          .httpClientBuilder(
+              NettyNioAsyncHttpClient.builder()
+                  .maxConcurrency(6)
+                  .connectionAcquisitionTimeout(Duration.ofHours(1))
+                  .writeTimeout(Duration.ofHours(2))
+          )
           .build();
     }
     return this.asyncClient;
@@ -566,23 +582,49 @@ public class S3RemoteFileService implements RemoteFileService
   @Override
   public void putFile(String key, RemoteFileMetadata metadata, InputStream stream)
   {
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+
     try
     {
-      S3Client client = getClient();
       String bucketName = AppProperties.getBucketName();
 
-      PutObjectRequest putOb = PutObjectRequest.builder() //
-          .bucket(bucketName) //
-          .key(key) //
-          .contentLength(metadata.getContentLength()) //
-          .contentType(metadata.getContentType()) //
+      Long contentLength = null;
+      if (metadata.getContentLength() > 0)
+      {
+        contentLength = metadata.getContentLength();
+      }
+
+      PutObjectRequest putOb = PutObjectRequest.builder()
+          .bucket(bucketName)
+          .key(key)
+          .contentLength(contentLength)
+          .contentType(metadata.getContentType())
           .build();
 
-      client.putObject(putOb, RequestBody.fromInputStream(stream, metadata.getContentLength()));
+      getAsyncClient()
+          .putObject(
+              putOb,
+              AsyncRequestBody.fromInputStream(stream, contentLength, executor))
+          .join();
+    }
+    catch (CompletionException e)
+    {
+      Throwable cause = e.getCause();
+
+      if (cause instanceof SdkClientException)
+      {
+        throw new ProgrammingErrorException(cause);
+      }
+
+      throw new ProgrammingErrorException(e);
     }
     catch (SdkClientException e)
     {
       throw new ProgrammingErrorException(e);
+    }
+    finally
+    {
+      executor.shutdown();
     }
   }
 
