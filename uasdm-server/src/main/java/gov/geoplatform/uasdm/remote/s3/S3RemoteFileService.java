@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.remote.s3;
 
@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
@@ -65,7 +66,11 @@ import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3Uri;
 import software.amazon.awssdk.services.s3.S3Utilities;
-import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
+import software.amazon.awssdk.services.s3.model.CompleteMultipartUploadRequest;
+import software.amazon.awssdk.services.s3.model.CompletedMultipartUpload;
+import software.amazon.awssdk.services.s3.model.CompletedPart;
+import software.amazon.awssdk.services.s3.model.CreateMultipartUploadRequest;
+import software.amazon.awssdk.services.s3.model.CreateMultipartUploadResponse;
 import software.amazon.awssdk.services.s3.model.Delete;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
@@ -74,11 +79,14 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest.Builder;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
+import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.ListObjectVersionsRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.UploadPartCopyRequest;
+import software.amazon.awssdk.services.s3.model.UploadPartCopyResponse;
 import software.amazon.awssdk.services.s3.paginators.ListObjectVersionsIterable;
 import software.amazon.awssdk.services.s3.paginators.ListObjectsV2Iterable;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
@@ -119,21 +127,7 @@ public class S3RemoteFileService implements RemoteFileService
   {
     if (asyncClient == null)
     {
-      this.asyncClient = S3AsyncClient.builder()
-          .region(region())
-          .credentialsProvider(StaticCredentialsProvider.create(credentials()))
-          .multipartEnabled(true)
-          .multipartConfiguration(b -> b
-              .thresholdInBytes(128L * 1024L * 1024L)
-              .minimumPartSizeInBytes(512L * 1024L * 1024L)
-          )
-          .httpClientBuilder(
-              NettyNioAsyncHttpClient.builder()
-                  .maxConcurrency(6)
-                  .connectionAcquisitionTimeout(Duration.ofHours(1))
-                  .writeTimeout(Duration.ofHours(2))
-          )
-          .build();
+      this.asyncClient = S3AsyncClient.builder().region(region()).credentialsProvider(StaticCredentialsProvider.create(credentials())).multipartEnabled(true).multipartConfiguration(b -> b.thresholdInBytes(128L * 1024L * 1024L).minimumPartSizeInBytes(512L * 1024L * 1024L)).httpClientBuilder(NettyNioAsyncHttpClient.builder().maxConcurrency(6).connectionAcquisitionTimeout(Duration.ofHours(1)).writeTimeout(Duration.ofHours(2))).build();
     }
     return this.asyncClient;
 
@@ -384,15 +378,59 @@ public class S3RemoteFileService implements RemoteFileService
   {
     try
     {
-      CopyObjectRequest copyReq = CopyObjectRequest.builder() //
-          .sourceBucket(sourceBucket) //
-          .sourceKey(sourceKey) //
-          .destinationBucket(destBucket) //
-          .destinationKey(destKey) //
+      HeadObjectRequest headObjectRequest = HeadObjectRequest.builder().bucket(sourceBucket).key(sourceKey).build();
+      HeadObjectResponse headObjectResponse = this.getClient().headObject(headObjectRequest);
+      long objectSize = headObjectResponse.contentLength();
+
+      logger.trace("Source Object buckert: {}, key: {}, size {}", sourceBucket, sourceKey, objectSize);
+
+      // Copy the object using 20 MB parts
+      long partSize = 20 * 1024 * 1024; // 20 MB
+      long bytePosition = 0;
+      int partNum = 1;
+
+      CreateMultipartUploadRequest createMultipartUploadRequest = CreateMultipartUploadRequest.builder().bucket(destBucket).key(destKey).build();
+
+      CreateMultipartUploadResponse response = this.getClient().createMultipartUpload(createMultipartUploadRequest);
+      String uploadId = response.uploadId();
+
+      List<CompletedPart> uploadedParts = new ArrayList<>();
+
+      while (bytePosition < objectSize)
+      {
+        long lastByte = Math.min(bytePosition + partSize - 1, objectSize - 1);
+        logger.trace("Part Number: {}, Byte Position: {}, Last Byte: {}", partNum, bytePosition, lastByte);
+
+        UploadPartCopyRequest uploadPartCopyRequest = UploadPartCopyRequest.builder() //
+            .sourceBucket(sourceBucket) //
+            .sourceKey(sourceKey) //
+            .destinationBucket(destBucket) //
+            .destinationKey(destKey) //
+            .uploadId(uploadId) //
+            .copySourceRange("bytes=" + bytePosition + "-" + lastByte) //
+            .partNumber(partNum).build();
+
+        UploadPartCopyResponse uploadPartCopyResponse = getClient().uploadPartCopy(uploadPartCopyRequest);
+
+        CompletedPart part = CompletedPart.builder().partNumber(partNum).eTag(uploadPartCopyResponse.copyPartResult().eTag()).build();
+        uploadedParts.add(part);
+
+        bytePosition += partSize;
+        partNum++;
+      }
+
+      CompletedMultipartUpload completedMultipartUpload = CompletedMultipartUpload.builder() //
+          .parts(uploadedParts) //
           .build();
 
-      S3Client client = getClient();
-      client.copyObject(copyReq);
+      CompleteMultipartUploadRequest completeMultipartUploadRequest = CompleteMultipartUploadRequest.builder() //
+          .bucket(destBucket) //
+          .key(destKey) //
+          .uploadId(uploadId) //
+          .multipartUpload(completedMultipartUpload) //
+          .build();
+
+      this.client.completeMultipartUpload(completeMultipartUploadRequest);
     }
     catch (SdkClientException e)
     {
@@ -594,18 +632,9 @@ public class S3RemoteFileService implements RemoteFileService
         contentLength = metadata.getContentLength();
       }
 
-      PutObjectRequest putOb = PutObjectRequest.builder()
-          .bucket(bucketName)
-          .key(key)
-          .contentLength(contentLength)
-          .contentType(metadata.getContentType())
-          .build();
+      PutObjectRequest putOb = PutObjectRequest.builder().bucket(bucketName).key(key).contentLength(contentLength).contentType(metadata.getContentType()).build();
 
-      getAsyncClient()
-          .putObject(
-              putOb,
-              AsyncRequestBody.fromInputStream(stream, contentLength, executor))
-          .join();
+      getAsyncClient().putObject(putOb, AsyncRequestBody.fromInputStream(stream, contentLength, executor)).join();
     }
     catch (CompletionException e)
     {
