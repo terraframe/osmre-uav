@@ -41,7 +41,9 @@
     <aspectj.version>1.9.22.1</aspectj.version>    
     <aspectj.plugin.version>1.15.0</aspectj.plugin.version>
 
-    <geotools.version>16.1</geotools.version>    
+    <geotools.version>16.1</geotools.version>
+    <spring.version>6.2.17</spring.version>
+    <spring.security.version>6.5.9</spring.security.version>
   </properties>
   
   <licenses>

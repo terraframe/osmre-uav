@@ -61,7 +61,7 @@ export class LoginComponent {
   }
 
   onClickKeycloak(): void {
-    window.location.href = this.context + "/keycloak/loginRedirect";
+    window.location.href = this.context + "/keycloak/authorization/keycloak";
   }
 
   onSubmit(): void {

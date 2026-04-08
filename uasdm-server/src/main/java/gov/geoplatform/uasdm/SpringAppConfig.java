@@ -50,8 +50,9 @@ import net.geoprism.spring.web.JsonExceptionHandler;
     "net.geoprism.registry.spring", //
     "net.geoprism.spring", //
     "gov.geoplatform.uasdm.controller", //
-    "gov.geoplatform.uasdm.service", //
-    "gov.geoplatform.uasdm.service.business", //
+    "gov.geoplatform.uasdm.service",
+    "gov.geoplatform.uasdm.service.business",
+    "gov.geoplatform.uasdm.session",
     "gov.geoplatform.uasdm.maintenance" }, excludeFilters = { //
         @ComponentScan.Filter(type = FilterType.REGEX, pattern = "net.geoprism.registry.service.SessionFilter"), //
         @ComponentScan.Filter(type = FilterType.REGEX, pattern = "net.geoprism.registry.controller.*"), //
@@ -116,11 +117,11 @@ public class SpringAppConfig implements WebMvcConfigurer
     // converters.add(msgConverter);
   }
 
-  @Bean
-  Filter sessionFilter()
-  {
-    return new SessionFilter();
-  }
+//  @Bean
+//  Filter sessionFilter()
+//  {
+//    return new SessionFilter();
+//  }
 
   @Bean
   JsonExceptionHandler errorHandler()

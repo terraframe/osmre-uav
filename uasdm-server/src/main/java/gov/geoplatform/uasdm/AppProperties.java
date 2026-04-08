@@ -171,6 +171,18 @@ public class AppProperties
       return null;
     }
   }
+  
+  public static InputStream getKeycloakSpringConfig()
+  {
+    if (isKeycloakEnabled() && ConfigurationManager.checkExistence(UasdmConfigGroup.COMMON, "keycloak-spring.json"))
+    {
+      return ConfigurationManager.getResourceAsStream(UasdmConfigGroup.COMMON, "keycloak-spring.json");
+    }
+    else
+    {
+      return null;
+    }
+  }
 
   public static File getUploadDirectory()
   {

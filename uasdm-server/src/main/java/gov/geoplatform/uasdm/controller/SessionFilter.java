@@ -45,14 +45,17 @@ import com.runwaysdk.web.WebClientSession;
 import net.geoprism.registry.service.LoginBruteForceGuardService;
 import net.geoprism.registry.service.request.SessionServiceIF;
 
-@Service
-@Primary
-public class SessionFilter implements Filter
+/**
+ * Deprected : TODO Delete me
+ */
+//@Service
+//@Primary
+public class SessionFilter // implements Filter
 {
-  @Autowired
+//  @Autowired
   protected SessionServiceIF            sessionService;
 
-  @Autowired
+//  @Autowired
   protected LoginBruteForceGuardService loginGuard;
 
   public void init(FilterConfig filterConfig) throws ServletException

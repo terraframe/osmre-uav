@@ -1,0 +1,16 @@
+{
+  "registrationId": "keycloak",
+  "clientId": "idm",
+  "clientSecret": null,
+  "clientName": "Keycloak",
+  "authorizationGrantType": "authorization_code",
+  "redirectUri": "{baseUrl}/keycloak/loginRedirect/{registrationId}",
+  "scope": ["openid", "profile", "email"],
+  "issuerUri": "https://localhost:8021/realms/myrealm",
+  "authorizationUri": "https://localhost:8021/realms/myrealm/protocol/openid-connect/auth",
+  "tokenUri": "https://localhost:8021/realms/myrealm/protocol/openid-connect/token",
+  "userInfoUri": "https://localhost:8021/realms/myrealm/protocol/openid-connect/userinfo",
+  "jwkSetUri": "https://localhost:8021/realms/myrealm/protocol/openid-connect/certs",
+  "userNameAttributeName": "preferred_username",
+  "clientAuthenticationMethod": "none"
+}
