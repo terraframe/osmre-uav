@@ -1,6 +1,6 @@
 {
   "registrationId": "keycloak",
-  "clientId": "idm-staging",
+  "clientId": "idm-stg",
   "clientSecret": null,
   "clientName": "Keycloak",
   "authorizationGrantType": "authorization_code",
