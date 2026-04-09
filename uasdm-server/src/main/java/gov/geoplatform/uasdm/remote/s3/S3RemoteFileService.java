@@ -385,7 +385,7 @@ public class S3RemoteFileService implements RemoteFileService
       logger.trace("Source Object buckert: {}, key: {}, size {}", sourceBucket, sourceKey, objectSize);
 
       // Copy the object using 20 MB parts
-      long partSize = 20 * 1024 * 1024; // 20 MB
+      long partSize = 500 * 1024 * 1024; // 500 MB
       long bytePosition = 0;
       int partNum = 1;
 
