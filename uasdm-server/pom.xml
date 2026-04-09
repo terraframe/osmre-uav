@@ -164,13 +164,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!-- Source: https://mvnrepository.com/artifact/org.keycloak/keycloak-jakarta-servlet-filter-adapter -->
-    <dependency>
-      <groupId>org.keycloak</groupId>
-      <artifactId>keycloak-jakarta-servlet-filter-adapter</artifactId>
-      <version>25.0.3</version>
-      <scope>compile</scope>
-    </dependency>
     <dependency>
       <groupId>jakarta.websocket</groupId>
       <artifactId>jakarta.websocket-api</artifactId>
