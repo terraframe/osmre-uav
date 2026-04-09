@@ -18,13 +18,6 @@ import net.geoprism.registry.service.LoginBruteForceGuardService;
 @Component
 public class BasicWebClientSessionAuthenticationProvider implements AuthenticationProvider
 {
-  private final LoginBruteForceGuardService loginGuard;
-
-  public BasicWebClientSessionAuthenticationProvider(LoginBruteForceGuardService loginGuard)
-  {
-    this.loginGuard = loginGuard;
-  }
-
   @Override
   public Authentication authenticate(Authentication authentication) throws AuthenticationException
   {
