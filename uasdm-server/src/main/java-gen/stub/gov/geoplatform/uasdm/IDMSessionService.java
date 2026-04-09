@@ -136,12 +136,12 @@ public class IDMSessionService extends IDMSessionServiceBase
   @Transaction
   private static synchronized ExternalProfile getProfile(JsonObject joUser)
   {
-    final String username = joUser.get(KeycloakConstants.USERJSON_USERNAME).isJsonNull() ? null : joUser.get(KeycloakConstants.USERJSON_USERNAME).getAsString();
-    final String userid = joUser.get(KeycloakConstants.USERJSON_USERID).isJsonNull() ? null : joUser.get(KeycloakConstants.USERJSON_USERID).getAsString();
-    final String firstName = joUser.get(KeycloakConstants.USERJSON_FIRSTNAME).isJsonNull() ? null : joUser.get(KeycloakConstants.USERJSON_FIRSTNAME).getAsString();
-    final String lastName = joUser.get(KeycloakConstants.USERJSON_LASTNAME).isJsonNull() ? null : joUser.get(KeycloakConstants.USERJSON_LASTNAME).getAsString();
-    final String phoneNumber = joUser.get(KeycloakConstants.USERJSON_PHONENUMBER).isJsonNull() ? null : joUser.get(KeycloakConstants.USERJSON_PHONENUMBER).getAsString();
-    final String email = joUser.get(KeycloakConstants.USERJSON_EMAIL).isJsonNull() ? null : joUser.get(KeycloakConstants.USERJSON_EMAIL).getAsString();
+    final String username = readString(joUser, KeycloakConstants.USERJSON_USERNAME);
+    final String userid = readString(joUser, KeycloakConstants.USERJSON_USERID);
+    final String firstName = readString(joUser, KeycloakConstants.USERJSON_FIRSTNAME);
+    final String lastName = readString(joUser, KeycloakConstants.USERJSON_LASTNAME);
+    final String phoneNumber = readString(joUser, KeycloakConstants.USERJSON_PHONENUMBER);
+    final String email = readString(joUser, KeycloakConstants.USERJSON_EMAIL);
     
     ExternalProfileQuery query = new ExternalProfileQuery(new QueryFactory());
     query.WHERE(query.getEmail().EQi(email));
@@ -230,5 +230,15 @@ public class IDMSessionService extends IDMSessionServiceBase
     {
       it.close();
     }
+  }
+  
+  private static String readString(JsonObject joUser, String key) {
+    if (joUser == null || !joUser.has(key)) return null;
+    
+    var val = joUser.get(key);
+    
+    if (val == null || val.isJsonNull() || !val.isJsonPrimitive()) return null;
+    
+    return val.getAsString();
   }
 }

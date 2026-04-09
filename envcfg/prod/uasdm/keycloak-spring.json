@@ -1,0 +1,16 @@
+{
+  "registrationId": "keycloak",
+  "clientId": "idm-prod",
+  "clientSecret": null,
+  "clientName": "Keycloak",
+  "authorizationGrantType": "authorization_code",
+  "redirectUri": "{baseUrl}/keycloak/loginRedirect/{registrationId}",
+  "scope": ["openid", "profile", "email"],
+  "issuerUri": "https://kauth.geoplatform.gov/realms/IDM",
+  "authorizationUri": "https://kauth.geoplatform.gov/realms/IDM/protocol/openid-connect/auth",
+  "tokenUri": "https://kauth.geoplatform.gov/realms/IDM/protocol/openid-connect/token",
+  "userInfoUri": "https://kauth.geoplatform.gov/realms/IDM/protocol/openid-connect/userinfo",
+  "jwkSetUri": "https://kauth.geoplatform.gov/realms/IDM/protocol/openid-connect/certs",
+  "userNameAttributeName": "preferred_username",
+  "clientAuthenticationMethod": "none"
+}

@@ -81,40 +81,9 @@
   </filter>
   <filter-mapping>
     <filter-name>EncodingFilter</filter-name>
-    <url-pattern>*</url-pattern>
+    <url-pattern>/*</url-pattern>
   </filter-mapping>
   
-  <filter>
-    <filter-name>UASDM Keycloak Filter</filter-name>
-    <filter-class>gov.geoplatform.uasdm.keycloak.UASDMKeycloakOIDCFilter</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>UASDM Keycloak Filter</filter-name>
-    <url-pattern>/*</url-pattern>
-    <url-pattern>/keycloak/*</url-pattern>
-  </filter-mapping>
-  <filter>
-    <filter-name>SessionFilter</filter-name>
-    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-    <init-param>
-      <param-name>targetBeanName</param-name>
-      <param-value>sessionFilter</param-value>
-    </init-param>
-  </filter>
-  <filter-mapping>
-    <filter-name>SessionFilter</filter-name>
-    <url-pattern>*</url-pattern>
-  </filter-mapping>
-<!--   
-  <filter>
-    <filter-name>UrlMapperFilter</filter-name>
-    <filter-class>com.runwaysdk.web.filter.UrlMapperFilter</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>UrlMapperFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
- -->  
   <filter>
     <filter-name>CorsFilter</filter-name>
     <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
@@ -131,6 +100,16 @@
     <filter-name>CorsFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+  
+  <filter>
+	  <filter-name>springSecurityFilterChain</filter-name>
+	  <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	
+	<filter-mapping>
+	  <filter-name>springSecurityFilterChain</filter-name>
+	  <url-pattern>/*</url-pattern>
+	</filter-mapping>
   
   <listener>
     <listener-class>net.geoprism.PatchingContextListener</listener-class>

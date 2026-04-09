@@ -310,7 +310,7 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
         if (iterator.hasNext())
         {
           collectionStatus = iterator.next();
-          collectionStatus.appLock();
+          collectionStatus = CollectionStatus.lock(collectionStatus.getOid());
         }
         else
         {
