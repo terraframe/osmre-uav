@@ -1,0 +1,28 @@
+name: "Sync Bug Label from Project"
+on:
+  project_v2_item:
+    types: [edited]
+
+jobs:
+  sync_label:
+    runs-on: ubuntu-latest
+    # Only run if the 'Ticket Type' field was the one changed
+    if: github.event.changes.field_value.field_name == 'Ticket Type'
+    permissions:
+      issues: write
+    steps:
+      - name: Update Labels
+        run: |
+          # Capture the new value from the project item
+          CURRENT_VALUE="${{ github.event.project_v2_item.field_values.Ticket_Type }}"
+          ISSUE_ID="${{ github.event.project_v2_item.content_node_id }}"
+
+          if [ "$CURRENT_VALUE" == "Bug" ]; then
+            echo "Type is Bug. Adding label..."
+            gh issue edit "$ISSUE_ID" --add-label "bug"
+          else
+            echo "Type is $CURRENT_VALUE. Removing bug label if it exists..."
+            gh issue edit "$ISSUE_ID" --remove-label "bug"
+          }
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
