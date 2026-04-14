@@ -17,7 +17,7 @@ jobs:
         run: |
           # 1. Get the 'Ticket Type' value for this issue from Project V2
           # Replace PROJECT_ID with your numeric project ID (found in project URL)
-          PROJECT_ID="YOUR_PROJECT_NUMBER"
+          PROJECT_ID=5
           
           CURRENT_VALUE=$(gh project item-list $PROJECT_ID --owner ${{ github.repository_owner }} --format json | jq -r ".items[] | select(.content.number == $ISSUE_NUMBER) | .fieldValues[] | select(.field.name == \"Ticket Type\") | .value")
 
