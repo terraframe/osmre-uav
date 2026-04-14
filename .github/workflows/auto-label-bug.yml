@@ -1,28 +1,29 @@
 name: "Sync Bug Label from Project"
 on:
-  project_v2_item:
-    types: [edited]
+  issues:
+    types: [edited, labeled]
 
 jobs:
   sync_label:
     runs-on: ubuntu-latest
-    # Only run if the 'Ticket Type' field was the one changed
-    if: github.event.changes.field_value.field_name == 'Ticket Type'
     permissions:
       issues: write
+      repository-projects: read
     steps:
-      - name: Update Labels
-        run: |
-          # Capture the new value from the project item
-          CURRENT_VALUE="${{ github.event.project_v2_item.field_values.Ticket_Type }}"
-          ISSUE_ID="${{ github.event.project_v2_item.content_node_id }}"
-
-          if [ "$CURRENT_VALUE" == "Bug" ]; then
-            echo "Type is Bug. Adding label..."
-            gh issue edit "$ISSUE_ID" --add-label "bug"
-          else
-            echo "Type is $CURRENT_VALUE. Removing bug label if it exists..."
-            gh issue edit "$ISSUE_ID" --remove-label "bug"
-          }
+      - name: Sync based on Project Field
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          # 1. Get the 'Ticket Type' value for this issue from Project V2
+          # Replace PROJECT_ID with your numeric project ID (found in project URL)
+          PROJECT_ID="YOUR_PROJECT_NUMBER"
+          
+          CURRENT_VALUE=$(gh project item-list $PROJECT_ID --owner ${{ github.repository_owner }} --format json | jq -r ".items[] | select(.content.number == $ISSUE_NUMBER) | .fieldValues[] | select(.field.name == \"Ticket Type\") | .value")
+
+          # 2. Add or remove label based on that value
+          if [ "$CURRENT_VALUE" == "Bug" ]; then
+            gh issue edit $ISSUE_NUMBER --add-label "bug"
+          else
+            gh issue edit $ISSUE_NUMBER --remove-label "bug"
+          fi
