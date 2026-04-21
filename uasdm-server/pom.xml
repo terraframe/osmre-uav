@@ -59,7 +59,7 @@
       <dependency>
         <groupId>software.amazon.awssdk</groupId>
         <artifactId>bom</artifactId>
-        <version>2.40.10</version>
+        <version>2.42.37</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -141,22 +141,22 @@
     <dependency>
       <groupId>it.geosolutions.imageio-ext</groupId>
       <artifactId>imageio-ext-cog-rangereader-http</artifactId>
-      <version>1.4.7</version>
+      <version>1.4.16</version>
     </dependency>
     <dependency>
       <artifactId>imageio-ext-cog-rangereader-s3</artifactId>
       <groupId>it.geosolutions.imageio-ext</groupId>
-      <version>1.4.7</version>
+      <version>1.4.16</version>
     </dependency>
     <dependency>
       <groupId>it.geosolutions.imageio-ext</groupId>
       <artifactId>imageio-ext-cog-commons</artifactId>
-      <version>1.4.7</version>
+      <version>1.4.16</version>
     </dependency>
     <dependency>
       <groupId>it.geosolutions.imageio-ext</groupId>
       <artifactId>imageio-ext-cog-reader</artifactId>
-      <version>1.4.7</version>
+      <version>1.4.16</version>
       <exclusions>
         <exclusion>
           <artifactId>ehcache</artifactId>
