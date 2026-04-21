@@ -29,7 +29,6 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
-import org.apache.solr.client.solrj.util.ClientUtils;
 import org.commongeoregistry.adapter.dataaccess.LocalizedValue;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
@@ -74,7 +73,6 @@ import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
-import gov.geoplatform.uasdm.service.IndexService;
 import gov.geoplatform.uasdm.service.business.KnowStacBusinessService;
 import gov.geoplatform.uasdm.view.QueryLocationResult;
 import gov.geoplatform.uasdm.view.QueryResult;
@@ -97,6 +95,50 @@ public class ElasticSearchIndex implements Index
 
   private RestClient    restClient;
 
+  /**
+   * TODO:
+   * This method copy/pasted from solr to maintain compatibility with existing code.
+   * 
+   * That being said: AI recommends a better solution is to stop using 'query_string'
+   * for literal user text. Instead it recommends using 'simple_query_string' as the
+   * more "fault-tolerant alternative".
+   * 
+   * I don't really have time to dig into all of that so I'm doing the simplest thing
+   * I can here to remove the solrj dependency (which has tons of security vulnerabilities).
+   */
+  public static String escapeQueryChars(String s) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < s.length(); i++) {
+      char c = s.charAt(i);
+      // These characters are part of the query syntax and must be escaped
+      if (c == '\\'
+          || c == '+'
+          || c == '-'
+          || c == '!'
+          || c == '('
+          || c == ')'
+          || c == ':'
+          || c == '^'
+          || c == '['
+          || c == ']'
+          || c == '\"'
+          || c == '{'
+          || c == '}'
+          || c == '~'
+          || c == '*'
+          || c == '?'
+          || c == '|'
+          || c == '&'
+          || c == ';'
+          || c == '/'
+          || Character.isWhitespace(c)) {
+        sb.append('\\');
+      }
+      sb.append(c);
+    }
+    return sb.toString();
+  }
+  
   @Override
   public boolean startup()
   {
@@ -615,14 +657,14 @@ public class ElasticSearchIndex implements Index
       SearchRequest.Builder s = new SearchRequest.Builder();
       s.index(ElasticSearchIndex.STAC_INDEX_NAME).size(0).aggregations("totals", a -> a.filters(v -> v.filters(b -> {
         HashMap<String, Query> map = new HashMap<String, Query>();
-        map.put("site_count", new Query.Builder().queryString(m -> m.fields("properties.site").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
-        map.put("project_count", new Query.Builder().queryString(m -> m.fields("properties.project").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
-        map.put("mission_count", new Query.Builder().queryString(m -> m.fields("properties.mission").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
-        map.put("collection_count", new Query.Builder().queryString(m -> m.fields("properties.collection").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
-        map.put("sensor_count", new Query.Builder().queryString(m -> m.fields("properties.sensor").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
-        map.put("platform_count", new Query.Builder().queryString(m -> m.fields("properties.platform").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
-        map.put("faa_number_count", new Query.Builder().queryString(m -> m.fields("properties.faaNumber").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
-        map.put("serial_number_count", new Query.Builder().queryString(m -> m.fields("properties.serialNumber").query("*" + ClientUtils.escapeQueryChars(text) + "*")).build());
+        map.put("site_count", new Query.Builder().queryString(m -> m.fields("properties.site").query("*" + escapeQueryChars(text) + "*")).build());
+        map.put("project_count", new Query.Builder().queryString(m -> m.fields("properties.project").query("*" + escapeQueryChars(text) + "*")).build());
+        map.put("mission_count", new Query.Builder().queryString(m -> m.fields("properties.mission").query("*" + escapeQueryChars(text) + "*")).build());
+        map.put("collection_count", new Query.Builder().queryString(m -> m.fields("properties.collection").query("*" + escapeQueryChars(text) + "*")).build());
+        map.put("sensor_count", new Query.Builder().queryString(m -> m.fields("properties.sensor").query("*" + escapeQueryChars(text) + "*")).build());
+        map.put("platform_count", new Query.Builder().queryString(m -> m.fields("properties.platform").query("*" + escapeQueryChars(text) + "*")).build());
+        map.put("faa_number_count", new Query.Builder().queryString(m -> m.fields("properties.faaNumber").query("*" + escapeQueryChars(text) + "*")).build());
+        map.put("serial_number_count", new Query.Builder().queryString(m -> m.fields("properties.serialNumber").query("*" + escapeQueryChars(text) + "*")).build());
 
         return b.keyed(map);
       })));
@@ -660,7 +702,7 @@ public class ElasticSearchIndex implements Index
             else
             {
               String value = filter.getString("value");
-              m.queryString(qs -> qs.fields("properties." + field).query("*" + ClientUtils.escapeQueryChars(value) + "*"));
+              m.queryString(qs -> qs.fields("properties." + field).query("*" + escapeQueryChars(value) + "*"));
             }
           }
 
@@ -728,7 +770,7 @@ public class ElasticSearchIndex implements Index
 
     return results;
   }
-
+  
   public Page<StacItem> getItems(JSONObject criteria, Integer pageSize, Integer pageNumber)
   {
     Page<StacItem> page = new Page<StacItem>();
@@ -789,7 +831,7 @@ public class ElasticSearchIndex implements Index
                 {
                   String value = filter.getString("value");
 
-                  conditions.add(new Query.Builder().queryString(qs -> qs.fields("properties." + field).query("*" + ClientUtils.escapeQueryChars(value) + "*")).build());
+                  conditions.add(new Query.Builder().queryString(qs -> qs.fields("properties." + field).query("*" + escapeQueryChars(value) + "*")).build());
                 }
               }
 
@@ -836,7 +878,7 @@ public class ElasticSearchIndex implements Index
                 else
                 {
                   String value = filter.getString("value");
-                  conditions.add(new Query.Builder().queryString(qs -> qs.boost(1.2F).fields("properties." + field).query("*" + ClientUtils.escapeQueryChars(value) + "*")).build());
+                  conditions.add(new Query.Builder().queryString(qs -> qs.boost(1.2F).fields("properties." + field).query("*" + escapeQueryChars(value) + "*")).build());
                 }
               }
 

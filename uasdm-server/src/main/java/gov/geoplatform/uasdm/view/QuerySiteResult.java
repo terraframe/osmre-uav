@@ -17,7 +17,7 @@ package gov.geoplatform.uasdm.view;
 
 import java.util.List;
 
-import org.apache.solr.common.SolrDocument;
+//import org.apache.solr.common.SolrDocument;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -117,18 +117,18 @@ public class QuerySiteResult implements QueryResult
     return object;
   }
 
-  public static QuerySiteResult build(SolrDocument document)
-  {
-    QuerySiteResult result = new QuerySiteResult();
-    result.setId((String) document.getFieldValue("id"));
-    result.setFilename((String) document.getFieldValue("filename"));
-    result.addItem((String) document.getFieldValue("siteId"), (String) document.getFieldValue("siteName"));
-    result.addItem((String) document.getFieldValue("projectId"), (String) document.getFieldValue("projectName"));
-    result.addItem((String) document.getFieldValue("missionId"), (String) document.getFieldValue("missionName"));
-    result.addItem((String) document.getFieldValue("collectionId"), (String) document.getFieldValue("collectionName"));
-
-    return result;
-  }
+//  public static QuerySiteResult build(SolrDocument document)
+//  {
+//    QuerySiteResult result = new QuerySiteResult();
+//    result.setId((String) document.getFieldValue("id"));
+//    result.setFilename((String) document.getFieldValue("filename"));
+//    result.addItem((String) document.getFieldValue("siteId"), (String) document.getFieldValue("siteName"));
+//    result.addItem((String) document.getFieldValue("projectId"), (String) document.getFieldValue("projectName"));
+//    result.addItem((String) document.getFieldValue("missionId"), (String) document.getFieldValue("missionName"));
+//    result.addItem((String) document.getFieldValue("collectionId"), (String) document.getFieldValue("collectionName"));
+//
+//    return result;
+//  }
 
   public static JSONArray serialize(List<QueryResult> list)
   {
