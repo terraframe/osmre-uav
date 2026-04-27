@@ -57,6 +57,7 @@ import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
 import gov.geoplatform.uasdm.ws.UserNotificationMessage;
 import me.desair.tus.server.upload.UploadInfo;
+import net.geoprism.spring.core.ApplicationContextHolder;
 
 public class ImageryProcessingJob extends ImageryProcessingJobBase
 {
@@ -231,7 +232,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
         res = new EditableArchiveFileResource(res);
       }
 
-      var validator = new UploadValidationProcessor();
+      var validator = ApplicationContextHolder.getBean(UploadValidationProcessor.class);
       boolean isValid = validator.process(res, (AbstractUploadTask) this.getWorkflowTask(), getConfiguration());
 
       if (isValid)

@@ -15,24 +15,20 @@
  */
 package gov.geoplatform.uasdm.processing.geolocation;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 import com.opencsv.CSVReader;
+import com.runwaysdk.resource.ApplicationFileResource;
+import com.runwaysdk.resource.ArchiveFileResource;
 
-import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
+import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
 
 public class RX1R2GeoLocationFileValidator extends GeoLocationFileValidator
 {
-  public RX1R2GeoLocationFileValidator(ODMProcessingPayload payload)
+  public RX1R2GeoLocationFileValidator(FileFormat geoLocationFormat, ApplicationFileResource geoLocationFile, ArchiveFileResource archive)
   {
-    super(payload);
+    super(geoLocationFormat, geoLocationFile, archive);
   }
   
   @Override
@@ -40,7 +36,7 @@ public class RX1R2GeoLocationFileValidator extends GeoLocationFileValidator
   {
     GeoLocationValidationResults results = new GeoLocationValidationResults();
     
-    try (CSVReader csvReader = new CSVReader(new InputStreamReader(new ByteArrayInputStream(this.payload.getGeoLocationFile().getBytes()))))
+    try (CSVReader csvReader = new CSVReader(new InputStreamReader(this.geoLocationFile.openNewStream())))
     {
       String[] line;
       int num = 1;
@@ -52,7 +48,7 @@ public class RX1R2GeoLocationFileValidator extends GeoLocationFileValidator
         {
           String fileName = line[0];
           
-          if (!payload.getImageNames().contains(fileName))
+          if (!imageNames.contains(fileName))
           {
             results.addError("Line [" + num + "] references an image which does not exist. Image names must match exactly and are case sensitive.");
           }

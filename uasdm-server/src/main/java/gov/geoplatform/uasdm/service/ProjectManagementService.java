@@ -25,9 +25,11 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
@@ -53,6 +55,7 @@ import com.runwaysdk.dataaccess.ProgrammingErrorException;
 import com.runwaysdk.dataaccess.cache.DataNotFoundException;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 import com.runwaysdk.dataaccess.transaction.Transaction;
+import com.runwaysdk.resource.ApplicationFileResource;
 import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
@@ -73,6 +76,7 @@ import gov.geoplatform.uasdm.cog.TiTillerProxy;
 import gov.geoplatform.uasdm.command.GenerateMetadataCommand;
 import gov.geoplatform.uasdm.graph.ArtifactQuery;
 import gov.geoplatform.uasdm.graph.Collection;
+import gov.geoplatform.uasdm.graph.CollectionFormat;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.ODMRun;
@@ -135,7 +139,7 @@ public class ProjectManagementService
     private CollectionIF      collection;
 
     private Set<String>       excludes;
-
+    
     public RerunODMProcessThread(ODMProcessingTask task, CollectionIF collection, Set<String> excludes)
     {
       super("Rerun ortho thread for collection [" + collection.getName() + "]");
@@ -156,45 +160,16 @@ public class ProjectManagementService
          */
         Predicate<SiteObject> predicate = ( excludes == null || excludes.size() == 0 ) ? null : new ExcludeSiteObjectPredicate(this.excludes);
 
-        List<String> filenames = new LinkedList<String>();
-
-        CloseableFile zip;
-        try
-        {
-          logger.info("Initiating download from S3 of all raw data for collection [" + collection.getName() + "].");
-
-          zip = new CloseableFile(File.createTempFile("raw-" + this.collection.getOid(), ".zip"));
-
-          try (OutputStream ostream = new BufferedOutputStream(new FileOutputStream(zip)))
-          {
-            var format = this.collection.getFormat();
-            List<String> files;
-
-            if (format != null && format.isVideo())
-              files = downloadAll(this.collection, ImageryComponent.VIDEO, ostream, predicate, false);
-            else
-              files = downloadAll(this.collection, ImageryComponent.RAW, ostream, predicate, false);
-
-            filenames.addAll(files);
-          }
-        }
-        catch (IOException e)
-        {
-          throw new ProgrammingErrorException(e);
-        }
+        ArchiveFileResource archive = downloadAllImagery(collection, predicate);
 
         JSONArray array = new JSONArray();
-
-        for (String filename : filenames)
-        {
-          array.put(filename);
-        }
+        calculateImageNames(archive).forEach(n -> array.put(n));
 
         task.appLock();
         task.setProcessFilenameArray(array.toString());
         task.apply();
 
-        task.initiate(new ArchiveFileResource(new FileResource(zip)), collection.isMultiSpectral(), collection.isRadiometric());
+        task.initiate(archive, collection.isMultiSpectral(), collection.isRadiometric());
 
         NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
       }
@@ -213,7 +188,7 @@ public class ProjectManagementService
       }
     }
   }
-
+  
   private class RerunLidarProcessThread extends Thread
   {
     private LidarProcessingTask task;
@@ -277,7 +252,7 @@ public class ProjectManagementService
     }
   }
 
-  final Logger logger = LoggerFactory.getLogger(ProjectManagementService.class);
+  static final Logger logger = LoggerFactory.getLogger(ProjectManagementService.class);
 
   @Request(RequestType.SESSION)
   public List<TreeComponent> getChildren(String sessionId, String parentid)
@@ -579,6 +554,56 @@ public class ProjectManagementService
     }
 
     return filenames;
+  }
+  
+  public ArchiveFileResource downloadAllImagery(UasComponentIF component, Predicate<SiteObject> predicate) {
+    CloseableFile zip;
+    try
+    {
+      logger.info("Initiating download from S3 of all raw data for collection [" + component.getName() + "].");
+
+      zip = new CloseableFile(File.createTempFile("raw-" + component.getOid(), ".zip"));
+
+      try (OutputStream ostream = new BufferedOutputStream(new FileOutputStream(zip)))
+      {
+        CollectionFormat format = component instanceof CollectionIF ? ((CollectionIF)component).getFormat() : null;
+
+        if (format != null && format.isVideo())
+          downloadAll(component, ImageryComponent.VIDEO, ostream, predicate, false);
+        else
+          downloadAll(component, ImageryComponent.RAW, ostream, predicate, false);
+      }
+      
+      return new ArchiveFileResource(new FileResource(zip));
+    }
+    catch (IOException e)
+    {
+      throw new ProgrammingErrorException(e);
+    }
+  }
+  
+  public Set<String> calculateImageNames(ArchiveFileResource archive) {
+    Set<String> imageNames = new HashSet<String>();
+    
+    Queue<ApplicationFileResource> queue = new LinkedList<>();
+    queue.add(archive);
+    while(!queue.isEmpty())
+    {
+      var res = queue.poll();
+      
+      if (res.hasChildren())
+      {
+        for (var child : res.getChildrenFiles())
+          queue.add(child);
+        
+        continue;
+      }
+      
+      if (!res.getName().endsWith(".xml"))
+        imageNames.add(res.getName());
+    }
+    
+    return imageNames;
   }
 
   @Request(RequestType.SESSION)

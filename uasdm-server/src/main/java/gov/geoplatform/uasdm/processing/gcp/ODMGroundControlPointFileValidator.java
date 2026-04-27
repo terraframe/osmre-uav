@@ -24,8 +24,11 @@ import java.math.BigDecimal;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.runwaysdk.resource.ApplicationFileResource;
+import com.runwaysdk.resource.ArchiveFileResource;
 
 import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
+import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
 
 /**
  *
@@ -38,15 +41,15 @@ import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
  */
 public class ODMGroundControlPointFileValidator extends GroundControlPointFileValidator {
 
-    public ODMGroundControlPointFileValidator(ODMProcessingPayload payload) {
-        super(payload);
+    public ODMGroundControlPointFileValidator(FileFormat geoLocationFormat, ApplicationFileResource geoLocationFile, ArchiveFileResource archive) {
+        super(geoLocationFormat, geoLocationFile, archive);
     }
 
     @Override
     public GroundControlPointValidationResults validate() {
         GroundControlPointValidationResults results = new GroundControlPointValidationResults();
 
-        try (BufferedReader br = new BufferedReader(new StringReader(this.payload.getGroundControlPointFile()))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(this.gcpFile.openNewStream()))) {
             int num = 1;
             String line;
             while ((line = br.readLine()) != null) {
@@ -93,7 +96,7 @@ public class ODMGroundControlPointFileValidator extends GroundControlPointFileVa
                                 }
                                 break;
                             case 5:
-                                if (!payload.getImageNames().contains(vals[i])) {
+                                if (!imageNames.contains(vals[i])) {
                                     results.addError("Line [" + num + "] references an image which does not exist. Image names must match exactly and are case sensitive.");
                                 }
                                 break;

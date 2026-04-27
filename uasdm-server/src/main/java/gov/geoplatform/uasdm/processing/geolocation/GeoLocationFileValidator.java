@@ -15,9 +15,18 @@
  */
 package gov.geoplatform.uasdm.processing.geolocation;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
+
+import com.runwaysdk.resource.ApplicationFileResource;
+import com.runwaysdk.resource.ArchiveFileResource;
+
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
-import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
+import gov.geoplatform.uasdm.odm.HttpNewResponse;
+import gov.geoplatform.uasdm.odm.ODMResponse;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
 
 /**
@@ -27,32 +36,62 @@ import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
  */
 abstract public class GeoLocationFileValidator
 {
+  protected FileFormat geoLocationFormat;
   
-  protected ODMProcessingPayload payload;
+  protected ApplicationFileResource geoLocationFile;
   
-  public GeoLocationFileValidator(ODMProcessingPayload payload)
+  protected ArchiveFileResource archive;
+  
+  protected Set<String> imageNames = new HashSet<String>();
+  
+  public GeoLocationFileValidator(FileFormat geoLocationFormat, ApplicationFileResource geoLocationFile, ArchiveFileResource archive)
   {
-    this.payload = payload;
+    this.geoLocationFormat = geoLocationFormat;
+    this.geoLocationFile = geoLocationFile;
+    this.archive = archive;
+    
+    calculateImageNames();
   }
   
   abstract public GeoLocationValidationResults validate();
+  
+  private void calculateImageNames() {
+    imageNames.clear();
+    
+    Queue<ApplicationFileResource> queue = new LinkedList<>();
+    queue.add(archive);
+    while(!queue.isEmpty())
+    {
+      var res = queue.poll();
+      
+      if (res.hasChildren())
+      {
+        for (var child : res.getChildrenFiles())
+          queue.add(child);
+        
+        continue;
+      }
+      
+      imageNames.add(res.getName());
+    }
+  }
 
-  public static GeoLocationValidationResults validate(FileFormat geoLocationFormat, ODMProcessingPayload payload)
+  public static GeoLocationValidationResults validate(FileFormat geoLocationFormat, ApplicationFileResource geoLocationFile, ArchiveFileResource archive)
   {
     switch(geoLocationFormat)
     {
       case ODM:
-        return new ODMGeoLocationFileValidator(payload).validate();
+        return new ODMGeoLocationFileValidator(geoLocationFormat, geoLocationFile, archive).validate();
       case RX1R2:
-        return new RX1R2GeoLocationFileValidator(payload).validate();
+        return new RX1R2GeoLocationFileValidator(geoLocationFormat, geoLocationFile, archive).validate();
       default:
         throw new UnsupportedOperationException("Invalid format " + geoLocationFormat);
     }
   }
   
-  public static void validate(FileFormat geoLocationFormat, ODMProcessingPayload payload, AbstractWorkflowTask task)
+  public static void validate(FileFormat geoLocationFormat, ApplicationFileResource geoLocationFile, ArchiveFileResource archive, AbstractWorkflowTask task)
   {
-    GeoLocationValidationResults results = validate(geoLocationFormat, payload);
+    GeoLocationValidationResults results = validate(geoLocationFormat, geoLocationFile, archive);
     
     results.getErrors().stream().forEach(er -> task.createAction(er, TaskActionType.ERROR));
     

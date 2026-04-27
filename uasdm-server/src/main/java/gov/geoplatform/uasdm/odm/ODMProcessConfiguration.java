@@ -102,7 +102,7 @@ public class ODMProcessConfiguration implements ProcessConfiguration
 
   private boolean                includeGeoLocationFile;
 
-  private FileFormat             geoLocationFormat;
+  private FileFormat             geoLocationFormat = FileFormat.ODM;
 
   private String                 geoLocationFileName;
 
@@ -205,7 +205,6 @@ public class ODMProcessConfiguration implements ProcessConfiguration
     this.minNumFeatures = Integer.valueOf(10000);
     this.pcQuality = Quality.MEDIUM;
     this.featureQuality = Quality.HIGH;
-    this.geoLocationFormat = FileFormat.RX1R2;
     this.geoLocationFileName = Product.GEO_LOCATION_FILE;
     this.radiometricCalibration = RadiometricCalibration.NONE;
     this.includeGroundControlPointFile = false;

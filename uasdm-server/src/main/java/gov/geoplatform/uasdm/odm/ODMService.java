@@ -146,24 +146,6 @@ public class ODMService implements ODMServiceIF
     {
       if (payload.getRawCount() > 0)
       {
-        if (configuration.isIncludeGeoLocationFile() && StringUtils.isEmpty(payload.getGeoLocationFile()))
-        {
-          throw new GeoLocationFileMissingException(configuration.getGeoLocationFileName());
-        }
-        else if (configuration.isIncludeGeoLocationFile())
-        {
-          GeoLocationFileValidator.validate(configuration.getGeoLocationFormat(), payload, task);
-        }
-
-        if (configuration.isIncludeGroundControlPointFile() && StringUtils.isEmpty(payload.getGroundControlPointFile()))
-        {
-          throw new GenericException("Ground control point file is required");
-        }
-        else if (configuration.isIncludeGroundControlPointFile())
-        {
-          GroundControlPointFileValidator.validate(ODMProcessConfiguration.FileFormat.ODM, payload, task);
-        }
-
         HttpNewResponse resp = this.taskNewInit(col, payload.getRawCount(), isMultispectral, configuration);
 
         if (resp.hasError() || resp.getHTTPResponse().isError())

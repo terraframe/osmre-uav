@@ -51,6 +51,7 @@ import net.geoprism.spring.web.JsonExceptionHandler;
     "net.geoprism.spring", //
     "gov.geoplatform.uasdm.controller", //
     "gov.geoplatform.uasdm.service",
+    "gov.geoplatform.uasdm.processing",
     "gov.geoplatform.uasdm.service.business",
     "gov.geoplatform.uasdm.session",
     "gov.geoplatform.uasdm.maintenance" }, excludeFilters = { //

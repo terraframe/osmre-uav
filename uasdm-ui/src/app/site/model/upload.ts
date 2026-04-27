@@ -25,5 +25,9 @@ export interface UploadMetadata {
     tool?: string;
     projectionName?: string;
     ptEpsg?: number;
-
+    includeGroundControlPointFile?: boolean;
+    groundControlPointFileName?: string;
+    geoLocationFileName?: string;
+    geoLocationFormat?: string;
+    includeGeoLocationFile?: boolean;
 }

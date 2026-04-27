@@ -25,6 +25,7 @@ import java.util.Queue;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.opencsv.exceptions.CsvValidationException;
 import com.runwaysdk.resource.ApplicationFileResource;
@@ -180,6 +181,11 @@ public class ODMFacade
     {
       new RadiometricImageryPreProcessor().process(new FileResource(archive.extract()));
     }
+    
+    // This configuration (and format conversion) happens during upload. Once we get to processing, this config is derived (and legacy) 
+    configuration.setIncludeGeoLocationFile(StringUtils.isNotBlank(payload.getGeoLocationFile()));
+    configuration.setGeoLocationFormat(FileFormat.ODM);
+    configuration.setIncludeGroundControlPointFile(StringUtils.isNotBlank(payload.getGroundControlPointFile()));
 
     return payload;
   }
@@ -206,20 +212,11 @@ public class ODMFacade
         continue;
       }
       
-      if (res.getName().equalsIgnoreCase("geo.txt") && configuration.isIncludeGeoLocationFile())
+      if (res.getName().equalsIgnoreCase("geo.txt"))
       {
-        // We want to set the geoLocation file here on the payload BEFORE we convert it so that the validator which uses it will use the unconverter format
         payload.setGeoLocationFile(IOUtils.toString(res.openNewStream(), "UTF-8"));
-        
-        if (configuration.getGeoLocationFormat().equals(FileFormat.RX1R2))
-        {
-          try (RX1R2GeoFileConverter reader = RX1R2GeoFileConverter.open(res.openNewStream()))
-          {
-            IOUtils.copy(new FileInputStream(reader.getOutput()), new FileOutputStream(res.getUnderlyingFile()));
-          }
-        }
       }
-      else if (res.getName().equalsIgnoreCase("gcp_list.txt") && configuration.isIncludeGroundControlPointFile())
+      else if (res.getName().equalsIgnoreCase("gcp_list.txt"))
       {
         payload.setGroundControlPointFile(IOUtils.toString(res.openNewStream(), "UTF-8"));
       }

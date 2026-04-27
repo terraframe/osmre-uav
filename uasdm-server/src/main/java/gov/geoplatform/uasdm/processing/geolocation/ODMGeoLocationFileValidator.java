@@ -16,15 +16,13 @@
 package gov.geoplatform.uasdm.processing.geolocation;
 
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 
-import org.apache.commons.lang.StringUtils;
+import com.runwaysdk.resource.ApplicationFileResource;
+import com.runwaysdk.resource.ArchiveFileResource;
 
-import com.runwaysdk.dataaccess.ProgrammingErrorException;
-
-import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
+import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
 
 /**
  * 
@@ -37,9 +35,9 @@ import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
 public class ODMGeoLocationFileValidator extends GeoLocationFileValidator
 {
 
-  public ODMGeoLocationFileValidator(ODMProcessingPayload payload)
+  public ODMGeoLocationFileValidator(FileFormat geoLocationFormat, ApplicationFileResource geoLocationFile, ArchiveFileResource archive)
   {
-    super(payload);
+    super(geoLocationFormat, geoLocationFile, archive);
   }
   
   @Override
@@ -47,7 +45,7 @@ public class ODMGeoLocationFileValidator extends GeoLocationFileValidator
   {
     GeoLocationValidationResults results = new GeoLocationValidationResults();
     
-    try (BufferedReader br = new BufferedReader(new StringReader(this.payload.getGeoLocationFile())))
+    try (BufferedReader br = new BufferedReader(new InputStreamReader(this.geoLocationFile.openNewStream())))
     {
       int num = 1;
       String line;
@@ -73,7 +71,7 @@ public class ODMGeoLocationFileValidator extends GeoLocationFileValidator
             switch(i)
             {
               case 0:
-                if (!payload.getImageNames().contains(vals[i]))
+                if (!imageNames.contains(vals[i]))
                 {
                   results.addError("Line [" + num + "] references an image which does not exist. Image names must match exactly and are case sensitive.");
                 }

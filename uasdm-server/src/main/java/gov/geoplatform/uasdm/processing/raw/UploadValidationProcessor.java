@@ -16,6 +16,7 @@
 package gov.geoplatform.uasdm.processing.raw;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,12 +24,14 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Service;
 
 import com.runwaysdk.RunwayException;
 import com.runwaysdk.resource.ApplicationFileResource;
@@ -38,6 +41,7 @@ import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.resource.ResourceException;
 import com.runwaysdk.session.Session;
 
+import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.InvalidZipException;
 import gov.geoplatform.uasdm.Util;
@@ -49,18 +53,29 @@ import gov.geoplatform.uasdm.bus.CollectionUploadEvent;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.Mission;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
+import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.CollectionFormat;
+import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.odm.GeoLocationFileMissingException;
+import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
+import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
+import gov.geoplatform.uasdm.processing.gcp.GroundControlPointFileValidator;
+import gov.geoplatform.uasdm.processing.geolocation.GeoLocationFileValidator;
+import gov.geoplatform.uasdm.processing.geolocation.RX1R2GeoFileConverter;
 import gov.geoplatform.uasdm.resource.EditableArchiveFileResource;
+import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
 import gov.geoplatform.uasdm.ws.UserNotificationMessage;
+import jakarta.inject.Inject;
 
+@Service
 public class UploadValidationProcessor
 {
   
@@ -80,6 +95,13 @@ public class UploadValidationProcessor
   protected ApplicationFileResource rootFile;
   
   protected ApplicationFileResource downstreamFile = null;
+  
+  protected ApplicationFileResource detectedGeoLocationFile = null;
+  
+  protected ApplicationFileResource detectedGCPFile = null;
+  
+  @Inject
+  private ProjectManagementService pms;
   
   public static boolean isMultispectral(AbstractWorkflowTask task)
   {
@@ -181,7 +203,6 @@ public class UploadValidationProcessor
       task.apply();
       
       isValid = false;
-      return false;
     }
     
     if (uploaded instanceof ArchiveFileResource)
@@ -203,7 +224,111 @@ public class UploadValidationProcessor
       if (downstreamFile == null) downstreamFile = uploaded;
     }
     
+    handleGeoLocationAndGcp(task, configuration);
+    
+    if (!isValid && !WorkflowTaskStatus.ERROR.toString().equals(task.getStatus())) {
+      task.lock();
+      task.setStatus(WorkflowTaskStatus.ERROR.toString());
+      task.setMessage("The uploaded file did not pass validation. Check the messages for more information.");
+      task.apply();
+    }
+    
     return isValid;
+  }
+  
+  private void handleGeoLocationAndGcp(AbstractUploadTask task, ProcessConfiguration configuration) {
+    try {
+      ArchiveFileResource archive = null;
+      
+      if (configuration.isODM()) {
+        // The validator requires all the files. So if they only upload the glf we'll have to validate on next upload.
+        if (rootFile instanceof ArchiveFileResource) {
+          archive = (ArchiveFileResource) rootFile;
+        } else {
+          archive = pms.downloadAllImagery(task.getImageryComponent().getUasComponent(), null);
+          
+          if (pms.fileNamesInArchive(archive).size() == 0) {
+            archive = null;
+          } else if (detectedGeoLocationFile == null) {
+            detectedGeoLocationFile = findGlf(archive);
+          }
+        }
+      
+        var odmConfig = configuration.toODM();
+        
+        // GeoLocation (aka geologger) files
+        if (detectedGeoLocationFile == null)
+        {
+          if (odmConfig.isIncludeGeoLocationFile()) {
+            throw new GeoLocationFileMissingException(odmConfig.getGeoLocationFileName());
+          } else if (sensorRequiresGLF(task)) {
+            task.createAction("Your collection references a sensor which generates a geo location (geologger) file, but you did not select one on upload. Please upload a geo location file before processing.", TaskActionType.WARNING);
+          }
+        }
+        else { // We actually can't check against the "isIncludeGeoLocationFile" flag here, because they could have uploaded on a previous run and now they're uploading imagery. 
+          // Validate
+          if (archive != null)
+            GeoLocationFileValidator.validate(odmConfig.getGeoLocationFormat(), detectedGeoLocationFile, archive, task);
+          
+          // Convert
+          if (odmConfig.getGeoLocationFormat().equals(FileFormat.RX1R2))
+          {
+            try (RX1R2GeoFileConverter reader = RX1R2GeoFileConverter.open(detectedGeoLocationFile.openNewStream()))
+            {
+              IOUtils.copy(new FileInputStream(reader.getOutput()), new FileOutputStream(detectedGeoLocationFile.getUnderlyingFile()));
+            }
+          }
+        }
+        
+        // Validate GCP
+        if (odmConfig.isIncludeGroundControlPointFile()) {
+          if (detectedGCPFile == null)
+          {
+            throw new GenericException("Ground control point file is required");
+          }
+          
+          GroundControlPointFileValidator.validate(ODMProcessConfiguration.FileFormat.ODM, detectedGCPFile, archive, task);
+        }
+      }
+    }
+    catch (Throwable t) {
+      isValid = false;
+      task.createAction(RunwayException.localizeThrowable(t, Session.getCurrentLocale()), TaskActionType.ERROR);
+    }
+  }
+    
+  public ApplicationFileResource findGlf(ArchiveFileResource archive) {
+    ApplicationFileResource result = null;
+    
+    Queue<ApplicationFileResource> queue = new LinkedList<>();
+    queue.add(archive);
+    while(!queue.isEmpty())
+    {
+      var res = queue.poll();
+      
+      if (res.hasChildren())
+      {
+        for (var child : res.getChildrenFiles())
+          queue.add(child);
+        
+        continue;
+      }
+      
+      if (res.getName().equals(Product.GEO_LOCATION_FILE))
+        result = res;
+    }
+    
+    return result;
+  }
+  
+  private boolean sensorRequiresGLF(AbstractUploadTask task) {
+    ImageryComponent component = task.getImageryComponent();
+    
+    if (component instanceof Collection) {
+      return Boolean.TRUE.equals(( (Collection) component ).getSensor().getHasGeologger());
+    }
+    
+    return false;
   }
   
   private void validateArchive(ArchiveFileResource archive, AbstractUploadTask task, ProcessConfiguration configuration)
@@ -371,10 +496,12 @@ public class UploadValidationProcessor
         if (isGeo)
         {
           finalName = "geo.txt";
+          detectedGeoLocationFile = res;
         }
         else if (isGcp)
         {
           finalName = "gcp_list.txt";
+          detectedGCPFile = res;
         }
         else if (!extensions.contains(ext))
         {

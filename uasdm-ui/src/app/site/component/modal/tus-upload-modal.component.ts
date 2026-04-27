@@ -104,7 +104,9 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 			type: ProcessConfigType.ODM,
 			processOrtho: true,
 			processPtcloud: true,
-			processDem: true
+			processDem: true,
+			includeGroundControlPointFile: false,
+			includeGeoLocationFile: false
 		}
 
 		if (this.uploadTarget != null && this.uploadTarget === 'ptcloud') {
