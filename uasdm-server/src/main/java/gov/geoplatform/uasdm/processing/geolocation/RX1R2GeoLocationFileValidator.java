@@ -44,6 +44,11 @@ public class RX1R2GeoLocationFileValidator extends GeoLocationFileValidator
       // we are going to read data line by line
       while ( ( line = csvReader.readNext() ) != null)
       {
+        // First line might be a SRS
+        if (num == 1 && line.length == 1 && line[0].trim().toUpperCase().startsWith("EPSG")) {
+          continue;
+        }
+        
         if (line.length >= 4)
         {
           String fileName = line[0];
