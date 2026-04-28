@@ -154,6 +154,17 @@
                 bands, not standard RGB imagery. Radiometric calibration is automatically enabled (as CAMERA), but if
                 your sensor supports CAMERA+SUN, you may enable that during processing.</span>
             </div>
+            <div *ngIf="uploadTarget === 'raw' && component && component.sensor.hasGeologger"
+              style="padding: 8px; background-color: #f4fff3; border-left: 4px solid #8be099;">
+              <h4>Geo Location File</h4>
+              <span>You are uploading to a sensor which requires a geo location file. This geo location file is generated
+                separately from the rest of the imagery, and is sometimes called 'PIX4D.csv' or 'geo.txt', but may
+                vary by sensor. This file may be uploaded by itself, or inside a zip with the rest of the imagery. If a
+                geo location file already exists, it will be replaced. RX1RII geo location files will be converted to, and
+                stored as, an ODM file-format upon upload. Validation of this file also happens on upload. References to
+                imagery inside this file are case sensitive and must match exactly.
+              </span>
+            </div>
             <h4>All uploaded files</h4>
             <ul>
               <li *ngIf="uploadTarget === 'raw'">Must be compressed into a .zip or .tar.gz format.</li>
@@ -187,21 +198,26 @@
           <hr />
 
           <div *ngIf="(metadata.processOrtho || metadata.processDem) && !isVideo()" class="form-group mt-1">
-            <boolean-field [(value)]="metadata.includeGeoLocationFile"
-              label="Upload includes geo location file"></boolean-field>
+            
+              <boolean-field
+                [(ngModel)]="metadata.includeGeoLocationFile"
+                name="includeGeoLocationFile"
+                [required]="uploadTarget === 'raw' && component && component.sensor.hasGeologger"
+                label="Upload includes geo location file">
+              </boolean-field>
           </div>
 
           <div class="form-group mt-1" *ngIf="metadata.processOrtho && metadata.includeGeoLocationFile && !isVideo()">
-            <label for="geoLocationFormat">Geo location file format</label>
-            <select [(ngModel)]="metadata.geoLocationFormat" name="geoLocationFormat" class="form-control">
+            <label for="geoLocationFormat">Geo location file format <span class="text-danger">*</span></label>
+            <select required [(ngModel)]="metadata.geoLocationFormat" name="geoLocationFormat" class="form-control">
               <option value="RX1R2">RX1R2</option>
               <option value="ODM">ODM</option>
             </select>
           </div>
 
           <div class="form-group mt-1" *ngIf="metadata.processOrtho && metadata.includeGeoLocationFile && !isVideo()">
-            <label for="geoLocationFileName">Geo location file name</label>
-            <input [(ngModel)]="metadata.geoLocationFileName" name="geoLocationFileName" type="input" class="form-control"
+            <label for="geoLocationFileName">Geo location file name <span class="text-danger">*</span></label>
+            <input required [(ngModel)]="metadata.geoLocationFileName" name="geoLocationFileName" type="input" class="form-control"
               placeholder="File name..." />
           </div>
 
@@ -353,7 +369,7 @@
             <span class="ui-button-text">Close</span>
           </button>
 
-          <button type="button btn btn-primary" [disabled]="myForm.invalid || !selectedFile || isUploading"
+          <button type="button" [disabled]="myForm.invalid || !selectedFile || isUploading"
             class="btn btn-primary" (click)="handleUpload()">
             <i class="icon-upload icon-white"></i>
             Upload

@@ -7,7 +7,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { ErrorHandler, BasicConfirmModalComponent } from '@shared/component';
 
@@ -82,6 +83,10 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	canReprocessImagery: boolean = false;
 	sets: ImageSet[] = [];
 
+	private dataRequestCancel$ = new Subject<void>();
+	private thumbnailSubscriptions: Subscription[] = [];
+	private requestGeneration = 0;
+	private destroyed$ = new Subject<void>();
 
 	constPageSize: number = 25;
 
@@ -132,6 +137,10 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnDestroy(): void {
+		this.cancelInFlightRequests();
+		this.destroyed$.next();
+		this.destroyed$.complete();
+		this.dataRequestCancel$.complete();
 	}
 
 
@@ -155,17 +164,31 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		});
 	}
 
+	private cancelInFlightRequests(): void {
+		this.requestGeneration++;
+
+		this.dataRequestCancel$.next();
+
+		for (const sub of this.thumbnailSubscriptions) {
+			sub.unsubscribe();
+		}
+
+		this.thumbnailSubscriptions = [];
+	}
+
 	labelForFormat(format: string) {
 		var meta = COLLECTION_FORMATS.find(m => m.value === format);
 
 		return meta == null ? format : meta.label;
 	}
 
-	createImageFromBlob(image: Blob, imageData: any) {
-		let reader = new FileReader();
+	createImageFromBlob(image: Blob, imageData: any, generation: number): void {
+		const reader = new FileReader();
+
 		reader.addEventListener("load", () => {
-			// this.imageToShow = reader.result;
-			this.thumbnails[imageData.key] = reader.result;
+			if (generation === this.requestGeneration && this.tabName === 'image') {
+				this.thumbnails[imageData.key] = reader.result;
+			}
 		}, false);
 
 		if (image) {
@@ -173,30 +196,49 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	getThumbnail(image: SiteEntity): void {
-		if (image == null) { return; }
+	getThumbnail(image: SiteEntity, generation: number): void {
+		if (image == null) {
+			return;
+		}
+
+		let sub: Subscription;
 
 		if (image.presignedThumbnailDownload != null && image.presignedThumbnailDownload.length > 0) {
-
-			this.service.downloadPresigned(image.presignedThumbnailDownload, false).subscribe(blob => {
-				this.createImageFromBlob(blob, image);
-			}, error => {
-				console.log(error);
-			});
-
+			sub = this.service.downloadPresigned(image.presignedThumbnailDownload, false)
+				.pipe(
+					takeUntil(this.dataRequestCancel$),
+					takeUntil(this.destroyed$)
+				)
+				.subscribe({
+					next: blob => {
+						if (generation === this.requestGeneration && this.tabName === 'image') {
+							this.createImageFromBlob(blob, image, generation);
+						}
+					},
+					error: error => console.log(error)
+				});
 		} else {
-
-			let rootPath: string = image.key.substr(0, image.key.lastIndexOf("/"));
-			let fileName: string = /[^/]*$/.exec(image.key)[0];
+			const rootPath: string = image.key.substr(0, image.key.lastIndexOf("/"));
+			const fileName: string = /[^/]*$/.exec(image.key)[0];
 			const lastPeriod: number = fileName.lastIndexOf(".");
 			const thumbKey: string = rootPath + "/thumbnails/" + fileName.substr(0, lastPeriod) + ".png";
 
-			this.service.download(image.component, thumbKey, false).subscribe(blob => {
-				this.createImageFromBlob(blob, image);
-			}, error => {
-				console.log(error);
-			});
+			sub = this.service.download(image.component, thumbKey, false)
+				.pipe(
+					takeUntil(this.dataRequestCancel$),
+					takeUntil(this.destroyed$)
+				)
+				.subscribe({
+					next: blob => {
+						if (generation === this.requestGeneration && this.tabName === 'image') {
+							this.createImageFromBlob(blob, image, generation);
+						}
+					},
+					error: error => console.log(error)
+				});
 		}
+
+		this.thumbnailSubscriptions.push(sub);
 	}
 
 	onPageChange(pageNumber: number): void {
@@ -204,8 +246,10 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	}
 
 	onSelect(tabName: string): void {
+		this.cancelInFlightRequests();
 
 		this.tabName = tabName;
+		this.thumbnails = {};
 
 		if (tabName === "image") {
 			this.enableSelectableImages = true;
@@ -220,12 +264,7 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 			let ps: number = null;
 
 			if (tabName === "image") {
-				if (this.page.pageNumber == null) {
-					pn = 1;
-				}
-				else {
-					pn = this.page.pageNumber;
-				}
+				pn = this.page.pageNumber == null ? 1 : this.page.pageNumber;
 				ps = this.constPageSize;
 			}
 
@@ -233,13 +272,14 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 			this.video.name = null;
 
 			this.getData(this.entity.id, this.tabName, pn, ps);
-
 		}
 	}
 
-	getData(component: string, folder: string, pageNumber: number, pageSize: number) {
-
+	getData(component: string, folder: string, pageNumber: number, pageSize: number): void {
 		this.loading = true;
+
+		const generation = this.requestGeneration;
+		const requestedTab = folder;
 
 		if (folder === "image" && this.entity.format && this.entity.format.startsWith('VIDEO_')) {
 			folder = "video";
@@ -247,24 +287,44 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 			pageSize = null;
 		}
 
-		this.service.getObjects(component, folder, pageNumber, pageSize, true).then(resultSet => {
-			this.page = resultSet;
+		this.service.getObjects$(component, folder, pageNumber, pageSize, true)
+			.pipe(
+				takeUntil(this.dataRequestCancel$),
+				takeUntil(this.destroyed$)
+			)
+			.subscribe({
+				next: resultSet => {
+					// The request completed, but it no longer belongs to the active tab.
+					if (generation !== this.requestGeneration || requestedTab !== this.tabName) {
+						return;
+					}
 
-			const minNumberOfFiles = (this.entity.isLidar || (this.entity.format && this.entity.format.toLowerCase().includes("video"))) ? 0 : 1;
+					this.page = resultSet;
 
-			this.canReprocessImagery = this.page.results.length > minNumberOfFiles ? true : false;
+					const minNumberOfFiles =
+						(this.entity.isLidar || (this.entity.format && this.entity.format.toLowerCase().includes("video")))
+							? 0
+							: 1;
 
-			for (let i = 0; i < this.page.results.length; ++i) {
-				let item = this.page.results[i];
+					this.canReprocessImagery = this.page.results.length > minNumberOfFiles;
 
-				if (this.isImage(item)) {
-					this.getThumbnail(item);
+					for (const item of this.page.results) {
+						if (this.isImage(item)) {
+							this.getThumbnail(item, generation);
+						}
+					}
+				},
+				error: err => {
+					if (generation === this.requestGeneration) {
+						this.error(err);
+					}
+				},
+				complete: () => {
+					if (generation === this.requestGeneration) {
+						this.loading = false;
+					}
 				}
-
-			}
-		}).finally(() => {
-			this.loading = false;
-		})
+			});
 	}
 
 	isImage(item: any): boolean {

@@ -39,7 +39,24 @@ export class ManagementService {
 			.toPromise()
 	}
 
-	getObjects(id: string, key: string, pageNumber: number, pageSize: number, presigned: boolean = false): Promise<SiteObjectsResultSet> {
+	// Consider this method deprecated. Use the observable version of this method (getObjects$) instead.
+	getObjects(
+		id: string,
+		key: string,
+		pageNumber: number,
+		pageSize: number,
+		presigned: boolean = false
+	): Promise<SiteObjectsResultSet> {
+		return firstValueFrom(this.getObjects$(id, key, pageNumber, pageSize, presigned));
+	}
+
+	getObjects$(
+		id: string,
+		key: string,
+		pageNumber: number,
+		pageSize: number,
+		presigned: boolean = false
+	): Observable<SiteObjectsResultSet> {
 		let params: HttpParams = new HttpParams();
 		params = params.set('id', id);
 
@@ -50,15 +67,17 @@ export class ManagementService {
 		if (pageNumber != null) {
 			params = params.set('pageNumber', pageNumber.toString());
 		}
+
 		if (pageSize != null) {
 			params = params.set('pageSize', pageSize.toString());
 		}
 
-		let method = presigned ? "objects-presigned" : "objects";
+		const method = presigned ? "objects-presigned" : "objects";
 
-		return this.http
-			.get<SiteObjectsResultSet>(environment.apiUrl + '/api/project/' + method, { params: params })
-			.toPromise()
+		return this.http.get<SiteObjectsResultSet>(
+			environment.apiUrl + '/api/project/' + method,
+			{ params }
+		);
 	}
 
 	view(id: string): Promise<{ breadcrumbs: SiteEntity[], item: SiteEntity }> {

@@ -1,21 +1,74 @@
-<!--
+<div
+  class="boolean-field"
+  [ngClass]="{
+    'boolean-field-inline': inline,
+    'boolean-field-disabled': disabled,
+    'boolean-field-invalid': showRequiredError
+  }">
 
+  <div class="form-check boolean-field-check-row">
 
+    <div
+      [id]="id"
+      role="checkbox"
+      tabindex="0"
+      class="jcf-unselectable chk-area form-check-input boolean-field-checkbox"
+      [ngClass]="{
+        'chk-checked': value,
+        'chk-disabled': disabled,
+        'chk-invalid': showRequiredError
+      }"
+      [attr.aria-checked]="value"
+      [attr.aria-disabled]="disabled"
+      [attr.aria-required]="required"
+      [attr.aria-invalid]="showRequiredError"
+      [attr.aria-describedby]="showRequiredError ? requiredErrorId : null"
+      [style]="!inline ? '' : 'margin: 0 5px 0 0;'"
+      (click)="toggle()"
+      (blur)="markTouched()"
+      (keydown.enter)="toggle()"
+      (keydown.space)="toggle(); $event.preventDefault()">
 
--->
-<div>
-  <div class="form-check">
-    <div (click)="toggle()" [ngClass]="{'chk-checked' : value, 'chk-disabled' : disabled}" [style]="!inline ? '' : 'margin: 0 5px 0 0;'" ng-style="chkstyle" class="jcf-unselectable chk-area form-check-input">
       <span></span>
     </div>
 
-    <label *ngIf="label.length > 0" class="form-check-label">{{label}}</label>
-    <label *ngIf="localizeLabelKey.length > 0" class="form-check-label">
-      <localize key="{{localizeLabelKey}}"></localize>
+    <label
+      *ngIf="label.length > 0"
+      class="form-check-label boolean-field-label"
+      [attr.for]="id"
+      (click)="toggle()">
+
+      {{ label }}
+
+      <span
+        *ngIf="required"
+        class="boolean-field-required-marker"
+        aria-hidden="true">*</span>
     </label>
+
+    <label
+      *ngIf="localizeLabelKey.length > 0"
+      class="form-check-label boolean-field-label"
+      [attr.for]="id"
+      (click)="toggle()">
+
+      <localize key="{{ localizeLabelKey }}"></localize>
+
+      <span
+        *ngIf="required"
+        class="boolean-field-required-marker"
+        aria-hidden="true">*</span>
+    </label>
+
   </div>
-  <!-- Force a line break somehow 
-  <div *ngIf="!inline" class="row">
+
+  <div
+    *ngIf="showRequiredError"
+    [id]="requiredErrorId"
+    class="boolean-field-error">
+
+    {{ requiredMessage }}
+
   </div>
-  -->
+
 </div>

@@ -1,0 +1,53 @@
+.modal-form .holder .check-block .chk-area {
+  margin: 10px 0 0 0;
+}
+
+.boolean-field {
+  display: block;
+}
+
+.boolean-field-inline {
+  display: inline-block;
+}
+
+.boolean-field-check-row {
+  display: flex;
+  align-items: center;
+}
+
+.boolean-field-checkbox {
+  cursor: pointer;
+}
+
+.boolean-field-disabled .boolean-field-checkbox,
+.boolean-field-disabled .boolean-field-label {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.boolean-field-label {
+  cursor: pointer;
+  user-select: none;
+  padding-left: 8px;
+}
+
+.boolean-field-required-marker {
+  color: #dc3545;
+  margin-left: 3px;
+}
+
+.chk-invalid {
+  border: 1px solid #dc3545;
+  box-shadow: 0 0 0 0.15rem rgba(220, 53, 69, 0.15);
+}
+
+.boolean-field-error {
+  color: #dc3545;
+  font-size: 0.875rem;
+  line-height: 1.25;
+  margin-top: 4px;
+}
+
+.boolean-field-invalid .boolean-field-label {
+  color: #dc3545;
+}

@@ -78,30 +78,59 @@ import jakarta.inject.Inject;
 @Service
 public class UploadValidationProcessor
 {
-  
-  protected HashSet<String> filenameSet = new HashSet<String>();
-  
-  protected boolean isMultispectral;
-  
-  protected boolean isRadiometric;
-  
-  protected boolean isVideo;
-  
-  protected CollectionFormat format;
-  
-  protected boolean isValid = true;
-  
-  // The file being processed
-  protected ApplicationFileResource rootFile;
-  
-  protected ApplicationFileResource downstreamFile = null;
-  
-  protected ApplicationFileResource detectedGeoLocationFile = null;
-  
-  protected ApplicationFileResource detectedGCPFile = null;
-  
   @Inject
   private ProjectManagementService pms;
+  
+  private static class ValidationContext {
+    private final Set<String> filenameSet = new HashSet<>();
+
+    private boolean isMultispectral;
+    private boolean isRadiometric;
+    private boolean isVideo;
+    private CollectionFormat format;
+
+    private boolean isValid = true;
+
+    private ApplicationFileResource rootFile;
+    private ApplicationFileResource downstreamFile;
+    private ApplicationFileResource detectedGeoLocationFile;
+    private ApplicationFileResource detectedGCPFile;
+  }
+  
+  public static class UploadValidationResult {
+    private final boolean valid;
+    private final ApplicationFileResource downstreamFile;
+    private final ApplicationFileResource detectedGeoLocationFile;
+    private final ApplicationFileResource detectedGCPFile;
+
+    public UploadValidationResult(
+        boolean valid,
+        ApplicationFileResource downstreamFile,
+        ApplicationFileResource detectedGeoLocationFile,
+        ApplicationFileResource detectedGCPFile
+    ) {
+      this.valid = valid;
+      this.downstreamFile = downstreamFile;
+      this.detectedGeoLocationFile = detectedGeoLocationFile;
+      this.detectedGCPFile = detectedGCPFile;
+    }
+
+    public boolean isValid() {
+      return valid;
+    }
+
+    public ApplicationFileResource getDownstreamFile() {
+      return downstreamFile;
+    }
+
+    public ApplicationFileResource getDetectedGeoLocationFile() {
+      return detectedGeoLocationFile;
+    }
+
+    public ApplicationFileResource getDetectedGCPFile() {
+      return detectedGCPFile;
+    }
+  }
   
   public static boolean isMultispectral(AbstractWorkflowTask task)
   {
@@ -185,16 +214,16 @@ public class UploadValidationProcessor
     return null;
   }
   
-  public ApplicationFileResource getDownstreamFile() { return downstreamFile; }
-
   @SuppressWarnings("resource")
-  public boolean process(ApplicationFileResource uploaded, AbstractUploadTask task, ProcessConfiguration configuration)
+  public UploadValidationResult process(ApplicationFileResource uploaded, AbstractUploadTask task, ProcessConfiguration configuration)
   {
-    this.rootFile = uploaded;
-    this.isMultispectral = isMultispectral(task);
-    this.isRadiometric= isRadiometric(task);
-    this.isVideo = isVideo(task);
-    this.format = getCollectionFormat(task);
+    ValidationContext ctx = new ValidationContext();
+
+    ctx.rootFile = uploaded;
+    ctx.isMultispectral = isMultispectral(task);
+    ctx.isRadiometric = isRadiometric(task);
+    ctx.isVideo = isVideo(task);
+    ctx.format = getCollectionFormat(task);
     
     if (!UasComponentIF.isValidName(configuration.getProductName())) {
       task.lock();
@@ -202,62 +231,67 @@ public class UploadValidationProcessor
       task.setMessage("Invalid Product Name [" + configuration.getProductName() + "]. No spaces or special characters such as <, >, -, +, =, !, @, #, $, %, ^, &, *, ?,/, \\ or apostrophes are allowed.");
       task.apply();
       
-      isValid = false;
+      ctx.isValid = false;
     }
     
     if (uploaded instanceof ArchiveFileResource)
     {
-      validateArchive((ArchiveFileResource) uploaded, task, configuration);
-      this.downstreamFile = uploaded;
+      validateArchive(ctx, (ArchiveFileResource) uploaded, task, configuration);
+      ctx.downstreamFile = uploaded;
     }
     else
     {
-      if (!validateFile(uploaded, task, configuration))
+      if (!validateFile(ctx, uploaded, task, configuration))
       {
-        isValid = false;
+        ctx.isValid = false;
         task.lock();
         task.setStatus(WorkflowTaskStatus.ERROR.toString());
         task.setMessage("The uploaded file did not pass validation. Check the messages for more information.");
         task.apply();
       }
       
-      if (downstreamFile == null) downstreamFile = uploaded;
+      if (ctx.downstreamFile == null) ctx.downstreamFile = uploaded;
     }
     
-    handleGeoLocationAndGcp(task, configuration);
+    handleGeoLocationAndGcp(ctx, task, configuration);
     
-    if (!isValid && !WorkflowTaskStatus.ERROR.toString().equals(task.getStatus())) {
+    if (!ctx.isValid && !WorkflowTaskStatus.ERROR.toString().equals(task.getStatus())) {
       task.lock();
       task.setStatus(WorkflowTaskStatus.ERROR.toString());
       task.setMessage("The uploaded file did not pass validation. Check the messages for more information.");
       task.apply();
     }
     
-    return isValid;
+    return new UploadValidationResult(
+        ctx.isValid,
+        ctx.downstreamFile,
+        ctx.detectedGeoLocationFile,
+        ctx.detectedGCPFile
+    );
   }
   
-  private void handleGeoLocationAndGcp(AbstractUploadTask task, ProcessConfiguration configuration) {
+  private void handleGeoLocationAndGcp(ValidationContext ctx, AbstractUploadTask task, ProcessConfiguration configuration) {
     try {
       ArchiveFileResource archive = null;
       
       if (configuration.isODM()) {
         // The validator requires all the files. So if they only upload the glf we'll have to validate on next upload.
-        if (rootFile instanceof ArchiveFileResource) {
-          archive = (ArchiveFileResource) rootFile;
+        if (ctx.rootFile instanceof ArchiveFileResource) {
+          archive = (ArchiveFileResource) ctx.rootFile;
         } else {
           archive = pms.downloadAllImagery(task.getImageryComponent().getUasComponent(), null);
           
           if (pms.fileNamesInArchive(archive).size() == 0) {
             archive = null;
-          } else if (detectedGeoLocationFile == null) {
-            detectedGeoLocationFile = findGlf(archive);
+          } else if (ctx.detectedGeoLocationFile == null) {
+            ctx.detectedGeoLocationFile = findGlf(archive);
           }
         }
       
         var odmConfig = configuration.toODM();
         
         // GeoLocation (aka geologger) files
-        if (detectedGeoLocationFile == null)
+        if (ctx.detectedGeoLocationFile == null)
         {
           if (odmConfig.isIncludeGeoLocationFile()) {
             throw new GeoLocationFileMissingException(odmConfig.getGeoLocationFileName());
@@ -268,31 +302,36 @@ public class UploadValidationProcessor
         else { // We actually can't check against the "isIncludeGeoLocationFile" flag here, because they could have uploaded on a previous run and now they're uploading imagery. 
           // Validate
           if (archive != null)
-            GeoLocationFileValidator.validate(odmConfig.getGeoLocationFormat(), detectedGeoLocationFile, archive, task);
+            GeoLocationFileValidator.validate(odmConfig.getGeoLocationFormat(), ctx.detectedGeoLocationFile, archive, task);
           
           // Convert
           if (odmConfig.getGeoLocationFormat().equals(FileFormat.RX1R2))
           {
-            try (RX1R2GeoFileConverter reader = RX1R2GeoFileConverter.open(detectedGeoLocationFile.openNewStream()))
+            try (RX1R2GeoFileConverter reader = RX1R2GeoFileConverter.open(ctx.detectedGeoLocationFile.openNewStream()))
             {
-              IOUtils.copy(new FileInputStream(reader.getOutput()), new FileOutputStream(detectedGeoLocationFile.getUnderlyingFile()));
+              try (
+                  FileInputStream in = new FileInputStream(reader.getOutput());
+                  FileOutputStream out = new FileOutputStream(ctx.detectedGeoLocationFile.getUnderlyingFile())
+              ) {
+                IOUtils.copy(in, out);
+              }
             }
           }
         }
         
         // Validate GCP
         if (odmConfig.isIncludeGroundControlPointFile()) {
-          if (detectedGCPFile == null)
+          if (ctx.detectedGCPFile == null)
           {
             throw new GenericException("Ground control point file is required");
           }
           
-          GroundControlPointFileValidator.validate(ODMProcessConfiguration.FileFormat.ODM, detectedGCPFile, archive, task);
+          GroundControlPointFileValidator.validate(ODMProcessConfiguration.FileFormat.ODM, ctx.detectedGCPFile, archive, task);
         }
       }
     }
     catch (Throwable t) {
-      isValid = false;
+      ctx.isValid = false;
       task.createAction(RunwayException.localizeThrowable(t, Session.getCurrentLocale()), TaskActionType.ERROR);
     }
   }
@@ -331,7 +370,7 @@ public class UploadValidationProcessor
     return false;
   }
   
-  private void validateArchive(ArchiveFileResource archive, AbstractUploadTask task, ProcessConfiguration configuration)
+  private void validateArchive(ValidationContext ctx, ArchiveFileResource archive, AbstractUploadTask task, ProcessConfiguration configuration)
   {
     try
     {
@@ -355,16 +394,16 @@ public class UploadValidationProcessor
           continue;
         }
         
-        if (validateFile(res, task, configuration)) {
+        if (validateFile(ctx, res, task, configuration)) {
           count++;
         } else {
-          removeFromProcessing(res);
+          removeFromProcessing(ctx, res);
         }
       }
       
       if (count > 0 && configuration.isLidar() && task.getUploadTarget().equals(ImageryComponent.RAW))
       {
-        List<String> incomingFiles = filenameSet.stream().filter(f -> {
+        List<String> incomingFiles = ctx.filenameSet.stream().filter(f -> {
           return f.toUpperCase().endsWith(".LAZ") || f.toUpperCase().endsWith(".LAS");
         }).collect(Collectors.toList());
 
@@ -380,7 +419,7 @@ public class UploadValidationProcessor
             NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
           }
 
-          isValid = false;
+          ctx.isValid = false;
           return;
         }
 
@@ -404,20 +443,20 @@ public class UploadValidationProcessor
             NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
           }
 
-          isValid = false;
+          ctx.isValid = false;
           return;
         }
 
       }
       else if (count == 0)
       {
-        List<String> extensions = getSupportedExtensions(task, configuration);
+        List<String> extensions = getSupportedExtensions(ctx, task, configuration);
         
         String msg = "The zip did not contain any files to process. Files must follow proper naming conventions and end in one of the following file extensions: " + StringUtils.join(extensions, ", ");
         
-        if (isMultispectral)
+        if (ctx.isMultispectral)
           msg = "You selected a multispectral sensor. " + msg;
-        else if (isRadiometric)
+        else if (ctx.isRadiometric)
           msg = "You selected a radiometric sensor. " + msg;
         
         task.lock();
@@ -430,7 +469,7 @@ public class UploadValidationProcessor
           NotificationFacade.queue(new UserNotificationMessage(Session.getCurrentSession(), MessageType.UPLOAD_JOB_CHANGE, task.toJSON()));
         }
 
-        isValid = false;
+        ctx.isValid = false;
         return;
       }
       
@@ -447,18 +486,21 @@ public class UploadValidationProcessor
     }
   }
   
-  protected List<String> getSupportedExtensions(AbstractUploadTask task, ProcessConfiguration configuration)
+  protected List<String> getSupportedExtensions(ValidationContext ctx, AbstractUploadTask task, ProcessConfiguration configuration)
   {
-    if (format != null)
-      return ImageryProcessingJob.getSupportedExtensions(task.getUploadTarget(), format, configuration);
+    if (ctx.format != null)
+      return ImageryProcessingJob.getSupportedExtensions(task.getUploadTarget(), ctx.format, configuration);
     else
-      return ImageryProcessingJob.getSupportedExtensions(task.getUploadTarget(), isMultispectral, isRadiometric, isVideo, configuration);
+      return ImageryProcessingJob.getSupportedExtensions(task.getUploadTarget(), ctx.isMultispectral, ctx.isRadiometric, ctx.isVideo, configuration);
   }
   
-  private boolean validateFile(ApplicationFileResource res, AbstractUploadTask task, ProcessConfiguration configuration)
+  private boolean validateFile(ValidationContext ctx, ApplicationFileResource res, AbstractUploadTask task, ProcessConfiguration configuration)
   {
     String finalName = res.getName();
     final String uploadTarget = task.getUploadTarget();
+    
+    boolean isGeo = false;
+    boolean isGcp = false;
     
     if (!Mission.ACCESSIBLE_SUPPORT.equals(uploadTarget))
     {
@@ -489,27 +531,25 @@ public class UploadValidationProcessor
       if (configuration.isODM() || configuration.isLidar())
       {
         final String ext = res.getNameExtension().toLowerCase();
-        final List<String> extensions = getSupportedExtensions(task, configuration);
-        final boolean isGeo = res.getName().equals("geo.txt") || (configuration.isODM() && ( res.getName().equalsIgnoreCase(configuration.toODM().getGeoLocationFileName()) && configuration.toODM().isIncludeGeoLocationFile() ));
-        final boolean isGcp = res.getName().equals("gcp_list.txt") || (configuration.isODM() && ( res.getName().equalsIgnoreCase(configuration.toODM().getGroundControlPointFileName()) && configuration.toODM().isIncludeGroundControlPointFile() ));
+        final List<String> extensions = getSupportedExtensions(ctx, task, configuration);
+        isGeo = res.getName().equals("geo.txt") || (configuration.isODM() && ( res.getName().equalsIgnoreCase(configuration.toODM().getGeoLocationFileName()) && configuration.toODM().isIncludeGeoLocationFile() ));
+        isGcp = res.getName().equals("gcp_list.txt") || (configuration.isODM() && ( res.getName().equalsIgnoreCase(configuration.toODM().getGroundControlPointFileName()) && configuration.toODM().isIncludeGroundControlPointFile() ));
   
         if (isGeo)
         {
           finalName = "geo.txt";
-          detectedGeoLocationFile = res;
         }
         else if (isGcp)
         {
           finalName = "gcp_list.txt";
-          detectedGCPFile = res;
         }
         else if (!extensions.contains(ext))
         {
           String msg = "The file [" + res.getName() + "] is of an unsupported format and will be ignored. The following formats are supported: " + StringUtils.join(extensions, ", ");
           
-          if (isMultispectral)
+          if (ctx.isMultispectral)
             msg = "You selected a multispectral sensor. " + msg;
-          else if (isRadiometric)
+          else if (ctx.isRadiometric)
             msg = "You selected a radiometric sensor. " + msg;
           
           task.createAction(msg, TaskActionType.ERROR);
@@ -518,7 +558,7 @@ public class UploadValidationProcessor
       }
     }
     
-    if (!filenameSet.add(finalName))
+    if (!ctx.filenameSet.add(finalName))
     {
       task.createAction("The filename [" + finalName + "] conflicts with another name in the uploaded archive. This conflict may be a result of inner directories or special characters which cannot be represented in the final collection. This will result in missing files.", TaskActionType.ERROR);
       return false;
@@ -529,14 +569,16 @@ public class UploadValidationProcessor
       if (res.getParentFile().isPresent()) {
         var newFile = new File(res.getParentFile().orElseThrow().getUnderlyingFile(), finalName);
         res.getUnderlyingFile().renameTo(newFile);
-        this.downstreamFile = new FileResource(new CloseableFile(newFile));
+        res = new FileResource(new CloseableFile(newFile));
+        ctx.downstreamFile = res;
       } else {
         try
         {
           var parent = Files.createTempDirectory(res.getName()).toFile();
           var newFile = new File(parent, finalName);
-          IOUtils.copy(res.openNewStream(), new FileOutputStream(newFile));
-          this.downstreamFile = new FileResource(new CloseableFile(newFile));
+          try (var in = res.openNewStream(); var out = new FileOutputStream(newFile) ) { IOUtils.copy(in, out); }
+          res = new FileResource(new CloseableFile(newFile));
+          ctx.downstreamFile = res;
         }
         catch (IOException e)
         {
@@ -544,15 +586,21 @@ public class UploadValidationProcessor
         }
       }
     }
+    
+    if (isGeo) {
+      ctx.detectedGeoLocationFile = res;
+    } else if (isGcp) {
+      ctx.detectedGCPFile = res;
+    }
 
     return true;
   }
   
-  protected void removeFromProcessing(ApplicationFileResource res)
+  protected void removeFromProcessing(ValidationContext ctx, ApplicationFileResource res)
   {
-    if (rootFile instanceof EditableArchiveFileResource)
+    if (ctx.rootFile instanceof EditableArchiveFileResource)
     {
-      ( (EditableArchiveFileResource) rootFile ).exclude(res);
+      ( (EditableArchiveFileResource) ctx.rootFile ).exclude(res);
     }
   }
   

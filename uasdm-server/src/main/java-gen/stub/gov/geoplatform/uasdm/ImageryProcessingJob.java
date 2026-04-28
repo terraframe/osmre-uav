@@ -50,13 +50,13 @@ import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
 import gov.geoplatform.uasdm.processing.raw.UploadValidationProcessor;
+import gov.geoplatform.uasdm.processing.raw.UploadValidationProcessor.UploadValidationResult;
 import gov.geoplatform.uasdm.resource.EditableArchiveFileResource;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
 import gov.geoplatform.uasdm.ws.UserNotificationMessage;
-import me.desair.tus.server.upload.UploadInfo;
 import net.geoprism.spring.core.ApplicationContextHolder;
 
 public class ImageryProcessingJob extends ImageryProcessingJobBase
@@ -158,18 +158,13 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
    * @return
    * @throws FileNotFoundException
    */
-  public static JobHistory processFiles(String runAsUserOid, UploadInfo uploadInfo, InputStream istream) throws FileNotFoundException
+  public static JobHistory processFiles(String runAsUserOid, AbstractWorkflowTask task, ProcessConfiguration configuration, String fileName, InputStream istream)
   {
-    String uploadId = uploadInfo.getId().toString();
-
-    AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(uploadId);
-    ProcessConfiguration configuration = task.getConfiguration();
-
     VaultFile vfImageryZip = null;
 
     try
     {
-      vfImageryZip = VaultFile.createAndApply(uploadInfo.getFileName(), istream);
+      vfImageryZip = VaultFile.createAndApply(fileName, istream);
 
       ImageryProcessingJob job = new ImageryProcessingJob();
       job.setRunAsUserId(runAsUserOid);
@@ -233,11 +228,11 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
       }
 
       var validator = ApplicationContextHolder.getBean(UploadValidationProcessor.class);
-      boolean isValid = validator.process(res, (AbstractUploadTask) this.getWorkflowTask(), getConfiguration());
+      UploadValidationResult result = validator.process(res, (AbstractUploadTask) this.getWorkflowTask(), getConfiguration());
 
-      if (isValid)
+      if (result.isValid())
       {
-        this.uploadToS3(validator.getDownstreamFile(), this.getUploadTarget(), this.getConfiguration());
+        this.uploadToS3(result.getDownstreamFile(), this.getUploadTarget(), this.getConfiguration());
       }
     }
     catch (Throwable t)

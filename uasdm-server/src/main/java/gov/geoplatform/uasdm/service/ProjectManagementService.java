@@ -45,6 +45,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.runwaysdk.RunwayException;
@@ -68,7 +69,9 @@ import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
+import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.UasComponentCompositeDeleteException;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.cog.CogPreviewParams;
@@ -109,6 +112,7 @@ import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.RadiometricCalibration;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.processing.ProcessingInProgressException;
+import gov.geoplatform.uasdm.processing.raw.UploadValidationProcessor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
@@ -131,7 +135,11 @@ import net.geoprism.localization.LocalizationService;
 @Service
 public class ProjectManagementService
 {
-
+  static final Logger logger = LoggerFactory.getLogger(ProjectManagementService.class);
+  
+  @Autowired
+  private UploadValidationProcessor uploadValidator;
+  
   private class RerunODMProcessThread extends Thread
   {
     private ODMProcessingTask task;
@@ -163,7 +171,7 @@ public class ProjectManagementService
         ArchiveFileResource archive = downloadAllImagery(collection, predicate);
 
         JSONArray array = new JSONArray();
-        calculateImageNames(archive).forEach(n -> array.put(n));
+        fileNamesInArchive(archive).forEach(n -> array.put(n));
 
         task.appLock();
         task.setProcessFilenameArray(array.toString());
@@ -251,8 +259,6 @@ public class ProjectManagementService
       }
     }
   }
-
-  static final Logger logger = LoggerFactory.getLogger(ProjectManagementService.class);
 
   @Request(RequestType.SESSION)
   public List<TreeComponent> getChildren(String sessionId, String parentid)
@@ -582,7 +588,7 @@ public class ProjectManagementService
     }
   }
   
-  public Set<String> calculateImageNames(ArchiveFileResource archive) {
+  public Set<String> fileNamesInArchive(ArchiveFileResource archive) {
     Set<String> imageNames = new HashSet<String>();
     
     Queue<ApplicationFileResource> queue = new LinkedList<>();
@@ -707,7 +713,10 @@ public class ProjectManagementService
   {
     try
     {
-      ImageryProcessingJob.processFiles(runAsUserOid, uploadInfo, istream);
+      String uploadId = uploadInfo.getId().toString();
+      AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(uploadId);
+      
+      ImageryProcessingJob.processFiles(runAsUserOid, task, task.getConfiguration(), uploadInfo.getFileName(), istream);
     }
     catch (Throwable t)
     {
@@ -1307,6 +1316,20 @@ public class ProjectManagementService
     UasComponentIF component = ComponentFacade.getComponent(id);
     ProductIF product = productName != null ? component.getProduct(productName).get() : null;
 
+    if (fileName.equals(Product.GEO_LOCATION_FILE)) {
+      String userId = Session.getCurrentSession().getUser().getOid();
+      
+      ODMProcessConfiguration config = new ODMProcessConfiguration();
+      
+      AbstractWorkflowTask task = component.createWorkflowTask(userId, id, folder);
+      task.setStatus(WorkflowTaskStatus.STARTED.toString());
+      task.setMessage("Uploading to the staging environment...");
+      task.apply();
+      
+      ImageryProcessingJob.processFiles(userId, task, config, fileName, stream);
+      return new JSONObject();
+    }
+    
     DocumentIF doc = component.putFile(folder, fileName, product, metadata, stream);
 
     return doc.toJSON();

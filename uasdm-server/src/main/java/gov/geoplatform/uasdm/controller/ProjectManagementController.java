@@ -90,7 +90,7 @@ public class ProjectManagementController extends AbstractController
 
   @Autowired
   private WorkflowService          workflowService;
-
+  
   @GetMapping("/configuration")
   public ResponseEntity<String> configuration()
   {
