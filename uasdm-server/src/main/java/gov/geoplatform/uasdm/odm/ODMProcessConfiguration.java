@@ -100,6 +100,12 @@ public class ODMProcessConfiguration implements ProcessConfiguration
   
   public static final String     VIDEO_LIMIT                       = "videoLimit";
 
+  /*
+   * A hack. Used by the back-end in ProjectManagementService.getDefaultRunConfig to tell the front-end that they can't run processing on a collection
+   * because the back-end is missing the geo location file.
+   */
+  private boolean                hasntUploadedGeoLocationFile = false;
+  
   private boolean                includeGeoLocationFile;
 
   private FileFormat             geoLocationFormat = FileFormat.ODM;
@@ -216,6 +222,16 @@ public class ODMProcessConfiguration implements ProcessConfiguration
   public ProcessType getType()
   {
     return ProcessType.ODM;
+  }
+  
+  public boolean isHasntUploadedGeoLocationFile()
+  {
+    return hasntUploadedGeoLocationFile;
+  }
+
+  public void setHasntUploadedGeoLocationFile(boolean hasntUploadedGeoLocationFile)
+  {
+    this.hasntUploadedGeoLocationFile = hasntUploadedGeoLocationFile;
   }
 
   public String getProductName()
@@ -418,6 +434,7 @@ public class ODMProcessConfiguration implements ProcessConfiguration
     object.addProperty(PRODUCT_NAME, this.productName);
     object.addProperty(VIDEO_RESOLUTION, videoResolution);
     object.addProperty(VIDEO_LIMIT, videoLimit);
+    object.addProperty("hasntUploadedGeoLocationFile", hasntUploadedGeoLocationFile);
 
     return object;
   }

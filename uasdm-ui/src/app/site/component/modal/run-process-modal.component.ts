@@ -74,6 +74,10 @@ export class RunProcessModalComponent implements OnInit, OnDestroy {
         this.service.getDefaultRunConfig(this.entity.id).then((config: ProcessConfig) => {
             this.config = config;
             this.config.productName = null;
+
+            if (this.config.hasntUploadedGeoLocationFile) {
+                this.message = "Your sensor requires an uploaded geo location file. Please complete your upload before processing.";
+            }
         }).catch((err: HttpErrorResponse) => {
             this.error(err);
         });
@@ -95,6 +99,8 @@ export class RunProcessModalComponent implements OnInit, OnDestroy {
     }
 
     isValid(): boolean {
+        if (this.config.hasntUploadedGeoLocationFile) return false;
+
         if (this.config.type === ProcessConfigType.LIDAR) {
             return (this.config.generateCopc
                 || this.config.generateGSM

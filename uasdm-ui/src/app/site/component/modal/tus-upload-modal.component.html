@@ -197,17 +197,16 @@
         <div *ngIf="metadata">
           <hr />
 
-          <div *ngIf="(metadata.processOrtho || metadata.processDem) && !isVideo()" class="form-group mt-1">
+          <div *ngIf="component.sensor.hasGeologger && (metadata.processOrtho || metadata.processDem) && !isVideo()" class="form-group mt-1">
             
               <boolean-field
                 [(ngModel)]="metadata.includeGeoLocationFile"
                 name="includeGeoLocationFile"
-                [required]="uploadTarget === 'raw' && component && component.sensor.hasGeologger"
                 label="Upload includes geo location file">
               </boolean-field>
           </div>
 
-          <div class="form-group mt-1" *ngIf="metadata.processOrtho && metadata.includeGeoLocationFile && !isVideo()">
+          <div class="form-group mt-1" *ngIf="component.sensor.hasGeologger && metadata.processOrtho && metadata.includeGeoLocationFile && !isVideo()">
             <label for="geoLocationFormat">Geo location file format <span class="text-danger">*</span></label>
             <select required [(ngModel)]="metadata.geoLocationFormat" name="geoLocationFormat" class="form-control">
               <option value="RX1R2">RX1R2</option>
@@ -215,13 +214,13 @@
             </select>
           </div>
 
-          <div class="form-group mt-1" *ngIf="metadata.processOrtho && metadata.includeGeoLocationFile && !isVideo()">
+          <div class="form-group mt-1" *ngIf="component.sensor.hasGeologger && metadata.processOrtho && metadata.includeGeoLocationFile && !isVideo()">
             <label for="geoLocationFileName">Geo location file name <span class="text-danger">*</span></label>
             <input required [(ngModel)]="metadata.geoLocationFileName" name="geoLocationFileName" type="input" class="form-control"
               placeholder="File name..." />
           </div>
 
-          <div *ngIf="metadata.processOrtho && metadata.includeGeoLocationFile && metadata.geoLocationFormat === 'ODM'">
+          <div *ngIf="component.sensor.hasGeologger && metadata.processOrtho && metadata.includeGeoLocationFile && metadata.geoLocationFormat === 'ODM'">
             <p>File format:</p>
             <pre>
               <code>

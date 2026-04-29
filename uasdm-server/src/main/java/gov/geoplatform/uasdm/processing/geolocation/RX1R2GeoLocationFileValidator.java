@@ -17,6 +17,7 @@ package gov.geoplatform.uasdm.processing.geolocation;
 
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.util.Set;
 
 import com.opencsv.CSVReader;
 import com.runwaysdk.resource.ApplicationFileResource;
@@ -26,9 +27,9 @@ import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
 
 public class RX1R2GeoLocationFileValidator extends GeoLocationFileValidator
 {
-  public RX1R2GeoLocationFileValidator(FileFormat geoLocationFormat, ApplicationFileResource geoLocationFile, ArchiveFileResource archive)
+  public RX1R2GeoLocationFileValidator(FileFormat geoLocationFormat, ApplicationFileResource geoLocationFile, Set<String> imageNames)
   {
-    super(geoLocationFormat, geoLocationFile, archive);
+    super(geoLocationFormat, geoLocationFile, imageNames);
   }
   
   @Override

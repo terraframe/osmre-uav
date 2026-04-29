@@ -29,7 +29,7 @@ import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
 
 /**
  * 
- * @author jsmethie
+ * @author jsmethie, rrowlands
  *
  */
 abstract public class GroundControlPointFileValidator
@@ -38,56 +38,31 @@ abstract public class GroundControlPointFileValidator
   
   protected ApplicationFileResource gcpFile;
   
-  protected ArchiveFileResource archive;
-  
   protected Set<String> imageNames = new HashSet<String>();
 
-  public GroundControlPointFileValidator(FileFormat geoLocationFormat, ApplicationFileResource gcpFile, ArchiveFileResource archive)
+  public GroundControlPointFileValidator(FileFormat geoLocationFormat, ApplicationFileResource gcpFile, Set<String> imageNames)
   {
     this.geoLocationFormat = geoLocationFormat;
     this.gcpFile = gcpFile;
-    this.archive = archive;
-    
-    calculateImageNames();
-  }
-  
-  private void calculateImageNames() {
-    imageNames.clear();
-    
-    Queue<ApplicationFileResource> queue = new LinkedList<>();
-    queue.add(archive);
-    while(!queue.isEmpty())
-    {
-      var res = queue.poll();
-      
-      if (res.hasChildren())
-      {
-        for (var child : res.getChildrenFiles())
-          queue.add(child);
-        
-        continue;
-      }
-      
-      imageNames.add(res.getName());
-    }
+    this.imageNames = imageNames;
   }
   
   abstract public GroundControlPointValidationResults validate();
 
-  public static GroundControlPointValidationResults validate(FileFormat geoLocationFormat, ApplicationFileResource gcpFile, ArchiveFileResource archive)
+  public static GroundControlPointValidationResults validate(FileFormat geoLocationFormat, ApplicationFileResource gcpFile, Set<String> imageNames)
   {
     switch(geoLocationFormat)
     {
       case ODM:
-        return new ODMGroundControlPointFileValidator(geoLocationFormat, gcpFile, archive).validate();
+        return new ODMGroundControlPointFileValidator(geoLocationFormat, gcpFile, imageNames).validate();
       default:
         throw new UnsupportedOperationException("Invalid format " + geoLocationFormat);
     }
   }
   
-  public static void validate(FileFormat geoLocationFormat, ApplicationFileResource gcpFile, ArchiveFileResource archive, AbstractWorkflowTask task)
+  public static void validate(FileFormat geoLocationFormat, ApplicationFileResource gcpFile, Set<String> imageNames, AbstractWorkflowTask task)
   {
-    GroundControlPointValidationResults results = validate(geoLocationFormat, gcpFile, archive);
+    GroundControlPointValidationResults results = validate(geoLocationFormat, gcpFile, imageNames);
     
     results.getErrors().stream().forEach(er -> task.createAction(er, TaskActionType.ERROR));
     

@@ -152,6 +152,7 @@ export class ProcessConfig {
 	geoLocationFormat?: string;
 	geoLocationFileName?: string;
 	groundControlPointFileName?: string;
+	hasntUploadedGeoLocationFile?: boolean;
 
 	// LIDAR processing options;
 	generateCopc?: boolean;

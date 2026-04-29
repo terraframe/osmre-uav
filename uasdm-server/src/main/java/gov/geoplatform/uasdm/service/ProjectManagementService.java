@@ -85,6 +85,7 @@ import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.Sensor;
+import gov.geoplatform.uasdm.graph.SiteObjectDocumentQuery;
 import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.graph.UserAccessEntity;
@@ -1413,23 +1414,23 @@ public class ProjectManagementService
     else
     {
       List<ODMRun> runs = ODMRun.getByComponentOrdered(collectionId);
+      
+      ODMProcessConfiguration config;
 
       if (runs.size() > 0)
       {
         ODMRun run = runs.get(0);
 
-        ODMProcessConfiguration config = run.getConfiguration();
+        config = run.getConfiguration();
 
         if (config.isIncludeGeoLocationFile())
         {
           config.setGeoLocationFileName(Product.GEO_LOCATION_FILE);
         }
-
-        return config.toJson().toString();
       }
       else
       {
-        ODMProcessConfiguration config = new ODMProcessConfiguration();
+        config = new ODMProcessConfiguration();
 
         Document geoFile = Document.find(collection.buildRawKey() + Product.GEO_LOCATION_FILE);
 
@@ -1455,10 +1456,18 @@ public class ProjectManagementService
             config.setPcQuality(Quality.HIGH);
           }
         });
-
-        return config.toJson().toString();
       }
+      
+      collection.getMetadata().ifPresent(metadata -> {
+        if (metadata.getSensor() != null && metadata.getSensor().getHasGeologger()) {
+          SiteObjectDocumentQuery query = new SiteObjectDocumentQuery(collection, null, Collection.RAW);
+          boolean hasGeologger = query.getDocuments().stream().filter(d -> d.getName().equals(Product.GEO_LOCATION_FILE)).findAny().isPresent();
+          
+          config.setHasntUploadedGeoLocationFile(!hasGeologger);
+        }
+      });
 
+      return config.toJson().toString();
     }
 
   }

@@ -16,18 +16,12 @@
 package gov.geoplatform.uasdm.processing.gcp;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.math.BigDecimal;
+import java.util.Set;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.runwaysdk.resource.ApplicationFileResource;
-import com.runwaysdk.resource.ArchiveFileResource;
 
-import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
 
 /**
@@ -41,8 +35,8 @@ import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
  */
 public class ODMGroundControlPointFileValidator extends GroundControlPointFileValidator {
 
-    public ODMGroundControlPointFileValidator(FileFormat geoLocationFormat, ApplicationFileResource geoLocationFile, ArchiveFileResource archive) {
-        super(geoLocationFormat, geoLocationFile, archive);
+    public ODMGroundControlPointFileValidator(FileFormat geoLocationFormat, ApplicationFileResource geoLocationFile, Set<String> imageNames) {
+        super(geoLocationFormat, geoLocationFile, imageNames);
     }
 
     @Override

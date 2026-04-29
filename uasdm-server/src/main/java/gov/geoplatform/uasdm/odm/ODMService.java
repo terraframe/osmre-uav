@@ -48,6 +48,7 @@ import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
+import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.Quality;
 import gov.geoplatform.uasdm.processing.gcp.GroundControlPointFileValidator;
@@ -170,7 +171,7 @@ public class ODMService implements ODMServiceIF
             continue;
           }
           
-          if (!payload.getImageNames().contains(res.getName())) continue;
+          if (!Product.GEO_LOCATION_FILE.equals(res.getName()) && !payload.getImageNames().contains(res.getName())) continue;
           
           ODMResponse uploadResp = this.taskNewUpload(uuid, res);
         

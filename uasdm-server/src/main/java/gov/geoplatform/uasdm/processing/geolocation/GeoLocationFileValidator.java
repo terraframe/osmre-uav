@@ -40,23 +40,19 @@ abstract public class GeoLocationFileValidator
   
   protected ApplicationFileResource geoLocationFile;
   
-  protected ArchiveFileResource archive;
-  
   protected Set<String> imageNames = new HashSet<String>();
   
-  public GeoLocationFileValidator(FileFormat geoLocationFormat, ApplicationFileResource geoLocationFile, ArchiveFileResource archive)
+  public GeoLocationFileValidator(FileFormat geoLocationFormat, ApplicationFileResource geoLocationFile, Set<String> imageNames)
   {
     this.geoLocationFormat = geoLocationFormat;
     this.geoLocationFile = geoLocationFile;
-    this.archive = archive;
-    
-    calculateImageNames();
+    this.imageNames = imageNames;
   }
   
   abstract public GeoLocationValidationResults validate();
   
-  private void calculateImageNames() {
-    imageNames.clear();
+  public static Set<String> calculateImageNames(ApplicationFileResource archive) {
+    Set<String> imageNames = new HashSet<String>();
     
     Queue<ApplicationFileResource> queue = new LinkedList<>();
     queue.add(archive);
@@ -74,24 +70,26 @@ abstract public class GeoLocationFileValidator
       
       imageNames.add(res.getName());
     }
+    
+    return imageNames;
   }
 
-  public static GeoLocationValidationResults validate(FileFormat geoLocationFormat, ApplicationFileResource geoLocationFile, ArchiveFileResource archive)
+  public static GeoLocationValidationResults validate(FileFormat geoLocationFormat, ApplicationFileResource geoLocationFile, Set<String> imageNames)
   {
     switch(geoLocationFormat)
     {
       case ODM:
-        return new ODMGeoLocationFileValidator(geoLocationFormat, geoLocationFile, archive).validate();
+        return new ODMGeoLocationFileValidator(geoLocationFormat, geoLocationFile, imageNames).validate();
       case RX1R2:
-        return new RX1R2GeoLocationFileValidator(geoLocationFormat, geoLocationFile, archive).validate();
+        return new RX1R2GeoLocationFileValidator(geoLocationFormat, geoLocationFile, imageNames).validate();
       default:
         throw new UnsupportedOperationException("Invalid format " + geoLocationFormat);
     }
   }
   
-  public static void validate(FileFormat geoLocationFormat, ApplicationFileResource geoLocationFile, ArchiveFileResource archive, AbstractWorkflowTask task)
+  public static void validate(FileFormat geoLocationFormat, ApplicationFileResource geoLocationFile, Set<String> imageNames, AbstractWorkflowTask task)
   {
-    GeoLocationValidationResults results = validate(geoLocationFormat, geoLocationFile, archive);
+    GeoLocationValidationResults results = validate(geoLocationFormat, geoLocationFile, imageNames);
     
     results.getErrors().stream().forEach(er -> task.createAction(er, TaskActionType.ERROR));
     
