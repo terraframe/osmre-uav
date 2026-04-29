@@ -157,12 +157,7 @@
             <div *ngIf="uploadTarget === 'raw' && component && component.sensor.hasGeologger"
               style="padding: 8px; background-color: #f4fff3; border-left: 4px solid #8be099;">
               <h4>Geo Location File</h4>
-              <span>You are uploading to a sensor which requires a geo location file. This geo location file is generated
-                separately from the rest of the imagery, and is sometimes called 'PIX4D.csv' or 'geo.txt', but may
-                vary by sensor. This file may be uploaded by itself, or inside a zip with the rest of the imagery. If a
-                geo location file already exists, it will be replaced. RX1RII geo location files will be converted to, and
-                stored as, an ODM file-format upon upload. Validation of this file also happens on upload. References to
-                imagery inside this file are case sensitive and must match exactly.
+              <span>This collection has a sensor registered to it that requires a geo location file. IDM supports geo location files in Open Drone Map (ODM) or Pix4D format which can be uploaded inside the zip with the rest of the raw imagery or by itself. If a geo location file already exists, it will be replaced. Upon upload the file will be validated and RX1RII geo location files will be converted to the ODM file-format.
               </span>
             </div>
             <h4>All uploaded files</h4>

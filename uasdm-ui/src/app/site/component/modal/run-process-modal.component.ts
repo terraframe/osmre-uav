@@ -53,6 +53,8 @@ export class RunProcessModalComponent implements OnInit, OnDestroy {
 
     estimate: RuntimeEstimate;
 
+    public loading: boolean = true;
+
     public loadingEstimate: boolean = false;
 
     /*
@@ -78,6 +80,8 @@ export class RunProcessModalComponent implements OnInit, OnDestroy {
             if (this.config.hasntUploadedGeoLocationFile) {
                 this.message = "Your sensor requires an uploaded geo location file. Please complete your upload before processing.";
             }
+
+            this.loading = false;
         }).catch((err: HttpErrorResponse) => {
             this.error(err);
         });

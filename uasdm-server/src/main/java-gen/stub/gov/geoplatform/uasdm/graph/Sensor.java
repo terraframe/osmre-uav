@@ -62,7 +62,7 @@ public class Sensor extends SensorBase implements JSONSerializable
     // Default value : RGB.
     this.setCollectionFormats(DEFAULT_FORMATS);
   }
-
+  
   @Override
   public void apply()
   {
@@ -248,6 +248,15 @@ public class Sensor extends SensorBase implements JSONSerializable
     }).collect(Collector.of(JSONArray::new, JSONArray::put, JSONArray::put)));
 
     return object;
+  }
+  
+  /**
+   * Guaranteed to never return null. Null values resolve to false.
+   */
+  @Override
+  public Boolean getHasGeologger()
+  {
+    return Boolean.TRUE.equals(super.getHasGeologger());
   }
 
   @Transaction

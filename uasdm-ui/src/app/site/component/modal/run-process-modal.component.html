@@ -6,7 +6,7 @@
 
 
 <ng-template #odmConfig>
-	
+
 	<h3 class="mt-2">Run ortho to process the following products: </h3>
 
 	<table style="width: 100%;">
@@ -172,6 +172,9 @@
 			</div>
 		</div>
 
+		<i *ngIf="loading" class="fa fa-spinner fa-spin" style="margin-left:50%;"></i>
+
+		<ng-container *ngIf="!loading">
 		<div *ngIf="estimate || loadingEstimate" class="runtime-header">
 			<ng-container *ngIf="estimate">
 				<div class="runtime-header__icon">⏱</div>
@@ -212,6 +215,7 @@
 		</ng-container>
 
 		<ng-container *ngIf="config.type === ProcessConfigType.LIDAR" [ngTemplateOutlet]="lidarConfig">
+		</ng-container>
 		</ng-container>
 
 	</div>

@@ -55,6 +55,7 @@ import gov.geoplatform.uasdm.bus.Mission;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.CollectionFormat;
+import gov.geoplatform.uasdm.graph.CollectionMetadata;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UasComponent;
@@ -78,6 +79,7 @@ import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
 import gov.geoplatform.uasdm.ws.UserNotificationMessage;
 import jakarta.inject.Inject;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 @Service
 public class UploadValidationProcessor
@@ -300,12 +302,14 @@ public class UploadValidationProcessor
       
         // If the sensor has a geologger, we need to validate if they upload a new geo file or if they upload new imagery, regardless of whether they checked "includes geo location file" on upload.
         if (sensor.getHasGeologger()) {
-          if (ctx.detectedGeoLocationFile == null && !odmConfig.isIncludeGeoLocationFile()) {
-            RemoteFileObject remoteGeo = component.download(component.getS3location() + Collection.RAW + "/" + Product.GEO_LOCATION_FILE);
-            
-            if (remoteGeo.exists())
+          if (ctx.detectedGeoLocationFile == null) {
+            try {
+              RemoteFileObject remoteGeo = component.download(component.getS3location() + Collection.RAW + "/" + Product.GEO_LOCATION_FILE);
               downloadedFile = remoteGeo.openNewFile();
               ctx.detectedGeoLocationFile = new FileResource(downloadedFile);
+            } catch(S3Exception ex) {
+              // No problem if the file doesn't exist
+            }
           }
           
           if (ctx.detectedGeoLocationFile == null)
@@ -389,7 +393,11 @@ public class UploadValidationProcessor
     ImageryComponent component = task.getImageryComponent();
     
     if (component instanceof Collection) {
-      return Boolean.TRUE.equals(( (Collection) component ).getSensor().getHasGeologger());
+      CollectionMetadata metadata = ( (Collection) component ).getMetadata().orElse(null);
+      
+      if (metadata != null && metadata.getSensor() != null) {
+        return metadata.getSensor().getHasGeologger();
+      }
     }
     
     return false;
@@ -557,8 +565,11 @@ public class UploadValidationProcessor
       {
         final String ext = res.getNameExtension().toLowerCase();
         final List<String> extensions = getSupportedExtensions(ctx, task, configuration);
-        isGeo = res.getName().equals(Product.GEO_LOCATION_FILE) || (configuration.isODM() && ( res.getName().equalsIgnoreCase(configuration.toODM().getGeoLocationFileName()) && configuration.toODM().isIncludeGeoLocationFile() ));
-        isGcp = res.getName().equals(Product.GCP_FILE) || (configuration.isODM() && ( res.getName().equalsIgnoreCase(configuration.toODM().getGroundControlPointFileName()) && configuration.toODM().isIncludeGroundControlPointFile() ));
+        isGeo = configuration.isODM() && configuration.toODM().isIncludeGeoLocationFile() && (res.getName().toLowerCase().equals(Product.GEO_LOCATION_FILE.toLowerCase())
+            || res.getName().toLowerCase().equals("pix4d.csv")
+            || res.getName().equalsIgnoreCase(configuration.toODM().getGeoLocationFileName()) && configuration.toODM().isIncludeGeoLocationFile());
+        isGcp = configuration.isODM() && ( res.getName().toLowerCase().equals(Product.GCP_FILE.toLowerCase())
+            || ( res.getName().equalsIgnoreCase(configuration.toODM().getGroundControlPointFileName()) && configuration.toODM().isIncludeGroundControlPointFile() ));
   
         if (isGeo)
         {
