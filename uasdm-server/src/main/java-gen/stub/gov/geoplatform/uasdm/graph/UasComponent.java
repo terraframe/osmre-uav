@@ -845,7 +845,7 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
   {
     if (this instanceof ImageryComponent)
     {
-      return new FileUploadProcessor().process(task, file, (ImageryComponent) this, uploadTarget, product);
+      return new FileUploadProcessor().process(task, file, (ImageryComponent) this, uploadTarget, product, null);
     }
     else
     {

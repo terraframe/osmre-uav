@@ -589,7 +589,7 @@ public class ProjectManagementService
     }
   }
   
-  public Set<String> fileNamesInArchive(ArchiveFileResource archive) {
+  public static Set<String> fileNamesInArchive(ArchiveFileResource archive) {
     Set<String> imageNames = new HashSet<String>();
     
     Queue<ApplicationFileResource> queue = new LinkedList<>();

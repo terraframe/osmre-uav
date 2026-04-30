@@ -15,24 +15,33 @@
  */
 package gov.geoplatform.uasdm.processing.raw;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
 import com.runwaysdk.RunwayException;
 import com.runwaysdk.resource.ApplicationFileResource;
+import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.InvalidZipException;
 import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
+import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.model.ImageryComponent;
+import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 
 public class FileUploadProcessor
 {
+  
+  ApplicationFileResource gcpFile;
+  
+  ApplicationFileResource glFile;
   
   /**
    * 
@@ -44,7 +53,25 @@ public class FileUploadProcessor
    * @return
    */
   @SuppressWarnings("resource")
-  public List<String> process(AbstractWorkflowTask task, ApplicationFileResource fileIn, ImageryComponent imageryComponent, String uploadTarget, ProductIF product)
+  public List<String> process(AbstractWorkflowTask task, ApplicationFileResource fileIn, ImageryComponent imageryComponent, String uploadTarget, ProductIF product, ProcessConfiguration config)
+  {
+    List<String> results = new ArrayList<String>();
+    
+    results.addAll(upload(true, task, fileIn, imageryComponent, uploadTarget, product));
+    
+    if (config != null && fileIn instanceof ArchiveFileResource) {
+      new PostUploadValidationProcessor().validate(glFile, gcpFile, (ArchiveFileResource)fileIn, (AbstractUploadTask)task, config);
+      
+      if (glFile != null)
+        results.addAll(upload(false, task, glFile, imageryComponent, uploadTarget, product));
+      if (gcpFile != null)
+        results.addAll(upload(false, task, gcpFile, imageryComponent, uploadTarget, product));
+    }
+    
+    return results;
+  }
+  
+  protected List<String> upload(boolean firstPhase, AbstractWorkflowTask task, ApplicationFileResource fileIn, ImageryComponent imageryComponent, String uploadTarget, ProductIF product)
   {
     if (!ImageryComponent.isValidTarget(uploadTarget))
     {
@@ -62,6 +89,16 @@ public class FileUploadProcessor
       while(!queue.isEmpty())
       {
         var res = queue.poll();
+        
+        if (firstPhase) {
+          if (res.getName().equals(Product.GEO_LOCATION_FILE)) {
+            glFile = res;
+            continue;
+          } else if (res.getName().equals(Product.GCP_FILE)) {
+            gcpFile = res;
+            continue;
+          }
+        }
         
         if (res.hasChildren())
         {

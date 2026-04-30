@@ -175,7 +175,7 @@ public class Imagery extends ImageryBase implements ImageryIF
   @Override
   public List<String> uploadArchive(AbstractWorkflowTask task, ApplicationFileResource file, String uploadTarget, ProductIF product)
   {
-    return new FileUploadProcessor().process(task, file, this, uploadTarget, product);
+    return new FileUploadProcessor().process(task, file, this, uploadTarget, product, null);
   }
 
   @Override

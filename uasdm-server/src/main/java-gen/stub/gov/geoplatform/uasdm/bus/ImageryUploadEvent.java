@@ -78,7 +78,7 @@ public class ImageryUploadEvent extends ImageryUploadEventBase
 
     if (DevProperties.uploadRaw())
     {
-      files = new FileUploadProcessor().process(task, fileRes, imagery, uploadTarget, null);
+      files = new FileUploadProcessor().process(task, fileRes, imagery, uploadTarget, null, configuration);
     }
 
     if (fileRes instanceof ArchiveFileResource && (!DevProperties.uploadRaw() || Util.hasImages(files)))
