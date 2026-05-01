@@ -32,6 +32,7 @@ import gov.geoplatform.uasdm.CollectionStatusQuery;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery;
 import gov.geoplatform.uasdm.bus.OrthoProcessingTask;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
@@ -65,7 +66,7 @@ public class LingeringWorkflowTaskCleanupJob {
     // More than x days old? And still processing? Yeah, no.
     private void cleanupWorkflowTasks() {
       AbstractWorkflowTaskQuery query = new AbstractWorkflowTaskQuery(new QueryFactory());
-      query.WHERE(query.getStatus().EQ(ODMStatus.RUNNING.getLabel()).OR(query.getStatus().EQ(ODMStatus.QUEUED.getLabel()).OR(query.getStatus().EQ(ODMStatus.NEW.getLabel())).OR(query.getStatus().EQ("Processing"))));
+      query.WHERE(query.getStatus().EQ(ODMStatus.RUNNING.getLabel()).OR(query.getStatus().EQ(ODMStatus.QUEUED.getLabel()).OR(query.getStatus().EQ(ODMStatus.NEW.getLabel())).OR(query.getStatus().EQ("Processing")).OR(query.getStatus().EQ(WorkflowTaskStatus.STARTED.toString()))));
       
       try (OIterator<? extends AbstractWorkflowTask> it = query.getIterator())
       {
