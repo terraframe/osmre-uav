@@ -944,8 +944,13 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     final GraphQuery<ProductIF> query = new GraphQuery<ProductIF>(statement.toString());
     query.setParameter("rid", this.getRID());
     query.setParameter("primary", true);
+    
+    var results = query.getResults();
 
-    return Optional.ofNullable(query.getSingleResult());
+    if (results.size() != 1)
+      return Optional.empty();
+    
+    return Optional.ofNullable(results.get(0));
   }
 
   @Override
