@@ -2,6 +2,19 @@
 # Release Notes
 
 
+## [1.8.3](https://github.com/terraframe/osmre-uav/releases/tag/1.8.3) (2026-05-06)
+
+
+### Bug Fixes
+
+   - **collection** unspecified error caused by multiple priamry products   ([6c6ca](https://github.com/terraframe/osmre-uav/commit/6c6cafaef0e23e4e054f8e679cd29fbbc9992f29))
+   - **workfow tasks** tasks stuck in upload with no progress   ([b6c0f](https://github.com/terraframe/osmre-uav/commit/b6c0f464cca2e2c906c038363f1cc060797b510d))
+   - **geolocation** geolocation and gcp files now work on upload+process separated workflow  ([b2365](https://github.com/terraframe/osmre-uav/commit/b23653d445d524d0d165c9ed440ac532c2d4d663))
+   - **security** upgrade jackson to latest version   ([53295](https://github.com/terraframe/osmre-uav/commit/5329522032c613842f0587b8f71c53402d032aaf))
+   - **security** rip out solr   ([26ddd](https://github.com/terraframe/osmre-uav/commit/26dddeae501032f8d7f4572d7d50daa67951ce64))
+
+
+
 ## [1.8.2](https://github.com/terraframe/osmre-uav/releases/tag/1.8.2) (2026-04-10)
 
 
