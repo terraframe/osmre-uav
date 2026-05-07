@@ -233,12 +233,13 @@ public class Product extends ProductBase implements ProductIF
     {
       CollectionIF col = ( (CollectionIF) component );
 
-      List<ProductIF> prods = col.getProducts();
-      if (prods.size() > 0)
-      {
-        Product prod = (Product) prods.get(0);
-        prod.setPrimary(true);
-        prod.apply();
+      for (ProductIF prod : col.getProducts()) {
+        if (!prod.getOid().equals(this.getOid())) {
+          Product newPrimary = (Product) prod;
+          newPrimary.setPrimary(true);
+          newPrimary.apply();
+          break;
+        }
       }
     }
 

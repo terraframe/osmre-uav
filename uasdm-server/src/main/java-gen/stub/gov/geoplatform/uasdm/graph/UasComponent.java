@@ -947,8 +947,20 @@ public abstract class UasComponent extends UasComponentBase implements UasCompon
     
     var results = query.getResults();
 
-    if (results.size() != 1)
+    // An error state. We can clean the data here.
+    if (results.size() > 1) {
+      log.error("ERROR: Multiple primary products detected on uas component [" + this.getOid() + "]. Cleaning the data by setting a random product to primary.");
+      
+      for (int i = 1; i < results.size(); ++i) {
+        Product product = ((Product)results.get(i));
+        product.setPrimary(false);
+        product.apply();
+      }
+      
+      return Optional.of(results.get(0));
+    } else if (results.size() == 0) {
       return Optional.empty();
+    }
     
     return Optional.ofNullable(results.get(0));
   }
