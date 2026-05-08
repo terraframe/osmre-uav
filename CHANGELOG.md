@@ -2,6 +2,16 @@
 # Release Notes
 
 
+## [1.8.4](https://github.com/terraframe/osmre-uav/releases/tag/1.8.4) (2026-05-08)
+
+
+### Bug Fixes
+
+   - **upload** hanging upload status   ([47fe8](https://github.com/terraframe/osmre-uav/commit/47fe8def840401b88c09f98095afeed81c8206a0))
+   - **product** issue with multiple primary products   ([05b87](https://github.com/terraframe/osmre-uav/commit/05b87f2a56384c121a27ddcc0938890820206a1e))
+
+
+
 ## [1.8.3](https://github.com/terraframe/osmre-uav/releases/tag/1.8.3) (2026-05-06)
 
 
