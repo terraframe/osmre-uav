@@ -1,77 +1,69 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!--
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         metadata-complete="true"
+         version="3.0">
 
-    Copyright 2020 The Department of Interior
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-
--->
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" metadata-complete="true" version="3.0">
   <display-name>IDM</display-name>
+
   <description>
-  IDM
+    IDM
   </description>
+
   <mime-mapping>
     <extension>wsdl</extension>
     <mime-type>text/xml</mime-type>
   </mime-mapping>
+
   <mime-mapping>
     <extension>xsd</extension>
     <mime-type>text/xml</mime-type>
   </mime-mapping>
-  
-  <listener>
-    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-  </listener>
-  <context-param>
-    <param-name>contextConfigLocation</param-name>
-    <param-value>gov.geoplatform.uasdm.SpringAppConfig</param-value>
-  </context-param>
+
+
+  <!-- Root Spring context: load SpringAppConfig exactly once -->
   <context-param>
     <param-name>contextClass</param-name>
     <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
   </context-param>
-  <!-- Spring Servlet Dispatcher -->
+
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>gov.geoplatform.uasdm.SpringAppConfig</param-value>
+  </context-param>
+
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+
+
+  <!-- Spring MVC DispatcherServlet: use the already-created root context -->
   <servlet>
     <servlet-name>SpringDispatcher</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
+
     <init-param>
-      <param-name>contextClass</param-name>
-      <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
+      <param-name>contextAttribute</param-name>
+      <param-value>org.springframework.web.context.WebApplicationContext.ROOT</param-value>
     </init-param>
-    <init-param>
-      <param-name>contextConfigLocation</param-name>
-      <param-value>gov.geoplatform.uasdm.SpringAppConfig</param-value>
-    </init-param>
+
     <multipart-config>
       <location>/tmp</location>
       <max-file-size>-1</max-file-size>
       <max-request-size>-1</max-request-size>
       <file-size-threshold>0</file-size-threshold>
-    </multipart-config>    
+    </multipart-config>
   </servlet>
-   <servlet-mapping>
+
+  <servlet-mapping>
     <servlet-name>SpringDispatcher</servlet-name>
     <url-pattern>/</url-pattern>
   </servlet-mapping>
-  
-<!--
-   <servlet-mapping>
-    <servlet-name>SpringDispatcher</servlet-name>
-    <url-pattern>/api/*</url-pattern>
-  </servlet-mapping>
- -->  <filter>
+
+
+  <filter>
     <filter-name>EncodingFilter</filter-name>
     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
     <init-param>
@@ -79,51 +71,62 @@
       <param-value>encodingFilter</param-value>
     </init-param>
   </filter>
+
   <filter-mapping>
     <filter-name>EncodingFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-  
+
+
   <filter>
     <filter-name>CorsFilter</filter-name>
     <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+
     <init-param>
       <param-name>cors.allowed.origins</param-name>
       <param-value>https://localhost:4200</param-value>
-    </init-param>    
+    </init-param>
+
     <init-param>
       <param-name>cors.allowed.methods</param-name>
       <param-value>GET,POST,HEAD,OPTIONS,PATCH,DELETE</param-value>
-    </init-param>    
+    </init-param>
   </filter>
+
   <filter-mapping>
     <filter-name>CorsFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-  
+
+
   <filter>
-	  <filter-name>springSecurityFilterChain</filter-name>
-	  <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-	</filter>
-	
-	<filter-mapping>
-	  <filter-name>springSecurityFilterChain</filter-name>
-	  <url-pattern>/*</url-pattern>
-	</filter-mapping>
-  
+    <filter-name>springSecurityFilterChain</filter-name>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>springSecurityFilterChain</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+
   <listener>
     <listener-class>net.geoprism.PatchingContextListener</listener-class>
   </listener>
+
   <listener>
     <listener-class>net.geoprism.SchedulerContextListener</listener-class>
   </listener>
+
   <listener>
     <listener-class>gov.geoplatform.uasdm.index.IndexContextListener</listener-class>
   </listener>
+
   <listener>
     <listener-class>gov.geoplatform.uasdm.odm.ODMContextListener</listener-class>
   </listener>
-  
+
+
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>https-only</web-resource-name>
@@ -131,8 +134,10 @@
       <http-method>GET</http-method>
       <http-method>POST</http-method>
     </web-resource-collection>
+
     <user-data-constraint>
       <transport-guarantee>CONFIDENTIAL</transport-guarantee>
     </user-data-constraint>
   </security-constraint>
+
 </web-app>

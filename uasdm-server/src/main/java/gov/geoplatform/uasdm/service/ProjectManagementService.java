@@ -1324,7 +1324,7 @@ public class ProjectManagementService
       
       AbstractWorkflowTask task = component.createWorkflowTask(userId, id, folder);
       task.setStatus(WorkflowTaskStatus.STARTED.toString());
-      task.setMessage("Uploading to the staging environment...");
+      task.setMessage(WorkflowService.FINALIZING_UPLOAD_MESSAGE);
       task.apply();
       
       ImageryProcessingJob.processFiles(userId, task, config, fileName, stream);

@@ -17,6 +17,7 @@ package gov.geoplatform.uasdm.maintenance;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,13 +31,14 @@ import com.runwaysdk.session.Request;
 import gov.geoplatform.uasdm.CollectionStatus;
 import gov.geoplatform.uasdm.CollectionStatusQuery;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
+import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTaskQuery;
 import gov.geoplatform.uasdm.bus.OrthoProcessingTask;
-import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 import gov.geoplatform.uasdm.odm.ODMStatus;
 import gov.geoplatform.uasdm.odm.ODMUploadTask;
+import gov.geoplatform.uasdm.service.WorkflowService;
 
 @Component
 public class LingeringWorkflowTaskCleanupJob {
@@ -54,7 +56,11 @@ public class LingeringWorkflowTaskCleanupJob {
      */
     @Scheduled(cron = "0 0 4 * * *")
     public void cleanUp() {
+      try {
         inRequest();
+      } catch (Throwable t) {
+        logger.error("Unhandled exception thrown during cleanup", t);
+      }
     }
     
     @Request
@@ -72,20 +78,27 @@ public class LingeringWorkflowTaskCleanupJob {
       {
         while (it.hasNext())
         {
-          AbstractWorkflowTask task = it.next();
+          AbstractWorkflowTask staleEntity = it.next();
           
-          int expireDays = 7;
-          if (task instanceof ODMProcessingTask)
-            expireDays = 1;
-          else if (task instanceof ODMUploadTask || task instanceof OrthoProcessingTask)
-            expireDays = 3;
+          String taskOid = staleEntity.getOid();
+          Date taskLastUpdate = staleEntity.getLastUpdateDate();
           
-          if (task.getLastUpdateDate() != null && task.getLastUpdateDate().toInstant().isBefore(Instant.now().minus(expireDays, ChronoUnit.DAYS))) {
-            logger.error("Workflow task [" + task.getOid() + "] has been processing too long without updates [" + expireDays + " days]. Failing task.");
-            task.appLock();
-            task.setStatus(ODMStatus.FAILED.getLabel());
-            task.setMessage("The task timed out (was processing for too long with no updates). Contact your technical support.");
-            task.apply();
+          try {
+            int expireDays = 7;
+            if (staleEntity instanceof ODMProcessingTask || (staleEntity.getStatus().equals(WorkflowTaskStatus.STARTED.toString()) && staleEntity.getMessage().toLowerCase().contains(WorkflowService.FINALIZING_UPLOAD_MESSAGE.toLowerCase())))
+              expireDays = 1;
+            else if (staleEntity instanceof ODMUploadTask || staleEntity instanceof OrthoProcessingTask)
+              expireDays = 3;
+            
+            if (taskLastUpdate != null && taskLastUpdate.toInstant().isBefore(Instant.now().minus(expireDays, ChronoUnit.DAYS))) {
+              logger.error("Workflow task [" + taskOid + "] has been processing too long without updates [" + expireDays + " days]. Failing task.");
+              AbstractWorkflowTask task = AbstractWorkflowTask.lock(taskOid);
+              task.setStatus(ODMStatus.FAILED.getLabel());
+              task.setMessage("The task timed out (was processing for too long with no updates). Contact your technical support.");
+              task.apply();
+            }
+          } catch(Throwable t) {
+            logger.error("Unexpected exception encountered while cleaning up workflow tasks on record [" + taskOid + "]", t);
           }
         }
       }
@@ -99,24 +112,32 @@ public class LingeringWorkflowTaskCleanupJob {
       {
         while (it.hasNext())
         {
-          CollectionStatus colStat = it.next();
+          CollectionStatus staleEntity = it.next();
           
-          int updated = CollectionStatus.updateStatus(colStat.getComponent(), colStat.getProductId());
+          String oid = staleEntity.getOid();
+          String componentId = staleEntity.getComponent();
+          String productId = staleEntity.getProductId();
           
-          if (updated == 0) {
-            // No associated tasks... Lingering status object?
+          try {
+            int updated = CollectionStatus.updateStatus(componentId, productId);
             
-            var col = UasComponent.get(colStat.getComponent());
-            
-            if (col == null) {
-              logger.error("No associated tasks for CollectionStatus object, and referencing collection does not exist! Deleting lingering CollectionStatus [" + colStat.getOid() + "] object.");
-              colStat.delete();
-            } else {
-              logger.error("No associated tasks for CollectionStatus object [" + col.getS3location() + "]! Updating status of CollectionStatus object [" + colStat.getOid() + "] to Failed.");
-              colStat.appLock();
-              colStat.setStatus(ODMStatus.FAILED.getLabel());
-              colStat.apply();
+            if (updated == 0) {
+              // No associated tasks... Lingering status object?
+              
+              var col = UasComponent.get(componentId);
+              CollectionStatus colStat = CollectionStatus.lock(oid);
+              
+              if (col == null) {
+                logger.error("No associated tasks for CollectionStatus object, and referencing collection does not exist! Deleting lingering CollectionStatus [" + colStat.getOid() + "] object.");
+                colStat.delete();
+              } else {
+                logger.error("No associated tasks for CollectionStatus object [" + col.getS3location() + "]! Updating status of CollectionStatus object [" + colStat.getOid() + "] to Failed.");
+                colStat.setStatus(ODMStatus.FAILED.getLabel());
+                colStat.apply();
+              }
             }
+          } catch (Throwable t) {
+            logger.error("Unexpected exception encountered while cleaning up collection status on record [" + oid + "]", t);
           }
         }
       }

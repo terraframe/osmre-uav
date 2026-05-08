@@ -311,6 +311,10 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
         {
           collectionStatus = iterator.next();
           collectionStatus = CollectionStatus.lock(collectionStatus.getOid());
+          
+          if (iterator.hasNext()) {
+            logger.error("Component [" + component.getOid() + "] has more than one associated CollectionStatus. This is considered an error.");
+          }
         }
         else
         {

@@ -45,6 +45,8 @@ import me.desair.tus.server.upload.UploadInfo;
 public class WorkflowService
 {
   final Logger log = LoggerFactory.getLogger(WorkflowService.class);
+  
+  public static final String FINALIZING_UPLOAD_MESSAGE = "Uploading to the staging environment...";
 
   @Transaction
   public JSONObject updateUploadTaskInTransaction(String uploadId)
@@ -55,7 +57,7 @@ public class WorkflowService
     {
       task.lock();
       task.setStatus(WorkflowTaskStatus.UPLOADING.toString());
-      task.setMessage("Uploading to the staging environment..."); // parser.getPercent()
+      task.setMessage(FINALIZING_UPLOAD_MESSAGE); // parser.getPercent()
       // + "%
       // complete"
       task.apply();
@@ -121,7 +123,7 @@ public class WorkflowService
       task.setStatus(WorkflowTaskStatus.STARTED.toString());
     }
 
-    task.setMessage("Uploading to the staging environment...");
+    task.setMessage(FINALIZING_UPLOAD_MESSAGE);
     task.apply();
   }
 
