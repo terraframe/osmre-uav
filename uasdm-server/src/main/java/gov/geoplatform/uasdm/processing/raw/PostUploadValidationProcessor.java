@@ -20,9 +20,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
 import com.opencsv.exceptions.CsvValidationException;
@@ -34,6 +37,7 @@ import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.session.Session;
 
 import gov.geoplatform.uasdm.GenericException;
+import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
 import gov.geoplatform.uasdm.graph.Collection;
@@ -66,19 +70,25 @@ public class PostUploadValidationProcessor
       final UasComponentIF component = task.getImageryComponent().getUasComponent();
       
       if (configuration.isODM() && component instanceof Collection) {
-        final Set<String> allImageNames = new HashSet<String>();
+        Set<String> allImageNames = new HashSet<String>();
         final Sensor sensor = ((Collection)component).getMetadata().get().getSensor();
         final ODMProcessConfiguration odmConfig = configuration.toODM();
         
         if (!sensor.getHasGeologger() && !odmConfig.isIncludeGroundControlPointFile()) return;
         
         // We need to calculate the full set of raw inside this collection, after the upload. We'll start with imagery that's inside the zip.
-        ProjectManagementService.fileNamesInArchive(archive).stream().filter(n -> !Product.GEO_LOCATION_FILE.equals(n) && !Product.GCP_FILE.equals(n)).forEach(n -> allImageNames.add(n));
+        allImageNames = ProjectManagementService.fileNamesInArchive(archive).stream().filter(n -> !Product.GEO_LOCATION_FILE.equals(n) && !Product.GCP_FILE.equals(n)).collect(Collectors.toSet());
         
         // Now we need to check what's in S3 and merge it with what's in the archive. This is necessary because the upload could be a partial upload.
-        RemoteFileFacade.getSiteObjects(component, Collection.RAW, new LinkedList<SiteObject>(), null, null)
-          .getObjects().stream().filter(n -> !Product.GEO_LOCATION_FILE.equals(n) && !Product.GCP_FILE.equals(n))
-          .forEach(o -> allImageNames.add(o.getName()));
+        allImageNames = RemoteFileFacade.getSiteObjects(component, Collection.RAW, new LinkedList<SiteObject>(), null, null).getObjects().stream()
+            .filter(n -> !Product.GEO_LOCATION_FILE.equals(n) && !Product.GCP_FILE.equals(n))
+            .filter(n -> !n.getKey().toLowerCase().contains("/thumbnails/"))
+            .map(so -> so.getName())
+            .collect(Collectors.toSet());
+        
+        // Strip unsupported extensions since they won't be uploaded to ODM anyway
+        List<String> supportedExtensions = ImageryProcessingJob.getSupportedExtensions(ImageryComponent.RAW, false, false, false, configuration);
+        allImageNames = allImageNames.stream().filter(n -> supportedExtensions.contains(FilenameUtils.getExtension(n).toLowerCase())).collect(Collectors.toSet());
       
         // If the sensor has a geologger, we need to validate if they upload a new geo file or if they upload new imagery, regardless of whether they checked "includes geo location file" on upload.
         if (sensor.getHasGeologger()) {

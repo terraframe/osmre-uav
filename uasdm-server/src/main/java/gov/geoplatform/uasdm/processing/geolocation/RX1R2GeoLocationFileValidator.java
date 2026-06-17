@@ -17,6 +17,7 @@ package gov.geoplatform.uasdm.processing.geolocation;
 
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Set;
 
 import com.opencsv.CSVReader;
@@ -37,6 +38,9 @@ public class RX1R2GeoLocationFileValidator extends GeoLocationFileValidator
   {
     GeoLocationValidationResults results = new GeoLocationValidationResults();
     
+    Set<String> geoLocFilenames = new HashSet<String>();
+    
+    // Step 1. Read the file, validate each line.
     try (CSVReader csvReader = new CSVReader(new InputStreamReader(this.geoLocationFile.openNewStream())))
     {
       String[] line;
@@ -54,9 +58,11 @@ public class RX1R2GeoLocationFileValidator extends GeoLocationFileValidator
         {
           String fileName = line[0];
           
-          if (!imageNames.contains(fileName))
+          geoLocFilenames.add(fileName.toLowerCase());
+          
+          if (!imageNames.containsKey(fileName.toLowerCase()))
           {
-            results.addError("Line [" + num + "] references an image which does not exist. Image names must match exactly and are case sensitive.");
+            results.addWarning("Line [" + num + "] references an image [" + fileName + "] which does not exist in the collection. Image names are not case sensitive.");
           }
           
           try
@@ -107,6 +113,13 @@ public class RX1R2GeoLocationFileValidator extends GeoLocationFileValidator
     catch (Throwable t)
     {
       throw new GeoLocationFileInvalidFormatException(t.getMessage(), t);
+    }
+    
+    // Step 2. Check for images in the collection which aren't in the geo location file. This is a hard error, since it wouldn't have coordinates.
+    for (String lowerName : imageNames.keySet()) {
+      if (!geoLocFilenames.contains(lowerName)) {
+        results.addError("The geo location file did not include a reference to " + imageNames.get(lowerName) + " (an image in your collection). Processing the collection would cause this image to not have a valid geo location.");
+      }
     }
     
     return results;

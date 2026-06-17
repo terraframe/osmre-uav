@@ -21,6 +21,8 @@ import java.util.List;
 public class GeoLocationValidationResults
 {
   private List<String> errors = new ArrayList<String>();
+  
+  private List<String> warnings = new ArrayList<String>();
 
   public GeoLocationValidationResults()
   {
@@ -45,5 +47,25 @@ public class GeoLocationValidationResults
   public void addError(String error)
   {
     this.errors.add(error);
+  }
+  
+  public boolean hasWarnings()
+  {
+    return warnings.size() > 0;
+  }
+  
+  public List<String> getWarnings()
+  {
+    return warnings;
+  }
+
+  public void setWarnings(List<String> warnings)
+  {
+    this.warnings = warnings;
+  }
+  
+  public void addWarning(String warning)
+  {
+    this.warnings.add(warning);
   }
 }

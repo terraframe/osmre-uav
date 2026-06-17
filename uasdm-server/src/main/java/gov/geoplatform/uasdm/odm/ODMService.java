@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -53,6 +54,7 @@ import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.Quality;
 import gov.geoplatform.uasdm.processing.gcp.GroundControlPointFileValidator;
 import gov.geoplatform.uasdm.processing.geolocation.GeoLocationFileValidator;
+import gov.geoplatform.uasdm.processing.geolocation.ODMGeoLocationProcessConverter;
 
 public class ODMService implements ODMServiceIF
 {
@@ -172,6 +174,9 @@ public class ODMService implements ODMServiceIF
           }
           
           if (!Product.GEO_LOCATION_FILE.equals(res.getName()) && !payload.getImageNames().contains(res.getName())) continue;
+          
+          if (Product.GEO_LOCATION_FILE.equals(res.getName()))
+            res = ODMGeoLocationProcessConverter.convert(payload.getImageNames().stream().map(n -> n.toLowerCase()).collect(Collectors.toSet()), res, task);
           
           ODMResponse uploadResp = this.taskNewUpload(uuid, res);
         

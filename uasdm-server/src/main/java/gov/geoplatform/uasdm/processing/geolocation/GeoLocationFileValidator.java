@@ -15,18 +15,18 @@
  */
 package gov.geoplatform.uasdm.processing.geolocation;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.runwaysdk.resource.ApplicationFileResource;
-import com.runwaysdk.resource.ArchiveFileResource;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
-import gov.geoplatform.uasdm.odm.HttpNewResponse;
-import gov.geoplatform.uasdm.odm.ODMResponse;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
 
 /**
@@ -40,13 +40,18 @@ abstract public class GeoLocationFileValidator
   
   protected ApplicationFileResource geoLocationFile;
   
-  protected Set<String> imageNames = new HashSet<String>();
+  protected Map<String,String> imageNames = new HashMap<String,String>();
   
   public GeoLocationFileValidator(FileFormat geoLocationFormat, ApplicationFileResource geoLocationFile, Set<String> imageNames)
   {
     this.geoLocationFormat = geoLocationFormat;
     this.geoLocationFile = geoLocationFile;
-    this.imageNames = imageNames;
+    
+    this.imageNames = imageNames.stream()
+        .collect(Collectors.toMap(
+          name -> name.toLowerCase(),
+          name -> name
+        ));
   }
   
   abstract public GeoLocationValidationResults validate();
@@ -91,6 +96,7 @@ abstract public class GeoLocationFileValidator
   {
     GeoLocationValidationResults results = validate(geoLocationFormat, geoLocationFile, imageNames);
     
+    results.getWarnings().stream().forEach(w -> task.createAction(w, TaskActionType.WARNING));
     results.getErrors().stream().forEach(er -> task.createAction(er, TaskActionType.ERROR));
     
     if (results.hasErrors())

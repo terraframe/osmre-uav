@@ -18,10 +18,10 @@ package gov.geoplatform.uasdm.processing.geolocation;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Set;
 
 import com.runwaysdk.resource.ApplicationFileResource;
-import com.runwaysdk.resource.ArchiveFileResource;
 
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
 
@@ -46,6 +46,9 @@ public class ODMGeoLocationFileValidator extends GeoLocationFileValidator
   {
     GeoLocationValidationResults results = new GeoLocationValidationResults();
     
+    Set<String> geoLocFilenames = new HashSet<String>();
+    
+    // Step 1. Read the file, validate each line.
     try (BufferedReader br = new BufferedReader(new InputStreamReader(this.geoLocationFile.openNewStream())))
     {
       int num = 1;
@@ -72,10 +75,12 @@ public class ODMGeoLocationFileValidator extends GeoLocationFileValidator
             switch(i)
             {
               case 0:
-                if (!imageNames.contains(vals[i]))
+                String lowercaseName = vals[i].toLowerCase();
+                if (!imageNames.containsKey(lowercaseName))
                 {
-                  results.addError("Line [" + num + "] references an image which does not exist. Image names must match exactly and are case sensitive.");
+                  results.addWarning("Line [" + num + "] references an image [" + vals[i] + "] which does not exist. Image names are not case sensitive.");
                 }
+                geoLocFilenames.add(lowercaseName);
                 break;
               case 1:
                 try
@@ -131,6 +136,13 @@ public class ODMGeoLocationFileValidator extends GeoLocationFileValidator
     catch (Throwable t)
     {
       throw new GeoLocationFileInvalidFormatException(t.getMessage(), t);
+    }
+    
+    // Step 2. Check for images in the collection which aren't in the geo location file. This is a hard error, since it wouldn't have coordinates.
+    for (String lowerName : imageNames.keySet()) {
+      if (!geoLocFilenames.contains(lowerName)) {
+        results.addError("The geo location file did not include a reference to " + imageNames.get(lowerName) + " (an image in your collection). Processing the collection would cause this image to not have a valid geo location.");
+      }
     }
     
     return results;
