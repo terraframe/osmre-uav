@@ -894,7 +894,12 @@ public class Product extends ProductBase implements ProductIF
             String rootPath = FilenameUtils.getPath(document.getS3location());
             String baseName = FilenameUtils.getBaseName(document.getName());
 
-            RemoteFileFacade.copyObject(rootPath + "thumbnails/" + baseName + ".png", AppProperties.getBucketName(), rootPath + "thumbnails/" + baseName + ".png", AppProperties.getPublicBucketName());
+            try {
+              RemoteFileFacade.copyObject(rootPath + "thumbnails/" + baseName + ".png", AppProperties.getBucketName(), rootPath + "thumbnails/" + baseName + ".png", AppProperties.getPublicBucketName());
+            } catch (NoSuchKeyException ex) {
+              // Thumbnails, while important, are not important enough to fail the entire publishing job
+              logger.error("Error encountered whilst publishing thumbnail for product [" + this.getOid() + "].", ex);
+            }
           }
 
         }
@@ -910,7 +915,12 @@ public class Product extends ProductBase implements ProductIF
             String rootPath = FilenameUtils.getPath(document.getS3location());
             String baseName = FilenameUtils.getBaseName(document.getName());
 
-            RemoteFileFacade.deleteObject(rootPath + "thumbnails/" + baseName + ".png", AppProperties.getPublicBucketName());
+            try {
+              RemoteFileFacade.deleteObject(rootPath + "thumbnails/" + baseName + ".png", AppProperties.getPublicBucketName());
+            } catch (NoSuchKeyException ex) {
+              // Thumbnails, while important, are not important enough to fail the entire publishing job
+              logger.error("Error encountered whilst unpublishing thumbnail for product [" + this.getOid() + "].", ex);
+            }
           }
         }
       }
