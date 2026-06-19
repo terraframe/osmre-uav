@@ -10,11 +10,12 @@
 <div class="input-group">
 
   <input type="text" class="form-control" autocomplete="off"
+    #textModel="ngModel"
     [style]="customStyles" [name]="name" [disabled]="disabled" [(ngModel)]="text"
     [class]="classNames"    
     [typeaheadAsync]="true"
     [typeahead]="typeahead"
-    (change)="onTextChange()"
+    (ngModelChange)="onTextChange()"
     (typeaheadOnSelect)="typeaheadOnSelect($event)" (typeaheadLoading)="loading = $event"
     [ngClass]="{'inline-loading':loading}" [typeaheadOptionsLimit]="7"
     [typeaheadItemTemplate]="customItemTemplate" [typeaheadMinLength]="0" [typeaheadWaitMs]="300"

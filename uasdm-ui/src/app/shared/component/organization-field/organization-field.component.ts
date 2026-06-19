@@ -2,14 +2,14 @@
 ///
 ///
 
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from "@angular/core";
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ViewChild } from "@angular/core";
+import { ControlContainer, NgForm, FormsModule, NgModel } from "@angular/forms";
 import { BsModalService } from "ngx-bootstrap/modal";
 import { TypeaheadMatch, TypeaheadDirective } from "ngx-bootstrap/typeahead";
 import { Observable, Observer, Subscription } from "rxjs";
 import { LocalizedValue, Organization } from "@shared/model/organization";
 import { OrganizationService } from "@shared/service/organization.service";
 import { OrganizationHierarchyModalComponent } from "./organization-hierarchy-modal.component";
-import { ControlContainer, NgForm, FormsModule } from "@angular/forms";
 import { NgClass } from "@angular/common";
 
 @Component({
@@ -38,15 +38,19 @@ export class OrganizationFieldComponent implements OnInit, OnDestroy {
 
     @Output() valueChange = new EventEmitter<{ code: string, label: LocalizedValue }>();
 
+    @ViewChild("textModel") textModel: NgModel;
+
     private _value: { code: string, label: LocalizedValue } = null;
 
     @Input()
     get value(): { code: string, label: LocalizedValue } {
         return this._value;
     }
+
     set value(v: { code: string, label: LocalizedValue }) {
         this._value = v;
         this.text = v?.label?.localizedValue ?? "";
+        this.updateValidity();
     }
 
 
@@ -94,6 +98,7 @@ export class OrganizationFieldComponent implements OnInit, OnDestroy {
     setValue(value: { code: string, label: LocalizedValue }): void {
         this.value = value;
         this.valueChange.emit(this.value);
+        this.updateValidity();
     }
 
     onViewTree(): void {
@@ -109,8 +114,34 @@ export class OrganizationFieldComponent implements OnInit, OnDestroy {
     }
 
     onTextChange(): void {
-        if (this.value != null && (this.text == null || this.text.length === 0)) {
-            this.setValue(null);
+        if (this.value != null) {
+            const selectedLabel = this.value.label?.localizedValue ?? "";
+            const currentText = this.text ?? "";
+
+            if (currentText !== selectedLabel) {
+                this.setValue(null);
+            }
+        }
+
+        this.updateValidity();
+    }
+
+    private updateValidity(): void {
+        if (this.textModel == null) {
+            return;
+        }
+
+        if (this.required && this.value == null) {
+            this.textModel.control.setErrors({ requiredOrganization: true });
+        }
+        else {
+            const errors = this.textModel.control.errors;
+
+            if (errors != null) {
+                delete errors["requiredOrganization"];
+
+                this.textModel.control.setErrors(Object.keys(errors).length > 0 ? errors : null);
+            }
         }
     }
 

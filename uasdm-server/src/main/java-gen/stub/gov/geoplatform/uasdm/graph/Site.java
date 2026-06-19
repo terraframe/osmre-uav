@@ -41,6 +41,7 @@ import com.runwaysdk.session.Request;
 import com.runwaysdk.system.metadata.MdEdge;
 import com.runwaysdk.system.metadata.MdVertex;
 
+import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.bus.DuplicateSiteException;
@@ -57,6 +58,7 @@ import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphSynchronizationQuery;
 import net.geoprism.graph.LabeledPropertyGraphType;
 import net.geoprism.graph.LabeledPropertyGraphTypeVersion;
+import net.geoprism.registry.graph.GraphOrganization;
 import net.geoprism.registry.lpg.StrategyConfiguration;
 import net.geoprism.registry.lpg.TreeStrategyConfiguration;
 import net.geoprism.registry.model.ServerOrganization;
@@ -84,6 +86,26 @@ public class Site extends SiteBase implements SiteIF
   {
     return ServerOrganization.getByGraphId(this.getObjectValue(ORGANIZATION));
   }
+  
+  /*
+   * TODO: There's a bug in the base class generator where it doesn't de-reference object references properly
+   */
+  @Override
+  public GraphOrganization getOrganization()
+  {
+    return GraphOrganization.get((String)this.getObjectValue(ORGANIZATION));
+  }
+  
+  @Override
+  public void apply() {
+    if (this.getOrganization() == null) {
+      GenericException ge = new GenericException("Organization is a required field.");
+      ge.setUserMessage("Organization is a required field.");
+      throw ge;
+    }
+    
+    super.apply();
+  }
 
   @Override
   @Transaction
@@ -98,7 +120,7 @@ public class Site extends SiteBase implements SiteIF
 
       throw e;
     }
-
+    
     // Organization organization = this.getOrganization();
     //
     // if (bureauOid != null && bureauOid.length() > 0)

@@ -73,6 +73,11 @@ export class EntityModalComponent implements OnInit {
 	handleOnSubmit(): void {
 		this.message = null;
 
+		if (this.hasInvalidRequiredOrganization()) {
+			this.message = "Organization is required. Please select a valid organization from the list.";
+			return;
+		}
+
 		if (this.entity.type !== 'Site' || this.entity.geometry != null) {
 			if (this.newInstance) {
 				this.service.applyWithParent(this.entity, this.parentId).then(data => {
@@ -97,6 +102,15 @@ export class EntityModalComponent implements OnInit {
 		else {
 			this.message = "Sites require a location";
 		}
+	}
+
+	private hasInvalidRequiredOrganization(): boolean {
+		return this.attributes.some(attribute => {
+			return this.evaluate(attribute)
+				&& attribute.type === "organization"
+				&& attribute.required
+				&& this.entity[attribute.name] == null;
+		});
 	}
 
 	evaluate(attribute: AttributeType): boolean {

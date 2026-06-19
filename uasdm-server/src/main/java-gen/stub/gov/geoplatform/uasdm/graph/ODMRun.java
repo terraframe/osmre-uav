@@ -77,7 +77,7 @@ public class ODMRun extends ODMRunBase
   }
   
   /*
-   * TODO: This shouldn't be necessary, but the base class is throwing a ClassCastException
+   * TODO: There's a bug in the base class generator where it doesn't de-reference object references properly
    */
   @Override
   public Document getReport()
