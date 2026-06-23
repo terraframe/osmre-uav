@@ -28,6 +28,13 @@ import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.SiteObject;
 
+/**
+ * TODO:
+ * 
+ * This class is REALLY slow. You probably want to use CollectionRawQuery instead.
+ * 
+ * This class does complex LIKE queries across the entire document table which takes FOREVER.
+ */
 public class SiteObjectDocumentQuery implements SiteObjectDocumentQueryIF
 {
   private UasComponentIF component;

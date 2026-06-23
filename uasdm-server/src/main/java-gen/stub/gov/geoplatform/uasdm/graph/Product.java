@@ -91,8 +91,8 @@ import gov.geoplatform.uasdm.remote.s3.S3RemoteFileService;
 import gov.geoplatform.uasdm.service.IndexService;
 import gov.geoplatform.uasdm.service.business.IDMHierarchyTypeSnapshotBusinessService;
 import gov.geoplatform.uasdm.service.request.IDMLabeledPropertyGraphSynchronizationService;
-import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.CollectionCriteria;
+import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.SiteObject;
 import net.geoprism.graph.HierarchyTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
@@ -104,6 +104,7 @@ import net.geoprism.registry.model.ServerOrganization;
 import net.geoprism.registry.service.business.HierarchyTypeSnapshotBusinessServiceIF;
 import net.geoprism.registry.service.business.LabeledPropertyGraphTypeVersionBusinessServiceIF;
 import net.geoprism.spring.core.ApplicationContextHolder;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 
 public class Product extends ProductBase implements ProductIF
 {

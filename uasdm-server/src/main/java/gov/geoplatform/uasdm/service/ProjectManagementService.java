@@ -897,7 +897,13 @@ public class ProjectManagementService
   @Request(RequestType.SESSION)
   public SiteObjectsResultSet getObjectsPresignedReq(String sessionId, String id, String key, Long pageNumber, Long pageSize)
   {
-    return this.getObjects(id, key, pageNumber, pageSize);
+    UasComponentIF component = ComponentFacade.getComponent(id);
+
+    if (component instanceof Collection) {
+      return ((Collection)component).getRawSiteObjects(key, pageNumber, pageSize);
+    } else {
+      return component.getSiteObjects(key, pageNumber, pageSize);
+    }
   }
 
   @Request(RequestType.SESSION)
@@ -1460,8 +1466,11 @@ public class ProjectManagementService
       
       collection.getMetadata().ifPresent(metadata -> {
         if (metadata.getSensor() != null && metadata.getSensor().getHasGeologger()) {
-          SiteObjectDocumentQuery query = new SiteObjectDocumentQuery(collection, null, Collection.RAW);
-          boolean hasGeologger = query.getDocuments().stream().filter(d -> d.getName().equals(Product.GEO_LOCATION_FILE)).findAny().isPresent();
+          // TODO : This query is REALLY slow, since it queries the entire document table. Maybe we need to just get rid of this 'SiteObjectDocumentQuery' entirely?
+//          SiteObjectDocumentQuery query = new SiteObjectDocumentQuery(collection, null, Collection.RAW);
+//          boolean hasGeologger = query.getDocuments().stream().filter(d -> d.getName().equals(Product.GEO_LOCATION_FILE)).findAny().isPresent();
+          
+          boolean hasGeologger = collection.getChildren().stream().filter(d -> d.getName().equals(Product.GEO_LOCATION_FILE)).findAny().isPresent();
           
           config.setHasntUploadedGeoLocationFile(!hasGeologger);
         }

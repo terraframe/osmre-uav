@@ -178,13 +178,28 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
    */
   public List<DocumentIF> getRaw()
   {
-    return getDocuments().stream()//
-        .filter(doc -> {
-          return doc.getS3location().contains("/raw/");
-        }).filter(doc -> {
-          // Exclude the metadata xml file
-          return !doc.getS3location().endsWith(".xml");
-        }).collect(Collectors.toList());
+    CollectionRawQuery query = new CollectionRawQuery(this);
+
+    return query.getDocuments().stream()
+        .map(document -> (DocumentIF) document)
+        .collect(Collectors.toList());
+  }
+  
+  public Long getRawCount()
+  {
+    CollectionRawQuery query = new CollectionRawQuery(this);
+
+    return query.getCount();
+  }
+  
+  public SiteObjectsResultSet getRawSiteObjects(String folder, Long pageNumber, Long pageSize)
+  {
+    CollectionRawQuery query = new CollectionRawQuery(this);
+
+    Long count = query.getCount();
+    List<SiteObject> items = query.getSiteObjects();
+
+    return new SiteObjectsResultSet(count, pageNumber, pageSize, items, folder);
   }
 
   public CollectionFormat getFormat()

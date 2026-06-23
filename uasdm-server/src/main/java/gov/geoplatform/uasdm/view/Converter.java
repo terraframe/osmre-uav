@@ -38,10 +38,11 @@ import com.runwaysdk.session.SessionIF;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.Util;
+import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Document;
+import gov.geoplatform.uasdm.graph.ImageSet;
 import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Product;
-import gov.geoplatform.uasdm.graph.ImageSet;
 import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.model.CollectionIF;
@@ -101,7 +102,11 @@ public abstract class Converter<T extends UasComponentIF>
     });
 
     siteItem.setGeometry(uasComponent.getGeoPoint());
-    siteItem.setNumberOfChildren(uasComponent.getNumberOfChildren());
+    
+    if (!(uasComponent instanceof Collection))
+      siteItem.setNumberOfChildren(uasComponent.getNumberOfChildren());
+    else
+      siteItem.setNumberOfChildren(((Collection)uasComponent).getRawCount());
 
     if (metadata)
     {

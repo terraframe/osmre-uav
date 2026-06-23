@@ -23,6 +23,7 @@ import com.runwaysdk.session.SessionIF;
 import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AllPrivilegeType;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
+import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
 import gov.geoplatform.uasdm.graph.Platform;
 import gov.geoplatform.uasdm.graph.Sensor;
