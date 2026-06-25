@@ -389,7 +389,7 @@
 
         <footer class="flex-shrink-1 sidebar-footer">
           <div class="container-fluid">
-            <pagination-controls (pageChange)="onPageChange($event)" [maxSize]="20"></pagination-controls>
+            <pagination-controls *ngIf="current == null" (pageChange)="onPageChange($event)" [maxSize]="5"></pagination-controls>
 
             <div class="row" *ngIf="current != null && current.type === 0" style="background:white;">
               <div class="col-md-12" style="text-align: center;padding: 10px;border-top: 1px solid lightgrey;">

@@ -166,7 +166,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   page: PageResult<SiteEntity> = {
     pageNumber: 1,
-    pageSize: 100,
+    pageSize: 50,
     count: 0,
     resultSet: []
   };
