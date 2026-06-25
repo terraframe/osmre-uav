@@ -22,8 +22,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import gov.geoplatform.uasdm.graph.ImageSet;
-import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.CollectionCriteria;
+import gov.geoplatform.uasdm.view.ComponentProductDTO;
+import gov.geoplatform.uasdm.view.SiteItem;
 
 public interface ComponentStrategy
 {
@@ -47,7 +48,9 @@ public interface ComponentStrategy
 
   public List<ComponentProductDTO> getProducts(CollectionCriteria criteria);
 
-  public List<SiteIF> getSites(String conditions, String sort);
+  public List<SiteIF> getSites(String conditions, String sort, Integer pageSize, Integer pageNumber);
+  
+  public Page<SiteItem> getSitesPage(String conditions, String sort, Integer pageSize, Integer pageNumber);
 
   public Page<MetadataMessage> getMissingMetadata(Integer pageNumber, Integer pageSize);
 

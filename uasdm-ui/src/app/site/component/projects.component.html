@@ -389,6 +389,7 @@
 
         <footer class="flex-shrink-1 sidebar-footer">
           <div class="container-fluid">
+            <pagination-controls (pageChange)="onPageChange($event)" [maxSize]="20"></pagination-controls>
 
             <div class="row" *ngIf="current != null && current.type === 0" style="background:white;">
               <div class="col-md-12" style="text-align: center;padding: 10px;border-top: 1px solid lightgrey;">
@@ -440,7 +441,7 @@
               to resolve</a>
           </alert>
 
-          <div class="idm-toast" *ngFor="let task of tasks; let idx = index">
+          <div class="idm-toast" *ngFor="let task of tasks | paginate: { itemsPerPage: page.pageSize, currentPage: page.pageNumber, totalItems: page.count }; let idx = index">
             <alert *ngIf="task.status === 'Complete' && task.actions.length === 0" type="success" [dismissible]="true"
               (onClosed)="handleCloseToast(idx)">
               <strong>Upload {{task.status}}</strong> for {{task.collectionLabel}}. <a

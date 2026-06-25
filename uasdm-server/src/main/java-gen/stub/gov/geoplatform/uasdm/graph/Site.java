@@ -45,14 +45,19 @@ import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.Bureau;
 import gov.geoplatform.uasdm.bus.DuplicateSiteException;
+import gov.geoplatform.uasdm.model.ComponentFacade;
 import gov.geoplatform.uasdm.model.EdgeType;
+import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.service.business.IDMHierarchyTypeSnapshotBusinessService;
 import gov.geoplatform.uasdm.view.AttributeOrganizationType;
 import gov.geoplatform.uasdm.view.AttributeType;
+import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.EqCondition;
 import gov.geoplatform.uasdm.view.Option;
+import gov.geoplatform.uasdm.view.SiteItem;
+import gov.geoplatform.uasdm.view.TreeComponent;
 import net.geoprism.graph.GeoObjectTypeSnapshot;
 import net.geoprism.graph.LabeledPropertyGraphSynchronization;
 import net.geoprism.graph.LabeledPropertyGraphSynchronizationQuery;
@@ -398,11 +403,26 @@ public class Site extends SiteBase implements SiteIF
     return ( query.getResults().size() > 0 );
   }
 
-  public static List<SiteIF> getSites(String conditions, String sort)
+  public static List<SiteIF> getSites(String conditions, String sort, Integer pageSize, Integer pageNumber)
   {
-    SiteQuery query = new SiteQuery(conditions);
+    SiteQuery query = new SiteQuery(conditions, pageSize, pageNumber);
 
     return query.getResults().stream().map(a -> (SiteIF) a).collect(Collectors.toList());
+  }
+  
+  public static Page<SiteItem> getSitesPage(String conditions, String sort, Integer pageSize, Integer pageNumber)
+  {
+    if (pageSize == null || pageSize <= 0)
+      pageSize = 20;
+    if (pageNumber == null || pageNumber <= 0)
+      pageNumber = 1;
+    
+    SiteQuery query = new SiteQuery(conditions, pageSize, pageNumber);
+    
+    Long count = query.getCount();
+    LinkedList<SiteItem> sites = query.getResults().stream().map(s -> Converter.toSiteItem(s, false)).collect(Collectors.toCollection(LinkedList::new));
+
+    return new Page<SiteItem>(count, pageNumber, pageSize, sites);
   }
 
   public static List<String> expandClause()

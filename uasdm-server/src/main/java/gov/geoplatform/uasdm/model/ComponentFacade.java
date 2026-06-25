@@ -22,8 +22,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import gov.geoplatform.uasdm.graph.ImageSet;
-import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.CollectionCriteria;
+import gov.geoplatform.uasdm.view.ComponentProductDTO;
+import gov.geoplatform.uasdm.view.SiteItem;
 
 public class ComponentFacade
 {
@@ -74,9 +75,14 @@ public class ComponentFacade
     return STRATEGY.getDocument(oid);
   }
 
-  public static List<SiteIF> getSites(String conditions, String sort)
+  public static List<SiteIF> getSites(String conditions, String sort, Integer pageSize, Integer pageNumber)
   {
-    return STRATEGY.getSites(conditions, sort);
+    return STRATEGY.getSites(conditions, sort, pageSize, pageNumber);
+  }
+  
+  public static Page<SiteItem> getSitesPage(String conditions, String sort, Integer pageSize, Integer pageNumber)
+  {
+    return STRATEGY.getSitesPage(conditions, sort, pageSize, pageNumber);
   }
 
   public static long getMissingMetadataCount()

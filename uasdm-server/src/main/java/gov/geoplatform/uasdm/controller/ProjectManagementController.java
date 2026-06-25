@@ -138,11 +138,11 @@ public class ProjectManagementController extends AbstractController
   }
 
   @GetMapping("/roots")
-  public ResponseEntity<String> getRoots(@RequestParam(required = false, name = "conditions") String conditions, @RequestParam(required = false, name = "sort") String sort)
+  public ResponseEntity<String> getRoots(@RequestParam(required = false, name = "conditions") String conditions, @RequestParam(required = false, name = "sort") String sort, @RequestParam(required = false, name = "pageSize") Integer pageSize, @RequestParam(required = false, name = "pageNumber") Integer pageNumber)
   {
-    List<TreeComponent> roots = this.service.getRoots(this.getSessionId(), conditions, sort);
+    Page<SiteItem> page = this.service.getRoots(this.getSessionId(), conditions, sort, pageSize, pageNumber);
 
-    return ResponseEntity.ok(SiteItem.serialize(roots).toString());
+    return ResponseEntity.ok(page.toJSON().toString());
   }
 
   @GetMapping("/metadata-options")

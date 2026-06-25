@@ -25,13 +25,14 @@ import org.json.JSONObject;
 import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.Document;
+import gov.geoplatform.uasdm.graph.ImageSet;
 import gov.geoplatform.uasdm.graph.Imagery;
 import gov.geoplatform.uasdm.graph.Product;
-import gov.geoplatform.uasdm.graph.ImageSet;
 import gov.geoplatform.uasdm.graph.Site;
 import gov.geoplatform.uasdm.graph.UasComponent;
-import gov.geoplatform.uasdm.view.ComponentProductDTO;
 import gov.geoplatform.uasdm.view.CollectionCriteria;
+import gov.geoplatform.uasdm.view.ComponentProductDTO;
+import gov.geoplatform.uasdm.view.SiteItem;
 
 public class GraphStrategy implements ComponentStrategy
 {
@@ -80,9 +81,14 @@ public class GraphStrategy implements ComponentStrategy
     return Document.get(oid);
   }
 
-  public List<SiteIF> getSites(String conditions, String sort)
+  public List<SiteIF> getSites(String conditions, String sort, Integer pageSize, Integer pageNumber)
   {
-    return Site.getSites(conditions, sort);
+    return Site.getSites(conditions, sort, pageSize, pageNumber);
+  }
+  
+  public Page<SiteItem> getSitesPage(String conditions, String sort, Integer pageSize, Integer pageNumber)
+  {
+    return Site.getSitesPage(conditions, sort, pageSize, pageNumber);
   }
 
   @Override

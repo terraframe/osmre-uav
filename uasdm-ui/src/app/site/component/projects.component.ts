@@ -27,6 +27,8 @@ import { MetadataService } from "../service/metadata.service";
 import { CookieService } from "ngx-cookie-service";
 import * as lodash from 'lodash';
 
+import { NgxPaginationModule } from 'ngx-pagination';
+
 import {
   fadeInOnEnterAnimation,
   fadeOutOnLeaveAnimation
@@ -70,6 +72,7 @@ import { ImageSetService } from "@site/service/image-set.service";
 import { HttpParams } from "@angular/common/http";
 import { Store } from "@ngrx/store";
 import { createSetLayer, getCollection, getImageSets, getMapLayers, getVisible, MapActions } from "src/app/state/map.state";
+import { PageResult } from "@shared/model/page";
 
 const enum PANEL_TYPE {
   SITE = 0,
@@ -88,7 +91,7 @@ const enum PANEL_TYPE {
     fadeInOnEnterAnimation(),
     fadeOutOnLeaveAnimation()
   ],
-  imports: [NgIf, NgFor, CollapseDirective, NgClass, UasdmHeaderComponent, FormsModule, TypeaheadDirective, OrganizationFieldComponent, TabsetComponent, TabDirective, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet, ProductPanelComponent, ImageSetPanelComponent, KnowStacPanelComponent, ImageryPanelComponent, AlertComponent, RouterLink, LegendPanelComponent]
+  imports: [NgIf, NgFor, NgxPaginationModule, CollapseDirective, NgClass, UasdmHeaderComponent, FormsModule, TypeaheadDirective, OrganizationFieldComponent, TabsetComponent, TabDirective, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet, ProductPanelComponent, ImageSetPanelComponent, KnowStacPanelComponent, ImageryPanelComponent, AlertComponent, RouterLink, LegendPanelComponent]
 })
 export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
@@ -160,6 +163,13 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
   active: boolean = false;
 
   loadingSites: boolean = true;
+
+  page: PageResult<SiteEntity> = {
+    pageNumber: 1,
+    pageSize: 100,
+    count: 0,
+    resultSet: []
+  };
 
   /* 
    * List of base layers
@@ -749,8 +759,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.loadingSites = true;
 
-    return this.service.roots(null, conditions, this.sort).then(nodes => {
-      this.setNodes(nodes);
+    return this.service.roots(null, conditions, this.sort, this.page.pageNumber, this.page.pageSize).then(page => {
+      this.page = page;
+      this.setNodes(page.resultSet);
     }).finally(() => {
       this.loadingSites = false;
     })
@@ -1967,6 +1978,17 @@ export class ProjectsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     return conditions;
   }
+
+  onPageChange(pageNumber: number): void {
+		// this.service.page(pageNumber).then(res => {
+		// 	this.res = res;
+
+		// 	this.p = pageNumber;
+		// });
+
+    this.page.pageNumber = pageNumber;
+    this.refreshSites();
+	}
 
   buildItemsLayer() {
     // Update the items layer with new data

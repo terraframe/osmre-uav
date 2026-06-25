@@ -32,6 +32,7 @@ import gov.geoplatform.uasdm.bus.Site;
 import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.graph.ImageSet;
 import gov.geoplatform.uasdm.view.ComponentProductDTO;
+import gov.geoplatform.uasdm.view.SiteItem;
 import gov.geoplatform.uasdm.view.CollectionCriteria;
 
 public class BusinessStrategy implements ComponentStrategy
@@ -143,6 +144,18 @@ public class BusinessStrategy implements ComponentStrategy
 
   @Override
   public List<ComponentImageSet> getImageSets(CollectionCriteria criteria)
+  {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public List<SiteIF> getSites(String conditions, String sort, Integer pageSize, Integer pageNumber)
+  {
+    return Site.getSites(conditions);
+  }
+
+  @Override
+  public Page<SiteItem> getSitesPage(String conditions, String sort, Integer pageSize, Integer pageNumber)
   {
     throw new UnsupportedOperationException();
   }

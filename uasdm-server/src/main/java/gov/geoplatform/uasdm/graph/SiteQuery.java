@@ -18,6 +18,7 @@ package gov.geoplatform.uasdm.graph;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -110,10 +111,25 @@ public class SiteQuery
   private StringBuilder                 statement  = new StringBuilder();
 
   private String                        conditions;
+  
+  private Integer pageSize;
+  
+  private Integer pageNumber;
 
+  public SiteQuery(String conditions, Integer pageSize, Integer pageNumber)
+  {
+    this.conditions = conditions;
+    this.pageSize = Objects.requireNonNullElse(pageSize, 20);
+    this.pageNumber = Objects.requireNonNullElse(pageNumber, 1);
+
+    this.process();
+  }
+  
   public SiteQuery(String conditions)
   {
     this.conditions = conditions;
+    this.pageSize = null;
+    this.pageNumber = null;
 
     this.process();
   }
@@ -130,10 +146,23 @@ public class SiteQuery
 
   public List<UasComponentIF> getResults()
   {
-    final GraphQuery<UasComponentIF> query = new GraphQuery<UasComponentIF>(statement.toString(), parameters);
+    String resultsStatement = statement.toString();
+    
+    if (pageSize != null && pageNumber != null)
+      resultsStatement = statement + " SKIP " + (pageSize * (pageNumber-1)) + " LIMIT " + pageSize;
+    
+    final GraphQuery<UasComponentIF> query = new GraphQuery<UasComponentIF>(resultsStatement.toString(), parameters);
 
     return query.getResults();
+  }
+  
+  public Long getCount()
+  {
+    String countStatement = "SELECT COUNT(*) FROM (" + statement + ")";
+    
+    final GraphQuery<Long> query = new GraphQuery<Long>(countStatement, parameters);
 
+    return query.getSingleResult();
   }
 
   private final void process()

@@ -339,6 +339,11 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
 
   public static Page<CollectionStatus> getUserWorkflowTasks(String statuses, Integer pageNumber, Integer pageSize)
   {
+    if (pageNumber == null || pageNumber <= 0)
+      pageNumber = 1;
+    if (pageSize == null || pageSize <= 0)
+      pageSize = 20;
+    
     CollectionStatusQuery query = new CollectionStatusQuery(new QueryFactory());
 
     if (statuses != null)
@@ -366,6 +371,8 @@ public class CollectionStatus extends CollectionStatusBase implements JSONSerial
 
       query.WHERE(query.getComponent().EQ(taskQuery.getComponent()));
     }
+    
+    query.restrictRows(pageSize, pageNumber);
 
     query.ORDER_BY_DESC(query.getLastModificationDate());
 

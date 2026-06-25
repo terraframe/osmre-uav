@@ -325,18 +325,11 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public List<TreeComponent> getRoots(String sessionId, String conditions, String sort)
+  public Page<SiteItem> getRoots(String sessionId, String conditions, String sort, Integer pageSize, Integer pageNumber)
   {
-    LinkedList<TreeComponent> roots = new LinkedList<TreeComponent>();
+    Page<SiteItem> page = ComponentFacade.getSitesPage(conditions, sort, pageSize, pageNumber);
 
-    List<SiteIF> sites = ComponentFacade.getSites(conditions, sort);
-
-    for (SiteIF s : sites)
-    {
-      roots.add(Converter.toSiteItem(s, false));
-    }
-
-    return roots;
+    return page;
   }
 
   /**

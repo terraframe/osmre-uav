@@ -17,7 +17,9 @@ package gov.geoplatform.uasdm.view;
 
 import org.json.JSONObject;
 
-public interface TreeComponent
+import gov.geoplatform.uasdm.model.JSONSerializable;
+
+public interface TreeComponent extends JSONSerializable
 {
   public JSONObject toJSON();
 

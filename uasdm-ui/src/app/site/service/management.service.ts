@@ -13,7 +13,7 @@ import { AuthService } from '@shared/service/auth.service';
 import { EventService } from '@shared/service/event.service';
 import { HttpBackendClient } from '@shared/service/http-backend-client.service';
 
-import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet, TaskGroup, Selection, CollectionArtifacts, ProcessConfig } from '../model/management';
+import { SiteEntity, Message, Task, AttributeType, Condition, SiteObjectsResultSet, TaskGroup, Selection, CollectionArtifacts, ProcessConfig, Page } from '../model/management';
 import { Sensor } from '../model/sensor';
 import { Platform } from '../model/platform';
 import { PageResult } from '@shared/model/page';
@@ -223,7 +223,7 @@ export class ManagementService {
 			.toPromise()
 	}
 
-	roots(id: string, conditions: { hierarchy: any, array: { field: string, value: any }[] }, sort?: string): Promise<SiteEntity[]> {
+	roots(id: string, conditions: { hierarchy: any, array: { field: string, value: any }[] }, sort?: string, pageNumber: number = 1, pageSize: number = 20): Promise<PageResult<SiteEntity>> {
 		let params: HttpParams = new HttpParams();
 
 		if (id != null) {
@@ -238,9 +238,12 @@ export class ManagementService {
 			params = params.set('sort', sort);
 		}
 
+		params = params.set('pageNumber', pageNumber);
+		params = params.set('pageSize', pageSize);
+
 
 		return this.http
-			.get<SiteEntity[]>(environment.apiUrl + '/api/project/roots', { params: params })
+			.get<PageResult<SiteEntity>>(environment.apiUrl + '/api/project/roots', { params: params })
 			.toPromise()
 	}
 
