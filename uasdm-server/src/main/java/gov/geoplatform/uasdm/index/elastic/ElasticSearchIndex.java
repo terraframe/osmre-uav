@@ -49,10 +49,13 @@ import com.runwaysdk.session.Session;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import co.elastic.clients.elasticsearch._types.GeoShapeRelation;
+import co.elastic.clients.elasticsearch._types.Script;
+import co.elastic.clients.elasticsearch._types.ScriptSortType;
+import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.aggregations.Aggregate;
 import co.elastic.clients.elasticsearch._types.aggregations.FiltersBucket;
+import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
-import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery.Builder;
 import co.elastic.clients.elasticsearch.core.DeleteByQueryRequest;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
@@ -64,7 +67,6 @@ import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
-import co.elastic.clients.util.ObjectBuilder;
 import gov.geoplatform.uasdm.AppProperties;
 import gov.geoplatform.uasdm.index.Index;
 import gov.geoplatform.uasdm.model.Page;
@@ -496,45 +498,184 @@ public class ElasticSearchIndex implements Index
 
   public List<QueryResult> query(String text)
   {
-    List<QueryResult> results = new LinkedList<QueryResult>();
+    List<QueryResult> results = new LinkedList<>();
 
-    if (text != null && text.length() > 0)
+    if (text != null && !text.trim().isEmpty())
     {
       try
       {
         ElasticsearchClient client = createClient();
 
-        String[] tokens = text.trim().split("\\s");
+        String queryText = text.trim();
 
-        SearchResponse<ElasticDocument> search = client.search(s -> s.index(COMPONENT_INDEX_NAME, LOCATION_INDEX_NAME).query(q -> {
-          ObjectBuilder<Query> builder = q.bool(b -> b.must(mu -> {
+        // TODO : Running this custom sort script is naturally going to be expensive, especially on broad searches. The alternative is to set a 'hierarchyDepth' field on each indexed object and sort directly by that.
+        String hierarchySortScript =
+            "if (doc.containsKey('filename.keyword') && doc['filename.keyword'].size() > 0) return 5; " +
+            "if (doc.containsKey('collectionId.keyword') && doc['collectionId.keyword'].size() > 0) return 4; " +
+            "if (doc.containsKey('missionId.keyword') && doc['missionId.keyword'].size() > 0) return 3; " +
+            "if (doc.containsKey('projectId.keyword') && doc['projectId.keyword'].size() > 0) return 2; " +
+            "if (doc.containsKey('siteId.keyword') && doc['siteId.keyword'].size() > 0) return 1; " +
+            "if (doc.containsKey('label.keyword') && doc['label.keyword'].size() > 0) return 6; " +
+            "return 99;";
 
-            mu.queryString(m -> {
-              Builder fields = m.fields("siteName", "projectName", "missionName", "collectionName", "bureau", "description", "filename", "label");
+        SearchResponse<ElasticDocument> search = client.search(s -> s
+            .index(COMPONENT_INDEX_NAME, LOCATION_INDEX_NAME)
 
-              StringBuilder query = new StringBuilder();
+            .query(q -> q.bool(top -> top
+                .must(must -> must.bool(b -> b
 
-              for (int i = 0; i < tokens.length; i++)
-              {
-                for (String token : tokens)
-                {
-                  if (i != 0)
-                  {
-                    query.append(" AND ");
-                  }
+                    // Exact location label match
+                    .should(sh -> sh.term(t -> t
+                        .field("label.keyword")
+                        .value(queryText)
+                        .boost(10.0f)
+                    ))
 
-                  query.append("(" + token + ")");
-                }
-              }
+                    // Exact component hierarchy matches
+                    .should(sh -> sh.term(t -> t
+                        .field("siteName.keyword")
+                        .value(queryText)
+                        .boost(35.0f)
+                    ))
+                    .should(sh -> sh.term(t -> t
+                        .field("projectName.keyword")
+                        .value(queryText)
+                        .boost(30.0f)
+                    ))
+                    .should(sh -> sh.term(t -> t
+                        .field("missionName.keyword")
+                        .value(queryText)
+                        .boost(25.0f)
+                    ))
+                    .should(sh -> sh.term(t -> t
+                        .field("collectionName.keyword")
+                        .value(queryText)
+                        .boost(20.0f)
+                    ))
 
-              return fields.query(query.toString());
-            });
+                    // Prefix/contains matching
+                    .should(sh -> sh.wildcard(w -> w
+                        .field("siteName.keyword")
+                        .value("*" + queryText + "*")
+                        .caseInsensitive(true)
+                        .boost(20.0f)
+                    ))
+                    .should(sh -> sh.wildcard(w -> w
+                        .field("projectName.keyword")
+                        .value("*" + queryText + "*")
+                        .caseInsensitive(true)
+                        .boost(18.0f)
+                    ))
+                    .should(sh -> sh.wildcard(w -> w
+                        .field("missionName.keyword")
+                        .value("*" + queryText + "*")
+                        .caseInsensitive(true)
+                        .boost(16.0f)
+                    ))
+                    .should(sh -> sh.wildcard(w -> w
+                        .field("collectionName.keyword")
+                        .value("*" + queryText + "*")
+                        .caseInsensitive(true)
+                        .boost(14.0f)
+                    ))
+                    .should(sh -> sh.wildcard(w -> w
+                        .field("label.keyword")
+                        .value("*" + queryText + "*")
+                        .caseInsensitive(true)
+                        .boost(10.0f)
+                    ))
+                    .should(sh -> sh.wildcard(w -> w
+                        .field("filename.keyword")
+                        .value("*" + queryText + "*")
+                        .caseInsensitive(true)
+                        .boost(1.0f)
+                    ))
 
-            return mu;
-          }));
+                    // Phrase matches
+                    .should(sh -> sh.matchPhrase(mp -> mp
+                        .field("siteName")
+                        .query(queryText)
+                        .boost(20.0f)
+                    ))
+                    .should(sh -> sh.matchPhrase(mp -> mp
+                        .field("projectName")
+                        .query(queryText)
+                        .boost(18.0f)
+                    ))
+                    .should(sh -> sh.matchPhrase(mp -> mp
+                        .field("missionName")
+                        .query(queryText)
+                        .boost(16.0f)
+                    ))
+                    .should(sh -> sh.matchPhrase(mp -> mp
+                        .field("collectionName")
+                        .query(queryText)
+                        .boost(14.0f)
+                    ))
+                    .should(sh -> sh.matchPhrase(mp -> mp
+                        .field("label")
+                        .query(queryText)
+                        .boost(10.0f)
+                    ))
 
-          return builder;
-        }), ElasticDocument.class);
+                    // Fuzzy all-terms
+                    .should(sh -> sh.multiMatch(mm -> mm
+                        .fields(
+                            "siteName^10",
+                            "projectName^8",
+                            "missionName^6",
+                            "collectionName^4",
+                            "bureau^2",
+                            "description",
+                            "filename^0.2",
+                            "label^3"
+                        )
+                        .query(queryText)
+                        .operator(Operator.And)
+                        .fuzziness("AUTO")
+                        .boost(3.0f)
+                    ))
+
+                    // Fuzzy partial fallback
+                    .should(sh -> sh.multiMatch(mm -> mm
+                        .fields(
+                            "siteName^10",
+                            "projectName^8",
+                            "missionName^6",
+                            "collectionName^4",
+                            "bureau^2",
+                            "description",
+                            "filename^0.2",
+                            "label^3"
+                        )
+                        .query(queryText)
+                        .operator(Operator.Or)
+                        .fuzziness("AUTO")
+                        .boost(1.0f)
+                    ))
+
+                    .minimumShouldMatch("1")
+                ))
+            ))
+
+            // Hard hierarchy ordering:
+            // site -> project -> mission -> collection -> document -> location/other
+            .sort(so -> so.script(ss -> ss
+                .type(ScriptSortType.Number)
+                .order(SortOrder.Asc)
+                .script(sc -> sc
+                    .lang("painless")
+                    .source(hierarchySortScript)
+                )
+            ))
+
+            // Within each hierarchy bucket, keep normal Elasticsearch relevance.
+            .sort(so -> so.score(sc -> sc
+                .order(SortOrder.Desc)
+            )),
+
+            ElasticDocument.class
+        );
 
         for (Hit<ElasticDocument> hit : search.hits().hits())
         {
