@@ -2,7 +2,8 @@
 ///
 ///
 
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit, DestroyRef } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 
@@ -60,6 +61,8 @@ export class TasksComponent implements OnInit {
    */
   bsModalRef: BsModalRef;
 
+  openedCollectionId: string = null;
+
   /*
    * List of messages
    */
@@ -74,7 +77,10 @@ export class TasksComponent implements OnInit {
     private managementService: ManagementService,
     private modalService: BsModalService,
     private pService: ProductService,
-    private websocketService: WebsocketService
+    private websocketService: WebsocketService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private destroyRef: DestroyRef
   ) {
     this.websocketService.getNotifier()
       .pipe(takeUntilDestroyed())
@@ -92,11 +98,22 @@ export class TasksComponent implements OnInit {
 
   ngOnInit(): void {
     this.userName = this.managementService.getCurrentUser();
+
     this.managementService.tasks([], this.taskPage.pageSize, this.taskPage.pageNumber, this.token).then(data => {
       this.setTaskData(data);
     });
 
     this.getMessages();
+
+    this.route.queryParamMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(params => {
+        const collectionId = params.get('collection');
+
+        if (collectionId != null && collectionId.trim().length > 0 && collectionId !== this.openedCollectionId) {
+          this.openCollectionModal(collectionId, false);
+        }
+      });
   }
 
   ngOnDestroy(): void {
@@ -316,7 +333,23 @@ export class TasksComponent implements OnInit {
   }
 
   handleGoto(collectionId: string): void {
-    // let breadcrumbs = []
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { collection: collectionId },
+      queryParamsHandling: 'merge'
+    });
+  }
+
+  private openCollectionModal(collectionId: string, updateUrl: boolean = true): void {
+    this.openedCollectionId = collectionId;
+
+    if (updateUrl) {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { collection: collectionId },
+        queryParamsHandling: 'merge'
+      });
+    }
 
     this.managementService.view(collectionId).then(response => {
       const entity = response.item;
@@ -329,9 +362,23 @@ export class TasksComponent implements OnInit {
           ignoreBackdropClick: true,
           class: 'leaf-modal modal-xl'
         });
+
         this.bsModalRef.content.init(entity, nodes, breadcrumbs);
-      })
-    })
+
+        this.bsModalRef.onHidden?.subscribe(() => {
+          this.openedCollectionId = null;
+          this.clearCollectionParam();
+        });
+      });
+    });
+  }
+
+  private clearCollectionParam(): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { collection: null },
+      queryParamsHandling: 'merge'
+    });
   }
 
   handleGotoTask(task: TaskGroup): void {

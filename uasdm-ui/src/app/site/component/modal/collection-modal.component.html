@@ -33,8 +33,23 @@
       <div class="row">
         <div class="col-md-12">
           <h2>{{entity.name}} <span *ngIf="!entity.metadataUploaded" style="margin-left: 0;margin-bottom: 5px;"></span>
-            <a class="float-end" (click)="copyLocation()" title="Copy url to clipboard">
-              <i class="fa fa-solid fa-share-nodes"></i>
+            <a
+              class="collection-share-button float-end"
+              role="button"
+              tabindex="0"
+              aria-label="Copy URL to this collection"
+              (click)="copyLocation()"
+              (keydown.enter)="copyLocation()"
+              (keydown.space)="copyLocation()">
+
+              <i
+                class="fa fa-solid fa-share-nodes"
+                [ngClass]="{ 'copied': urlCopied }">
+              </i>
+
+              <span class="collection-share-tooltip">
+                {{ urlCopied ? 'URL copied!' : 'Copy URL to this collection' }}
+              </span>
             </a>
           </h2>
 

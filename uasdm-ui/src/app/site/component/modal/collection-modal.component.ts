@@ -88,6 +88,9 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 	private requestGeneration = 0;
 	private destroyed$ = new Subject<void>();
 
+	urlCopied = false;
+	private urlCopiedTimeout: ReturnType<typeof setTimeout> | null = null;
+
 	constPageSize: number = 25;
 
 	page: SiteObjectsResultSet = new SiteObjectsResultSet();
@@ -138,6 +141,12 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 
 	ngOnDestroy(): void {
 		this.cancelInFlightRequests();
+
+		if (this.urlCopiedTimeout != null) {
+			clearTimeout(this.urlCopiedTimeout);
+			this.urlCopiedTimeout = null;
+		}
+
 		this.destroyed$.next();
 		this.destroyed$.complete();
 		this.dataRequestCancel$.complete();
@@ -536,9 +545,23 @@ export class CollectionModalComponent implements OnInit, OnDestroy {
 		this.video.src = null;
 	}
 
-	copyLocation() {
+	copyLocation(): void {
+		const copied = this.clipboard.copy(window.location.href);
 
-		this.clipboard.copy(window.location.href);
+		if (!copied) {
+			return;
+		}
+
+		this.urlCopied = true;
+
+		if (this.urlCopiedTimeout != null) {
+			clearTimeout(this.urlCopiedTimeout);
+		}
+
+		this.urlCopiedTimeout = setTimeout(() => {
+			this.urlCopied = false;
+			this.urlCopiedTimeout = null;
+		}, 5000);
 	}
 
 	handleImageSetUpdate(set: ImageSet): void {
