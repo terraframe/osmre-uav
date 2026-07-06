@@ -28,6 +28,7 @@ import com.runwaysdk.mvc.RestSerializer;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
+import gov.geoplatform.uasdm.odm.ODMProcessingTask;
 
 public class ODMRunView implements JsonSerializable
 {
@@ -52,7 +53,9 @@ public class ODMRunView implements JsonSerializable
   {
     ODMRunView view = new ODMRunView();
     
-    view.setOutput(run.getOutput());
+    ODMProcessingTask task = run.getWorkflowTask();
+    if (task != null)
+      view.setOutput(task.getOdmOutput());
     
     view.setConfig(run.getConfiguration());
     

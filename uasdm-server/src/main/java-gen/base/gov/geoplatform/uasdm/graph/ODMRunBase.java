@@ -1,21 +1,6 @@
-/**
- * Copyright 2020 The Department of Interior
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.geoplatform.uasdm.graph;
 
-@com.runwaysdk.business.ClassSignature(hash = -1785660761)
+@com.runwaysdk.business.ClassSignature(hash = -625492941)
 /**
  * This class is generated automatically.
  * DO NOT MAKE CHANGES TO IT - THEY WILL BE OVERWRITTEN
@@ -28,12 +13,11 @@ public abstract class ODMRunBase extends com.runwaysdk.business.graph.VertexObje
   public final static String CLASS = "gov.geoplatform.uasdm.graph.ODMRun";
   public final static java.lang.String COMPONENT = "component";
   public final static java.lang.String CONFIG = "config";
-  public final static java.lang.String INSTANCETYPE = "instanceType";
   public final static java.lang.String FEATUREQUALITY = "featureQuality";
+  public final static java.lang.String INSTANCETYPE = "instanceType";
   public final static java.lang.String MATCHERNEIGHBORS = "matcherNeighbors";
   public final static java.lang.String MINNUMFEATURES = "minNumFeatures";
   public final static java.lang.String OID = "oid";
-  public final static java.lang.String OUTPUT = "output";
   public final static java.lang.String PCQUALITY = "pcQuality";
   public final static java.lang.String RADIOMETRICCALIBRATION = "radiometricCalibration";
   public final static java.lang.String REPORT = "report";
@@ -45,7 +29,7 @@ public abstract class ODMRunBase extends com.runwaysdk.business.graph.VertexObje
   public final static java.lang.String VIDEORESOLUTION = "videoResolution";
   public final static java.lang.String WORKFLOWTASK = "workflowTask";
   @SuppressWarnings("unused")
-  private static final long serialVersionUID = -1785660761;
+  private static final long serialVersionUID = -625492941;
   
   public ODMRunBase()
   {
@@ -84,22 +68,6 @@ public abstract class ODMRunBase extends com.runwaysdk.business.graph.VertexObje
     this.setValue(CONFIG, value);
   }
   
-  public String getInstanceType()
-  {
-    return (String) this.getObjectValue(INSTANCETYPE);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getInstanceTypeMd()
-  {
-    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.ODMRun.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(INSTANCETYPE);
-  }
-  
-  public void setInstanceType(String value)
-  {
-    this.setValue(INSTANCETYPE, value);
-  }
-  
   public String getFeatureQuality()
   {
     return (String) this.getObjectValue(FEATUREQUALITY);
@@ -114,6 +82,22 @@ public abstract class ODMRunBase extends com.runwaysdk.business.graph.VertexObje
   public void setFeatureQuality(String value)
   {
     this.setValue(FEATUREQUALITY, value);
+  }
+  
+  public String getInstanceType()
+  {
+    return (String) this.getObjectValue(INSTANCETYPE);
+  }
+  
+  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getInstanceTypeMd()
+  {
+    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.ODMRun.CLASS);
+    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(INSTANCETYPE);
+  }
+  
+  public void setInstanceType(String value)
+  {
+    this.setValue(INSTANCETYPE, value);
   }
   
   public Integer getMatcherNeighbors()
@@ -157,22 +141,6 @@ public abstract class ODMRunBase extends com.runwaysdk.business.graph.VertexObje
   {
     com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.ODMRun.CLASS);
     return (com.runwaysdk.dataaccess.MdAttributeUUIDDAOIF)mdClassIF.definesAttribute(OID);
-  }
-  
-  public String getOutput()
-  {
-    return (String) this.getObjectValue(OUTPUT);
-  }
-  
-  public static com.runwaysdk.dataaccess.MdAttributeTextDAOIF getOutputMd()
-  {
-    com.runwaysdk.dataaccess.MdClassDAOIF mdClassIF = com.runwaysdk.dataaccess.metadata.MdClassDAO.getMdClassDAO(gov.geoplatform.uasdm.graph.ODMRun.CLASS);
-    return (com.runwaysdk.dataaccess.MdAttributeTextDAOIF)mdClassIF.definesAttribute(OUTPUT);
-  }
-  
-  public void setOutput(String value)
-  {
-    this.setValue(OUTPUT, value);
   }
   
   public String getPcQuality()

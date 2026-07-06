@@ -160,8 +160,6 @@ public class ODMZipPostProcessor
         }
       });
 
-      odmRun.setOutput(processingTask.getOdmOutput());
-
       odmRun.setComponent((Collection) this.collection);
 
       odmRun.setRunEnd(new Date());

@@ -482,13 +482,6 @@ public class ODMTaskProcessor
       task.writeODMtoS3(output);
 
       new ODMMessageConverter().process(task, task.getMessage(), output);
-      
-      ODMRun run = ODMRun.getForTask(task.getOid());
-      if (run != null)
-      {
-        run.setOutput(sb.toString());
-        run.apply();
-      }
     }
   }
 
