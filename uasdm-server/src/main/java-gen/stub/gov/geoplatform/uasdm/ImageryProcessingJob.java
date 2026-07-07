@@ -91,7 +91,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
   {
     // First check the upload target. If they're manually uploading a product,
     // it doesn't matter what the collection format is.
-    if (ImageryComponent.DEM.equals(uploadTarget))
+    if (uploadTarget.startsWith(ImageryComponent.DEM))
       return Arrays.asList("tif", "tiff", "xml");
     else if (ImageryComponent.ORTHO.equals(uploadTarget))
       return Arrays.asList("png", "tif", "tiff", "xml");
@@ -120,7 +120,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
   public static List<String> getSupportedExtensions(String uploadTarget, boolean isMultispectral, boolean isRadiometric, boolean isVideo, ProcessConfiguration config)
   {
-    if (isMultispectral || isRadiometric || uploadTarget.equals(ImageryComponent.DEM))
+    if (isMultispectral || isRadiometric || uploadTarget.startsWith(ImageryComponent.DEM))
     {
       return Arrays.asList("tif", "tiff", "xml");
     }

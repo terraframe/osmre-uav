@@ -112,7 +112,7 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 		if (this.uploadTarget != null && this.uploadTarget === 'ptcloud') {
 			this.extensions = ".laz,.las,.zip,.gz";
 		}
-		if (this.uploadTarget != null && this.uploadTarget === 'dem') {
+		if (this.uploadTarget != null && this.uploadTarget.startsWith('dem')) {
 			this.extensions = ".tif,.tiff,.zip,.gz";
 		}
 		if (this.uploadTarget != null && this.uploadTarget === 'ortho') {
@@ -300,7 +300,7 @@ export class TusUploadModalComponent implements OnInit, OnDestroy {
 		else if(this.uploadTarget === 'ortho') {
 			rows.push({ type: 'Ortho', formats: 'tif, tiff, png' });
 		}
-		else if(this.uploadTarget === 'dem') {
+		else if(this.uploadTarget.startsWith('dem')) {
 			rows.push({ type: 'DEM', formats: 'tif, tiff' });
 		}
 

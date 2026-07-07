@@ -123,7 +123,11 @@ public class SiteObjectDocumentQuery implements SiteObjectDocumentQueryIF
       actualFolder = "raw";
     }
 
-    query.setParameter("s3location", component.getS3location(this.product, actualFolder) + "%");
+    String s3Loc = component.getS3location(this.product, actualFolder);
+    if (actualFolder.startsWith("dem/") && s3Loc.endsWith("/"))
+      s3Loc = s3Loc.substring(0, s3Loc.length()-1);
+    
+    query.setParameter("s3location", s3Loc + "%");
 
     if (this.component instanceof CollectionIF)
     {

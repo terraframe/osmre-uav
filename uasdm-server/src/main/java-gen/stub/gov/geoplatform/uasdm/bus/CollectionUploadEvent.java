@@ -83,20 +83,21 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     // NotificationMessage(Session.getCurrentSession(), task.toJSON()));
     // }
 
+    String targetWithPathing = uploadTarget; // In the case of a DEM upload, this will be either dem/dsm or dem/dtm. Otherwise it's just the folder we're uploading to
+    uploadTarget = uploadTarget.startsWith(ImageryComponent.DEM) ? ImageryComponent.DEM : uploadTarget; // A lot of components weren't built to handle dem/dsm or dem/dtm so we strip that out here to allow legacy code to work just fine
+    
     UasComponentIF component = task.getComponentInstance();
 
     ProductIF product = null;
 
     task.lock();
-
+    
     if (!uploadTarget.equals(ImageryComponent.RAW) && !uploadTarget.equals(ImageryComponent.VIDEO) && !uploadTarget.equals(ImageryComponent.GEOREF))
     {
       Optional<ProductIF> optional = component.getProduct(configuration.getProductName());
 
       // Delete the existing artifact if it exists
-      optional.ifPresent(p -> {
-        component.removeArtifacts(p, uploadTarget, true);
-      });
+      if (optional.isPresent()) component.removeArtifacts(optional.get(), targetWithPathing, true);
 
       // If the product doesn't exist, then create it
       product = optional.orElseGet(() -> component.createProductIfNotExist(configuration.getProductName()));
@@ -116,7 +117,7 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
       {
         // TODO : processUpload is currently always set to true in
         // upload-modal.component.ts
-        if (processUpload && ( uploadTarget.equals(ImageryComponent.ORTHO) || uploadTarget.equals(ImageryComponent.DEM) ) && ( infile.getNameExtension().equals("tif") || infile.getNameExtension().equals("tiff") ))
+        if (processUpload && ( uploadTarget.equals(ImageryComponent.ORTHO) || uploadTarget.startsWith(ImageryComponent.DEM) ) && ( infile.getNameExtension().equals("tif") || infile.getNameExtension().equals("tiff") ))
         {
           boolean isCog = new CogTifValidator().isValidCog(infile);
 

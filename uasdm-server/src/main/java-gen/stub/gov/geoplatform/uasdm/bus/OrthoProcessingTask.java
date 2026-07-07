@@ -75,19 +75,21 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
   @Transaction
   public void initiate(ApplicationFileResource infile)
   {
+    final String targetWithPathing = this.getUploadTarget(); // In the case of a DEM upload, this will be either dem/dsm or dem/dtm. Otherwise it's just the folder we're uploading to
+    final String uploadTarget = targetWithPathing.startsWith(ImageryComponent.DEM) ? ImageryComponent.DEM : targetWithPathing; // A lot of components weren't built to handle dem/dsm or dem/dtm so we strip that out here to allow legacy code to work just fine
+    
     UasComponent component = UasComponent.get(this.getComponent());
 
     Product product = (Product) component.createProductIfNotExist(this.getProductName());
 
-    List<DocumentIF> documents = component.getDocuments().stream().filter(doc -> {
-      return doc.getS3location().contains("/" + product.getProductName() + "/" + this.getUploadTarget() + "/");
-    }).collect(Collectors.toList());
-
-    product.addDocuments(documents);
+    // Add a ProductHasDocument relationship to the uploaded file so it appears in the artifact list
+    product.addDocuments(component.getDocuments().stream().filter(doc -> {
+        return doc.getS3location().contains("/" + product.getProductName() + "/" + uploadTarget + "/" + infile.getName());
+      }).collect(Collectors.toList()));
 
     final StatusMonitorIF monitor = new WorkflowTaskMonitor(this);
 
-    if (this.getUploadTarget().equals(ImageryComponent.ORTHO) && this.getProcessOrtho())
+    if (uploadTarget.equals(ImageryComponent.ORTHO) && this.getProcessOrtho())
     {
       if (new GeoreferenceValidator().isValid(infile))
       {
@@ -107,13 +109,17 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
       }
     }
 
-    if (this.getUploadTarget().equals(ImageryComponent.DEM) && this.getProcessDem())
+    if (uploadTarget.equals(ImageryComponent.DEM) && this.getProcessDem())
     {
+      String finalName = ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION;
+      if (targetWithPathing.equals(ImageryComponent.DEM + "/dtm"))
+        finalName = ODMZipPostProcessor.DEM_GDAL + "/dtm" + CogTifProcessor.COG_EXTENSION;
+      
       if (new GeoreferenceValidator().isValid(infile))
       {
         new GeoreferenceArchiveProcessor(ImageryComponent.DEM + "/" + "gdal_dem.tif", product, component, monitor) //
             .addDownstream(new CogTifProcessor(ImageryComponent.DEM + "/" + "gdal_dem" + CogTifProcessor.COG_EXTENSION, product, component, new WorkflowTaskMonitor(this)) //
-                .addDownstream(new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, component, new WorkflowTaskMonitor(this)))) //
+                .addDownstream(new HillshadeProcessor(finalName, product, component, new WorkflowTaskMonitor(this)))) //
             .process(infile);
 
       }
@@ -121,19 +127,20 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
       {
         if (!new CogTifValidator().isValidCog(infile))
         {
-          new CogTifProcessor(ImageryComponent.DEM + "/dsm" + CogTifProcessor.COG_EXTENSION, product, component, monitor) //
-              .addDownstream(new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, component, new WorkflowTaskMonitor(this))) //
+          String dsmOrDtm = (targetWithPathing.equals(ImageryComponent.DEM + "/dtm")) ? "/dtm" : "/dsm";
+          new CogTifProcessor(ImageryComponent.DEM + dsmOrDtm + CogTifProcessor.COG_EXTENSION, product, component, monitor) //
+              .addDownstream(new HillshadeProcessor(finalName, product, component, new WorkflowTaskMonitor(this))) //
               .process(infile);
         }
         else
         {
-          new HillshadeProcessor(ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION, product, component, new WorkflowTaskMonitor(this)) //
+          new HillshadeProcessor(finalName, product, component, new WorkflowTaskMonitor(this)) //
               .process(infile);
         }
       }
     }
 
-    if (this.getUploadTarget().equals(ImageryComponent.PTCLOUD) && this.getProcessPtcloud() && !StringUtils.isEmpty(AppProperties.getPotreeConverterPath()))
+    if (uploadTarget.equals(ImageryComponent.PTCLOUD) && this.getProcessPtcloud() && !StringUtils.isEmpty(AppProperties.getPotreeConverterPath()))
     {
       new PotreeConverterProcessor(ODMZipPostProcessor.POTREE, product, component, new WorkflowTaskMonitor(this)).process(infile);
     }

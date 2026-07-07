@@ -6,7 +6,7 @@ import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angu
 import { HttpErrorResponse } from '@angular/common/http';
 import { BsModalService } from 'ngx-bootstrap/modal';
 
-import { CollectionArtifacts, ProductDetail, SiteEntity } from '@site/model/management';
+import { CollectionArtifact, CollectionArtifacts, ProductDetail, SiteEntity } from '@site/model/management';
 import { ManagementService } from '@site/service/management.service';
 
 import { BasicConfirmModalComponent } from '@shared/component';
@@ -95,6 +95,14 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 	ngOnDestroy(): void {
 	}
 
+	allowUpload(folder: string, ca: CollectionArtifact): boolean {
+		if (ca == null || ca.items.length == 0) return true;
+		if (folder === 'dem/dsm' && !ca.items.find(i => i.name.startsWith('dsm'))) return true;
+		if (folder === 'dem/dtm' && !ca.items.find(i => i.name.startsWith('dtm'))) return true;
+
+		return ca.items.length == 0;
+	}
+
 	loadArtifacts(): void {
 		this.loading = true;
 		this.service.getArtifacts(this.entity.id).then(groups => {
@@ -143,19 +151,19 @@ export class ArtifactPageComponent implements OnInit, OnDestroy {
 		// });
 	}
 
-	handleRemove(productName: string, section: { label: string, folder: string }): void {
+	handleRemove(productName: string, sectionLabel: string, sectionFolder: string): void {
 
 		const modal = this.modalService.show(BasicConfirmModalComponent, {
 			animated: true,
 			backdrop: true, class: 'modal-xl',
 			ignoreBackdropClick: true,
 		});
-		modal.content.message = 'Do you want to delete the [' + section.label + '] products? This action cannot be undone.';
+		modal.content.message = 'Do you want to delete the [' + sectionLabel + '] products? This action cannot be undone.';
 		modal.content.type = ModalTypes.danger;
 		modal.content.submitText = 'Delete';
 
 		modal.content.onConfirm.subscribe(() => {
-			this.service.removeArtifacts(this.entity.id, productName, section.folder).then(artifacts => {
+			this.service.removeArtifacts(this.entity.id, productName, sectionFolder).then(artifacts => {
 
 				// TODO: Handle refresh
 				//				this.artifacts = artifacts;

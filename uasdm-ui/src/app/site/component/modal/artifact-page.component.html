@@ -108,19 +108,48 @@
                       Actions
                     </button>
                     <ol *dropdownMenu class="dropdown-menu dropdown-menu-right">
-                      <li *ngIf="group[section.folder] == null || group[section.folder].items.length == 0">
+                      <li *ngIf="section.folder !== 'dem' && allowUpload(section.folder, group[section.folder])">
                         <a [ngClass]="{'disabled': processRunning}"
                           (click)="handleUpload(group.productName, section.folder)" class="dropdown-item">
                           Upload
                         </a>
                       </li>
+                      <li *ngIf="section.folder === 'dem' && allowUpload(section.folder + '/dsm', group[section.folder])">
+                        <a [ngClass]="{'disabled': processRunning}"
+                          (click)="handleUpload(group.productName, section.folder + '/dsm')" class="dropdown-item">
+                          Upload DSM
+                        </a>
+                      </li>
+                      <li *ngIf="section.folder === 'dem' && allowUpload(section.folder + '/dtm', group[section.folder])">
+                        <a [ngClass]="{'disabled': processRunning}"
+                          (click)="handleUpload(group.productName, section.folder + '/dtm')" class="dropdown-item">
+                          Upload DTM
+                        </a>
+                      </li>
                       <ng-container *ngIf="group[section.folder] != null">
                         <li *ngIf="group[section.folder].items.length > 0">
-                          <a [ngClass]="{'disabled': processRunning}" (click)="handleRemove(group.productName, section)"
+                          <a [ngClass]="{'disabled': processRunning}" (click)="handleRemove(group.productName, section.label, section.folder)"
                             class="dropdown-item text-danger">
-                            Remove
+                            Remove <span *ngIf="group[section.folder].items.length > 1">All</span>
                           </a>
                         </li>
+
+                        <!-- While this in theory makes sense, in practice it doesn't work for non-cog artifacts which were uploaded and then processed into cog artifacts, since they don't follow the standard 'dtm'/'dsm' naming conventions, there's no way to know if those artifacts are dtm or dsm -->
+                        <!--
+                        <li *ngIf="group[section.folder].items.length > 1 && section.folder === 'dem' && !allowUpload(section.folder + '/dsm', group[section.folder])">
+                          <a [ngClass]="{'disabled': processRunning}"
+                            (click)="handleRemove(group.productName, section.folder + '/dsm', section.folder + '/dsm')" class="dropdown-item text-danger">
+                            Remove DSM
+                          </a>
+                        </li>
+                        <li *ngIf="group[section.folder].items.length > 1 && section.folder === 'dem' && !allowUpload(section.folder + '/dtm', group[section.folder])">
+                          <a [ngClass]="{'disabled': processRunning}"
+                            (click)="handleRemove(group.productName, section.folder + '/dtm', section.folder + '/dtm')" class="dropdown-item text-danger">
+                            Remove DTM
+                          </a>
+                        </li>
+                        -->
+
                         <li>
                           <artifact-upload-item [componentId]="entity.id" [productName]="group.productName"
                             [folder]="section.folder" [replaceName]="'report.pdf'" [accept]="'.pdf'"
