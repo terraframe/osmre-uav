@@ -81,11 +81,11 @@ import gov.geoplatform.uasdm.graph.ArtifactQuery;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.CollectionFormat;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
+import gov.geoplatform.uasdm.graph.ComponentHasDocumentQuery;
 import gov.geoplatform.uasdm.graph.Document;
 import gov.geoplatform.uasdm.graph.ODMRun;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.graph.Sensor;
-import gov.geoplatform.uasdm.graph.SiteObjectDocumentQuery;
 import gov.geoplatform.uasdm.graph.UAV;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.graph.UserAccessEntity;
@@ -103,7 +103,6 @@ import gov.geoplatform.uasdm.model.ImageryWorkflowTaskIF;
 import gov.geoplatform.uasdm.model.Page;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.ProductIF;
-import gov.geoplatform.uasdm.model.SiteIF;
 import gov.geoplatform.uasdm.model.StacItem;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
@@ -892,11 +891,7 @@ public class ProjectManagementService
   {
     UasComponentIF component = ComponentFacade.getComponent(id);
 
-    if (component instanceof Collection) {
-      return ((Collection)component).getRawSiteObjects(key, pageNumber, pageSize);
-    } else {
-      return component.getSiteObjects(key, pageNumber, pageSize);
-    }
+    return component.getSiteObjects(key, pageNumber, pageSize);
   }
 
   @Request(RequestType.SESSION)
@@ -1459,11 +1454,8 @@ public class ProjectManagementService
       
       collection.getMetadata().ifPresent(metadata -> {
         if (metadata.getSensor() != null && metadata.getSensor().getHasGeologger()) {
-          // TODO : This query is REALLY slow, since it queries the entire document table. Maybe we need to just get rid of this 'SiteObjectDocumentQuery' entirely?
-//          SiteObjectDocumentQuery query = new SiteObjectDocumentQuery(collection, null, Collection.RAW);
-//          boolean hasGeologger = query.getDocuments().stream().filter(d -> d.getName().equals(Product.GEO_LOCATION_FILE)).findAny().isPresent();
-          
-          boolean hasGeologger = collection.getChildren().stream().filter(d -> d.getName().equals(Product.GEO_LOCATION_FILE)).findAny().isPresent();
+          ComponentHasDocumentQuery query = new ComponentHasDocumentQuery(collection, null, "data");
+          boolean hasGeologger = query.getDocuments().stream().filter(d -> d.getName().equals(Product.GEO_LOCATION_FILE)).findAny().isPresent();
           
           config.setHasntUploadedGeoLocationFile(!hasGeologger);
         }

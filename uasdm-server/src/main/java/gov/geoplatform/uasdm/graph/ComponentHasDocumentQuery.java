@@ -25,7 +25,9 @@ import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdEdgeDAO;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 
+import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.EdgeType;
+import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.view.SiteObject;
 
 /**
@@ -33,10 +35,18 @@ import gov.geoplatform.uasdm.view.SiteObject;
  * vertex to its document vertices first, then applying raw-document filtering.
  *
  * This avoids scanning the entire document table by s3location.
+ * 
+ * This query is to be preferred over it's predecessor, SiteObjectDocumentQuery, because this query is way faster.
+ * 
+ * @author rrowlands
  */
-public class CollectionRawQuery implements SiteObjectDocumentQueryIF
+public class ComponentHasDocumentQuery implements SiteObjectDocumentQueryIF
 {
-  private final Collection  collection;
+  private final UasComponent component;
+  
+  private ProductIF product;
+  
+  private String folder;
 
   private final MdEdgeDAOIF   mdEdge;
 
@@ -44,11 +54,22 @@ public class CollectionRawQuery implements SiteObjectDocumentQueryIF
 
   private Long                limit;
 
-  public CollectionRawQuery(Collection collection)
+  public ComponentHasDocumentQuery(UasComponent component, ProductIF product, String folder)
   {
     super();
 
-    this.collection = collection;
+    this.component = component;
+    this.product = product;
+    this.folder = folder;
+    this.mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_DOCUMENT);
+  }
+  
+  public ComponentHasDocumentQuery(UasComponent component, String folder)
+  {
+    super();
+
+    this.component = component;
+    this.folder = folder;
     this.mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_DOCUMENT);
   }
 
@@ -72,21 +93,95 @@ public class CollectionRawQuery implements SiteObjectDocumentQueryIF
     this.skip = skip;
   }
 
-  private void addRawWhereStatements(MdAttributeDAOIF s3location, StringBuilder ql)
+  private void addWhereStatements(MdAttributeDAOIF s3location, StringBuilder ql)
   {
     ql.append(" WHERE " + s3location.getColumnName() + " LIKE :s3location");
-    ql.append(" AND NOT (" + s3location.getColumnName() + " LIKE :xml)");
-    ql.append(" AND NOT (" + s3location.getColumnName() + " LIKE :txt)");
-    ql.append(" AND NOT (" + s3location.getColumnName() + " LIKE :csv)");
+    
+    if (this.component instanceof CollectionIF)
+    {
+      CollectionIF collection = (CollectionIF) this.component;
+
+      if (this.folder.equals("image") || this.folder.equals("data"))
+      {
+        if (this.folder.equals("image"))
+        {
+          ql.append(" AND ( ");
+        }
+        else if (this.folder.equals("data"))
+        {
+          ql.append(" AND NOT ( ");
+        }
+
+        if (!collection.isLidar())
+        {
+          ql.append(" " + s3location.getColumnName() + ".toUpperCase() LIKE :jpeg");
+          ql.append(" OR " + s3location.getColumnName() + ".toUpperCase() LIKE :jpg");
+          ql.append(" OR " + s3location.getColumnName() + ".toUpperCase() LIKE :png");
+          ql.append(" OR " + s3location.getColumnName() + ".toUpperCase() LIKE :tif");
+          ql.append(" OR " + s3location.getColumnName() + ".toUpperCase() LIKE :tiff");
+        }
+        else
+        {
+          ql.append(" " + s3location.getColumnName() + ".toUpperCase() LIKE :laz");
+          ql.append(" OR " + s3location.getColumnName() + ".toUpperCase() LIKE :las");
+        }
+
+        ql.append(" )");
+      }
+      else if (this.folder.equals("raw"))
+      {
+        ql.append(" AND NOT (" + s3location.getColumnName() + " LIKE :xml)");
+        ql.append(" AND NOT (" + s3location.getColumnName() + " LIKE :txt)");
+        ql.append(" AND NOT (" + s3location.getColumnName() + " LIKE :csv)");
+      }
+
+    }
   }
 
   private void addParameters(final GraphQuery<?> query)
   {
-    query.setParameter("s3location", this.collection.getS3location(null, "raw") + "%");
-    query.setParameter("xml", "%.xml");
-    query.setParameter("txt", "%.txt");
-    query.setParameter("csv", "%.csv");
-    query.setParameter("rid", this.collection.getRID());
+    query.setParameter("rid", this.component.getRID());
+    
+    String actualFolder = folder;
+
+    if (folder.equals("image") || folder.equals("data"))
+    {
+      actualFolder = "raw";
+    }
+
+    String s3Loc = component.getS3location(this.product, actualFolder);
+    if (actualFolder.startsWith("dem/") && s3Loc.endsWith("/"))
+      s3Loc = s3Loc.substring(0, s3Loc.length()-1);
+    
+    query.setParameter("s3location", s3Loc + "%");
+
+    if (this.component instanceof CollectionIF)
+    {
+      CollectionIF collection = (CollectionIF) this.component;
+
+      if (this.folder.equals("image") || this.folder.equals("data"))
+      {
+        if (!collection.isLidar())
+        {
+          query.setParameter("jpeg", "%.JPEG");
+          query.setParameter("jpg", "%.JPG");
+          query.setParameter("png", "%.PNG");
+          query.setParameter("tif", "%.TIF");
+          query.setParameter("tiff", "%.TIFF");
+        }
+        else
+        {
+          query.setParameter("las", "%.LAS");
+          query.setParameter("laz", "%.LAZ");
+        }
+      }
+      else if (this.folder.equals("raw"))
+      {
+        query.setParameter("xml", "%.xml");
+        query.setParameter("txt", "%.txt");
+        query.setParameter("csv", "%.csv");
+      }
+    }
   }
 
   private void addCollectionDocumentTraversal(StringBuilder ql)
@@ -109,7 +204,7 @@ public class CollectionRawQuery implements SiteObjectDocumentQueryIF
     ql.append("SELECT");
     addCollectionDocumentTraversal(ql);
 
-    addRawWhereStatements(s3location, ql);
+    addWhereStatements(s3location, ql);
 
     ql.append(" ORDER BY " + name.getColumnName() + " ASC");
 
@@ -141,7 +236,7 @@ public class CollectionRawQuery implements SiteObjectDocumentQueryIF
     ql.append("SELECT COUNT(*)");
     addCollectionDocumentTraversal(ql);
 
-    addRawWhereStatements(s3location, ql);
+    addWhereStatements(s3location, ql);
 
     final GraphQuery<Long> query = new GraphQuery<Long>(ql.toString());
 
@@ -163,7 +258,7 @@ public class CollectionRawQuery implements SiteObjectDocumentQueryIF
 
     for (Document document : documents)
     {
-      objects.add(SiteObject.create(this.collection, document));
+      objects.add(SiteObject.create(this.component, document));
     }
 
     return objects;

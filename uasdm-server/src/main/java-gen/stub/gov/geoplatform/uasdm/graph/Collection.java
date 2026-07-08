@@ -178,7 +178,7 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
    */
   public List<DocumentIF> getRaw()
   {
-    CollectionRawQuery query = new CollectionRawQuery(this);
+    ComponentHasDocumentQuery query = new ComponentHasDocumentQuery(this, Collection.RAW);
 
     return query.getDocuments().stream()
         .map(document -> (DocumentIF) document)
@@ -187,19 +187,9 @@ public class Collection extends CollectionBase implements ImageryComponent, Coll
   
   public Long getRawCount()
   {
-    CollectionRawQuery query = new CollectionRawQuery(this);
+    ComponentHasDocumentQuery query = new ComponentHasDocumentQuery(this, Collection.RAW);
 
     return query.getCount();
-  }
-  
-  public SiteObjectsResultSet getRawSiteObjects(String folder, Long pageNumber, Long pageSize)
-  {
-    CollectionRawQuery query = new CollectionRawQuery(this);
-
-    Long count = query.getCount();
-    List<SiteObject> items = query.getSiteObjects();
-
-    return new SiteObjectsResultSet(count, pageNumber, pageSize, items, folder);
   }
 
   public CollectionFormat getFormat()
