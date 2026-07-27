@@ -2,6 +2,24 @@
 # Release Notes
 
 
+## [1.8.5](https://github.com/terraframe/osmre-uav/releases/tag/1.8.5) (2026-07-27)
+
+### Features
+
+ - **collection-modal** improve share button  ([#477](https://github.com/terraframe/osmre-uav/issues/477)) ([3b5a8](https://github.com/terraframe/osmre-uav/commit/3b5a86d177d569ddd7176eebe6323cac2ee52992))
+ - **site-viewer** pagination  ([#483](https://github.com/terraframe/osmre-uav/issues/483)) ([faa4c](https://github.com/terraframe/osmre-uav/commit/faa4c56e5d4fb3e945d5d551b129ad903f40dc04))
+
+### Bug Fixes
+
+   - **upload** support for multiple elevation products  ([#395](https://github.com/terraframe/osmre-uav/issues/395)) ([67999](https://github.com/terraframe/osmre-uav/commit/67999b6e8cd47cd7f40a6a8171b806bc1c00bfae))
+   - **site** ability to create sites without an organization  ([#475](https://github.com/terraframe/osmre-uav/issues/475)) ([a3fc2](https://github.com/terraframe/osmre-uav/commit/a3fc2b8cd803e4e34fae478443f29036dc53b5cf))
+   - **publishing** issue publishing in thunder basin  ([#482](https://github.com/terraframe/osmre-uav/issues/482)) ([fd545](https://github.com/terraframe/osmre-uav/commit/fd545647089d8195275d13042efcc9511d2b2756))
+   - **search** rank search ordering based on hierarchy position   ([df2f1](https://github.com/terraframe/osmre-uav/commit/df2f1732f9dfdc089c434ca124772426b120cd33))
+   - **collection** slowness when loading thumbnails or processing modal   ([1b491](https://github.com/terraframe/osmre-uav/commit/1b49187a2ca5c06b97adbb0c257d7352bba76e50))
+   - **geologger** case-insensivity and allow unused imagery data   ([c2286](https://github.com/terraframe/osmre-uav/commit/c22865dcc037b4a67b3719fa202b8dafce3b07d8))
+
+
+
 ## [1.8.4](https://github.com/terraframe/osmre-uav/releases/tag/1.8.4) (2026-05-08)
 
 
