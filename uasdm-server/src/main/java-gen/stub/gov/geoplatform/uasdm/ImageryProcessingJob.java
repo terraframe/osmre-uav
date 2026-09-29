@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm;
 
@@ -52,7 +52,7 @@ import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
 import gov.geoplatform.uasdm.processing.raw.UploadValidationProcessor;
 import gov.geoplatform.uasdm.processing.raw.UploadValidationProcessor.UploadValidationResult;
 import gov.geoplatform.uasdm.resource.EditableArchiveFileResource;
-import gov.geoplatform.uasdm.service.ProjectManagementService;
+import gov.geoplatform.uasdm.resource.LoggedApplicationFileResourceDecorator;
 import gov.geoplatform.uasdm.ws.GlobalNotificationMessage;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
@@ -61,7 +61,7 @@ import net.geoprism.spring.core.ApplicationContextHolder;
 
 public class ImageryProcessingJob extends ImageryProcessingJobBase
 {
-  private static final Logger logger           = LoggerFactory.getLogger(ProjectManagementService.class);
+  private static final Logger logger           = LoggerFactory.getLogger(ImageryProcessingJob.class);
 
   private static final long   serialVersionUID = -339555201;
 
@@ -164,7 +164,11 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
     try
     {
+      logger.info("Task [" + task.getOid() + "]: Writing file [" + fileName + "] to the vault");
+
       vfImageryZip = VaultFile.createAndApply(fileName, istream);
+
+      logger.info("Task [" + task.getOid() + "]: Vault file for [" + fileName + "] created at: " + vfImageryZip.getAbsolutePath());
 
       ImageryProcessingJob job = new ImageryProcessingJob();
       job.setRunAsUserId(runAsUserOid);
@@ -186,7 +190,12 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
 
       try
       {
-        vfImageryZip.delete();
+        if (vfImageryZip != null)
+        {
+          logger.info("Task [" + task.getOid() + "]: Error caught - deleting vault file [" + vfImageryZip.getOid() + "][" + vfImageryZip.getFileName() + "] from the vault");
+
+          vfImageryZip.delete();
+        }
       }
       catch (Throwable t2)
       {
@@ -215,8 +224,7 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
 
     final AbstractWorkflowTask task = this.getWorkflowTask();
-    ApplicationFileResource res = VaultFile.get(this.getImageryFile());
-    ApplicationFileResource validated = null;
+    ApplicationFileResource res = new LoggedApplicationFileResourceDecorator(VaultFile.get(this.getImageryFile()));
 
     try
     {
@@ -252,9 +260,6 @@ public class ImageryProcessingJob extends ImageryProcessingJobBase
     finally
     {
       res.delete();
-
-      if (validated != null)
-        validated.delete();
     }
   }
 

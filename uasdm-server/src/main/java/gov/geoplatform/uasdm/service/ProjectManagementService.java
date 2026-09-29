@@ -1,20 +1,21 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.service;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -116,6 +117,7 @@ import gov.geoplatform.uasdm.processing.raw.UploadValidationProcessor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
+import gov.geoplatform.uasdm.resource.LoggingArchiveFileResource;
 import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.ODMRunView;
 import gov.geoplatform.uasdm.view.QueryResult;
@@ -135,11 +137,11 @@ import net.geoprism.localization.LocalizationService;
 @Service
 public class ProjectManagementService
 {
-  static final Logger logger = LoggerFactory.getLogger(ProjectManagementService.class);
-  
+  static final Logger               logger = LoggerFactory.getLogger(ProjectManagementService.class);
+
   @Autowired
   private UploadValidationProcessor uploadValidator;
-  
+
   private class RerunODMProcessThread extends Thread
   {
     private ODMProcessingTask task;
@@ -147,7 +149,7 @@ public class ProjectManagementService
     private CollectionIF      collection;
 
     private Set<String>       excludes;
-    
+
     public RerunODMProcessThread(ODMProcessingTask task, CollectionIF collection, Set<String> excludes)
     {
       super("Rerun ortho thread for collection [" + collection.getName() + "]");
@@ -168,18 +170,19 @@ public class ProjectManagementService
          */
         Predicate<SiteObject> predicate = ( excludes == null || excludes.size() == 0 ) ? null : new ExcludeSiteObjectPredicate(this.excludes);
 
-        ArchiveFileResource archive = downloadAllImagery(collection, predicate);
+        try (ArchiveFileResource archive = downloadAllImagery(collection, predicate))
+        {
+          JSONArray array = new JSONArray();
+          fileNamesInArchive(archive).forEach(n -> array.put(n));
 
-        JSONArray array = new JSONArray();
-        fileNamesInArchive(archive).forEach(n -> array.put(n));
+          task.appLock();
+          task.setProcessFilenameArray(array.toString());
+          task.apply();
 
-        task.appLock();
-        task.setProcessFilenameArray(array.toString());
-        task.apply();
+          task.initiate(archive, collection.isMultiSpectral(), collection.isRadiometric());
 
-        task.initiate(archive, collection.isMultiSpectral(), collection.isRadiometric());
-
-        NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
+          NotificationFacade.queue(new GlobalNotificationMessage(MessageType.JOB_CHANGE, null));
+        }
       }
       catch (Throwable t)
       {
@@ -196,7 +199,7 @@ public class ProjectManagementService
       }
     }
   }
-  
+
   private class RerunLidarProcessThread extends Thread
   {
     private LidarProcessingTask task;
@@ -528,13 +531,13 @@ public class ProjectManagementService
       items = items.stream().filter(predicate).collect(Collectors.toList());
     }
 
-    try (ZipOutputStream zos = new ZipOutputStream(out))
+    try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(out)))
     {
       for (SiteObject item : items)
       {
         try (RemoteFileObject remoteFile = download(component, item.getKey(), incrementDownloadCount))
         {
-          try (InputStream istream = remoteFile.getObjectContent())
+          try (InputStream istream = new BufferedInputStream(remoteFile.getObjectContent()))
           {
             zos.putNextEntry(new ZipEntry(item.getName()));
 
@@ -546,6 +549,8 @@ public class ProjectManagementService
           filenames.add(item.getName());
         }
       }
+
+      zos.finish();
     }
     catch (IOException e)
     {
@@ -554,54 +559,72 @@ public class ProjectManagementService
 
     return filenames;
   }
-  
-  public ArchiveFileResource downloadAllImagery(UasComponentIF component, Predicate<SiteObject> predicate) {
-    CloseableFile zip;
+
+  public ArchiveFileResource downloadAllImagery(UasComponentIF component, Predicate<SiteObject> predicate)
+  {
+    CloseableFile zip = null;
     try
     {
       logger.info("Initiating download from S3 of all raw data for collection [" + component.getName() + "].");
 
       zip = new CloseableFile(File.createTempFile("raw-" + component.getOid(), ".zip"));
 
+      logger.info("Writing [" + component.getName() + "] to location: " + zip.getAbsolutePath());
+
       try (OutputStream ostream = new BufferedOutputStream(new FileOutputStream(zip)))
       {
-        CollectionFormat format = component instanceof CollectionIF ? ((CollectionIF)component).getFormat() : null;
+        CollectionFormat format = component instanceof CollectionIF ? ( (CollectionIF) component ).getFormat() : null;
 
         if (format != null && format.isVideo())
           downloadAll(component, ImageryComponent.VIDEO, ostream, predicate, false);
         else
           downloadAll(component, ImageryComponent.RAW, ostream, predicate, false);
       }
-      
-      return new ArchiveFileResource(new FileResource(zip));
+
+      return new LoggingArchiveFileResource(new FileResource(zip));
     }
-    catch (IOException e)
+    catch (Exception e)
     {
+      logger.error("Error downloading file.", e);
+
+      if (zip != null)
+      {
+        logger.info("Deleting temp file: " + zip.getAbsolutePath());
+
+        zip.close();
+
+        if (zip.exists())
+        {
+          logger.error("Failed to delete temp file: " + zip.getAbsolutePath());
+        }
+      }
+
       throw new ProgrammingErrorException(e);
     }
   }
-  
-  public static Set<String> fileNamesInArchive(ArchiveFileResource archive) {
+
+  public static Set<String> fileNamesInArchive(ArchiveFileResource archive)
+  {
     Set<String> imageNames = new HashSet<String>();
-    
+
     Queue<ApplicationFileResource> queue = new LinkedList<>();
     queue.add(archive);
-    while(!queue.isEmpty())
+    while (!queue.isEmpty())
     {
       var res = queue.poll();
-      
+
       if (res.hasChildren())
       {
         for (var child : res.getChildrenFiles())
           queue.add(child);
-        
+
         continue;
       }
-      
+
       if (!res.getName().endsWith(".xml"))
         imageNames.add(res.getName());
     }
-    
+
     return imageNames;
   }
 
@@ -708,7 +731,9 @@ public class ProjectManagementService
     {
       String uploadId = uploadInfo.getId().toString();
       AbstractUploadTask task = ImageryWorkflowTask.getTaskByUploadId(uploadId);
-      
+
+      logger.info("Processing upload [" + uploadId + "] with task [" + task.getOid() + "]");
+
       ImageryProcessingJob.processFiles(runAsUserOid, task, task.getConfiguration(), uploadInfo.getFileName(), istream);
     }
     catch (Throwable t)
@@ -1311,20 +1336,21 @@ public class ProjectManagementService
     UasComponentIF component = ComponentFacade.getComponent(id);
     ProductIF product = productName != null ? component.getProduct(productName).get() : null;
 
-    if (fileName.equals(Product.GEO_LOCATION_FILE)) {
+    if (fileName.equals(Product.GEO_LOCATION_FILE))
+    {
       String userId = Session.getCurrentSession().getUser().getOid();
-      
+
       ODMProcessConfiguration config = new ODMProcessConfiguration();
-      
+
       AbstractWorkflowTask task = component.createWorkflowTask(userId, id, folder);
       task.setStatus(WorkflowTaskStatus.STARTED.toString());
       task.setMessage(WorkflowService.FINALIZING_UPLOAD_MESSAGE);
       task.apply();
-      
+
       ImageryProcessingJob.processFiles(userId, task, config, fileName, stream);
       return new JSONObject();
     }
-    
+
     DocumentIF doc = component.putFile(folder, fileName, product, metadata, stream);
 
     return doc.toJSON();
@@ -1408,7 +1434,7 @@ public class ProjectManagementService
     else
     {
       List<ODMRun> runs = ODMRun.getByComponentOrdered(collectionId);
-      
+
       ODMProcessConfiguration config;
 
       if (runs.size() > 0)
@@ -1451,12 +1477,13 @@ public class ProjectManagementService
           }
         });
       }
-      
+
       collection.getMetadata().ifPresent(metadata -> {
-        if (metadata.getSensor() != null && metadata.getSensor().getHasGeologger()) {
+        if (metadata.getSensor() != null && metadata.getSensor().getHasGeologger())
+        {
           ComponentHasDocumentQuery query = new ComponentHasDocumentQuery(collection, null, "data");
           boolean hasGeologger = query.getDocuments().stream().filter(d -> d.getName().equals(Product.GEO_LOCATION_FILE)).findAny().isPresent();
-          
+
           config.setHasntUploadedGeoLocationFile(!hasGeologger);
         }
       });
@@ -1495,9 +1522,10 @@ public class ProjectManagementService
 
     return new ODMProcessConfiguration();
   }
-  
+
   @PreDestroy
-  public void destroy() {
+  public void destroy()
+  {
     RemoteFileFacade.destroy();
   }
 

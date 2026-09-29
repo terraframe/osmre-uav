@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.odm;
 
@@ -120,12 +120,11 @@ public class ODMService implements ODMServiceIF
       CloseableFile zip = new CloseableFile(File.createTempFile("all", ".zip"));
 
       String url = connector.getServerUrl() + "task/" + uuid + "/download/all.zip";
-      logger.info("Downloading file from ODM [" + url + "].");
+      logger.info("Downloading file from ODM [" + url + "] to [" + zip.getAbsolutePath() + "]");
       FileUtils.copyURLToFile(new URL(url), zip, 20000, 1200000);
 
       return zip;
     }
-
     catch (Exception e)
     {
       throw new ProgrammingErrorException(e);
@@ -158,28 +157,29 @@ public class ODMService implements ODMServiceIF
         }
 
         String uuid = resp.getUUID();
-        
+
         Queue<ApplicationFileResource> queue = new LinkedList<>();
         queue.add(payload.getArchive());
-        while(!queue.isEmpty())
+        while (!queue.isEmpty())
         {
           var res = queue.poll();
-          
+
           if (res.hasChildren())
           {
             for (var child : res.getChildrenFiles())
               queue.add(child);
-            
+
             continue;
           }
-          
-          if (!Product.GEO_LOCATION_FILE.equals(res.getName()) && !payload.getImageNames().contains(res.getName())) continue;
-          
+
+          if (!Product.GEO_LOCATION_FILE.equals(res.getName()) && !payload.getImageNames().contains(res.getName()))
+            continue;
+
           if (Product.GEO_LOCATION_FILE.equals(res.getName()))
             res = ODMGeoLocationProcessConverter.convert(payload.getImageNames().stream().map(n -> n.toLowerCase()).collect(Collectors.toSet()), res, task);
-          
+
           ODMResponse uploadResp = this.taskNewUpload(uuid, res);
-        
+
           if (uploadResp.hasError() || uploadResp.getHTTPResponse().isError())
           {
             this.taskRemove(uuid);
@@ -329,12 +329,13 @@ public class ODMService implements ODMServiceIF
       arr.put(param);
     }
 
-    if (col.getFormat() != null && col.getFormat().isVideo()) {
+    if (col.getFormat() != null && col.getFormat().isVideo())
+    {
       JSONObject param = new JSONObject();
       param.put("name", "video-resolution");
       param.put("value", Objects.requireNonNullElse(configuration.getVideoResolution(), 4000));
       arr.put(param);
-      
+
       JSONObject p2 = new JSONObject();
       p2.put("name", "video-limit");
       p2.put("value", Objects.requireNonNullElse(configuration.getVideoLimit(), 500));

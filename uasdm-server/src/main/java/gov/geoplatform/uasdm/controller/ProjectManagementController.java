@@ -1,27 +1,23 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.util.List;
-
-import jakarta.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -30,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -42,8 +39,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.runwaysdk.session.Request;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import gov.geoplatform.uasdm.bus.UasComponent;
 import gov.geoplatform.uasdm.controller.body.CollectionBody;
@@ -77,6 +73,7 @@ import gov.geoplatform.uasdm.view.QuerySiteResult;
 import gov.geoplatform.uasdm.view.SiteItem;
 import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.TreeComponent;
+import jakarta.validation.Valid;
 
 @RestController
 @Validated
@@ -90,7 +87,7 @@ public class ProjectManagementController extends AbstractController
 
   @Autowired
   private WorkflowService          workflowService;
-  
+
   @GetMapping("/configuration")
   public ResponseEntity<String> configuration()
   {
@@ -222,7 +219,7 @@ public class ProjectManagementController extends AbstractController
   }
 
   @GetMapping("/download-all")
-  public ResponseEntity<InputStreamResource> downloadAll(final @RequestParam(required = false, name = "id") String id, final @RequestParam(required = false, name = "key") String key)
+  public ResponseEntity<StreamingResponseBody> downloadAll(final @RequestParam(required = false, name = "id") String id, final @RequestParam(required = false, name = "key") String key)
   {
 
     final String sessionId = this.getSessionId();
@@ -230,40 +227,14 @@ public class ProjectManagementController extends AbstractController
     SiteItem item = this.service.get(sessionId, id);
     Object name = item.getValue(UasComponent.NAME);
 
-    try
-    {
-      PipedInputStream istream = new PipedInputStream();
-      PipedOutputStream ostream = new PipedOutputStream(istream);
+    // StreamingResponseBody executes asynchronously outside Tomcat/Jetty
+    // threads
+    StreamingResponseBody responseBody = ostream -> ProjectManagementController.this.service.downloadAll(sessionId, id, key, ostream, true);
 
-      Thread thread = new Thread(new Runnable()
-      {
-        @Override
-        @Request
-        public void run()
-        {
-          try
-          {
-
-            ProjectManagementController.this.service.downloadAll(sessionId, id, key, ostream, true);
-          }
-          catch (Exception e)
-          {
-            logger.error("Error occurred while writing response to download-all request.", e);
-          }
-        }
-      });
-      thread.setDaemon(true);
-      thread.start();
-
-      return ResponseEntity.ok() //
-          .header("Content-Type", "application/zip") //
-          .header("Content-Disposition", "attachment; filename=\"" + name + ".zip\"") //
-          .body(new InputStreamResource(istream));
-    }
-    catch (IOException e)
-    {
-      throw new RuntimeException("Test");
-    }
+    return ResponseEntity.ok() //
+        .header(HttpHeaders.CONTENT_TYPE, "application/zip") //
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + name + ".zip\"") //
+        .body(responseBody);
   }
 
   @GetMapping("/download-odm-all")

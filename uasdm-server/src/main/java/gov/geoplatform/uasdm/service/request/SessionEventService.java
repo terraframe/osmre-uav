@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.service.request;
 
@@ -19,7 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.zip.ZipEntry;
@@ -77,56 +77,16 @@ public class SessionEventService
   }
 
   @Request(RequestType.SESSION)
-  public InputStream export(String sessionId)
+  public void export(String sessionId, OutputStream stream)
   {
-    try
+    try (ZipOutputStream zipFile = new ZipOutputStream(stream))
     {
-      File file = File.createTempFile("session-event-export", ".csv");
+      ZipEntry entry = new ZipEntry("session-event-export.csv");
+      zipFile.putNextEntry(entry);
+      csvExportService.export(zipFile);
+      zipFile.closeEntry();
 
-      try (FileOutputStream fos = new FileOutputStream(file))
-      {
-        csvExportService.export(fos);
-        fos.flush();
-
-        // Zip up the entire contents of the file
-        final PipedOutputStream pos = new PipedOutputStream();
-        final PipedInputStream pis = new PipedInputStream(pos);
-
-        Thread t = new Thread(new Runnable()
-        {
-          @Override
-          public void run()
-          {
-            try
-            {
-              try (ZipOutputStream zipFile = new ZipOutputStream(pos))
-              {
-                ZipEntry entry = new ZipEntry(file.getName());
-                zipFile.putNextEntry(entry);
-
-                try (FileInputStream in = new FileInputStream(file))
-                {
-                  IOUtils.copy(in, zipFile);
-                }
-              }
-              finally
-              {
-                pos.close();
-              }
-
-              FileUtils.deleteQuietly(file);
-            }
-            catch (IOException e)
-            {
-              logger.error("Error while writing the workbook", e);
-            }
-          }
-        });
-        t.setDaemon(true);
-        t.start();
-
-        return pis;
-      }
+      zipFile.finish();
     }
     catch (IOException ex)
     {

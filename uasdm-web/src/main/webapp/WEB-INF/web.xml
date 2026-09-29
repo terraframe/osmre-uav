@@ -60,6 +60,7 @@
     <servlet-name>SpringDispatcher</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
+    <async-supported>true</async-supported>
 
     <init-param>
       <param-name>contextAttribute</param-name>
@@ -71,7 +72,7 @@
       <max-file-size>-1</max-file-size>
       <max-request-size>-1</max-request-size>
       <file-size-threshold>0</file-size-threshold>
-    </multipart-config>
+    </multipart-config>    
   </servlet>
 
   <servlet-mapping>
@@ -83,6 +84,8 @@
   <filter>
     <filter-name>EncodingFilter</filter-name>
     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    <async-supported>true</async-supported>
+    
     <init-param>
       <param-name>targetBeanName</param-name>
       <param-value>encodingFilter</param-value>
@@ -98,6 +101,7 @@
   <filter>
     <filter-name>CorsFilter</filter-name>
     <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+    <async-supported>true</async-supported>
 
     <init-param>
       <param-name>cors.allowed.origins</param-name>
@@ -119,6 +123,7 @@
   <filter>
     <filter-name>springSecurityFilterChain</filter-name>
     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    <async-supported>true</async-supported>
   </filter>
 
   <filter-mapping>
