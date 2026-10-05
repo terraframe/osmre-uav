@@ -298,6 +298,8 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
     }
     catch (Throwable t)
     {
+      logger.error("An error was encountered while processing the imagery.", t);
+      
       task.appLock();
       task.setStatus(ODMStatus.FAILED.getLabel());
       task.setMessage("An error was encountered while processing the imagery. " + RunwayException.localizeThrowable(t, CommonProperties.getDefaultLocale()));
