@@ -33,6 +33,8 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -521,11 +523,9 @@ public class ProjectManagementService
     this.downloadAll(component, key, out, null, incrementDownloadCount);
   }
 
-  private List<String> downloadAll(UasComponentIF component, String key, OutputStream out, Predicate<SiteObject> predicate, boolean incrementDownloadCount)
+  private void downloadAll(UasComponentIF component, String key, OutputStream out, Predicate<SiteObject> predicate, boolean incrementDownloadCount)
   {
     List<SiteObject> items = component.getSiteObjects(key, null, null).getObjects();
-
-    List<String> filenames = new LinkedList<String>();
 
     if (predicate != null)
     {
@@ -540,14 +540,20 @@ public class ProjectManagementService
         {
           try (InputStream istream = new BufferedInputStream(remoteFile.getObjectContent()))
           {
-            zos.putNextEntry(new ZipEntry(item.getName()));
+            // https://github.com/terraframe/osmre-uav/issues/496
+            // Include the target folder to avoid duplicates
+            // report.pdf will likely be in multiple different folders
+            Pattern pattern = Pattern.compile(".*\\/products\\/[^\\/]+\\/(.+)");
+            Matcher matcher = pattern.matcher(item.getKey());
+
+            String name = matcher.matches() ? matcher.group(1) : item.getName();
+
+            zos.putNextEntry(new ZipEntry(name));
 
             IOUtils.copy(istream, zos);
 
             zos.closeEntry();
           }
-
-          filenames.add(item.getName());
         }
       }
 
@@ -557,8 +563,6 @@ public class ProjectManagementService
     {
       throw new ProgrammingErrorException(e);
     }
-
-    return filenames;
   }
 
   public ArchiveFileResource downloadAllImagery(UasComponentIF component, Predicate<SiteObject> predicate)
