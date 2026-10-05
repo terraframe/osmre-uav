@@ -33,7 +33,6 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +59,7 @@ import gov.geoplatform.uasdm.model.MissionIF;
 import gov.geoplatform.uasdm.model.ProjectIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
+import gov.geoplatform.uasdm.resource.LoggingCloseableFile;
 import gov.geoplatform.uasdm.service.IndexService;
 import gov.geoplatform.uasdm.view.FlightMetadata;
 import gov.geoplatform.uasdm.view.FlightMetadata.ArtifactMetadata;
@@ -672,7 +672,7 @@ public class MetadataXMLGenerator
   {
     try
     {
-      CloseableFile temp = new CloseableFile(File.createTempFile("metadata", ".xml"), true);
+      CloseableFile temp = new LoggingCloseableFile(File.createTempFile("metadata", ".xml"), true);
 
       try (FileOutputStream fos = new FileOutputStream(temp))
       {

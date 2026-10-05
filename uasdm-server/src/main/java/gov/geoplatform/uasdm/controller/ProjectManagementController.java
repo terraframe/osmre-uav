@@ -15,6 +15,7 @@
  */
 package gov.geoplatform.uasdm.controller;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -489,10 +490,27 @@ public class ProjectManagementController extends AbstractController
   {
     InputStream istream = this.service.downloadProductPreview(this.getSessionId(), productId, artifactName);
 
-    return ResponseEntity.ok() //
-        .header("Content-Type", "image/png") //
-        .header("Content-Disposition", "attachment; filename=\"" + artifactName + "_preview.png\"") //
-        .body(new InputStreamResource(istream));
+    try
+    {
+
+      return ResponseEntity.ok() //
+          .header("Content-Type", "image/png") //
+          .header("Content-Disposition", "attachment; filename=\"" + artifactName + "_preview.png\"") //
+          .body(new InputStreamResource(new BufferedInputStream(istream)));
+    }
+    catch (RuntimeException e)
+    {
+      try
+      {
+        istream.close();
+      }
+      catch (IOException e1)
+      {
+        logger.error("Unable to close stream on error", e1);
+      }
+
+      throw e;
+    }
   }
 
   @GetMapping("/download-last")

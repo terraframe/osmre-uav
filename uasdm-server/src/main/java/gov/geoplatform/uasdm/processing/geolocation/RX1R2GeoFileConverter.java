@@ -32,9 +32,6 @@ import org.slf4j.LoggerFactory;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 
-import gov.geoplatform.uasdm.GenericException;
-import gov.geoplatform.uasdm.processing.CogTifProcessor;
-
 public class RX1R2GeoFileConverter implements AutoCloseable
 {
   private static Logger      logger        = LoggerFactory.getLogger(RX1R2GeoFileConverter.class);
@@ -77,6 +74,8 @@ public class RX1R2GeoFileConverter implements AutoCloseable
   {
     this.output = File.createTempFile("geo", ".txt");
     this.output.deleteOnExit();
+    
+    logger.info("Creating file at: " + this.output.getAbsolutePath());
 
     try (FileWriter writer = new FileWriter(this.output))
     {

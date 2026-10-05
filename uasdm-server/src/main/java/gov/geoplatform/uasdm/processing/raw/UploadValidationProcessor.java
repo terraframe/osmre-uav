@@ -16,7 +16,6 @@
 package gov.geoplatform.uasdm.processing.raw;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,17 +30,17 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.runwaysdk.RunwayException;
 import com.runwaysdk.resource.ApplicationFileResource;
 import com.runwaysdk.resource.ArchiveFileResource;
-import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.resource.ResourceException;
 import com.runwaysdk.session.Session;
 
-import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.ImageryProcessingJob;
 import gov.geoplatform.uasdm.InvalidZipException;
 import gov.geoplatform.uasdm.Util;
@@ -57,34 +56,25 @@ import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.CollectionFormat;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
 import gov.geoplatform.uasdm.graph.Product;
-import gov.geoplatform.uasdm.graph.Sensor;
 import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProcessConfiguration;
 import gov.geoplatform.uasdm.model.UasComponentIF;
-import gov.geoplatform.uasdm.odm.GeoLocationFileMissingException;
-import gov.geoplatform.uasdm.odm.ODMProcessConfiguration;
-import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.FileFormat;
-import gov.geoplatform.uasdm.processing.gcp.GroundControlPointFileValidator;
-import gov.geoplatform.uasdm.processing.geolocation.GeoLocationFileInvalidFormatException;
-import gov.geoplatform.uasdm.processing.geolocation.GeoLocationFileValidator;
-import gov.geoplatform.uasdm.processing.geolocation.RX1R2GeoFileConverter;
-import gov.geoplatform.uasdm.remote.RemoteFileFacade;
-import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.resource.EditableArchiveFileResource;
+import gov.geoplatform.uasdm.resource.LoggingCloseableFile;
 import gov.geoplatform.uasdm.service.ProjectManagementService;
-import gov.geoplatform.uasdm.view.SiteObject;
 import gov.geoplatform.uasdm.view.SiteObjectsResultSet;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
 import gov.geoplatform.uasdm.ws.UserNotificationMessage;
 import jakarta.inject.Inject;
-import software.amazon.awssdk.services.s3.model.S3Exception;
 
 @Service
 public class UploadValidationProcessor
 {
+  private static final Logger logger           = LoggerFactory.getLogger(UploadValidationProcessor.class);
+
   @Inject
   private ProjectManagementService pms;
   
@@ -499,15 +489,18 @@ public class UploadValidationProcessor
       if (res.getParentFile().isPresent()) {
         var newFile = new File(res.getParentFile().orElseThrow().getUnderlyingFile(), finalName);
         res.getUnderlyingFile().renameTo(newFile);
-        res = new FileResource(new CloseableFile(newFile));
+        res = new FileResource(new LoggingCloseableFile(newFile));
         ctx.downstreamFile = res;
       } else {
         try
         {
           var parent = Files.createTempDirectory(res.getName()).toFile();
           var newFile = new File(parent, finalName);
+          
+          logger.info("Copying stream to file: " + newFile.getAbsolutePath());
+          
           try (var in = res.openNewStream(); var out = new FileOutputStream(newFile) ) { IOUtils.copy(in, out); }
-          res = new FileResource(new CloseableFile(newFile));
+          res = new FileResource(new LoggingCloseableFile(newFile));
           ctx.downstreamFile = res;
         }
         catch (IOException e)

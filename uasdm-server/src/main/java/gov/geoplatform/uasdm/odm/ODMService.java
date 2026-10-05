@@ -27,7 +27,6 @@ import java.util.Queue;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -45,16 +44,14 @@ import com.runwaysdk.resource.ArchiveFileResource;
 import com.runwaysdk.resource.CloseableFile;
 
 import gov.geoplatform.uasdm.AppProperties;
-import gov.geoplatform.uasdm.GenericException;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.graph.Collection;
 import gov.geoplatform.uasdm.graph.CollectionMetadata;
 import gov.geoplatform.uasdm.graph.Product;
 import gov.geoplatform.uasdm.odm.ODMFacade.ODMProcessingPayload;
 import gov.geoplatform.uasdm.odm.ODMProcessConfiguration.Quality;
-import gov.geoplatform.uasdm.processing.gcp.GroundControlPointFileValidator;
-import gov.geoplatform.uasdm.processing.geolocation.GeoLocationFileValidator;
 import gov.geoplatform.uasdm.processing.geolocation.ODMGeoLocationProcessConverter;
+import gov.geoplatform.uasdm.resource.LoggingCloseableFile;
 
 public class ODMService implements ODMServiceIF
 {
@@ -117,7 +114,7 @@ public class ODMService implements ODMServiceIF
 
     try
     {
-      CloseableFile zip = new CloseableFile(File.createTempFile("all", ".zip"));
+      CloseableFile zip = new LoggingCloseableFile(File.createTempFile("all", ".zip"));
 
       String url = connector.getServerUrl() + "task/" + uuid + "/download/all.zip";
       logger.info("Downloading file from ODM [" + url + "] to [" + zip.getAbsolutePath() + "]");

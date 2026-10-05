@@ -22,9 +22,10 @@ import com.runwaysdk.configuration.ConfigurationManager;
 import com.runwaysdk.configuration.ConfigurationReaderIF;
 import com.runwaysdk.resource.CloseableFile;
 
-import gov.geoplatform.uasdm.odm.HttpResponse;
 import gov.geoplatform.uasdm.odm.HttpInfoResponse;
+import gov.geoplatform.uasdm.odm.HttpResponse;
 import gov.geoplatform.uasdm.odm.ODMStatus;
+import gov.geoplatform.uasdm.resource.LoggingCloseableFile;
 
 /**
  * Useful for disabling features to make testing faster / easier.
@@ -81,7 +82,7 @@ public class DevProperties
 
   public static CloseableFile orthoResults()
   {
-    return new CloseableFile(getInstance().props.getString("dev.orthoResults"), false);
+    return new LoggingCloseableFile(getInstance().props.getString("dev.orthoResults"), false);
   }
 
   public static boolean shouldUploadProduct(String name)

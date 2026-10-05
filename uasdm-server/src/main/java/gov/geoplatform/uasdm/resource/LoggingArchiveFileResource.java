@@ -20,15 +20,20 @@ public class LoggingArchiveFileResource extends ArchiveFileResource
   @Override
   public CloseableFile extract() throws ResourceException
   {
+    boolean log = this.extractedParent == null;
+
     CloseableFile file = super.extract();
 
-    try
+    if (log)
     {
-      logger.info("Extracting archive resource [" + this.getAbsolutePath() + "] to [" + file.getAbsolutePath() + "]");
-    }
-    catch (Exception e)
-    {
+      try
+      {
+        logger.info("Extracting archive resource [" + this.getAbsolutePath() + "] to [" + file.getAbsolutePath() + "]");
+      }
+      catch (Exception e)
+      {
 
+      }
     }
 
     return file;

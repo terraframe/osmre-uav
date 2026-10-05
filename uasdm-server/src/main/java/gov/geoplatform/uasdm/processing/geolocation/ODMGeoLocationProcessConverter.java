@@ -30,12 +30,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.runwaysdk.resource.ApplicationFileResource;
-import com.runwaysdk.resource.CloseableFile;
 import com.runwaysdk.resource.FileResource;
 import com.runwaysdk.resource.ResourceException;
 
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.TaskActionType;
+import gov.geoplatform.uasdm.resource.LoggingCloseableFile;
 
 /**
  * Used to modify the "ODM geo location file" right before upload to ODM. This is needed because ODM
@@ -168,7 +168,7 @@ public class ODMGeoLocationProcessConverter
 
       Files.write(newFile.toPath(), lines, StandardCharsets.UTF_8);
 
-      return new FileResource(new CloseableFile(newFile));
+      return new FileResource(new LoggingCloseableFile(newFile));
     }
     catch (GeoLocationFileInvalidFormatException e)
     {

@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -49,6 +48,7 @@ import gov.geoplatform.uasdm.odm.ODMProcessingTaskIF;
 import gov.geoplatform.uasdm.odm.ODMUploadTaskIF;
 import gov.geoplatform.uasdm.processing.ManagedDocument.DocumentInfo;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
+import gov.geoplatform.uasdm.resource.LoggingCloseableFile;
 import gov.geoplatform.uasdm.service.IndexService;
 import net.lingala.zip4j.ZipFile;
 
@@ -92,10 +92,12 @@ public class ODMZipPostProcessor
 
     final String folderName = "odm-" + colName + "-" + new Random().nextInt();
 
-    try (CloseableFile unzippedParentFolder = new CloseableFile(FileUtils.getTempDirectory(), folderName))
+    try (CloseableFile unzippedParentFolder = new LoggingCloseableFile(FileUtils.getTempDirectory(), folderName))
     {
       try (CloseableFile allZip = getAllZip())
       {
+        logger.info("Extracting all zip: " + unzippedParentFolder.getAbsolutePath());
+
         try (ZipFile zipFile = new ZipFile(allZip))
         {
           zipFile.extractAll(unzippedParentFolder.getAbsolutePath());

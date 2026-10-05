@@ -18,8 +18,6 @@ package gov.geoplatform.uasdm.processing;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -63,6 +61,8 @@ public class CogTifProcessor extends ManagedDocument
     File overview = new File(file.getParent(), basename + "-overview.tif");
     try
     {
+      logger.info("Copying overview to: " + overview.getAbsolutePath());
+
       FileUtils.copyFile(file, overview);
     }
     catch (IOException e)

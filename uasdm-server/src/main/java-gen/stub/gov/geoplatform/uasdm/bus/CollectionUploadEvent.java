@@ -58,11 +58,11 @@ import gov.geoplatform.uasdm.processing.CogTifProcessor;
 import gov.geoplatform.uasdm.processing.CogTifValidator;
 import gov.geoplatform.uasdm.processing.raw.CollectionImageSizeCalculationProcessor;
 import gov.geoplatform.uasdm.processing.raw.FileUploadProcessor;
+import gov.geoplatform.uasdm.resource.LoggingCloseableFile;
 import gov.geoplatform.uasdm.ws.MessageType;
 import gov.geoplatform.uasdm.ws.NotificationFacade;
 import gov.geoplatform.uasdm.ws.UserNotificationMessage;
 import net.geoprism.GeoprismUser;
-import net.geoprism.configuration.GeoprismProperties;
 
 public class CollectionUploadEvent extends CollectionUploadEventBase
 {
@@ -123,11 +123,13 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
 
           if (isCog && !infile.getName().endsWith(CogTifProcessor.COG_EXTENSION))
           {
-            CloseableFile tempParent = new CloseableFile(Files.createTempDirectory("cogrename").toFile(), true);
+            CloseableFile tempParent = new LoggingCloseableFile(Files.createTempDirectory("cogrename").toFile(), true);
             
             // TODO : If you get a compile error here while upgrading to the latest runway, you can fix the compile error by removing  ", true, true);" and replacing it with ").deleteParentToo();"
-            CloseableFile newfile = new CloseableFile(new File(tempParent, infile.getBaseName() + CogTifProcessor.COG_EXTENSION).toURI(), true, true);
+            CloseableFile newfile = new LoggingCloseableFile(new File(tempParent, infile.getBaseName() + CogTifProcessor.COG_EXTENSION).toURI(), true, true);
 
+            logger.info("Copying COG for rename: " + newfile.getAbsolutePath());
+            
             FileUtils.copyFile(infile.getUnderlyingFile(), newfile);
 
             infile = new FileResource(newfile);
@@ -138,10 +140,12 @@ public class CollectionUploadEvent extends CollectionUploadEventBase
             task.createAction("Uploaded file ends with cog extension, but did not pass cog validation.", TaskActionType.ERROR.getType());
             task.apply();
 
-            CloseableFile tempParent = new CloseableFile(Files.createTempDirectory("cogfailvalidate").toFile(), true);
+            CloseableFile tempParent = new LoggingCloseableFile(Files.createTempDirectory("cogfailvalidate").toFile(), true);
 
             // TODO : If you get a compile error here while upgrading to the latest runway, you can fix the compile error by removing ", true, true);" and replacing it with ").deleteParentToo();"
-            CloseableFile newfile = new CloseableFile(new File(tempParent, infile.getBaseName() + ".tif").toURI(), true, true);
+            CloseableFile newfile = new LoggingCloseableFile(new File(tempParent, infile.getBaseName() + ".tif").toURI(), true, true);
+            
+            logger.info("Copying COG for validation: " + newfile.getAbsolutePath());
 
             FileUtils.copyFile(infile.getUnderlyingFile(), newfile);
 

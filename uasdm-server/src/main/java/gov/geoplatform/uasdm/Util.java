@@ -50,6 +50,7 @@ import gov.geoplatform.uasdm.processing.WorkflowTaskMonitor;
 import gov.geoplatform.uasdm.processing.report.CollectionReportFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
+import gov.geoplatform.uasdm.resource.LoggingCloseableFile;
 import gov.geoplatform.uasdm.service.IndexService;
 
 public class Util
@@ -168,7 +169,7 @@ public class Util
   {
     try
     {
-      CloseableFile temp = new CloseableFile(Files.createTempFile("geotiff-" + storeName, ".tif").toFile());
+      CloseableFile temp = new LoggingCloseableFile(Files.createTempFile("geotiff-" + storeName, ".tif").toFile());
 
       RemoteFileFacade.download(key, temp);
 

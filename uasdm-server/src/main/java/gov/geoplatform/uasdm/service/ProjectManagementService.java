@@ -118,6 +118,7 @@ import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileMetadata;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
 import gov.geoplatform.uasdm.resource.LoggingArchiveFileResource;
+import gov.geoplatform.uasdm.resource.LoggingCloseableFile;
 import gov.geoplatform.uasdm.view.Converter;
 import gov.geoplatform.uasdm.view.ODMRunView;
 import gov.geoplatform.uasdm.view.QueryResult;
@@ -225,7 +226,7 @@ public class ProjectManagementService
       {
         logger.info("Initiating download from S3 of all raw data for collection [" + collection.getName() + "].");
 
-        try (CloseableFile zip = new CloseableFile(File.createTempFile("raw-" + this.collection.getOid(), ".zip")))
+        try (CloseableFile zip = new LoggingCloseableFile(File.createTempFile("raw-" + this.collection.getOid(), ".zip")))
         {
           /*
            * Predicate for filtering out files from the zip file to send for
@@ -567,7 +568,7 @@ public class ProjectManagementService
     {
       logger.info("Initiating download from S3 of all raw data for collection [" + component.getName() + "].");
 
-      zip = new CloseableFile(File.createTempFile("raw-" + component.getOid(), ".zip"));
+      zip = new LoggingCloseableFile(File.createTempFile("raw-" + component.getOid(), ".zip"));
 
       logger.info("Writing [" + component.getName() + "] to location: " + zip.getAbsolutePath());
 
