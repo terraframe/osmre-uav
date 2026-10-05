@@ -26,14 +26,19 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 
 import gov.geoplatform.uasdm.GenericException;
+import gov.geoplatform.uasdm.processing.CogTifProcessor;
 
 public class RX1R2GeoFileConverter implements AutoCloseable
 {
+  private static Logger      logger        = LoggerFactory.getLogger(RX1R2GeoFileConverter.class);
+
   private InputStream input;
 
   private File        output;
@@ -49,6 +54,8 @@ public class RX1R2GeoFileConverter implements AutoCloseable
     if (this.output != null)
     {
       FileUtils.deleteQuietly(this.output);
+
+      logger.info("Deleted file at: " + this.output.getAbsolutePath());
     }
   }
 

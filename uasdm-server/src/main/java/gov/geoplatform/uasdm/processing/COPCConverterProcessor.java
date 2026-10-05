@@ -65,6 +65,8 @@ public class COPCConverterProcessor extends ManagedDocument
 
     try
     {
+      logger.info("Generating COG translate at: " + out.getAbsolutePath());
+
       var cmd = AppProperties.getCopcTranslateCommand();
       
       cmd.addAll(Arrays.asList(new String[] { res.getAbsolutePath(), out.getAbsolutePath() }));
@@ -80,7 +82,10 @@ public class COPCConverterProcessor extends ManagedDocument
         return super.process(frout);
       }
     } finally {
+      
       FileUtils.deleteQuietly(out);
+
+      logger.info("Deleted file: " + out.getAbsolutePath());
     }
 
     return ProcessResult.fail();

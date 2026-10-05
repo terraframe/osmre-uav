@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.processing;
 
@@ -38,7 +38,7 @@ public class CogTifProcessor extends ManagedDocument
 {
   public static final String COG_EXTENSION = ".cog.tif";
 
-  private Logger             logger        = LoggerFactory.getLogger(CogTifProcessor.class);
+  private static Logger      logger        = LoggerFactory.getLogger(CogTifProcessor.class);
 
   public CogTifProcessor(String s3path, Product product, UasComponentIF component, StatusMonitorIF monitor)
   {
@@ -70,23 +70,22 @@ public class CogTifProcessor extends ManagedDocument
       String msg = "Error copying file. Cog generation failed for [" + this.getS3Path() + "].";
       logger.error(msg, e);
       monitor.addError(msg);
-      
+
       return ProcessResult.fail();
     }
 
     try
     {
+      logger.info("Generating overview at: " + overview.getAbsolutePath());
+
       var cmd = AppProperties.getCondaTool("gdaladdo");
       cmd.addAll(Arrays.asList(new String[] { "-r", "average", overview.getAbsolutePath(), "2", "4", "8", "16" }));
-      if (!new SystemProcessExecutor(this.monitor)
-          .setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath())
-          .setCommandName("gdaladdo")
-          .execute(cmd.toArray(new String[0])))
+      if (!new SystemProcessExecutor(this.monitor).setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath()).setCommandName("gdaladdo").execute(cmd.toArray(new String[0])))
       {
         String msg = "Problem occurred generating overview file. Cog generation failed for [" + this.getS3Path() + "].";
         logger.error(msg);
         monitor.addError(msg);
-        
+
         return ProcessResult.fail();
       }
 
@@ -94,17 +93,16 @@ public class CogTifProcessor extends ManagedDocument
 
       try
       {
+        logger.info("Generating COG at: " + cog.getAbsolutePath());
+
         var cmd2 = AppProperties.getCondaTool("gdal_translate");
         cmd2.addAll(Arrays.asList(new String[] { overview.getAbsolutePath(), cog.getAbsolutePath(), "-of", "COG", "-co", "COMPRESS=LZW", "-co", "BIGTIFF=YES" }));
-        if (!new SystemProcessExecutor(this.monitor)
-            .setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath())
-            .setCommandName("gdal_translate")
-            .execute(cmd2.toArray(new String[0])))
+        if (!new SystemProcessExecutor(this.monitor).setEnvironment("PROJ_DATA", AppProperties.getSilvimetricProjDataPath()).setCommandName("gdal_translate").execute(cmd2.toArray(new String[0])))
         {
           String msg = "Problem occurred generating cog file. Cog generation failed for [" + this.getS3Path() + "].";
           logger.error(msg);
           monitor.addError(msg);
-          
+
           return ProcessResult.fail();
         }
 
@@ -114,11 +112,12 @@ public class CogTifProcessor extends ManagedDocument
 
           if (new CogTifValidator(this.monitor).isValidCog(cogRes))
           {
-            if (this.downstream != null && this.downstream instanceof GdalPNGGenerator) {
-              ((S3FileUpload)this.downstream).setProduct(product);
-              ((S3FileUpload)this.downstream).setS3Path(ImageryComponent.ORTHO + "/" + cogRes.getBaseName() + ".png");
+            if (this.downstream != null && this.downstream instanceof GdalPNGGenerator)
+            {
+              ( (S3FileUpload) this.downstream ).setProduct(product);
+              ( (S3FileUpload) this.downstream ).setS3Path(ImageryComponent.ORTHO + "/" + cogRes.getBaseName() + ".png");
             }
-            
+
             return super.process(cogRes);
           }
           else
@@ -135,11 +134,15 @@ public class CogTifProcessor extends ManagedDocument
       finally
       {
         FileUtils.deleteQuietly(cog);
+
+        logger.info("Deleted file: " + cog.getAbsolutePath());
       }
     }
     finally
     {
       FileUtils.deleteQuietly(overview);
+
+      logger.info("Deleted file: " + overview.getAbsolutePath());
     }
 
     return ProcessResult.fail();

@@ -81,6 +81,9 @@ public class GeoreferenceArchiveProcessor extends ManagedDocument
       // Double.toString(bounds.getMinY()), //
       // tif.getAbsolutePath(), geotif.getAbsolutePath() //
       // }));
+      
+      logger.info("Generating GeoTIFF at: " + geotif.getAbsolutePath());
+
 
       List<String> cmd = AppProperties.getCondaTool("gdal_translate");
       cmd.addAll(Arrays.asList(new String[] { //

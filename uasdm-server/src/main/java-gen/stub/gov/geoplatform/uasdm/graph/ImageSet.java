@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -34,6 +34,8 @@ import org.json.JSONArray;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.runwaysdk.business.graph.GraphQuery;
 import com.runwaysdk.business.graph.VertexObject;
@@ -56,6 +58,7 @@ import gov.geoplatform.uasdm.model.ComponentImageSet;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.EdgeType;
 import gov.geoplatform.uasdm.model.UasComponentIF;
+import gov.geoplatform.uasdm.processing.CogTifProcessor;
 import gov.geoplatform.uasdm.processing.SystemProcessExecutor;
 import gov.geoplatform.uasdm.remote.RemoteFileFacade;
 import gov.geoplatform.uasdm.remote.RemoteFileObject;
@@ -70,6 +73,8 @@ import net.geoprism.spring.core.ApplicationContextHolder;
 
 public class ImageSet extends ImageSetBase
 {
+  private static Logger     logger           = LoggerFactory.getLogger(ImageSet.class);
+
   @SuppressWarnings("unused")
   private static final long serialVersionUID = 1976921284;
 
@@ -448,6 +453,8 @@ public class ImageSet extends ImageSetBase
 
       try
       {
+        logger.info("Generating temp file at: " + tempFile.getAbsolutePath());
+
         try (InputStream istream = remoteFile.getObjectContent())
         {
           FileUtils.copyToFile(istream, tempFile);
@@ -495,6 +502,8 @@ public class ImageSet extends ImageSetBase
       finally
       {
         FileUtils.deleteQuietly(tempFile);
+
+        logger.info("Delete file at: " + tempFile.getAbsolutePath());
       }
     }
     catch (IOException e)

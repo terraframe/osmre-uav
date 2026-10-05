@@ -54,6 +54,8 @@ public class HillshadeProcessor extends ManagedDocument
     final String basename = FilenameUtils.getBaseName(file.getName());
 
     File hillshade = new File(file.getParent(), basename + "-gdal" + CogTifProcessor.COG_EXTENSION);
+    
+    logger.info("Generating hillshade at: " + hillshade.getAbsolutePath());
 
     var cmd = AppProperties.getCondaTool("gdaldem");
     cmd.addAll(Arrays.asList(new String[] { "hillshade", file.getAbsolutePath(), hillshade.getAbsolutePath(), "-co", "BIGTIFF=YES" }));

@@ -56,6 +56,8 @@ public class GdalPNGGenerator extends ManagedDocument
 
     File png = new File(file.getParent(), basename + ".png");
     
+    logger.info("Generating PNG at: " + png.getAbsolutePath());
+    
     var cmd = AppProperties.getCondaTool("gdal_translate");
     cmd.addAll(Arrays.asList(new String[] { "-of", "PNG", file.getAbsolutePath(), png.getAbsolutePath() }));
     

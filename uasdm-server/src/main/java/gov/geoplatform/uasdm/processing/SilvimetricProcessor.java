@@ -162,6 +162,8 @@ public class SilvimetricProcessor extends ManagedDocument
     finally
     {
       FileUtils.deleteQuietly(input);
+
+      logger.info("Deleted file at: " + input.getAbsolutePath());
     }
 
     return ProcessResult.fail();
