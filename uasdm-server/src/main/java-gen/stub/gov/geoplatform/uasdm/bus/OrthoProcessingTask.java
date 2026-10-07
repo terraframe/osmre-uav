@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.bus;
 
@@ -72,20 +72,25 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
     return obj;
   }
 
-  @Transaction
   public void initiate(ApplicationFileResource infile)
   {
-    final String targetWithPathing = this.getUploadTarget(); // In the case of a DEM upload, this will be either dem/dsm or dem/dtm. Otherwise it's just the folder we're uploading to
-    final String uploadTarget = targetWithPathing.startsWith(ImageryComponent.DEM) ? ImageryComponent.DEM : targetWithPathing; // A lot of components weren't built to handle dem/dsm or dem/dtm so we strip that out here to allow legacy code to work just fine
-    
     UasComponent component = UasComponent.get(this.getComponent());
 
-    Product product = (Product) component.createProductIfNotExist(this.getProductName());
+    Product product = createProduct(infile, component);
 
-    // Add a ProductHasDocument relationship to the uploaded file so it appears in the artifact list
-    product.addDocuments(component.getDocuments().stream().filter(doc -> {
-        return doc.getS3location().contains("/" + product.getProductName() + "/" + uploadTarget + "/" + infile.getName());
-      }).collect(Collectors.toList()));
+    process(infile, component, product);
+  }
+
+  @Transaction
+  private void process(ApplicationFileResource infile, UasComponent component, Product product)
+  {
+    // In the case of a DEM upload, this will be either dem/dsm or dem/dtm.
+    // Otherwise it's just the folder we're uploading to
+    final String targetWithPathing = this.getUploadTarget();
+
+    // A lot of components weren't built to handle dem/dsm or dem/dtm so we
+    // strip that out here to allow legacy code to work justfine
+    final String uploadTarget = getConvertedUploadTarget(targetWithPathing);
 
     final StatusMonitorIF monitor = new WorkflowTaskMonitor(this);
 
@@ -106,15 +111,20 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
         }
 
         new GdalPNGGenerator(ImageryComponent.ORTHO + "/" + infile.getBaseName() + ".png", product, component, monitor).process(infile);
+
+        throw new RuntimeException("Something bad happened");
       }
     }
 
     if (uploadTarget.equals(ImageryComponent.DEM) && this.getProcessDem())
     {
       String finalName = ODMZipPostProcessor.DEM_GDAL + "/dsm" + CogTifProcessor.COG_EXTENSION;
+
       if (targetWithPathing.equals(ImageryComponent.DEM + "/dtm"))
+      {
         finalName = ODMZipPostProcessor.DEM_GDAL + "/dtm" + CogTifProcessor.COG_EXTENSION;
-      
+      }
+
       if (new GeoreferenceValidator().isValid(infile))
       {
         new GeoreferenceArchiveProcessor(ImageryComponent.DEM + "/" + "gdal_dem.tif", product, component, monitor) //
@@ -127,7 +137,7 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
       {
         if (!new CogTifValidator().isValidCog(infile))
         {
-          String dsmOrDtm = (targetWithPathing.equals(ImageryComponent.DEM + "/dtm")) ? "/dtm" : "/dsm";
+          String dsmOrDtm = ( targetWithPathing.equals(ImageryComponent.DEM + "/dtm") ) ? "/dtm" : "/dsm";
           new CogTifProcessor(ImageryComponent.DEM + dsmOrDtm + CogTifProcessor.COG_EXTENSION, product, component, monitor) //
               .addDownstream(new HillshadeProcessor(finalName, product, component, new WorkflowTaskMonitor(this))) //
               .process(infile);
@@ -166,6 +176,34 @@ public class OrthoProcessingTask extends OrthoProcessingTaskBase
     this.setStatus(ODMStatus.COMPLETED.getLabel());
     this.setMessage("Artifact has been processed");
     this.apply();
+  }
+
+  @Transaction
+  private Product createProduct(ApplicationFileResource infile, UasComponent component)
+  {
+    // In the case of a DEM upload, this will be either dem/dsm or dem/dtm.
+    // Otherwise it's just the folder we're uploading to
+    final String targetWithPathing = this.getUploadTarget();
+
+    // A lot of components weren't built to handle dem/dsm or dem/dtm so we
+    // strip that out here to allow legacy code to work justfine
+    final String uploadTarget = getConvertedUploadTarget(targetWithPathing);
+
+    Product product = (Product) component.createProductIfNotExist(this.getProductName());
+
+    // Add a ProductHasDocument relationship to the uploaded file so it appears
+    // in the artifact list
+    product.addDocuments(component.getDocuments().stream().filter(doc -> {
+      return doc.getS3location().contains("/" + product.getProductName() + "/" + uploadTarget + "/" + infile.getName());
+    }).collect(Collectors.toList()));
+
+    return product;
+  }
+
+  private String getConvertedUploadTarget(final String targetWithPathing)
+  {
+    final String uploadTarget = targetWithPathing.startsWith(ImageryComponent.DEM) ? ImageryComponent.DEM : targetWithPathing;
+    return uploadTarget;
   }
 
   public static OrthoProcessingTask getByUploadId(String uploadId)
