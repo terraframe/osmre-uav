@@ -216,22 +216,22 @@ public class ODMZipPostProcessor
   {
     if (this.progressTask != null && truthy(this.progressTask.getProcessDem()))
     {
-      this.runProcessor(unzippedParentFolder, "odm_dem/dsm.tif", new ManagedDocument(buildS3PathWithPrefix(ImageryComponent.DEM, "dsm" + CogTifProcessor.COG_EXTENSION), this.product, this.collection, monitor));
-      this.runProcessor(unzippedParentFolder, "odm_dem/dtm.tif", new ManagedDocument(buildS3PathWithPrefix(ImageryComponent.DEM, "dtm" + CogTifProcessor.COG_EXTENSION), this.product, this.collection, monitor));
+      this.runProcessor(unzippedParentFolder, "odm_dem/dsm.tif", new ManagedDocument(buildS3Path(ImageryComponent.DEM, "dsm" + CogTifProcessor.COG_EXTENSION), this.product, this.collection, monitor));
+      this.runProcessor(unzippedParentFolder, "odm_dem/dtm.tif", new ManagedDocument(buildS3Path(ImageryComponent.DEM, "dtm" + CogTifProcessor.COG_EXTENSION), this.product, this.collection, monitor));
 
-      this.runProcessor(unzippedParentFolder, "odm_dem/dsm.tif", new HillshadeProcessor(buildS3PathWithPrefix(DEM_GDAL, "dsm" + CogTifProcessor.COG_EXTENSION), this.product, this.collection, monitor));
+      this.runProcessor(unzippedParentFolder, "odm_dem/dsm.tif", new HillshadeProcessor(buildS3Path(DEM_GDAL, "dsm" + CogTifProcessor.COG_EXTENSION), this.product, this.collection, monitor));
 
       // Add the report to the dem folder
-      this.runProcessor(unzippedParentFolder, "odm_report/report.pdf", new ManagedDocument(buildS3PathWithPrefix(ImageryComponent.DEM, "report.pdf"), this.product, this.collection, monitor));
+      this.runProcessor(unzippedParentFolder, "odm_report/report.pdf", new ManagedDocument(buildS3Path(ImageryComponent.DEM, "report.pdf"), this.product, this.collection, monitor));
     }
 
     if (this.progressTask != null && truthy(this.progressTask.getProcessOrtho()))
     {
-      this.runProcessor(unzippedParentFolder, "odm_orthophoto/odm_orthophoto.png", new ManagedDocument(buildS3PathWithPrefix(ImageryComponent.ORTHO, "odm_orthophoto.png"), this.product, this.collection, monitor));
-      this.runProcessor(unzippedParentFolder, "odm_orthophoto/odm_orthophoto.tif", new ManagedDocument(buildS3PathWithPrefix(ImageryComponent.ORTHO, "odm_orthophoto" + CogTifProcessor.COG_EXTENSION), this.product, this.collection, monitor, new DocumentInfo().setOrthoCorrectionModel("unknown")));
+      this.runProcessor(unzippedParentFolder, "odm_orthophoto/odm_orthophoto.png", new ManagedDocument(buildS3Path(ImageryComponent.ORTHO, "odm_orthophoto.png"), this.product, this.collection, monitor));
+      this.runProcessor(unzippedParentFolder, "odm_orthophoto/odm_orthophoto.tif", new ManagedDocument(buildS3Path(ImageryComponent.ORTHO, "odm_orthophoto" + CogTifProcessor.COG_EXTENSION), this.product, this.collection, monitor, new DocumentInfo().setOrthoCorrectionModel("unknown")));
 
       // Add the report to the ortho folder
-      this.runProcessor(unzippedParentFolder, "odm_report/report.pdf", new ManagedDocument(buildS3PathWithPrefix(ImageryComponent.ORTHO, "report.pdf"), this.product, this.collection, monitor));
+      this.runProcessor(unzippedParentFolder, "odm_report/report.pdf", new ManagedDocument(buildS3Path(ImageryComponent.ORTHO, "report.pdf"), this.product, this.collection, monitor));
     }
 
     if (this.progressTask != null && truthy(this.progressTask.getProcessPtcloud()))
@@ -239,7 +239,7 @@ public class ODMZipPostProcessor
       EpsgProcessor processor = new EpsgProcessor();
 
       this.runProcessor(unzippedParentFolder, "odm_georeferencing/odm_georeferencing_model_geo.txt", processor);
-      this.runProcessor(unzippedParentFolder, "odm_georeferencing/odm_georeferenced_model.laz", new ManagedDocument(buildS3PathWithPrefix(ImageryComponent.PTCLOUD, "odm_georeferenced_model.laz"), this.product, this.collection, monitor, new DocumentInfo().setProjectionName(processor.getLine())));
+      this.runProcessor(unzippedParentFolder, "odm_georeferencing/odm_georeferenced_model.laz", new ManagedDocument(buildS3Path(ImageryComponent.PTCLOUD, "odm_georeferenced_model.laz"), this.product, this.collection, monitor, new DocumentInfo().setProjectionName(processor.getLine())));
 
       this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept.json", new S3FileUpload(buildPotreePath(POTREE, "ept.json"), this.product, this.collection, monitor));
       this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-build.json", new S3FileUpload(buildPotreePath(POTREE, "ept-build.json"), this.product, this.collection, monitor));
@@ -248,12 +248,12 @@ public class ODMZipPostProcessor
       this.runProcessor(unzippedParentFolder, "entwine_pointcloud/ept-data", new S3FileUpload(buildPotreePath(POTREE, "ept-data"), this.product, this.collection, monitor));
 
       // Add the report to the pt clould folder
-      this.runProcessor(unzippedParentFolder, "odm_report/report.pdf", new ManagedDocument(buildS3PathWithPrefix(ImageryComponent.PTCLOUD, "report.pdf"), this.product, this.collection, monitor));
+      this.runProcessor(unzippedParentFolder, "odm_report/report.pdf", new ManagedDocument(buildS3Path(ImageryComponent.PTCLOUD, "report.pdf"), this.product, this.collection, monitor));
     }
 
   }
 
-  public String buildS3PathWithPrefix(String folder, String filename)
+  public String buildS3Path(String folder, String filename)
   {
     String path = folder + "/";
 
