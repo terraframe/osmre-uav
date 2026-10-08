@@ -52,7 +52,8 @@ RUN apt-get install -y libboost-all-dev libtbb-dev
 RUN cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
 RUN make
 
-
+# Remove gcc to reduce security dependencies
+RUN sudo apt purge g++-14 gcc-14 cmake
 
 ### Install Conda from miniforge ###
 ## Commands taken from official conda-forge Dockerfile at:
