@@ -4,144 +4,220 @@
 
 -->
 
+<form #myForm="ngForm">
+  <!-- Templates must be inside of the form definition in order to share the form context -->
+  <ng-template #odmConfig>
+    <h3 class="mt-2">Run ortho to process the following products:</h3>
 
-<ng-template #odmConfig>
+    <table style="width: 100%">
+      <thead>
+        <th colspan="6">Type</th>
+        <th></th>
+      </thead>
+      <tr class="artifact-row">
+        <td colspan="6">Ptcloud</td>
+        <td>
+          <boolean-field
+            [(value)]="config.processPtcloud"
+            (valueChange)="configChange()"
+            label="Generate"
+          ></boolean-field>
+        </td>
+      </tr>
+      <tr class="artifact-row">
+        <td colspan="6">DEM</td>
+        <td>
+          <boolean-field [(value)]="config.processDem" (valueChange)="configChange()" label="Generate"></boolean-field>
+        </td>
+      </tr>
+      <tr class="artifact-row">
+        <td colspan="6">Ortho</td>
+        <td>
+          <boolean-field
+            [(value)]="config.processOrtho"
+            (valueChange)="configChange()"
+            label="Generate"
+          ></boolean-field>
+        </td>
+      </tr>
+    </table>
 
-	<h3 class="mt-2">Run ortho to process the following products: </h3>
-
-	<table style="width: 100%;">
-		<thead>
-			<th colspan="6">Type</th>
-			<th></th>
-		</thead>
-		<tr class="artifact-row">
-			<td colspan="6">Ptcloud</td>
-			<td>
-				<boolean-field [(value)]="config.processPtcloud" (valueChange)="configChange()" label="Generate"></boolean-field>
-			</td>
-		</tr>
-		<tr class="artifact-row">
-			<td colspan="6">DEM</td>
-			<td>
-				<boolean-field [(value)]="config.processDem" (valueChange)="configChange()" label="Generate"></boolean-field>
-			</td>
-		</tr>
-		<tr class="artifact-row">
-			<td colspan="6">Ortho</td>
-			<td>
-				<boolean-field [(value)]="config.processOrtho" (valueChange)="configChange()" label="Generate"></boolean-field>
-			</td>
-		</tr>
-	</table>
-
-	
-
-	<!-- <button type="button" class="btn btn-default" style="margin-top:10px;" (click)="isAdvancedSettingsCollapsed = !isAdvancedSettingsCollapsed"
+    <!-- <button type="button" class="btn btn-default" style="margin-top:10px;" (click)="isAdvancedSettingsCollapsed = !isAdvancedSettingsCollapsed"
 		[attr.aria-expanded]="!isAdvancedSettingsCollapsed" aria-controls="collapseBasic">Advanced Settings
 	</button> -->
-	<h4 class="mt-2">Advanced Settings</h4>
-	<div [collapse]="isAdvancedSettingsCollapsed" [isAnimated]="true" class="ps-3">
-		<div>
-			<div class="form-group">
-				<label for="outFileNamePrefix">Output Product Name Prefix</label>
-				<input [(ngModel)]="config.outFileNamePrefix" name="outFileNamePrefix" type="input" class="form-control"
-					placeholder="Output product name prefix..." />
-			</div>
+    <h4 class="mt-2">Advanced Settings</h4>
+    <div [collapse]="isAdvancedSettingsCollapsed" [isAnimated]="true" class="ps-3">
+      <div>
+        <div class="form-group">
+          <label for="outFileNamePrefix">Output Product Name Prefix</label>
+          <input
+            #outFileNamePrefix="ngModel"
+            [(ngModel)]="config.outFileNamePrefix"
+            name="outFileNamePrefix"
+            type="input"
+            class="form-control"
+            placeholder="Output product name prefix..."
+            forbiddenName
+          />
+          <div
+            class="text-danger"
+            *ngIf="outFileNamePrefix.invalid && (outFileNamePrefix.dirty || outFileNamePrefix.touched)"
+          >
+            <div *ngIf="outFileNamePrefix.errors?.forbiddenName">
+              No spaces or special characters such as &lt;, &gt;, -, +, =, !, &#64;, #, $, %, ^, &amp;, *, ?,/, \ or
+              apostrophes are allowed.
+            </div>
+          </div>
+        </div>
 
-			<div *ngIf="config.processOrtho || config.processDem" class="form-group mt-1">
-				<label for="resolution">Orthophoto and DEM Resolution (cm)</label>
-				<input [(ngModel)]="config.resolution" (change)="configChange()" name="resolution" type="number" class="form-control"
-					placeholder="5" step="1" min="0" />
-			</div>
+        <div *ngIf="config.processOrtho || config.processDem" class="form-group mt-1">
+          <label for="resolution">Orthophoto and DEM Resolution (cm)</label>
+          <input
+            [(ngModel)]="config.resolution"
+            (change)="configChange()"
+            name="resolution"
+            type="number"
+            class="form-control"
+            placeholder="5"
+            step="1"
+            min="0"
+          />
+        </div>
 
-			<div *ngIf="config.processOrtho || config.processDem" class="form-group mt-1">
-				<label for="matcherNeighbors">Matcher Nieghbors</label>
-				<input [(ngModel)]="config.matcherNeighbors" (change)="configChange()" name="matcherNeighbors" type="number" class="form-control"
-					placeholder="0" step="1" min="0" />
-			</div>
+        <div *ngIf="config.processOrtho || config.processDem" class="form-group mt-1">
+          <label for="matcherNeighbors">Matcher Nieghbors</label>
+          <input
+            [(ngModel)]="config.matcherNeighbors"
+            (change)="configChange()"
+            name="matcherNeighbors"
+            type="number"
+            class="form-control"
+            placeholder="0"
+            step="1"
+            min="0"
+          />
+        </div>
 
-			<div *ngIf="config.processOrtho || config.processDem" class="form-group mt-1">
-				<label for="minNumFeatures">Minimum number of features to extract per image</label>
-				<input [(ngModel)]="config.minNumFeatures" (change)="configChange()" name="minNumFeatures" type="number" class="form-control"
-					placeholder="10000" step="1" min="0" />
-			</div>
+        <div *ngIf="config.processOrtho || config.processDem" class="form-group mt-1">
+          <label for="minNumFeatures">Minimum number of features to extract per image</label>
+          <input
+            [(ngModel)]="config.minNumFeatures"
+            (change)="configChange()"
+            name="minNumFeatures"
+            type="number"
+            class="form-control"
+            placeholder="10000"
+            step="1"
+            min="0"
+          />
+        </div>
 
-			<div *ngIf="config.processPtcloud" class="form-group mt-1">
-				<label for="pcQuality">Generated point cloud quality</label>
-				<select [(ngModel)]="config.pcQuality" (change)="configChange()" name="pcQuality" class="form-control">
-					<option value="ULTRA">ULTRA</option>
-					<option value="HIGH">HIGH</option>
-					<option value="MEDIUM">MEDIUM</option>
-					<option value="LOW">LOW</option>
-					<option value="LOWEST">LOWEST</option>
-				</select>
-			</div>
+        <div *ngIf="config.processPtcloud" class="form-group mt-1">
+          <label for="pcQuality">Generated point cloud quality</label>
+          <select [(ngModel)]="config.pcQuality" (change)="configChange()" name="pcQuality" class="form-control">
+            <option value="ULTRA">ULTRA</option>
+            <option value="HIGH">HIGH</option>
+            <option value="MEDIUM">MEDIUM</option>
+            <option value="LOW">LOW</option>
+            <option value="LOWEST">LOWEST</option>
+          </select>
+        </div>
 
-			<div *ngIf="config.processOrtho" class="form-group mt-1">
-				<label for="featureQuality">Generated feature quality</label>
-				<select [(ngModel)]="config.featureQuality" (change)="configChange()" name="featureQuality" class="form-control">
-					<option value="ULTRA">ULTRA</option>
-					<option value="HIGH">HIGH</option>
-					<option value="MEDIUM">MEDIUM</option>
-					<option value="LOW">LOW</option>
-					<option value="LOWEST">LOWEST</option>
-				</select>
-				<div class="form-text alert alert-warning">
-					Setting feature quality to higher settings will significantly increase the time to process.
-				</div>
-			</div>
+        <div *ngIf="config.processOrtho" class="form-group mt-1">
+          <label for="featureQuality">Generated feature quality</label>
+          <select
+            [(ngModel)]="config.featureQuality"
+            (change)="configChange()"
+            name="featureQuality"
+            class="form-control"
+          >
+            <option value="ULTRA">ULTRA</option>
+            <option value="HIGH">HIGH</option>
+            <option value="MEDIUM">MEDIUM</option>
+            <option value="LOW">LOW</option>
+            <option value="LOWEST">LOWEST</option>
+          </select>
+          <div class="form-text alert alert-warning">
+            Setting feature quality to higher settings will significantly increase the time to process.
+          </div>
+        </div>
 
-			<div *ngIf="config.radiometricCalibration && (isRadiometric() || isMultispectral())" class="form-group mt-1">
-				<label for="radiometricCalibration">Radiometric calibration</label>
-				<select [(ngModel)]="config.radiometricCalibration" (change)="configChange()" name="radiometricCalibration" class="form-control">
-					<option value="NONE">NONE</option>
-					<option value="CAMERA">CAMERA</option>
-					<option value="CAMERA_SUN">CAMERA+SUN (experimental)</option>
-				</select>
-			</div>
+        <div *ngIf="config.radiometricCalibration && (isRadiometric() || isMultispectral())" class="form-group mt-1">
+          <label for="radiometricCalibration">Radiometric calibration</label>
+          <select
+            [(ngModel)]="config.radiometricCalibration"
+            (change)="configChange()"
+            name="radiometricCalibration"
+            class="form-control"
+          >
+            <option value="NONE">NONE</option>
+            <option value="CAMERA">CAMERA</option>
+            <option value="CAMERA_SUN">CAMERA+SUN (experimental)</option>
+          </select>
+        </div>
 
-			<div *ngIf="isVideo(false) && config.processOrtho" class="form-group mt-1">
-				<label for="videoResolution" title="Maximum output resolution of extracted video frames in pixels">Video Resolution</label>
-				<input [(ngModel)]="config.videoResolution" (change)="configChange()" name="`" type="number" class="form-control"
-					placeholder="4000" step="1" min="0" />
-			</div>
+        <div *ngIf="isVideo(false) && config.processOrtho" class="form-group mt-1">
+          <label for="videoResolution" title="Maximum output resolution of extracted video frames in pixels"
+            >Video Resolution</label
+          >
+          <input
+            [(ngModel)]="config.videoResolution"
+            (change)="configChange()"
+            name="`"
+            type="number"
+            class="form-control"
+            placeholder="4000"
+            step="1"
+            min="0"
+          />
+        </div>
 
-			<div *ngIf="isVideo(false) && config.processOrtho" class="form-group mt-1">
-				<label for="videoLimit" title="Maximum number of frames to extract from video files for processing. Set to 0 for no limit">Video Limit</label>
-				<input [(ngModel)]="config.videoLimit" (change)="configChange()" name="`" type="number" class="form-control"
-					placeholder="500" step="1" min="0" />
-			</div>
-		</div>
-	</div>
+        <div *ngIf="isVideo(false) && config.processOrtho" class="form-group mt-1">
+          <label
+            for="videoLimit"
+            title="Maximum number of frames to extract from video files for processing. Set to 0 for no limit"
+            >Video Limit</label
+          >
+          <input
+            [(ngModel)]="config.videoLimit"
+            (change)="configChange()"
+            name="`"
+            type="number"
+            class="form-control"
+            placeholder="500"
+            step="1"
+            min="0"
+          />
+        </div>
+      </div>
+    </div>
+  </ng-template>
 
-
-</ng-template>
-
-<ng-template #lidarConfig>
-	<table style="width: 100%;">
-		<thead>
-			<th colspan="6">Type</th>
-			<th></th>
-		</thead>
-		<tr class="artifact-row">
-			<td colspan="6">Generate COPC</td>
-			<td>
-				<boolean-field [(value)]="config.generateCopc" label="Generate"></boolean-field>
-			</td>
-		</tr>
-		<tr class="artifact-row">
-			<td colspan="6">Generate Tree canopy cover</td>
-			<td>
-				<boolean-field [(value)]="config.generateTreeCanopyCover" label="Generate"></boolean-field>
-			</td>
-		</tr>
-		<tr class="artifact-row">
-			<td colspan="6">Generate ground surface model</td>
-			<td>
-				<boolean-field [(value)]="config.generateGSM" label="Generate"></boolean-field>
-			</td>
-		</tr>
-		<!--
+  <ng-template #lidarConfig>
+    <table style="width: 100%">
+      <thead>
+        <th colspan="6">Type</th>
+        <th></th>
+      </thead>
+      <tr class="artifact-row">
+        <td colspan="6">Generate COPC</td>
+        <td>
+          <boolean-field [(value)]="config.generateCopc" label="Generate"></boolean-field>
+        </td>
+      </tr>
+      <tr class="artifact-row">
+        <td colspan="6">Generate Tree canopy cover</td>
+        <td>
+          <boolean-field [(value)]="config.generateTreeCanopyCover" label="Generate"></boolean-field>
+        </td>
+      </tr>
+      <tr class="artifact-row">
+        <td colspan="6">Generate ground surface model</td>
+        <td>
+          <boolean-field [(value)]="config.generateGSM" label="Generate"></boolean-field>
+        </td>
+      </tr>
+      <!--
 		<tr class="artifact-row">
 			<td colspan="6">Generate tree structure</td>
 			<td>
@@ -149,82 +225,106 @@
 			</td>
 		</tr>
 		-->
-		<tr class="artifact-row">
-			<td colspan="6">Generate terrain model</td>
-			<td>
-				<boolean-field [(value)]="config.generateTerrainModel" label="Generate"></boolean-field>
-			</td>
-		</tr>
-	</table>
-</ng-template>
+      <tr class="artifact-row">
+        <td colspan="6">Generate terrain model</td>
+        <td>
+          <boolean-field [(value)]="config.generateTerrainModel" label="Generate"></boolean-field>
+        </td>
+      </tr>
+    </table>
+  </ng-template>
 
+  <div class="modal-body">
+    <div *ngIf="message != null" class="error-container">
+      <div class="label-holder">
+        <strong>Error</strong>
+      </div>
+      <div class="holder">
+        <div>
+          <p class="error-message">{{ message }}</p>
+        </div>
+      </div>
+    </div>
 
-<form #myForm="ngForm">
-	<div class="modal-body">
-		<div *ngIf="message != null" class="error-container">
-			<div class="label-holder">
-				<strong>Error</strong>
-			</div>
-			<div class="holder">
-				<div>
-					<p class="error-message">{{message}}</p>
-				</div>
-			</div>
-		</div>
+    <i *ngIf="loading" class="fa fa-spinner fa-spin" style="margin-left: 50%"></i>
 
-		<i *ngIf="loading" class="fa fa-spinner fa-spin" style="margin-left:50%;"></i>
+    <ng-container *ngIf="!loading">
+      <div *ngIf="estimate || loadingEstimate" class="runtime-header">
+        <ng-container *ngIf="estimate">
+          <div class="runtime-header__icon">⏱</div>
 
-		<ng-container *ngIf="!loading">
-		<div *ngIf="estimate || loadingEstimate" class="runtime-header">
-			<ng-container *ngIf="estimate">
-				<div class="runtime-header__icon">⏱</div>
+          <div class="runtime-header__content">
+            <div class="runtime-header__title">Estimated processing time</div>
 
-				<div class="runtime-header__content">
-					<div class="runtime-header__title">
-					Estimated processing time
-					</div>
+            <div class="runtime-header__estimate">
+              <span *ngIf="estimate.runtime as rt">
+                ≈ {{ getRuntimeDisplay(rt).primary }}
+                <span *ngIf="getRuntimeDisplay(rt).secondary as detail" class="runtime-header__range">
+                  ({{ detail }})
+                </span>
+              </span>
+              <span *ngIf="!estimate.runtime">Unknown</span>
+            </div>
 
-					<div class="runtime-header__estimate">
-						<span *ngIf="estimate.runtime as rt">
-						≈ {{ getRuntimeDisplay(rt).primary }}
-						<span *ngIf="getRuntimeDisplay(rt).secondary as detail" class="runtime-header__range">
-							({{ detail }})
-						</span>
-						</span>
-						<span *ngIf="!estimate.runtime">Unknown</span>
-					</div>
+            <div class="runtime-header__meta">
+              <span *ngIf="estimate.runtime">Based on {{ estimate.similarJobs }} other similar jobs</span>
+              <span *ngIf="!estimate.runtime">Zero other similar jobs</span>
+            </div>
+          </div>
+        </ng-container>
 
-					<div class="runtime-header__meta">
-						<span *ngIf="estimate.runtime">Based on {{estimate.similarJobs}} other similar jobs</span>
-						<span *ngIf="!estimate.runtime">Zero other similar jobs</span>
-					</div>
-				</div>
-			</ng-container>
+        <i *ngIf="loadingEstimate" class="fa fa-spin fa-spinner"></i>
+      </div>
 
-			<i *ngIf="loadingEstimate" class="fa fa-spin fa-spinner"></i>
-		</div>
+      <div class="form-group mt-1">
+        <label for="productName">Product name</label>
+        <input
+          #productName="ngModel"
+          [(ngModel)]="config.productName"
+          name="productName"
+          type="input"
+          class="form-control"
+          placeholder="Product name"
+          required
+          forbiddenName
+        />
+        <div class="text-danger" *ngIf="productName.invalid && (productName.dirty || productName.touched)">
+          <div *ngIf="productName.errors?.required">Product name is required.</div>
+          <div *ngIf="productName.errors?.forbiddenName">
+            No spaces or special characters such as &lt;, &gt;, -, +, =, !, &#64;, #, $, %, ^, &amp;, *, ?,/, \ or
+            apostrophes are allowed.
+          </div>
+        </div>
+      </div>
 
-		<div class="form-group mt-1">
-			<label for="productName">Product name</label>
-			<input #productName="ngModel" [(ngModel)]="config.productName" name="productName" type="input" class="form-control"
-				placeholder="Product name" required forbiddenName />
-			<div class="text-danger" *ngIf="productName.invalid && (productName.dirty || productName.touched)"><div *ngIf="productName.errors?.required">Product name is required.</div><div *ngIf="productName.errors?.forbiddenName">No spaces or special characters such as &lt;, &gt;, -, +, =, !, &#64;, #, $, %, ^, &amp;, *, ?,/, \ or apostrophes are allowed.</div></div>
-		</div>
+      <ng-container *ngIf="config.type === ProcessConfigType.ODM" [ngTemplateOutlet]="odmConfig"> </ng-container>
 
-		<ng-container *ngIf="config.type === ProcessConfigType.ODM" [ngTemplateOutlet]="odmConfig">
-		</ng-container>
-
-		<ng-container *ngIf="config.type === ProcessConfigType.LIDAR" [ngTemplateOutlet]="lidarConfig">
-		</ng-container>
-		</ng-container>
-
-	</div>
-	<div class="modal-footer">
-		<div class="btn-holder" style="text-align: right;">
-			<button type="button" (click)="bsModalRef.hide()" class="btn btn-default" role="button"
-				aria-disabled="false" style="padding: 4px 18px;">Cancel</button>
-			<button type="button" [disabled]="myForm.invalid || !isValid()" (click)="confirm()" class="btn btn-primary"
-				role="button" aria-disabled="false" style="padding: 4px 18px;">Submit</button>
-		</div>
-	</div>
+      <ng-container *ngIf="config.type === ProcessConfigType.LIDAR" [ngTemplateOutlet]="lidarConfig"> </ng-container>
+    </ng-container>
+  </div>
+  <div class="modal-footer">
+    <div class="btn-holder" style="text-align: right">
+      <button
+        type="button"
+        (click)="bsModalRef.hide()"
+        class="btn btn-default"
+        role="button"
+        aria-disabled="false"
+        style="padding: 4px 18px"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        [disabled]="myForm.invalid || !isValid()"
+        (click)="confirm()"
+        class="btn btn-primary"
+        role="button"
+        aria-disabled="false"
+        style="padding: 4px 18px"
+      >
+        Submit
+      </button>
+    </div>
+  </div>
 </form>

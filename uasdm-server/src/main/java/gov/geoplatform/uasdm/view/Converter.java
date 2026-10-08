@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.view;
 
@@ -102,11 +102,11 @@ public abstract class Converter<T extends UasComponentIF>
     });
 
     siteItem.setGeometry(uasComponent.getGeoPoint());
-    
-    if (!(uasComponent instanceof Collection))
+
+    if (! ( uasComponent instanceof Collection ))
       siteItem.setNumberOfChildren(uasComponent.getNumberOfChildren());
     else
-      siteItem.setNumberOfChildren(((Collection)uasComponent).getRawCount());
+      siteItem.setNumberOfChildren( ( (Collection) uasComponent ).getRawCount());
 
     if (metadata)
     {
@@ -449,9 +449,17 @@ public abstract class Converter<T extends UasComponentIF>
 
     List<DocumentIF> docs = product.getDocuments();
 
+    // This can be very slow because it has to hit S3 in order to check for the
+    // existence of the potree files. This is due to the fact that we aren't
+    // creating Document objects for the potree files when processing the ODM
+    // outputs.
+    // TODO: Determine if we can create Documents for the potree output files.
+    // And update this logic to check against the documents instead of the
+    // remote file service
     boolean hasPointcloud = docs.stream().anyMatch(d -> d.getS3location().endsWith(".copc.laz"));
-    hasPointcloud = hasPointcloud || RemoteFileFacade.objectExists(s3Loc + "metadata.json") || RemoteFileFacade.objectExists(s3Loc + "ept.json");
-    hasPointcloud = hasPointcloud || RemoteFileFacade.objectExists(component != null ? component.getS3location(product, PointcloudService.LEGACY_POTREE_SUPPORT) : "" + "cloud.js");
+    hasPointcloud = hasPointcloud || RemoteFileFacade.findSuffix(s3Loc, "ept.json").isPresent();
+    hasPointcloud = hasPointcloud || RemoteFileFacade.findSuffix(s3Loc, "metadata.json").isPresent();
+    hasPointcloud = hasPointcloud || RemoteFileFacade.findSuffix(component != null ? component.getS3location(product, PointcloudService.LEGACY_POTREE_SUPPORT) : "", "cloud.js").isPresent();
     view.setHasPointcloud(hasPointcloud);
 
     view.setHasAllZip(product.hasAllZip());
@@ -531,7 +539,6 @@ public abstract class Converter<T extends UasComponentIF>
     {
       list.add(Converter.toSiteItem(component, false));
     }
-
 
     view.setComponents(list);
     view.setId(set.getOid());

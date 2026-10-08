@@ -170,7 +170,7 @@ public class TiTillerProxy
 
       stream = authenticatedInvokeURL(new URI(AppProperties.getTitilerUrl()), "/cog/statistics", parameters);
 
-      return new TitilerCogStatistics(IOUtils.toString(stream, "UTF-8"));
+      return new TitilerCogStatistics(IOUtils.toString(stream, StandardCharsets.UTF_8));
     }
     catch (URISyntaxException | IOException e)
     {

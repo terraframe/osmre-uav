@@ -15,7 +15,6 @@
  */
 package gov.geoplatform.uasdm.bus;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,13 +35,13 @@ import gov.geoplatform.uasdm.graph.UasComponent;
 import gov.geoplatform.uasdm.model.DocumentIF;
 import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.odm.ODMStatus;
-import gov.geoplatform.uasdm.processing.GeoreferenceValidator;
 import gov.geoplatform.uasdm.processing.CogTifProcessor;
 import gov.geoplatform.uasdm.processing.CogTifValidator;
 import gov.geoplatform.uasdm.processing.GdalPNGGenerator;
+import gov.geoplatform.uasdm.processing.GeoreferenceArchiveProcessor;
+import gov.geoplatform.uasdm.processing.GeoreferenceValidator;
 import gov.geoplatform.uasdm.processing.HillshadeProcessor;
 import gov.geoplatform.uasdm.processing.ODMZipPostProcessor;
-import gov.geoplatform.uasdm.processing.GeoreferenceArchiveProcessor;
 import gov.geoplatform.uasdm.processing.PotreeConverterProcessor;
 import gov.geoplatform.uasdm.processing.StatusMonitorIF;
 import gov.geoplatform.uasdm.processing.WorkflowTaskMonitor;
