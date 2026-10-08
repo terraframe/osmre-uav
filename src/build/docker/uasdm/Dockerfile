@@ -39,12 +39,13 @@ RUN wget https://raw.githubusercontent.com/OSGeo/gdal/master/swig/python/gdal-ut
 RUN apt-get update && apt-get -y install python3 pip wget
 
 # INSTALL compilers and build toold
-RUN apt-get install -y wget git cmake build-essential gcc g++ 
+RUN apt-get install -y wget git cmake build-essential g++-14 gcc-14 
 
 # INSTALL PotreeConverter
 WORKDIR /opt
 RUN git clone https://github.com/potree/PotreeConverter.git
 WORKDIR /opt/PotreeConverter
+RUN git checkout tags/2.1.3
 RUN mkdir build
 WORKDIR /opt/PotreeConverter/build
 RUN apt-get install -y libboost-all-dev libtbb-dev
