@@ -48,7 +48,7 @@ WORKDIR /opt/PotreeConverter
 RUN mkdir build
 WORKDIR /opt/PotreeConverter/build
 RUN apt-get install -y libboost-all-dev libtbb-dev
-RUN cmake -DCMAKE_BUILD_TYPE=Release ..
+RUN cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
 RUN make
 
 
