@@ -38,22 +38,32 @@ RUN wget https://raw.githubusercontent.com/OSGeo/gdal/master/swig/python/gdal-ut
 
 RUN apt-get update && apt-get -y install python3 pip wget
 
-# INSTALL compilers and build toold
-RUN apt-get install -y wget git cmake build-essential g++-14 gcc-14 
+# INSTALL PotreeConverter (build deps are installed and purged in the same layer)
+ARG BUILD_DEPS="git cmake build-essential g++-14 gcc-14 libboost-all-dev libtbb-dev"
+ARG POTREE_CONVERTER_VERSION="2.1.3"
 
-# INSTALL PotreeConverter
-WORKDIR /opt
-RUN git clone https://github.com/potree/PotreeConverter.git
-WORKDIR /opt/PotreeConverter
-RUN git checkout tags/2.1.3
-RUN mkdir build
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends ${BUILD_DEPS} ca-certificates; \
+    git clone --depth 1 --branch ${POTREE_CONVERTER_VERSION} https://github.com/potree/PotreeConverter.git /opt/PotreeConverter; \
+    mkdir -p /opt/PotreeConverter/build; \
+    cd /opt/PotreeConverter/build; \
+    CC=gcc-14 CXX=g++-14 cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..; \
+    make -j"$(nproc)"; \
+    # keep the runtime libraries the binary links to (e.g. libtbb12) from being autoremoved
+    ldd /opt/PotreeConverter/build/PotreeConverter \
+      | awk '/=>/ { print $3 }' \
+      | xargs -r realpath \
+      | xargs -r dpkg-query -S 2>/dev/null \
+      | cut -d: -f1 | sort -u \
+      | xargs -r apt-mark manual; \
+    # remove build-only artifacts
+    rm -rf /opt/PotreeConverter/.git /opt/PotreeConverter/build/CMakeFiles; \
+    apt-get purge -y --auto-remove ${BUILD_DEPS}; \
+    rm -rf /var/lib/apt/lists/*
+
 WORKDIR /opt/PotreeConverter/build
-RUN apt-get install -y libboost-all-dev libtbb-dev
-RUN cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
-RUN make
 
-# Remove gcc to reduce security dependencies
-RUN apt purge g++-14 gcc-14 cmake
 
 ### Install Conda from miniforge ###
 ## Commands taken from official conda-forge Dockerfile at:
