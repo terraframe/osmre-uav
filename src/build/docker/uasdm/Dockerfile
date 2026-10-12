@@ -99,6 +99,7 @@ ENV LD_LIBRARY_PATH=${CONDA_DIR}/lib:${LD_LIBRARY_PATH}
 # Ensure libmamba + sqlite in base are consistent and usable
 RUN conda install -n base -y -c conda-forge \
       "sqlite>=3.45" \
+      "libxml2<2.14" \
       conda-libmamba-solver libmamba \
  && conda config --set solver libmamba
 
