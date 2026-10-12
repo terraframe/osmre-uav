@@ -457,9 +457,8 @@ public abstract class Converter<T extends UasComponentIF>
     // And update this logic to check against the documents instead of the
     // remote file service
     boolean hasPointcloud = docs.stream().anyMatch(d -> d.getS3location().endsWith(".copc.laz"));
-    hasPointcloud = hasPointcloud || RemoteFileFacade.findSuffix(s3Loc, "ept.json").isPresent();
-    hasPointcloud = hasPointcloud || RemoteFileFacade.findSuffix(s3Loc, "metadata.json").isPresent();
-    hasPointcloud = hasPointcloud || RemoteFileFacade.findSuffix(component != null ? component.getS3location(product, PointcloudService.LEGACY_POTREE_SUPPORT) : "", "cloud.js").isPresent();
+    hasPointcloud = hasPointcloud || RemoteFileFacade.objectExists(s3Loc + "metadata.json") || RemoteFileFacade.objectExists(s3Loc + "ept.json");
+    hasPointcloud = hasPointcloud || RemoteFileFacade.objectExists(component != null ? component.getS3location(product, PointcloudService.LEGACY_POTREE_SUPPORT) : "" + "cloud.js");
     view.setHasPointcloud(hasPointcloud);
 
     view.setHasAllZip(product.hasAllZip());

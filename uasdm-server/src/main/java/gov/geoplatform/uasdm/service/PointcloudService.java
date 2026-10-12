@@ -46,33 +46,22 @@ public class PointcloudService
     return component.getProduct(productName).map(product -> {
       List<DocumentIF> docs = product.getDocuments();
 
-      Optional<String> optional = null;
-
-      if (docs.stream().anyMatch(d -> d.getS3location().endsWith(".copc.laz")))
-      {
+      if (docs.stream().anyMatch(d -> d.getS3location().endsWith(".copc.laz"))) {
         return docs.stream().filter(d -> d.getS3location().endsWith(".copc.laz")).findFirst().get().getS3location();
       }
-      // POTREE outputs can be prefixed, so you cannot do an exact lookup for
-      // the ept.json or other files
-      else if ( ( optional = RemoteFileFacade.findSuffix(component.getS3location(product, ODMZipPostProcessor.POTREE), "ept.json") ).isPresent())
+      // POTREE outputs cannot be prefixed, so you have to do an exact lookup of the name
+      else if (RemoteFileFacade.objectExists(component.getS3location(product, ODMZipPostProcessor.POTREE) + "ept.json"))
       {
-        return product.getS3location() + ODMZipPostProcessor.POTREE + "/" + optional //
-            .map(key -> key.substring(key.lastIndexOf('/') + 1)). //
-            orElse("ept.json");
+        return product.getS3location() + ODMZipPostProcessor.POTREE + "/" + "ept.json";
       }
-      else if ( ( optional = RemoteFileFacade.findSuffix(component.getS3location(product, ODMZipPostProcessor.POTREE), "metadata.json") ).isPresent())
+      else if (RemoteFileFacade.objectExists(component.getS3location(product, ODMZipPostProcessor.POTREE) + "metadata.json"))
       {
-        return product.getS3location() + ODMZipPostProcessor.POTREE + "/" + optional //
-            .map(key -> key.substring(key.lastIndexOf('/') + 1)). //
-            orElse("metadata.json");
+        return product.getS3location() + ODMZipPostProcessor.POTREE + "/" + "metadata.json";
       }
-      else if ( ( optional = RemoteFileFacade.findSuffix(component.getS3location(product, LEGACY_POTREE_SUPPORT), "cloud.js") ).isPresent())
+      else if (RemoteFileFacade.objectExists(component.getS3location(product, LEGACY_POTREE_SUPPORT) + "cloud.js"))
       {
-        return product.getS3location() + LEGACY_POTREE_SUPPORT + "/" + optional //
-            .map(key -> key.substring(key.lastIndexOf('/') + 1)). //
-            orElse("cloud.js");
+        return product.getS3location() + LEGACY_POTREE_SUPPORT + "/" + "cloud.js";
       }
-
       return null;
 
     }).orElse(null);
