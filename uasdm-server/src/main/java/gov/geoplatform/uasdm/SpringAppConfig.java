@@ -63,8 +63,11 @@ public class SpringAppConfig implements WebMvcConfigurer
   @Bean(name = "multipartResolver")
   public MultipartResolver multipartResolver()
   {
-    // multipartResolver.setMaxUploadSize(-1);
-    return new StandardServletMultipartResolver();
+    StandardServletMultipartResolver resolver = new StandardServletMultipartResolver();
+    // resolver.setMaxUploadSize(-1);
+    resolver.setResolveLazily(true);
+    
+    return resolver;
   }
 
   @Override
