@@ -2,6 +2,17 @@
 # Release Notes
 
 
+## [1.8.6](https://github.com/terraframe/osmre-uav/releases/tag/1.8.6) (2026-10-13)
+
+
+### Bug Fixes
+
+   - fixed issue #504 - potree pathing updated to use prefixed file names ([#504](https://github.com/terraframe/osmre-uav/issues/504)) ([e20be](https://github.com/terraframe/osmre-uav/commit/e20be18582b27d9e5fce4e7fec0303470c77e31b))
+   - fix for issue https://github.com/terraframe/osmre-uav/issues/506   ([14104](https://github.com/terraframe/osmre-uav/commit/14104e4d820c235f50f5292169293abd002da4e7))
+   - fix for issue https://github.com/terraframe/osmre-uav/issues/496 - included the target folder in the zip instead of flattening all of thetarget forlders into a single directory  ([67eba](https://github.com/terraframe/osmre-uav/commit/67eba42f5f3c56313e4bf50e6d57cb20eb0ed842))
+
+
+
 ## [1.8.5](https://github.com/terraframe/osmre-uav/releases/tag/1.8.5) (2026-07-27)
 
 ### Features
