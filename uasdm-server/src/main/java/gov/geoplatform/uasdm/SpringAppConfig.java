@@ -26,14 +26,13 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
-import gov.geoplatform.uasdm.controller.SessionFilter;
-import jakarta.servlet.Filter;
 import me.desair.tus.server.TusFileUploadService;
 import me.desair.tus.server.upload.UuidUploadIdFactory;
 import net.geoprism.EncodingFilter;
@@ -151,4 +150,11 @@ public class SpringAppConfig implements WebMvcConfigurer
         .withUploadUri("/.*api/tus-upload") //
         .withUploadIdFactory(new UuidUploadIdFactory());
   }
+  
+  @Override
+  public void configureAsyncSupport(AsyncSupportConfigurer configurer)
+  {
+    configurer.setDefaultTimeout(-1);
+  }
+
 }
