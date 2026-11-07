@@ -235,6 +235,7 @@ public class ProjectManagementController extends AbstractController
     return ResponseEntity.ok() //
         .header(HttpHeaders.CONTENT_TYPE, "application/zip") //
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + name + ".zip\"") //
+        .header("X-Accel-Buffering", "no") // Included so nginx doesn't buffer the response
         .body(responseBody);
   }
 
