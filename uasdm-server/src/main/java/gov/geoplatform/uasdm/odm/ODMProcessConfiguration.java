@@ -206,7 +206,7 @@ public class ODMProcessConfiguration implements ProcessConfiguration
   {
     this.includeGeoLocationFile = false;
     this.outFileNamePrefix = outFileNamePrefix;
-    this.resolution = new BigDecimal(5);
+    this.resolution = new BigDecimal("0.1");
     this.matcherNeighbors = Integer.valueOf(0);
     this.minNumFeatures = Integer.valueOf(10000);
     this.pcQuality = Quality.MEDIUM;
