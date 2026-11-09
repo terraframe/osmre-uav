@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.graph;
 
@@ -27,6 +27,7 @@ import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 
 import gov.geoplatform.uasdm.model.CollectionIF;
 import gov.geoplatform.uasdm.model.EdgeType;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.view.SiteObject;
 
@@ -36,23 +37,24 @@ import gov.geoplatform.uasdm.view.SiteObject;
  *
  * This avoids scanning the entire document table by s3location.
  * 
- * This query is to be preferred over it's predecessor, SiteObjectDocumentQuery, because this query is way faster.
+ * This query is to be preferred over it's predecessor, SiteObjectDocumentQuery,
+ * because this query is way faster.
  * 
  * @author rrowlands
  */
 public class ComponentHasDocumentQuery implements SiteObjectDocumentQueryIF
 {
   private final UasComponent component;
-  
-  private ProductIF product;
-  
-  private String folder;
 
-  private final MdEdgeDAOIF   mdEdge;
+  private ProductIF          product;
 
-  private Long                skip;
+  private String             folder;
 
-  private Long                limit;
+  private final MdEdgeDAOIF  mdEdge;
+
+  private Long               skip;
+
+  private Long               limit;
 
   public ComponentHasDocumentQuery(UasComponent component, ProductIF product, String folder)
   {
@@ -63,7 +65,7 @@ public class ComponentHasDocumentQuery implements SiteObjectDocumentQueryIF
     this.folder = folder;
     this.mdEdge = MdEdgeDAO.getMdEdgeDAO(EdgeType.COMPONENT_HAS_DOCUMENT);
   }
-  
+
   public ComponentHasDocumentQuery(UasComponent component, String folder)
   {
     super();
@@ -96,18 +98,18 @@ public class ComponentHasDocumentQuery implements SiteObjectDocumentQueryIF
   private void addWhereStatements(MdAttributeDAOIF s3location, StringBuilder ql)
   {
     ql.append(" WHERE " + s3location.getColumnName() + " LIKE :s3location");
-    
+
     if (this.component instanceof CollectionIF)
     {
       CollectionIF collection = (CollectionIF) this.component;
 
-      if (this.folder.equals("image") || this.folder.equals("data"))
+      if (this.folder.equals("image") || this.folder.equals(ImageryComponent.DATA))
       {
         if (this.folder.equals("image"))
         {
           ql.append(" AND ( ");
         }
-        else if (this.folder.equals("data"))
+        else if (this.folder.equals(ImageryComponent.DATA))
         {
           ql.append(" AND NOT ( ");
         }
@@ -141,25 +143,25 @@ public class ComponentHasDocumentQuery implements SiteObjectDocumentQueryIF
   private void addParameters(final GraphQuery<?> query)
   {
     query.setParameter("rid", this.component.getRID());
-    
+
     String actualFolder = folder;
 
-    if (folder.equals("image") || folder.equals("data"))
+    if (folder.equals("image") || folder.equals(ImageryComponent.DATA))
     {
       actualFolder = "raw";
     }
 
     String s3Loc = component.getS3location(this.product, actualFolder);
     if (actualFolder.startsWith("dem/") && s3Loc.endsWith("/"))
-      s3Loc = s3Loc.substring(0, s3Loc.length()-1);
-    
+      s3Loc = s3Loc.substring(0, s3Loc.length() - 1);
+
     query.setParameter("s3location", s3Loc + "%");
 
     if (this.component instanceof CollectionIF)
     {
       CollectionIF collection = (CollectionIF) this.component;
 
-      if (this.folder.equals("image") || this.folder.equals("data"))
+      if (this.folder.equals("image") || this.folder.equals(ImageryComponent.DATA))
       {
         if (!collection.isLidar())
         {

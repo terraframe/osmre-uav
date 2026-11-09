@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 The Department of Interior
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package gov.geoplatform.uasdm.service;
 
@@ -32,7 +32,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
@@ -74,6 +76,7 @@ import gov.geoplatform.uasdm.Util;
 import gov.geoplatform.uasdm.bus.AbstractUploadTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask;
 import gov.geoplatform.uasdm.bus.AbstractWorkflowTask.WorkflowTaskStatus;
+import gov.geoplatform.uasdm.bus.Imagery;
 import gov.geoplatform.uasdm.bus.ImageryWorkflowTask;
 import gov.geoplatform.uasdm.bus.UasComponentCompositeDeleteException;
 import gov.geoplatform.uasdm.bus.WorkflowTask;
@@ -238,7 +241,7 @@ public class ProjectManagementService
 
           try (OutputStream ostream = new BufferedOutputStream(new FileOutputStream(zip)))
           {
-            downloadAll(this.collection, ImageryComponent.RAW, ostream, predicate, false);
+            downloadAll(this.collection, ostream, predicate, false, null, ImageryComponent.RAW);
           }
 
           task.initiate(new ArchiveFileResource(new FileResource(zip)));
@@ -516,16 +519,21 @@ public class ProjectManagementService
   }
 
   @Request(RequestType.SESSION)
-  public void downloadAll(String sessionId, String id, String key, OutputStream out, boolean incrementDownloadCount)
+  public void downloadAll(String sessionId, String id, OutputStream out, boolean incrementDownloadCount, String key)
   {
     UasComponentIF component = ComponentFacade.getComponent(id);
 
-    this.downloadAll(component, key, out, null, incrementDownloadCount);
+    this.downloadAll(component, out, null, incrementDownloadCount, null, key);
   }
 
-  private void downloadAll(UasComponentIF component, String key, OutputStream out, Predicate<SiteObject> predicate, boolean incrementDownloadCount)
+  private void downloadAll(UasComponentIF component, OutputStream out, Predicate<SiteObject> predicate, boolean incrementDownloadCount, Function<String, String> nameTransform, String... keys)
   {
-    List<SiteObject> items = component.getSiteObjects(key, null, null).getObjects();
+    List<SiteObject> items = new LinkedList<>();
+
+    for (String key : keys)
+    {
+      items.addAll(component.getSiteObjects(key, null, null).getObjects());
+    }
 
     if (predicate != null)
     {
@@ -547,6 +555,11 @@ public class ProjectManagementService
             Matcher matcher = pattern.matcher(item.getKey());
 
             String name = matcher.matches() ? matcher.group(1) : item.getName();
+
+            if (nameTransform != null)
+            {
+              name = nameTransform.apply(name);
+            }
 
             zos.putNextEntry(new ZipEntry(name));
 
@@ -581,9 +594,13 @@ public class ProjectManagementService
         CollectionFormat format = component instanceof CollectionIF ? ( (CollectionIF) component ).getFormat() : null;
 
         if (format != null && format.isVideo())
-          downloadAll(component, ImageryComponent.VIDEO, ostream, predicate, false);
+        {
+          downloadAll(component, ostream, predicate, false, null, ImageryComponent.VIDEO);
+        }
         else
-          downloadAll(component, ImageryComponent.RAW, ostream, predicate, false);
+        {
+          downloadAll(component, ostream, predicate, false, (name) -> name.toLowerCase(), ImageryComponent.RAW, Imagery.DATA);
+        }
       }
 
       return new LoggingArchiveFileResource(new FileResource(zip));
@@ -1486,7 +1503,7 @@ public class ProjectManagementService
       collection.getMetadata().ifPresent(metadata -> {
         if (metadata.getSensor() != null && metadata.getSensor().getHasGeologger())
         {
-          ComponentHasDocumentQuery query = new ComponentHasDocumentQuery(collection, null, "data");
+          ComponentHasDocumentQuery query = new ComponentHasDocumentQuery(collection, null, ImageryComponent.DATA);
           boolean hasGeologger = query.getDocuments().stream().filter(d -> d.getName().equals(Product.GEO_LOCATION_FILE)).findAny().isPresent();
 
           config.setHasntUploadedGeoLocationFile(!hasGeologger);

@@ -24,6 +24,7 @@ import com.runwaysdk.dataaccess.MdVertexDAOIF;
 import com.runwaysdk.dataaccess.metadata.graph.MdVertexDAO;
 
 import gov.geoplatform.uasdm.model.CollectionIF;
+import gov.geoplatform.uasdm.model.ImageryComponent;
 import gov.geoplatform.uasdm.model.ProductIF;
 import gov.geoplatform.uasdm.model.UasComponentIF;
 import gov.geoplatform.uasdm.view.SiteObject;
@@ -83,13 +84,13 @@ public class SiteObjectDocumentQuery implements SiteObjectDocumentQueryIF
     {
       CollectionIF collection = (CollectionIF) this.component;
 
-      if (this.folder.equals("image") || this.folder.equals("data"))
+      if (this.folder.equals("image") || this.folder.equals(ImageryComponent.DATA))
       {
         if (this.folder.equals("image"))
         {
           ql.append(" AND ( ");
         }
-        else if (this.folder.equals("data"))
+        else if (this.folder.equals(ImageryComponent.DATA))
         {
           ql.append(" AND NOT ( ");
         }
@@ -118,7 +119,7 @@ public class SiteObjectDocumentQuery implements SiteObjectDocumentQueryIF
   {
     String actualFolder = folder;
 
-    if (folder.equals("image") || folder.equals("data"))
+    if (folder.equals("image") || folder.equals(ImageryComponent.DATA))
     {
       actualFolder = "raw";
     }
@@ -133,7 +134,7 @@ public class SiteObjectDocumentQuery implements SiteObjectDocumentQueryIF
     {
       CollectionIF collection = (CollectionIF) this.component;
 
-      if (this.folder.equals("image") || this.folder.equals("data"))
+      if (this.folder.equals("image") || this.folder.equals(ImageryComponent.DATA))
       {
         if (!collection.isLidar())
         {

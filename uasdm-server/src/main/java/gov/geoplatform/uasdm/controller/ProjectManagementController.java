@@ -230,7 +230,7 @@ public class ProjectManagementController extends AbstractController
 
     // StreamingResponseBody executes asynchronously outside Tomcat/Jetty
     // threads
-    StreamingResponseBody responseBody = ostream -> ProjectManagementController.this.service.downloadAll(sessionId, id, key, ostream, true);
+    StreamingResponseBody responseBody = ostream -> ProjectManagementController.this.service.downloadAll(sessionId, id, ostream, true, key);
 
     return ResponseEntity.ok() //
         .header(HttpHeaders.CONTENT_TYPE, "application/zip") //

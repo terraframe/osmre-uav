@@ -156,10 +156,10 @@ public class ODMGeoLocationProcessConverter
         }
       }
 
-      if (hasError)
-      {
-        throw new RuntimeException("Geo-location file is invalid and cannot be sent to ODM. Upload a new geolocation file and try processsing again. View messages for more information.");
-      }
+//      if (hasError)
+//      {
+//        throw new RuntimeException("Geo-location file is invalid and cannot be sent to ODM. Upload a new geolocation file and try processsing again. View messages for more information.");
+//      }
 
       File parent = Files.createTempDirectory(res.getName()).toFile();
 

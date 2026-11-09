@@ -231,6 +231,12 @@ public class SiteObject implements TreeComponent
   {
     throw new UnsupportedOperationException();
   }
+  
+  @Override
+  public String toString()
+  {
+    return this.key;
+  }
 
   public JSONObject toJSON()
   {
