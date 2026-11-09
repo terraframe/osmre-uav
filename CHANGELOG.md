@@ -2,6 +2,15 @@
 # Release Notes
 
 
+## [1.8.7](https://github.com/terraframe/osmre-uav/releases/tag/1.8.7) (2026-11-09)
+
+
+### Bug Fixes
+
+   - fixed timout issue with long running downloads   ([62fd3](https://github.com/terraframe/osmre-uav/commit/62fd357e1b6595b0ceda15339a79f4505372b56b))
+
+
+
 ## [1.8.6](https://github.com/terraframe/osmre-uav/releases/tag/1.8.6) (2026-10-13)
 
 
